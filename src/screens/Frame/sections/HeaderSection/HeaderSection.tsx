@@ -16,7 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../../../components/ui/dropdown-menu";
-import { LogOut } from "lucide-react";
+import { LogOut, User } from "lucide-react";
 
 export const HeaderSection = (): JSX.Element => {
   const [authMode, setAuthMode] = useState<'signup' | 'login'>('login');
@@ -40,7 +40,6 @@ export const HeaderSection = (): JSX.Element => {
   const navLinks = [
     { title: "Feed", href: "#" },
     { title: "Create StartSnap", href: "/create" },
-    { title: "Profile", href: "#" },
   ];
 
   const handleAuthClick = (mode: 'signup' | 'login') => {
@@ -91,6 +90,12 @@ export const HeaderSection = (): JSX.Element => {
                 </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem className="cursor-pointer hover:bg-startsnap-mischka/50 flex items-center gap-2" asChild>
+                  <Link to="#" className="flex items-center gap-2 w-full">
+                    <User size={16} />
+                    <span>Profile</span>
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem 
                   onClick={handleSignOut}
                   className="cursor-pointer text-startsnap-french-rose hover:text-startsnap-french-rose hover:bg-startsnap-mischka/50 flex items-center gap-2"
