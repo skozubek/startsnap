@@ -88,26 +88,18 @@ export function AuthDialog({ isOpen, onClose, mode }: AuthDialogProps) {
           )}
 
           <div className="flex justify-end gap-4 mt-6">
-            <button
-              type="button"
+            <Button
               onClick={onClose}
-              className={cn(
-                "startsnap-button w-full bg-gray-200 text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold text-base",
-                "rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
-              )}
+              className="w-full h-[52px] px-6 bg-startsnap-mischka text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] startsnap-button mt-4"
             >
               Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className={cn(
-                "startsnap-button w-full bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base",
-                "rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
-              )}
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              className="w-full h-[52px] px-6 bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] startsnap-button"
             >
-              {loading ? 'Processing...' : mode === 'signup' ? 'Sign Up' : 'Login'}
-            </button>
+              {mode === 'signup' ? 'Sign Up' : 'Login'}
+            </Button>
           </div>
         </form>
       </div>
