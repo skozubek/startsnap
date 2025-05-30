@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
@@ -29,6 +29,8 @@ export const Profile = (): JSX.Element => {
     linkedin: "",
     website: ""
   });
+  const [userStartSnaps, setUserStartSnaps] = useState([]);
+  const [loadingStartSnaps, setLoadingStartSnaps] = useState(true);
 
   // Status options with emojis
   const statusOptions = [
@@ -40,22 +42,57 @@ export const Profile = (): JSX.Element => {
     { value: "break", label: "⏳ Taking a Break" }
   ];
 
-  // Sample project cards (these would come from the database in a real scenario)
-  const projectCards = [
-    {
-      title: "Quantum Leap Synthesizer",
-      description: "A retro-futuristic audio plugin for otherworldly soundscapes.",
-      category: {
-        name: "Music Tech",
-        bgColor: "bg-purple-200",
-        textColor: "text-startsnap-purple-heart",
-        borderColor: "border-purple-700",
-      },
-      launchTime: "Launched: 2 days ago",
-      tags: ["#Synth", "#Audio", "#Feedback"],
-      link: "/project/quantum-leap-synthesizer"
-    }
-  ];
+  // Category to color mapping
+  const categoryColorMap = {
+    tech: {
+      name: "Tech",
+      bgColor: "bg-blue-200",
+      textColor: "text-blue-700",
+      borderColor: "border-blue-700",
+    },
+    gaming: {
+      name: "Gaming",
+      bgColor: "bg-startsnap-ice-cold",
+      textColor: "text-startsnap-jewel",
+      borderColor: "border-green-700",
+    },
+    community: {
+      name: "Community",
+      bgColor: "bg-startsnap-french-pass",
+      textColor: "text-startsnap-persian-blue",
+      borderColor: "border-blue-700",
+    },
+    music: {
+      name: "Music Tech",
+      bgColor: "bg-purple-200",
+      textColor: "text-startsnap-purple-heart",
+      borderColor: "border-purple-700",
+    },
+    design: {
+      name: "Design",
+      bgColor: "bg-pink-200",
+      textColor: "text-pink-700",
+      borderColor: "border-pink-700",
+    },
+    education: {
+      name: "Education",
+      bgColor: "bg-yellow-200",
+      textColor: "text-yellow-700",
+      borderColor: "border-yellow-700",
+    },
+    productivity: {
+      name: "Productivity",
+      bgColor: "bg-orange-200",
+      textColor: "text-orange-700",
+      borderColor: "border-orange-700",
+    },
+    other: {
+      name: "Other",
+      bgColor: "bg-gray-200",
+      textColor: "text-gray-700",
+      borderColor: "border-gray-700",
+    },
+  };
 
   useEffect(() => {
     const fetchUserAndProfile = async () => {
@@ -100,6 +137,9 @@ export const Profile = (): JSX.Element => {
             username: session.user.email?.split('@')[0] || ''
           }));
         }
+
+        // Fetch user's StartSnaps
+        fetchUserStartSnaps(session.user.id);
       } catch (error) {
         console.error('Error:', error);
       } finally {
@@ -109,6 +149,29 @@ export const Profile = (): JSX.Element => {
 
     fetchUserAndProfile();
   }, [navigate]);
+
+  const fetchUserStartSnaps = async (userId) => {
+    try {
+      setLoadingStartSnaps(true);
+      
+      // Fetch startsnaps for the user
+      const { data, error } = await supabase
+        .from('startsnaps')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        throw error;
+      }
+      
+      setUserStartSnaps(data || []);
+    } catch (error) {
+      console.error('Error fetching user StartSnaps:', error);
+    } finally {
+      setLoadingStartSnaps(false);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -149,6 +212,31 @@ export const Profile = (): JSX.Element => {
       alert('Error updating profile. Please try again.');
     } finally {
       setUpdating(false);
+    }
+  };
+
+  // Helper function to get category display info
+  const getCategoryDisplay = (category) => {
+    return categoryColorMap[category] || categoryColorMap.other;
+  };
+
+  // Helper function to format date
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+    
+    if (diffInDays === 0) {
+      return "Launched: Today";
+    } else if (diffInDays === 1) {
+      return "Launched: Yesterday";
+    } else if (diffInDays < 7) {
+      return `Launched: ${diffInDays} days ago`;
+    } else if (diffInDays < 30) {
+      const weeks = Math.floor(diffInDays / 7);
+      return `Launched: ${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`;
+    } else {
+      return `Launched: ${date.toLocaleDateString()}`;
     }
   };
 
@@ -305,53 +393,73 @@ export const Profile = (): JSX.Element => {
           Your StartSnaps
         </h3>
         
-        {projectCards.length > 0 ? (
+        {loadingStartSnaps ? (
+          <div className="text-center py-8">
+            <p className="text-lg text-startsnap-pale-sky">Loading your StartSnaps...</p>
+          </div>
+        ) : userStartSnaps.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {projectCards.map((project, index) => (
-              <Card
-                key={index}
-                className="bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]"
-              >
-                <CardContent className="p-7 pt-[140px]">
-                  <div className="flex justify-between items-start">
-                    <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-xl leading-7">
-                      {project.title}
-                    </h3>
-                    <Badge
-                      className={`${project.category.bgColor} ${project.category.textColor} border ${project.category.borderColor} rounded-full px-3 py-1 font-['Space_Mono',Helvetica] text-xs`}
-                    >
-                      {project.category.name}
-                    </Badge>
-                  </div>
-
-                  <p className="mt-3 font-['Roboto',Helvetica] font-normal text-startsnap-river-bed text-sm leading-5">
-                    {project.description}
-                  </p>
-
-                  <p className="mt-4 font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs">
-                    {project.launchTime}
-                  </p>
-
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {project.tags.map((tag, idx) => (
+            {userStartSnaps.map((startsnap) => {
+              const categoryDisplay = getCategoryDisplay(startsnap.category);
+              // Create tags from various sources
+              const tags = startsnap.tags || [];
+              
+              return (
+                <Card
+                  key={startsnap.id}
+                  className="bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]"
+                >
+                  <CardContent className="p-7 pt-[140px]">
+                    <div className="flex justify-between items-start">
+                      <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-xl leading-7">
+                        {startsnap.name}
+                      </h3>
                       <Badge
-                        key={idx}
-                        className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-gray-800 px-2 py-1"
+                        className={`${categoryDisplay.bgColor} ${categoryDisplay.textColor} border ${categoryDisplay.borderColor} rounded-full px-3 py-1 font-['Space_Mono',Helvetica] text-xs`}
                       >
-                        {tag}
+                        {categoryDisplay.name}
                       </Badge>
-                    ))}
-                  </div>
+                    </div>
 
-                  <Button 
-                    className="startsnap-button w-full mt-4 bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]" 
-                    asChild
-                  >
-                    <a href={project.link}>View Project</a>
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
+                    <p className="mt-3 font-['Roboto',Helvetica] font-normal text-startsnap-river-bed text-sm leading-5">
+                      {startsnap.description}
+                    </p>
+
+                    <p className="mt-4 font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs">
+                      {formatDate(startsnap.created_at)}
+                    </p>
+
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {/* Display up to 3 tags */}
+                      {tags.slice(0, 3).map((tag, idx) => (
+                        <Badge
+                          key={idx}
+                          className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-gray-800 px-2 py-1"
+                        >
+                          #{tag}
+                        </Badge>
+                      ))}
+                      
+                      {/* Show more tags indicator if there are more */}
+                      {tags.length > 3 && (
+                        <Badge
+                          className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-gray-800 px-2 py-1"
+                        >
+                          +{tags.length - 3} more
+                        </Badge>
+                      )}
+                    </div>
+
+                    <Button 
+                      className="startsnap-button w-full mt-4 bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]" 
+                      asChild
+                    >
+                      <Link to={`/project/${startsnap.id}`}>View Project</Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         ) : (
           <Card className="bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] p-8">
@@ -361,7 +469,7 @@ export const Profile = (): JSX.Element => {
                 className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]" 
                 asChild
               >
-                <a href="/create">Create Your First StartSnap</a>
+                <Link to="/create">Create Your First StartSnap</Link>
               </Button>
             </div>
           </Card>
