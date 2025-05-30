@@ -5,7 +5,7 @@ import { Button } from "../../../../components/ui/button";
 import { Card, CardContent, CardFooter } from "../../../../components/ui/card";
 import { Link } from "react-router-dom";
 import { supabase } from "../../../../lib/supabase";
-import { GridThumbnail } from "../../../../components/ui/project-thumbnail";
+import { MinimalistThumbnail } from "../../../../components/ui/project-thumbnail";
 
 export const MainContentSection = (): JSX.Element => {
   const [startSnaps, setStartSnaps] = useState([]);
@@ -159,7 +159,7 @@ export const MainContentSection = (): JSX.Element => {
                   <CardContent className="p-7 pt-[219px] relative">
                     {/* Project thumbnail */}
                     <div className="absolute top-0 left-0 right-0 h-[200px] p-7 pb-0">
-                      <GridThumbnail 
+                      <MinimalistThumbnail 
                         projectId={startsnap.id} 
                         projectType={startsnap.type} 
                         category={startsnap.category}
@@ -167,7 +167,7 @@ export const MainContentSection = (): JSX.Element => {
                     </div>
                   
                     {/* Status badges - positioned in the top right corner */}
-                    <div className="absolute top-3 right-3 flex flex-col gap-2 items-end">
+                    <div className="absolute top-3 right-3 flex flex-col gap-2 items-end z-10">
                       {/* Project type badge */}
                       {startsnap.type === "live" ? (
                         <Badge className="bg-startsnap-mountain-meadow text-white font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-green-700 px-2 py-0.5 flex items-center gap-1">
@@ -191,7 +191,7 @@ export const MainContentSection = (): JSX.Element => {
                     </div>
 
                     <div className="flex justify-between items-start">
-                      <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-2xl leading-8">
+                      <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-2xl leading-8 flex-1">
                         {startsnap.name}
                       </h3>
                       <Badge

@@ -6,7 +6,7 @@ import { Card, CardContent } from "../../components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
 import { Textarea } from "../../components/ui/textarea";
 import { supabase } from "../../lib/supabase";
-import { GridThumbnail } from "../../components/ui/project-thumbnail";
+import { MinimalistThumbnail } from "../../components/ui/project-thumbnail";
 
 export const ProjectDetail = (): JSX.Element => {
   const { id } = useParams();
@@ -241,7 +241,7 @@ export const ProjectDetail = (): JSX.Element => {
           {/* Project Header Section */}
           <div className="border-b-2 border-gray-800 p-8 relative">
             {/* Status badges - positioned in the top right corner */}
-            <div className="absolute top-3 right-3 flex flex-col gap-2 items-end">
+            <div className="absolute top-3 right-3 flex flex-col gap-2 items-end z-10">
               {/* Project type badge */}
               {startsnap.type === "live" ? (
                 <Badge className="bg-startsnap-mountain-meadow text-white font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-green-700 px-3 py-1 flex items-center gap-1">
@@ -265,7 +265,7 @@ export const ProjectDetail = (): JSX.Element => {
             </div>
 
             <div className="h-64 rounded-lg border-2 border-solid border-gray-800 mb-6">
-              <GridThumbnail 
+              <MinimalistThumbnail 
                 projectId={startsnap.id} 
                 projectType={startsnap.type} 
                 category={startsnap.category}
@@ -273,7 +273,7 @@ export const ProjectDetail = (): JSX.Element => {
             </div>
 
             <div className="flex justify-between items-start mb-4">
-              <h1 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-4xl leading-10">
+              <h1 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-4xl leading-10 flex-1">
                 {startsnap.name}
               </h1>
               <Badge className={`${categoryDisplay.bgColor} ${categoryDisplay.textColor} border ${categoryDisplay.borderColor} rounded-full px-[13px] py-[5px] font-['Space_Mono',Helvetica]`}>
