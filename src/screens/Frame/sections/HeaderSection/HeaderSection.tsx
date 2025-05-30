@@ -37,8 +37,13 @@ export const HeaderSection = (): JSX.Element => {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Only "Feed" is visible to all users
   const navLinks = [
     { title: "Feed", href: "#" },
+  ];
+
+  // "Create StartSnap" is only visible to authenticated users
+  const authenticatedNavLinks = [
     { title: "Create StartSnap", href: "/create" },
   ];
 
@@ -68,8 +73,21 @@ export const HeaderSection = (): JSX.Element => {
         <div className="flex items-center gap-6">
           <NavigationMenu>
             <NavigationMenuList className="flex gap-6">
+              {/* Always show public links */}
               {navLinks.map((link, index) => (
                 <NavigationMenuItem key={index}>
+                  <NavigationMenuLink
+                    href={link.href}
+                    className="font-['Space_Grotesk',Helvetica] text-startsnap-oxford-blue text-[length:var(--startsnap-semantic-link-font-size)] tracking-[var(--startsnap-semantic-link-letter-spacing)] leading-[var(--startsnap-semantic-link-line-height)] hover:text-startsnap-french-rose transition-colors"
+                  >
+                    {link.title}
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              ))}
+              
+              {/* Only show authenticated links if user is logged in */}
+              {user && authenticatedNavLinks.map((link, index) => (
+                <NavigationMenuItem key={`auth-${index}`}>
                   <NavigationMenuLink
                     href={link.href}
                     className="font-['Space_Grotesk',Helvetica] text-startsnap-oxford-blue text-[length:var(--startsnap-semantic-link-font-size)] tracking-[var(--startsnap-semantic-link-letter-spacing)] leading-[var(--startsnap-semantic-link-line-height)] hover:text-startsnap-french-rose transition-colors"
