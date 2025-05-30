@@ -9,6 +9,13 @@ import {
 import { AuthDialog } from "../../../../components/ui/auth-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
 import { supabase } from "../../../../lib/supabase";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../../../components/ui/dropdown-menu";
+import { LogOut } from "lucide-react";
 
 export const HeaderSection = (): JSX.Element => {
   const [authMode, setAuthMode] = useState<'signup' | 'login'>('login');
@@ -40,6 +47,15 @@ export const HeaderSection = (): JSX.Element => {
     setIsAuthDialogOpen(true);
   };
 
+  const handleSignOut = async () => {
+    try {
+      await supabase.auth.signOut();
+      console.log('Successfully signed out');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full flex justify-center p-6 bg-startsnap-candlelight shadow-[0px_2px_4px_-2px_#0000001a,0px_4px_6px_-1px_#0000001a]">
       <div className="flex items-center justify-between w-full max-w-screen-2xl">
@@ -64,10 +80,23 @@ export const HeaderSection = (): JSX.Element => {
           </NavigationMenu>
 
           {user ? (
-            <Avatar className="w-10 h-10 border-2 border-gray-800">
-              <AvatarImage src={user.user_metadata?.avatar_url} />
-              <AvatarFallback>{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
-            </Avatar>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="outline-none">
+                <Avatar className="w-10 h-10 border-2 border-gray-800 cursor-pointer hover:border-startsnap-french-rose transition-colors">
+                  <AvatarImage src={user.user_metadata?.avatar_url} />
+                  <AvatarFallback>{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem 
+                  onClick={handleSignOut}
+                  className="cursor-pointer text-startsnap-french-rose hover:text-startsnap-french-rose hover:bg-startsnap-mischka/50 flex items-center gap-2"
+                >
+                  <LogOut size={16} />
+                  <span>Sign Out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <>
               <Button
