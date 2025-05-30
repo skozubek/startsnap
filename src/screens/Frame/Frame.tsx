@@ -5,7 +5,7 @@ import { MainContentSection } from "./sections/MainContentSection/MainContentSec
 
 export const Frame = (): JSX.Element => {
   return (
-    <div className="flex flex-col min-h-screen w-full bg-koniakowcomcandlelight">
+    <div className="flex flex-col min-h-screen w-full bg-startsnap-candlelight">
       <HeaderSection />
       <div className="flex flex-col w-full min-h-screen overflow-y-auto">
         <MainContentSection />

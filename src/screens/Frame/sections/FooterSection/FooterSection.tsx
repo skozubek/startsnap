@@ -9,9 +9,9 @@ export const FooterSection = (): JSX.Element => {
   ];
 
   return (
-    <footer className="flex flex-col w-full items-center p-8 bg-koniakowcomcandlelight">
+    <footer className="flex flex-col w-full items-center p-8 bg-startsnap-candlelight">
       <div className="relative w-full max-w-screen-2xl flex flex-col items-center gap-4">
-        <div className="font-['Roboto',Helvetica] font-normal text-koniakowcomebony-clay text-base text-center leading-6">
+        <div className="font-['Roboto',Helvetica] font-normal text-startsnap-ebony-clay text-base text-center leading-6">
           © 2024 startsnap.fun - Fueling Creative Journeys.
         </div>
 
@@ -20,7 +20,7 @@ export const FooterSection = (): JSX.Element => {
             <a
               key={index}
               href={link.href}
-              className="font-['Roboto',Helvetica] font-normal text-koniakowcomebony-clay text-base text-center leading-6 hover:underline"
+              className="font-['Roboto',Helvetica] font-normal text-startsnap-ebony-clay text-base text-center leading-6 hover:underline"
             >
               {link.title}
             </a>

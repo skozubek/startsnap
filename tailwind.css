@@ -5,116 +5,164 @@
   .all-\[unset\] {
     all: unset;
   }
+
+  .material-icons {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .startsnap-button {
+    transition: all 0.2s ease;
+    transform: translateY(0px);
+  }
+
+  .startsnap-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 5px 7px 0px #1f2937;
+  }
+
+  .startsnap-button:active {
+    transform: translateY(1px);
+    box-shadow: 3px 2px 0px #1f2937;
+  }
+
+  /* Specific button color hover effects */
+  .startsnap-button.bg-startsnap-french-rose:hover {
+    background-color: rgb(219, 39, 119); /* Darker pink */
+  }
+
+  .startsnap-button.bg-startsnap-mountain-meadow:hover {
+    background-color: rgb(21, 128, 61); /* Darker green */
+  }
+
+  .startsnap-button.bg-startsnap-athens-gray:hover {
+    background-color: rgb(209, 213, 219); /* Darker gray */
+  }
+
+  .startsnap-button.bg-startsnap-mischka:hover {
+    background-color: rgb(156, 163, 175); /* Darker mischka */
+  }
 }
 
 :root {
-  --koniakow-com-inter-regular-font-family: "Inter", Helvetica;
-  --koniakow-com-inter-regular-font-size: 14px;
-  --koniakow-com-inter-regular-font-style: normal;
-  --koniakow-com-inter-regular-font-weight: 400;
-  --koniakow-com-inter-regular-letter-spacing: 0px;
-  --koniakow-com-inter-regular-line-height: 20px;
-  --koniakow-com-material-icons-regular-font-family: "Material Icons", Helvetica;
-  --koniakow-com-material-icons-regular-font-size: 30px;
-  --koniakow-com-material-icons-regular-font-style: normal;
-  --koniakow-com-material-icons-regular-font-weight: 400;
-  --koniakow-com-material-icons-regular-letter-spacing: 0px;
-  --koniakow-com-material-icons-regular-line-height: 36px;
-  --koniakow-com-roboto-regular-font-family: "Roboto", Helvetica;
-  --koniakow-com-roboto-regular-font-size: 12px;
-  --koniakow-com-roboto-regular-font-style: normal;
-  --koniakow-com-roboto-regular-font-weight: 400;
-  --koniakow-com-roboto-regular-letter-spacing: 0px;
-  --koniakow-com-roboto-regular-line-height: 16px;
-  --koniakow-com-roboto-semibold-font-family: "Roboto", Helvetica;
-  --koniakow-com-roboto-semibold-font-size: 18px;
-  --koniakow-com-roboto-semibold-font-style: normal;
-  --koniakow-com-roboto-semibold-font-weight: 600;
-  --koniakow-com-roboto-semibold-letter-spacing: 0px;
-  --koniakow-com-roboto-semibold-line-height: 28px;
-  --koniakow-com-semantic-button-font-family: "Material Icons", Helvetica;
-  --koniakow-com-semantic-button-font-size: 24px;
-  --koniakow-com-semantic-button-font-style: normal;
-  --koniakow-com-semantic-button-font-weight: 400;
-  --koniakow-com-semantic-button-letter-spacing: 0px;
-  --koniakow-com-semantic-button-line-height: 24px;
-  --koniakow-com-semantic-heading-1-font-family: "Space Grotesk", Helvetica;
-  --koniakow-com-semantic-heading-1-font-size: 36px;
-  --koniakow-com-semantic-heading-1-font-style: normal;
-  --koniakow-com-semantic-heading-1-font-weight: 700;
-  --koniakow-com-semantic-heading-1-letter-spacing: 0px;
-  --koniakow-com-semantic-heading-1-line-height: 40px;
-  --koniakow-com-semantic-heading-2-font-family: "Material Icons", Helvetica;
-  --koniakow-com-semantic-heading-2-font-size: 24px;
-  --koniakow-com-semantic-heading-2-font-style: normal;
-  --koniakow-com-semantic-heading-2-font-weight: 400;
-  --koniakow-com-semantic-heading-2-letter-spacing: 0px;
-  --koniakow-com-semantic-heading-2-line-height: 24px;
-  --koniakow-com-semantic-heading-3-font-family: "Space Grotesk", Helvetica;
-  --koniakow-com-semantic-heading-3-font-size: 20px;
-  --koniakow-com-semantic-heading-3-font-style: normal;
-  --koniakow-com-semantic-heading-3-font-weight: 700;
-  --koniakow-com-semantic-heading-3-letter-spacing: 0px;
-  --koniakow-com-semantic-heading-3-line-height: 28px;
-  --koniakow-com-semantic-input-font-family: "Inter", Helvetica;
-  --koniakow-com-semantic-input-font-size: 16px;
-  --koniakow-com-semantic-input-font-style: normal;
-  --koniakow-com-semantic-input-font-weight: 400;
-  --koniakow-com-semantic-input-letter-spacing: 0px;
-  --koniakow-com-semantic-input-line-height: normal;
-  --koniakow-com-semantic-label-font-family: "Roboto", Helvetica;
-  --koniakow-com-semantic-label-font-size: 14px;
-  --koniakow-com-semantic-label-font-style: normal;
-  --koniakow-com-semantic-label-font-weight: 500;
-  --koniakow-com-semantic-label-letter-spacing: 0px;
-  --koniakow-com-semantic-label-line-height: 20px;
-  --koniakow-com-semantic-link-font-family: "Space Grotesk", Helvetica;
-  --koniakow-com-semantic-link-font-size: 16px;
-  --koniakow-com-semantic-link-font-style: normal;
-  --koniakow-com-semantic-link-font-weight: 400;
-  --koniakow-com-semantic-link-letter-spacing: 0px;
-  --koniakow-com-semantic-link-line-height: 24px;
-  --koniakow-com-semantic-options-font-family: "Roboto", Helvetica;
-  --koniakow-com-semantic-options-font-size: 16px;
-  --koniakow-com-semantic-options-font-style: normal;
-  --koniakow-com-semantic-options-font-weight: 400;
-  --koniakow-com-semantic-options-letter-spacing: 0px;
-  --koniakow-com-semantic-options-line-height: 24px;
-  --koniakow-com-semantic-textarea-font-family: "Roboto", Helvetica;
-  --koniakow-com-semantic-textarea-font-size: 16px;
-  --koniakow-com-semantic-textarea-font-style: normal;
-  --koniakow-com-semantic-textarea-font-weight: 400;
-  --koniakow-com-semantic-textarea-letter-spacing: 0px;
-  --koniakow-com-semantic-textarea-line-height: 24px;
-  --koniakow-com-space-mono-regular-font-family: "Space Mono", Helvetica;
-  --koniakow-com-space-mono-regular-font-size: 18px;
-  --koniakow-com-space-mono-regular-font-style: normal;
-  --koniakow-com-space-mono-regular-font-weight: 400;
-  --koniakow-com-space-mono-regular-letter-spacing: 0px;
-  --koniakow-com-space-mono-regular-line-height: 28px;
-  --koniakowcomathens-gray: rgba(229, 231, 235, 1);
-  --koniakowcomblack: rgba(0, 0, 0, 1);
-  --koniakowcomblue-chalk: rgba(243, 232, 255, 1);
-  --koniakowcomcandlelight: rgba(250, 204, 21, 1);
-  --koniakowcomcerise: rgba(219, 39, 119, 1);
-  --koniakowcomcorn: rgba(234, 179, 8, 1);
-  --koniakowcomebony-clay: rgba(31, 41, 55, 1);
-  --koniakowcomfrench-pass: rgba(191, 219, 254, 1);
-  --koniakowcomfrench-rose: rgba(236, 72, 153, 1);
-  --koniakowcomgray-chateau: rgba(156, 163, 175, 1);
-  --koniakowcomheliotrope: rgba(168, 85, 247, 1);
-  --koniakowcomice-cold: rgba(187, 247, 208, 1);
-  --koniakowcomjewel: rgba(21, 128, 61, 1);
-  --koniakowcommischka: rgba(209, 213, 219, 1);
-  --koniakowcommountain-meadow: rgba(34, 197, 94, 1);
-  --koniakowcomoxford-blue: rgba(55, 65, 81, 1);
-  --koniakowcompale-sky: rgba(107, 114, 128, 1);
-  --koniakowcompersian-blue: rgba(29, 78, 216, 1);
-  --koniakowcompurple-heart: rgba(126, 34, 206, 1);
-  --koniakowcomriver-bed: rgba(75, 85, 99, 1);
-  --koniakowcomwhite: rgba(255, 255, 255, 1);
-  --koniakowcomwhite-candlelight: rgba(255, 255, 255, 1);
-  --koniakowcomwisp-pink: rgba(243, 232, 255, 1);
+  --startsnap-inter-regular-font-family: "Inter", Helvetica;
+  --startsnap-inter-regular-font-size: 14px;
+  --startsnap-inter-regular-font-style: normal;
+  --startsnap-inter-regular-font-weight: 400;
+  --startsnap-inter-regular-letter-spacing: 0px;
+  --startsnap-inter-regular-line-height: 20px;
+  --startsnap-material-icons-regular-font-family: "Material Icons", Helvetica;
+  --startsnap-material-icons-regular-font-size: 30px;
+  --startsnap-material-icons-regular-font-style: normal;
+  --startsnap-material-icons-regular-font-weight: 400;
+  --startsnap-material-icons-regular-letter-spacing: 0px;
+  --startsnap-material-icons-regular-line-height: 36px;
+  --startsnap-roboto-regular-font-family: "Roboto", Helvetica;
+  --startsnap-roboto-regular-font-size: 12px;
+  --startsnap-roboto-regular-font-style: normal;
+  --startsnap-roboto-regular-font-weight: 400;
+  --startsnap-roboto-regular-letter-spacing: 0px;
+  --startsnap-roboto-regular-line-height: 16px;
+  --startsnap-roboto-semibold-font-family: "Roboto", Helvetica;
+  --startsnap-roboto-semibold-font-size: 18px;
+  --startsnap-roboto-semibold-font-style: normal;
+  --startsnap-roboto-semibold-font-weight: 600;
+  --startsnap-roboto-semibold-letter-spacing: 0px;
+  --startsnap-roboto-semibold-line-height: 28px;
+  --startsnap-semantic-button-font-family: "Material Icons", Helvetica;
+  --startsnap-semantic-button-font-size: 24px;
+  --startsnap-semantic-button-font-style: normal;
+  --startsnap-semantic-button-font-weight: 400;
+  --startsnap-semantic-button-letter-spacing: 0px;
+  --startsnap-semantic-button-line-height: 24px;
+  --startsnap-semantic-heading-1-font-family: "Space Grotesk", Helvetica;
+  --startsnap-semantic-heading-1-font-size: 36px;
+  --startsnap-semantic-heading-1-font-style: normal;
+  --startsnap-semantic-heading-1-font-weight: 700;
+  --startsnap-semantic-heading-1-letter-spacing: 0px;
+  --startsnap-semantic-heading-1-line-height: 40px;
+  --startsnap-semantic-heading-2-font-family: "Material Icons", Helvetica;
+  --startsnap-semantic-heading-2-font-size: 24px;
+  --startsnap-semantic-heading-2-font-style: normal;
+  --startsnap-semantic-heading-2-font-weight: 400;
+  --startsnap-semantic-heading-2-letter-spacing: 0px;
+  --startsnap-semantic-heading-2-line-height: 24px;
+  --startsnap-semantic-heading-3-font-family: "Space Grotesk", Helvetica;
+  --startsnap-semantic-heading-3-font-size: 20px;
+  --startsnap-semantic-heading-3-font-style: normal;
+  --startsnap-semantic-heading-3-font-weight: 700;
+  --startsnap-semantic-heading-3-letter-spacing: 0px;
+  --startsnap-semantic-heading-3-line-height: 28px;
+  --startsnap-semantic-input-font-family: "Inter", Helvetica;
+  --startsnap-semantic-input-font-size: 16px;
+  --startsnap-semantic-input-font-style: normal;
+  --startsnap-semantic-input-font-weight: 400;
+  --startsnap-semantic-input-letter-spacing: 0px;
+  --startsnap-semantic-input-line-height: normal;
+  --startsnap-semantic-label-font-family: "Roboto", Helvetica;
+  --startsnap-semantic-label-font-size: 14px;
+  --startsnap-semantic-label-font-style: normal;
+  --startsnap-semantic-label-font-weight: 500;
+  --startsnap-semantic-label-letter-spacing: 0px;
+  --startsnap-semantic-label-line-height: 20px;
+  --startsnap-semantic-link-font-family: "Space Grotesk", Helvetica;
+  --startsnap-semantic-link-font-size: 16px;
+  --startsnap-semantic-link-font-style: normal;
+  --startsnap-semantic-link-font-weight: 400;
+  --startsnap-semantic-link-letter-spacing: 0px;
+  --startsnap-semantic-link-line-height: 24px;
+  --startsnap-semantic-options-font-family: "Roboto", Helvetica;
+  --startsnap-semantic-options-font-size: 16px;
+  --startsnap-semantic-options-font-style: normal;
+  --startsnap-semantic-options-font-weight: 400;
+  --startsnap-semantic-options-letter-spacing: 0px;
+  --startsnap-semantic-options-line-height: 24px;
+  --startsnap-semantic-textarea-font-family: "Roboto", Helvetica;
+  --startsnap-semantic-textarea-font-size: 16px;
+  --startsnap-semantic-textarea-font-style: normal;
+  --startsnap-semantic-textarea-font-weight: 400;
+  --startsnap-semantic-textarea-letter-spacing: 0px;
+  --startsnap-semantic-textarea-line-height: 24px;
+  --startsnap-space-mono-regular-font-family: "Space Mono", Helvetica;
+  --startsnap-space-mono-regular-font-size: 18px;
+  --startsnap-space-mono-regular-font-style: normal;
+  --startsnap-space-mono-regular-font-weight: 400;
+  --startsnap-space-mono-regular-letter-spacing: 0px;
+  --startsnap-space-mono-regular-line-height: 28px;
+  --startsnapathens-gray: rgba(229, 231, 235, 1);
+  --startsnapblack: rgba(0, 0, 0, 1);
+  --startsnapblue-chalk: rgba(243, 232, 255, 1);
+  --startsnap-candlelight: rgba(250, 204, 21, 1);
+  --startsnap-cerise: rgba(219, 39, 119, 1);
+  --startsnap-corn: rgba(234, 179, 8, 1);
+  --startsnap-ebony-clay: rgba(31, 41, 55, 1);
+  --startsnap-french-pass: rgba(191, 219, 254, 1);
+  --startsnap-french-rose: rgba(236, 72, 153, 1);
+  --startsnap-gray-chateau: rgba(156, 163, 175, 1);
+  --startsnap-heliotrope: rgba(168, 85, 247, 1);
+  --startsnap-ice-cold: rgba(187, 247, 208, 1);
+  --startsnap-jewel: rgba(21, 128, 61, 1);
+  --startsnap-mischka: rgba(209, 213, 219, 1);
+  --startsnap-mountain-meadow: rgba(34, 197, 94, 1);
+  --startsnap-oxford-blue: rgba(55, 65, 81, 1);
+  --startsnap-pale-sky: rgba(107, 114, 128, 1);
+  --startsnap-persian-blue: rgba(29, 78, 216, 1);
+  --startsnap-purple-heart: rgba(126, 34, 206, 1);
+  --startsnap-river-bed: rgba(75, 85, 99, 1);
+  --startsnap-white: rgba(255, 255, 255, 1);
+  --startsnap-white-candlelight: rgba(255, 255, 255, 1);
+  --startsnap-wisp-pink: rgba(243, 232, 255, 1);
 }
 
 @tailwind base;

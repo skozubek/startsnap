@@ -7,29 +7,29 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        "koniakowcomathens-gray": "var(--koniakowcomathens-gray)",
-        koniakowcomblack: "var(--koniakowcomblack)",
-        "koniakowcomblue-chalk": "var(--koniakowcomblue-chalk)",
-        koniakowcomcandlelight: "var(--koniakowcomcandlelight)",
-        koniakowcomcerise: "var(--koniakowcomcerise)",
-        koniakowcomcorn: "var(--koniakowcomcorn)",
-        "koniakowcomebony-clay": "var(--koniakowcomebony-clay)",
-        "koniakowcomfrench-pass": "var(--koniakowcomfrench-pass)",
-        "koniakowcomfrench-rose": "var(--koniakowcomfrench-rose)",
-        "koniakowcomgray-chateau": "var(--koniakowcomgray-chateau)",
-        koniakowcomheliotrope: "var(--koniakowcomheliotrope)",
-        "koniakowcomice-cold": "var(--koniakowcomice-cold)",
-        koniakowcomjewel: "var(--koniakowcomjewel)",
-        koniakowcommischka: "var(--koniakowcommischka)",
-        "koniakowcommountain-meadow": "var(--koniakowcommountain-meadow)",
-        "koniakowcomoxford-blue": "var(--koniakowcomoxford-blue)",
-        "koniakowcompale-sky": "var(--koniakowcompale-sky)",
-        "koniakowcompersian-blue": "var(--koniakowcompersian-blue)",
-        "koniakowcompurple-heart": "var(--koniakowcompurple-heart)",
-        "koniakowcomriver-bed": "var(--koniakowcomriver-bed)",
-        koniakowcomwhite: "var(--koniakowcomwhite)",
-        "koniakowcomwhite-candlelight": "var(--koniakowcomwhite-candlelight)",
-        "koniakowcomwisp-pink": "var(--koniakowcomwisp-pink)",
+        "startsnap-athens-gray": "var(--startsnapathens-gray)",
+        "startsnap-black": "var(--startsnapblack)",
+        "startsnap-blue-chalk": "var(--startsnapblue-chalk)",
+        "startsnap-candlelight": "var(--startsnap-candlelight)",
+        "startsnap-cerise": "var(--startsnap-cerise)",
+        "startsnap-corn": "var(--startsnap-corn)",
+        "startsnap-ebony-clay": "var(--startsnap-ebony-clay)",
+        "startsnap-french-pass": "var(--startsnap-french-pass)",
+        "startsnap-french-rose": "var(--startsnap-french-rose)",
+        "startsnap-gray-chateau": "var(--startsnap-gray-chateau)",
+        "startsnap-heliotrope": "var(--startsnap-heliotrope)",
+        "startsnap-ice-cold": "var(--startsnap-ice-cold)",
+        "startsnap-jewel": "var(--startsnap-jewel)",
+        "startsnap-mischka": "var(--startsnap-mischka)",
+        "startsnap-mountain-meadow": "var(--startsnap-mountain-meadow)",
+        "startsnap-oxford-blue": "var(--startsnap-oxford-blue)",
+        "startsnap-pale-sky": "var(--startsnap-pale-sky)",
+        "startsnap-persian-blue": "var(--startsnap-persian-blue)",
+        "startsnap-purple-heart": "var(--startsnap-purple-heart)",
+        "startsnap-river-bed": "var(--startsnap-river-bed)",
+        "startsnap-white": "var(--startsnap-white)",
+        "startsnap-white-candlelight": "var(--startsnap-white-candlelight)",
+        "startsnap-wisp-pink": "var(--startsnap-wisp-pink)",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -65,34 +65,34 @@ module.exports = {
         },
       },
       fontFamily: {
-        "koniakow-com-inter-regular":
-          "var(--koniakow-com-inter-regular-font-family)",
-        "koniakow-com-material-icons-regular":
-          "var(--koniakow-com-material-icons-regular-font-family)",
-        "koniakow-com-roboto-regular":
-          "var(--koniakow-com-roboto-regular-font-family)",
-        "koniakow-com-roboto-semibold":
-          "var(--koniakow-com-roboto-semibold-font-family)",
-        "koniakow-com-semantic-button":
-          "var(--koniakow-com-semantic-button-font-family)",
-        "koniakow-com-semantic-heading-1":
-          "var(--koniakow-com-semantic-heading-1-font-family)",
-        "koniakow-com-semantic-heading-2":
-          "var(--koniakow-com-semantic-heading-2-font-family)",
-        "koniakow-com-semantic-heading-3":
-          "var(--koniakow-com-semantic-heading-3-font-family)",
-        "koniakow-com-semantic-input":
-          "var(--koniakow-com-semantic-input-font-family)",
-        "koniakow-com-semantic-label":
-          "var(--koniakow-com-semantic-label-font-family)",
-        "koniakow-com-semantic-link":
-          "var(--koniakow-com-semantic-link-font-family)",
-        "koniakow-com-semantic-options":
-          "var(--koniakow-com-semantic-options-font-family)",
-        "koniakow-com-semantic-textarea":
-          "var(--koniakow-com-semantic-textarea-font-family)",
-        "koniakow-com-space-mono-regular":
-          "var(--koniakow-com-space-mono-regular-font-family)",
+        "startsnap-inter-regular":
+          "var(--startsnap-inter-regular-font-family)",
+        "startsnap-material-icons-regular":
+          "var(--startsnap-material-icons-regular-font-family)",
+        "startsnap-roboto-regular":
+          "var(--startsnap-roboto-regular-font-family)",
+        "startsnap-roboto-semibold":
+          "var(--startsnap-roboto-semibold-font-family)",
+        "startsnap-semantic-button":
+          "var(--startsnap-semantic-button-font-family)",
+        "startsnap-semantic-heading-1":
+          "var(--startsnap-semantic-heading-1-font-family)",
+        "startsnap-semantic-heading-2":
+          "var(--startsnap-semantic-heading-2-font-family)",
+        "startsnap-semantic-heading-3":
+          "var(--startsnap-semantic-heading-3-font-family)",
+        "startsnap-semantic-input":
+          "var(--startsnap-semantic-input-font-family)",
+        "startsnap-semantic-label":
+          "var(--startsnap-semantic-label-font-family)",
+        "startsnap-semantic-link":
+          "var(--startsnap-semantic-link-font-family)",
+        "startsnap-semantic-options":
+          "var(--startsnap-semantic-options-font-family)",
+        "startsnap-semantic-textarea":
+          "var(--startsnap-semantic-textarea-font-family)",
+        "startsnap-space-mono-regular":
+          "var(--startsnap-space-mono-regular-font-family)",
         sans: [
           "ui-sans-serif",
           "system-ui",
