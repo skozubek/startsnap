@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import { supabase } from '../../lib/supabase';
+import { Button } from "./button";
+import { Input } from "./input";
+import { Label } from "./label";
+import { cn } from "../../lib/utils";
 
 interface AuthDialogProps {
   isOpen: boolean;
@@ -87,14 +91,20 @@ export function AuthDialog({ isOpen, onClose, mode }: AuthDialogProps) {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg border-2 border-gray-800 shadow-[3px_3px_0px_#1f2937] hover:translate-y-[1px] hover:translate-x-[1px] hover:shadow-[2px_2px_0px_#1f2937] transition-all"
+              className={cn(
+                "startsnap-button w-full bg-gray-200 text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold text-base",
+                "rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+              )}
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 bg-startsnap-french-rose text-white rounded-lg border-2 border-gray-800 shadow-[3px_3px_0px_#1f2937] hover:translate-y-[1px] hover:translate-x-[1px] hover:shadow-[2px_2px_0px_#1f2937] transition-all"
+              className={cn(
+                "startsnap-button w-full bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base",
+                "rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+              )}
             >
               {loading ? 'Processing...' : mode === 'signup' ? 'Sign Up' : 'Login'}
             </button>
