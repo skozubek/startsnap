@@ -17,7 +17,7 @@ export const ProjectDetail = (): JSX.Element => {
   const [feedbackEntries, setFeedbackEntries] = useState([]);
   const [feedbackContent, setFeedbackContent] = useState("");
   const [currentUser, setCurrentUser] = useState(null);
-  
+
   // Category to color mapping
   const categoryColorMap = {
     tech: {
@@ -109,49 +109,49 @@ export const ProjectDetail = (): JSX.Element => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setCurrentUser(session?.user || null);
     });
-    
+
     fetchProjectData();
   }, [id]);
 
   const fetchProjectData = async () => {
     try {
       setLoading(true);
-      
+
       // Fetch startsnap details
       const { data: projectData, error: projectError } = await supabase
         .from('startsnaps')
         .select('*')
         .eq('id', id)
         .single();
-      
+
       if (projectError) throw projectError;
-      
+
       setStartsnap(projectData);
-      
+
       // Fetch creator profile
       const { data: creatorData, error: creatorError } = await supabase
         .from('profiles')
         .select('*')
         .eq('user_id', projectData.user_id)
         .single();
-      
+
       if (creatorError && creatorError.code !== 'PGRST116') {
         console.error('Error fetching creator:', creatorError);
       } else {
         setCreator(creatorData);
       }
-      
+
       // Fetch vibe logs
       const { data: vibeLogsData, error: vibeLogsError } = await supabase
         .from('vibelogs')
         .select('*')
         .eq('startsnap_id', id)
         .order('created_at', { ascending: false });
-      
+
       if (vibeLogsError) throw vibeLogsError;
-      
+
       setVibeLogEntries(vibeLogsData || []);
-      
+
       // For now, use mock feedback entries
       // In a real implementation, you would fetch feedback from a separate table
       setFeedbackEntries([
@@ -170,7 +170,7 @@ export const ProjectDetail = (): JSX.Element => {
             "Great start! Consider adding tooltips for less common parameters. The color scheme is cool and retro. One minor bug: the LFO rate knob sometimes jumps values.",
         },
       ]);
-      
+
     } catch (error) {
       console.error('Error fetching project data:', error);
     } finally {
@@ -202,12 +202,12 @@ export const ProjectDetail = (): JSX.Element => {
       alert('Please enter some feedback');
       return;
     }
-    
+
     if (!currentUser) {
       alert('You need to be logged in to submit feedback');
       return;
     }
-    
+
     // In a real implementation, you would save the feedback to the database
     alert('Feedback submission functionality will be implemented soon!');
     setFeedbackContent('');
@@ -254,7 +254,7 @@ export const ProjectDetail = (): JSX.Element => {
                   Idea / Concept
                 </Badge>
               )}
-              
+
               {/* Hackathon badge */}
               {startsnap.is_hackathon_entry && (
                 <Badge className="bg-startsnap-heliotrope text-white font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-purple-700 px-3 py-1 flex items-center gap-1">
@@ -264,10 +264,10 @@ export const ProjectDetail = (): JSX.Element => {
               )}
             </div>
 
-            <div className="h-64 rounded-lg border-2 border-solid border-gray-800 mb-6">
-              <MinimalistThumbnail 
-                projectId={startsnap.id} 
-                projectType={startsnap.type} 
+            <div className="h-64 mb-6">
+              <MinimalistThumbnail
+                projectId={startsnap.id}
+                projectType={startsnap.type}
                 category={startsnap.category}
               />
             </div>
@@ -313,7 +313,7 @@ export const ProjectDetail = (): JSX.Element => {
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {startsnap.tags.map((tag, idx) => (
-                      <Badge 
+                      <Badge
                         key={`tag-${idx}`}
                         className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] font-normal text-sm rounded-full border border-solid border-gray-800 px-[13px] py-[5px]"
                       >
@@ -323,7 +323,7 @@ export const ProjectDetail = (): JSX.Element => {
                   </div>
                 </div>
               )}
-              
+
               {/* Tools Used Section */}
               {startsnap.tools_used && startsnap.tools_used.length > 0 && (
                 <div className="space-y-2">
@@ -335,7 +335,7 @@ export const ProjectDetail = (): JSX.Element => {
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {startsnap.tools_used.map((tool, idx) => (
-                      <Badge 
+                      <Badge
                         key={`tool-${idx}`}
                         className="bg-startsnap-french-pass text-startsnap-persian-blue font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-blue-700 px-[13px] py-[5px]"
                       >
@@ -345,7 +345,7 @@ export const ProjectDetail = (): JSX.Element => {
                   </div>
                 </div>
               )}
-              
+
               {/* Looking For Feedback Section */}
               {startsnap.feedback_tags && startsnap.feedback_tags.length > 0 && (
                 <div className="space-y-2">
@@ -357,7 +357,7 @@ export const ProjectDetail = (): JSX.Element => {
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {startsnap.feedback_tags.map((feedback, idx) => (
-                      <Badge 
+                      <Badge
                         key={`feedback-${idx}`}
                         className="bg-startsnap-ice-cold text-startsnap-jewel font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-green-700 px-[13px] py-[5px]"
                       >
@@ -394,7 +394,7 @@ export const ProjectDetail = (): JSX.Element => {
                 {startsnap.live_demo_url && (
                   <div className="flex items-center">
                     <span className="material-icons text-startsnap-oxford-blue mr-2">public</span>
-                    <a href={startsnap.live_demo_url} target="_blank" rel="noopener noreferrer" 
+                    <a href={startsnap.live_demo_url} target="_blank" rel="noopener noreferrer"
                       className="text-startsnap-persian-blue hover:underline">
                       Live Demo: {startsnap.live_demo_url}
                     </a>
@@ -428,7 +428,7 @@ export const ProjectDetail = (): JSX.Element => {
               vibeLogEntries.map((entry, index) => {
                 const logType = entry.log_type || 'update';
                 const iconData = vibeLogTypeIcons[logType] || vibeLogTypeIcons.update;
-                
+
                 return (
                   <div key={index} className="mb-8 last:mb-0">
                     <div className="flex items-start">
@@ -514,7 +514,7 @@ export const ProjectDetail = (): JSX.Element => {
                 value={feedbackContent}
                 onChange={(e) => setFeedbackContent(e.target.value)}
               />
-              <Button 
+              <Button
                 className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
                 onClick={handleSubmitFeedback}
                 disabled={!currentUser}
