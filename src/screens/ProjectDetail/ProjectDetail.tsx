@@ -238,7 +238,31 @@ export const ProjectDetail = (): JSX.Element => {
       <Card className="max-w-4xl w-full bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]">
         <CardContent className="p-0">
           {/* Project Header Section */}
-          <div className="border-b-2 border-gray-800 p-8">
+          <div className="border-b-2 border-gray-800 p-8 relative">
+            {/* Status badges - positioned in the top right corner */}
+            <div className="absolute top-3 right-3 flex flex-col gap-2 items-end">
+              {/* Project type badge */}
+              {startsnap.type === "live" ? (
+                <Badge className="bg-startsnap-mountain-meadow text-white font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-green-700 px-3 py-1 flex items-center gap-1">
+                  <span className="material-icons text-sm">rocket_launch</span>
+                  Live Project
+                </Badge>
+              ) : (
+                <Badge className="bg-startsnap-corn text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-yellow-700 px-3 py-1 flex items-center gap-1">
+                  <span className="material-icons text-sm">lightbulb</span>
+                  Idea / Concept
+                </Badge>
+              )}
+              
+              {/* Hackathon badge */}
+              {startsnap.is_hackathon_entry && (
+                <Badge className="bg-startsnap-heliotrope text-white font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-purple-700 px-3 py-1 flex items-center gap-1">
+                  <span className="material-icons text-sm">emoji_events</span>
+                  Hackathon Entry
+                </Badge>
+              )}
+            </div>
+
             <div className="h-64 rounded-lg border-2 border-solid border-gray-800 mb-6"></div>
 
             <div className="flex justify-between items-start mb-4">

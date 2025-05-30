@@ -407,7 +407,31 @@ export const Profile = (): JSX.Element => {
                   key={startsnap.id}
                   className="bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]"
                 >
-                  <CardContent className="p-7 pt-[140px]">
+                  <CardContent className="p-7 pt-[140px] relative">
+                    {/* Status badges - positioned in the top right corner */}
+                    <div className="absolute top-3 right-3 flex flex-col gap-2 items-end">
+                      {/* Project type badge */}
+                      {startsnap.type === "live" ? (
+                        <Badge className="bg-startsnap-mountain-meadow text-white font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-green-700 px-2 py-0.5 flex items-center gap-1">
+                          <span className="material-icons text-xs">rocket_launch</span>
+                          Live Project
+                        </Badge>
+                      ) : (
+                        <Badge className="bg-startsnap-corn text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-yellow-700 px-2 py-0.5 flex items-center gap-1">
+                          <span className="material-icons text-xs">lightbulb</span>
+                          Idea
+                        </Badge>
+                      )}
+                      
+                      {/* Hackathon badge */}
+                      {startsnap.is_hackathon_entry && (
+                        <Badge className="bg-startsnap-heliotrope text-white font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-purple-700 px-2 py-0.5 flex items-center gap-1">
+                          <span className="material-icons text-xs">emoji_events</span>
+                          Hackathon Entry
+                        </Badge>
+                      )}
+                    </div>
+                    
                     <div className="flex justify-between items-start">
                       <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-xl leading-7">
                         {startsnap.name}
