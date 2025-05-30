@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTitle,
 } from "@radix-ui/react-dialog";
 import { Button } from "./button";
@@ -24,11 +23,11 @@ export function AuthDialog({ isOpen, onClose, mode: initialMode }: AuthDialogPro
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px] bg-white rounded-xl border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]">
-        <DialogHeader className="text-center">
+        <div className="text-center">
           <DialogTitle className="text-3xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] text-center">
             {mode === 'login' ? 'Welcome back' : 'Create Account'}
           </DialogTitle>
-        </DialogHeader>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
