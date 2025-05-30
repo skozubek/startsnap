@@ -268,36 +268,73 @@ export const ProjectDetail = (): JSX.Element => {
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-2 mb-8">
-              {/* Display general tags */}
-              {startsnap.tags && startsnap.tags.map((tag, idx) => (
-                <Badge 
-                  key={`tag-${idx}`}
-                  className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] font-normal text-sm rounded-full border border-solid border-gray-800 px-[13px] py-[5px]"
-                >
-                  #{tag}
-                </Badge>
-              ))}
+            {/* Separated tag sections */}
+            <div className="space-y-4 mb-8">
+              {/* General Tags Section */}
+              {startsnap.tags && startsnap.tags.length > 0 && (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="material-icons text-startsnap-oxford-blue text-lg">tag</span>
+                    <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-sm">
+                      Tags
+                    </h3>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {startsnap.tags.map((tag, idx) => (
+                      <Badge 
+                        key={`tag-${idx}`}
+                        className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] font-normal text-sm rounded-full border border-solid border-gray-800 px-[13px] py-[5px]"
+                      >
+                        #{tag}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
               
-              {/* Display tools used */}
-              {startsnap.tools_used && startsnap.tools_used.map((tool, idx) => (
-                <Badge 
-                  key={`tool-${idx}`}
-                  className="bg-startsnap-french-pass text-startsnap-persian-blue font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-blue-700 px-[13px] py-[5px]"
-                >
-                  {tool}
-                </Badge>
-              ))}
+              {/* Tools Used Section */}
+              {startsnap.tools_used && startsnap.tools_used.length > 0 && (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="material-icons text-startsnap-persian-blue text-lg">build</span>
+                    <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-sm">
+                      Tools Used
+                    </h3>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {startsnap.tools_used.map((tool, idx) => (
+                      <Badge 
+                        key={`tool-${idx}`}
+                        className="bg-startsnap-french-pass text-startsnap-persian-blue font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-blue-700 px-[13px] py-[5px]"
+                      >
+                        {tool}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
               
-              {/* Display feedback areas */}
-              {startsnap.feedback_tags && startsnap.feedback_tags.map((feedback, idx) => (
-                <Badge 
-                  key={`feedback-${idx}`}
-                  className="bg-startsnap-ice-cold text-startsnap-jewel font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-green-700 px-[13px] py-[5px]"
-                >
-                  {feedback}
-                </Badge>
-              ))}
+              {/* Looking For Feedback Section */}
+              {startsnap.feedback_tags && startsnap.feedback_tags.length > 0 && (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="material-icons text-startsnap-jewel text-lg">forum</span>
+                    <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-sm">
+                      Looking For Feedback On
+                    </h3>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {startsnap.feedback_tags.map((feedback, idx) => (
+                      <Badge 
+                        key={`feedback-${idx}`}
+                        className="bg-startsnap-ice-cold text-startsnap-jewel font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-green-700 px-[13px] py-[5px]"
+                      >
+                        {feedback}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="flex gap-4">
