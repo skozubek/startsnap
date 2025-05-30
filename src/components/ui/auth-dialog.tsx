@@ -55,28 +55,30 @@ export function AuthDialog({ isOpen, onClose, mode }: AuthDialogProps) {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white p-8 rounded-lg border-2 border-gray-800 shadow-[5px_5px_0px_#1f2937] max-w-md w-full">
         <h2 className="text-2xl font-bold mb-6 font-['Space_Grotesk',Helvetica]">
-          {mode === 'signup' ? 'Create Account' : 'Login'}
+          {mode === 'signup' ? 'Create Account' : 'Welcome Back'}
         </h2>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Email</label>
-            <input
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-2 border-2 border-gray-800 rounded-lg"
+              className="w-full border-2 border-solid border-gray-800 rounded-lg p-4"
               required
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium mb-1">Password</label>
-            <input
+            <Label htmlFor="password">Password</Label>
+            <Input
+              id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-2 border-2 border-gray-800 rounded-lg"
+              className="w-full border-2 border-solid border-gray-800 rounded-lg p-4"
               required
             />
           </div>
@@ -87,16 +89,17 @@ export function AuthDialog({ isOpen, onClose, mode }: AuthDialogProps) {
             </p>
           )}
 
-          <div className="flex justify-end gap-4 mt-6">
+          <div className="flex justify-center gap-4 pt-4">
             <Button
+              type="button"
               onClick={onClose}
-              className="w-full h-[52px] px-6 bg-startsnap-mischka text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] startsnap-button mt-4"
+              className="startsnap-button w-32 bg-startsnap-mischka text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
             >
               Cancel
             </Button>
             <Button
-              onClick={handleSubmit}
-              className="w-full h-[52px] px-6 bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] startsnap-button"
+              type="submit"
+              className="startsnap-button w-32 bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
             >
               {mode === 'signup' ? 'Sign Up' : 'Login'}
             </Button>
