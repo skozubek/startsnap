@@ -19,6 +19,35 @@ export function AuthDialog({ isOpen, onClose, mode: initialMode }: AuthDialogPro
   const [mode, setMode] = useState(initialMode);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      if (mode === 'login') {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+        });
+        if (error) throw error;
+      }
+      onClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -59,8 +88,17 @@ export function AuthDialog({ isOpen, onClose, mode: initialMode }: AuthDialogPro
           )}
 
           <div className="space-y-2">
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-startsnap-french-rose hover:bg-startsnap-cerise text-white font-bold py-2 px-4 rounded-lg"
+            >
+              {loading ? 'Loading...' : mode === 'login' ? 'Sign In' : 'Sign Up'}
+            </Button>
+
             <div className="flex justify-center mt-6">
               <Button
+                type="button"
                 onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
                 variant="link"
                 className="text-startsnap-french-rose hover:text-startsnap-cerise"
