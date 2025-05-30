@@ -131,25 +131,6 @@ export const MainContentSection = (): JSX.Element => {
     }
   };
 
-  // Create combined tags array
-  const getAllTags = (startsnap) => {
-    const tags = [...(startsnap.tags || [])];
-    
-    // Add some tools as tags
-    if (startsnap.tools_used && startsnap.tools_used.length > 0) {
-      startsnap.tools_used.slice(0, 2).forEach(tool => {
-        tags.push(tool);
-      });
-    }
-    
-    // Add some feedback areas as tags
-    if (startsnap.feedback_tags && startsnap.feedback_tags.length > 0) {
-      tags.push("Feedback");
-    }
-    
-    return tags.map(tag => tag.startsWith('#') ? tag : `#${tag}`);
-  };
-
   return (
     <section className="flex flex-col w-full items-center gap-16 pt-8 pb-24 px-8 bg-startsnap-candlelight">
       {/* StartSnaps Cards Section */}
@@ -166,7 +147,6 @@ export const MainContentSection = (): JSX.Element => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {startSnaps.map((startsnap) => {
               const categoryDisplay = getCategoryDisplay(startsnap.category);
-              const tags = getAllTags(startsnap);
               const creatorName = creators[startsnap.user_id] || 'Anonymous';
               const creatorInitials = creatorName.substring(0, 2).toUpperCase();
               
@@ -208,21 +188,72 @@ export const MainContentSection = (): JSX.Element => {
                       </div>
                     </div>
 
-                    <div className="flex flex-wrap gap-2 mt-4">
-                      {tags.slice(0, 3).map((tag, idx) => (
-                        <Badge
-                          key={idx}
-                          className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] font-normal text-sm rounded-full border border-solid border-gray-800 px-[13px] py-[5px]"
-                        >
-                          {tag}
-                        </Badge>
-                      ))}
-                      {tags.length > 3 && (
-                        <Badge
-                          className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] font-normal text-sm rounded-full border border-solid border-gray-800 px-[13px] py-[5px]"
-                        >
-                          +{tags.length - 3} more
-                        </Badge>
+                    {/* Separated tag sections */}
+                    <div className="space-y-2 mt-4">
+                      {/* General Tags Section */}
+                      {startsnap.tags && startsnap.tags.length > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span className="material-icons text-startsnap-oxford-blue text-sm">tag</span>
+                          <div className="flex flex-wrap gap-1 flex-1">
+                            {startsnap.tags.slice(0, 2).map((tag, idx) => (
+                              <Badge 
+                                key={`tag-${idx}`}
+                                className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-gray-800 px-2 py-0.5"
+                              >
+                                #{tag}
+                              </Badge>
+                            ))}
+                            {startsnap.tags.length > 2 && (
+                              <Badge className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-gray-800 px-2 py-0.5">
+                                +{startsnap.tags.length - 2} more
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Tools Used Section */}
+                      {startsnap.tools_used && startsnap.tools_used.length > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span className="material-icons text-startsnap-persian-blue text-sm">build</span>
+                          <div className="flex flex-wrap gap-1 flex-1">
+                            {startsnap.tools_used.slice(0, 2).map((tool, idx) => (
+                              <Badge 
+                                key={`tool-${idx}`}
+                                className="bg-startsnap-french-pass text-startsnap-persian-blue font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-blue-700 px-2 py-0.5"
+                              >
+                                {tool}
+                              </Badge>
+                            ))}
+                            {startsnap.tools_used.length > 2 && (
+                              <Badge className="bg-startsnap-french-pass text-startsnap-persian-blue font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-blue-700 px-2 py-0.5">
+                                +{startsnap.tools_used.length - 2} more
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Looking For Feedback Section */}
+                      {startsnap.feedback_tags && startsnap.feedback_tags.length > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span className="material-icons text-startsnap-jewel text-sm">forum</span>
+                          <div className="flex flex-wrap gap-1 flex-1">
+                            {startsnap.feedback_tags.slice(0, 2).map((feedback, idx) => (
+                              <Badge 
+                                key={`feedback-${idx}`}
+                                className="bg-startsnap-ice-cold text-startsnap-jewel font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-green-700 px-2 py-0.5"
+                              >
+                                {feedback}
+                              </Badge>
+                            ))}
+                            {startsnap.feedback_tags.length > 2 && (
+                              <Badge className="bg-startsnap-ice-cold text-startsnap-jewel font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-green-700 px-2 py-0.5">
+                                +{startsnap.feedback_tags.length - 2} more
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
                       )}
                     </div>
                   </CardContent>
