@@ -421,8 +421,9 @@ export const Profile = (): JSX.Element => {
                       </Badge>
                     </div>
 
-                    <p className="mt-3 font-['Roboto',Helvetica] font-normal text-startsnap-river-bed text-sm leading-5">
+                    <p className="mt-3 font-['Roboto',Helvetica] font-normal text-startsnap-river-bed text-sm leading-5 line-clamp-2 h-10 overflow-hidden">
                       {startsnap.description}
+                      <span className="text-startsnap-french-rose text-xs italic ml-1">see more</span>
                     </p>
 
                     <p className="mt-4 font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs">
@@ -450,12 +451,20 @@ export const Profile = (): JSX.Element => {
                       )}
                     </div>
 
-                    <Button 
-                      className="startsnap-button w-full mt-4 bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]" 
-                      asChild
-                    >
-                      <Link to={`/edit/${startsnap.id}`}>Edit Project</Link>
-                    </Button>
+                    <div className="flex gap-2 mt-4">
+                      <Button 
+                        className="startsnap-button flex-1 bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] text-sm" 
+                        asChild
+                      >
+                        <Link to={`/edit/${startsnap.id}`}>Edit Project</Link>
+                      </Button>
+                      <Button 
+                        className="startsnap-button flex-1 bg-startsnap-mischka text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] text-sm" 
+                        asChild
+                      >
+                        <Link to={`/project/${startsnap.id}`}>View Project</Link>
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               );
