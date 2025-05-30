@@ -1,140 +1,193 @@
-import React, { useState, useEffect } from "react";
-import { supabase } from "../../lib/supabase";
-import { Button } from "./button";
-import { Input } from "./input";
-import { Label } from "./label";
+import React, { useState } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './dialog';
+import { Button } from './button';
+import { Input } from './input';
+import { Label } from './label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './tabs';
+import { supabase } from '../../lib/supabase';
 
-export function AuthDialog({ 
-  isOpen, 
-  onClose, 
-  mode: initialMode 
-}) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+interface AuthDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  mode: 'signup' | 'login';
+}
+
+export const AuthDialog: React.FC<AuthDialogProps> = ({ isOpen, onClose, mode }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [currentMode, setCurrentMode] = useState(initialMode);
+  const [error, setError] = useState('');
+  const [activeTab, setActiveTab] = useState<'signup' | 'login'>(mode);
 
-  // Reset to initial mode whenever dialog is opened
-  useEffect(() => {
-    if (isOpen) {
-      setCurrentMode(initialMode);
-      // Reset form state
-      setEmail("");
-      setPassword("");
-      setError(null);
-      setLoading(false);
+  const handleAuth = async (authType: 'signup' | 'login') => {
+    if (!email || !password) {
+      setError('Please enter both email and password');
+      return;
     }
-  }, [isOpen, initialMode]);
 
-  const handleToggleMode = () => {
-    setCurrentMode(currentMode === "login" ? "signup" : "login");
-    setError(null);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
     setLoading(true);
-    setError(null);
+    setError('');
 
     try {
-      if (currentMode === "signup") {
-        const { error } = await supabase.auth.signUp({
+      let result;
+
+      if (authType === 'signup') {
+        result = await supabase.auth.signUp({
           email,
           password,
+          options: {
+            emailRedirectTo: window.location.origin,
+          },
         });
-        if (error) throw error;
+        
+        // If sign-up was successful, check if profile was created
+        if (result.data?.user) {
+          console.log('User created:', result.data.user);
+          
+          // Wait a moment for the trigger to execute
+          setTimeout(async () => {
+            const { data: profile, error: profileError } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('user_id', result.data.user.id)
+              .single();
+            
+            if (profileError) {
+              console.error('Error fetching profile after signup:', profileError);
+              alert('User created but profile creation may have failed. Please contact support.');
+            } else {
+              console.log('Profile automatically created:', profile);
+              alert('Sign-up successful and profile created!');
+            }
+          }, 1000); // Give the database trigger a second to process
+        }
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
+        result = await supabase.auth.signInWithPassword({
           email,
           password,
         });
-        if (error) throw error;
+      }
+
+      if (result.error) {
+        throw result.error;
+      }
+
+      if (authType === 'login') {
+        console.log('Login successful!');
       }
       
       onClose();
     } catch (error) {
-      setError(error.message);
+      console.error(`Error during ${authType}:`, error);
+      setError(error.message || `Failed to ${authType}. Please try again.`);
     } finally {
       setLoading(false);
     }
   };
 
-  if (!isOpen) return null;
+  const handleTabChange = (value: string) => {
+    setActiveTab(value as 'signup' | 'login');
+    setError('');
+  };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 border-[3px] border-gray-800">
-        <h2 className="text-4xl font-bold text-startsnap-ebony-clay mb-8 font-['Space_Grotesk',Helvetica]">
-          {currentMode === "signup" ? "Create Account" : "Welcome Back"}
-        </h2>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="email" className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg">
-              Email
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica]"
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="password" className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg">
-              Password
-            </Label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica]"
-              required
-            />
-          </div>
-
-          {error && (
-            <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-              {error}
-            </div>
-          )}
-
-          <div className="flex justify-center gap-4 pt-4">
-            <Button
-              type="button"
-              onClick={onClose}
-              variant="outline"
-              className="startsnap-button bg-startsnap-mischka text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] w-40"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              disabled={loading}
-              className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] w-40"
-            >
-              {loading ? "Processing..." : currentMode === "signup" ? "Sign Up" : "Log In"}
-            </Button>
-          </div>
-
-          <div className="text-center mt-4">
-            <button
-              type="button"
-              onClick={handleToggleMode}
-              className="text-startsnap-french-rose hover:underline focus:outline-none"
-            >
-              {currentMode === "signup"
-                ? "Already have an account? Log in"
-                : "Don't have an account? Sign up"}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-2xl leading-8 text-center">
+            {activeTab === 'signup' ? 'Join StartSnap' : 'Welcome Back'}
+          </DialogTitle>
+        </DialogHeader>
+        
+        <Tabs defaultValue={mode} value={activeTab} onValueChange={handleTabChange} className="mt-4">
+          <TabsList className="grid grid-cols-2">
+            <TabsTrigger value="login" className="font-['Roboto',Helvetica] font-medium">
+              Login
+            </TabsTrigger>
+            <TabsTrigger value="signup" className="font-['Roboto',Helvetica] font-medium">
+              Sign Up
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="login" className="mt-6">
+            <form onSubmit={(e) => { e.preventDefault(); handleAuth('login'); }}>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue">
+                    Email
+                  </Label>
+                  <Input
+                    type="email"
+                    placeholder="your@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue">
+                    Password
+                  </Label>
+                  <Input
+                    type="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
+                  />
+                </div>
+                {error && <p className="text-red-500 text-sm">{error}</p>}
+                <Button 
+                  type="submit" 
+                  disabled={loading}
+                  className="startsnap-button w-full bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+                >
+                  {loading ? 'Logging in...' : 'Login'}
+                </Button>
+              </div>
+            </form>
+          </TabsContent>
+          
+          <TabsContent value="signup" className="mt-6">
+            <form onSubmit={(e) => { e.preventDefault(); handleAuth('signup'); }}>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue">
+                    Email
+                  </Label>
+                  <Input
+                    type="email"
+                    placeholder="your@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue">
+                    Password
+                  </Label>
+                  <Input
+                    type="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
+                  />
+                </div>
+                {error && <p className="text-red-500 text-sm">{error}</p>}
+                <Button 
+                  type="submit"
+                  disabled={loading}
+                  className="startsnap-button w-full bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+                >
+                  {loading ? 'Creating account...' : 'Sign Up'}
+                </Button>
+              </div>
+            </form>
+          </TabsContent>
+        </Tabs>
+      </DialogContent>
+    </Dialog>
   );
-}
+};
