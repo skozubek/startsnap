@@ -5,6 +5,8 @@ import { HeaderSection } from "./sections/HeaderSection/HeaderSection";
 import { MainContentSection } from "./sections/MainContentSection/MainContentSection";
 import { ProjectDetail } from "../ProjectDetail";
 import { CreateStartSnap } from "../CreateStartSnap";
+import { EditStartSnap } from "../EditStartSnap";
+import { Profile } from "../Profile";
 import { supabase } from "../../lib/supabase";
 
 export const Frame = (): JSX.Element => {
@@ -43,12 +45,28 @@ export const Frame = (): JSX.Element => {
       <div className="flex flex-col w-full min-h-screen overflow-y-auto">
         <Routes>
           <Route path="/" element={<MainContentSection />} />
-          <Route path="/project/quantum-leap-synthesizer" element={<ProjectDetail />} />
+          <Route path="/project/:id" element={<ProjectDetail />} />
           <Route 
             path="/create" 
             element={
               <ProtectedRoute>
                 <CreateStartSnap />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/edit/:id" 
+            element={
+              <ProtectedRoute>
+                <EditStartSnap />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/profile" 
+            element={
+              <ProtectedRoute>
+                <Profile />
               </ProtectedRoute>
             } 
           />

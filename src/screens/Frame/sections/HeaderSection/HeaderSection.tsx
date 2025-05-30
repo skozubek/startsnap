@@ -109,7 +109,7 @@ export const HeaderSection = (): JSX.Element => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuItem className="cursor-pointer hover:bg-startsnap-mischka/50 flex items-center gap-2" asChild>
-                  <Link to="#" className="flex items-center gap-2 w-full">
+                  <Link to="/profile" className="flex items-center gap-2 w-full">
                     <User size={16} />
                     <span>Profile</span>
                   </Link>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { UploadIcon } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
@@ -11,42 +11,97 @@ import { Checkbox } from "../../components/ui/checkbox";
 import { Separator } from "../../components/ui/separator";
 import { supabase } from "../../lib/supabase";
 
-export const CreateStartSnap = (): JSX.Element => {
+export const EditStartSnap = (): JSX.Element => {
   const navigate = useNavigate();
+  const { id } = useParams();
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
   const [formState, setFormState] = useState({
-    projectType: "idea", // Default to 'idea'
+    projectType: "idea",
     projectName: "",
     description: "",
     category: "",
     liveUrl: "",
     videoUrl: "",
-    tags: "", // For general tags
+    tags: "",
     isHackathon: false,
-    // First vibe log
-    vibeLogType: "launch",
-    vibeLogTitle: "Initial Launch",
+    vibeLogType: "update",
+    vibeLogTitle: "Project Update",
     vibeLogContent: "",
-    // Tools used and feedback tags
-    toolsInput: "", // For input field
-    toolsUsed: [], // Stored as array
-    feedbackInput: "", // For input field
-    feedbackAreas: [] // Stored as array
+    toolsInput: "",
+    toolsUsed: [],
+    feedbackInput: "",
+    feedbackAreas: []
   });
+  const [originalData, setOriginalData] = useState(null);
 
   useEffect(() => {
     // Check if user is logged in
-    const checkUser = async () => {
+    const checkUserAndFetchData = async () => {
+      // Get session
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) {
         navigate('/');
         return;
       }
       setUser(session.user);
+      
+      // Fetch project data
+      try {
+        const { data, error } = await supabase
+          .from('startsnaps')
+          .select('*')
+          .eq('id', id)
+          .single();
+        
+        if (error) throw error;
+        
+        if (!data) {
+          alert('Project not found');
+          navigate('/profile');
+          return;
+        }
+        
+        // Verify ownership
+        if (data.user_id !== session.user.id) {
+          alert('You do not have permission to edit this project');
+          navigate('/profile');
+          return;
+        }
+        
+        // Store original data
+        setOriginalData(data);
+        
+        // Set form state with existing data
+        setFormState({
+          projectType: data.type || 'idea',
+          projectName: data.name || '',
+          description: data.description || '',
+          category: data.category || '',
+          liveUrl: data.live_demo_url || '',
+          videoUrl: data.demo_video_url || '',
+          tags: data.tags ? data.tags.join(', ') : '',
+          isHackathon: data.is_hackathon_entry || false,
+          vibeLogType: 'update',
+          vibeLogTitle: 'Project Update',
+          vibeLogContent: '',
+          toolsInput: '',
+          toolsUsed: data.tools_used || [],
+          feedbackInput: '',
+          feedbackAreas: data.feedback_tags || []
+        });
+        
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching project data:', error);
+        alert('Error loading project data');
+        navigate('/profile');
+      }
     };
-    checkUser();
-  }, [navigate]);
+
+    checkUserAndFetchData();
+  }, [id, navigate]);
 
   // Handle form field changes
   const handleChange = (e) => {
@@ -105,7 +160,7 @@ export const CreateStartSnap = (): JSX.Element => {
     }));
   };
 
-  // Handle form submission
+  // Handle form submission for updating the project
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -115,23 +170,22 @@ export const CreateStartSnap = (): JSX.Element => {
     }
 
     if (!user) {
-      alert('You need to be logged in to create a project.');
+      alert('You need to be logged in to update a project.');
       return;
     }
 
     try {
-      setLoading(true);
+      setUpdating(true);
 
       // Parse general tags
       const generalTags = formState.tags.split(',')
         .map(tag => tag.trim())
         .filter(tag => tag.length > 0);
 
-      // Insert the startsnap
-      const { data: startsnap, error: startsnapError } = await supabase
+      // Update the startsnap
+      const { error: startsnapError } = await supabase
         .from('startsnaps')
-        .insert({
-          user_id: user.id,
+        .update({
           name: formState.projectName,
           description: formState.description,
           category: formState.category,
@@ -141,18 +195,19 @@ export const CreateStartSnap = (): JSX.Element => {
           tools_used: formState.toolsUsed,
           feedback_tags: formState.feedbackAreas,
           is_hackathon_entry: formState.isHackathon,
-          tags: generalTags
+          tags: generalTags,
+          updated_at: new Date()
         })
-        .select();
+        .eq('id', id);
 
       if (startsnapError) throw startsnapError;
 
-      // Insert the initial vibe log
+      // Insert a new vibe log if content is provided
       if (formState.vibeLogContent.trim()) {
         const { error: vibeLogError } = await supabase
           .from('vibelogs')
           .insert({
-            startsnap_id: startsnap[0].id,
+            startsnap_id: id,
             log_type: formState.vibeLogType,
             title: formState.vibeLogTitle,
             content: formState.vibeLogContent
@@ -161,21 +216,29 @@ export const CreateStartSnap = (): JSX.Element => {
         if (vibeLogError) throw vibeLogError;
       }
 
-      // Redirect to the project detail page or projects list
-      navigate('/');
-      alert('StartSnap created successfully!');
+      // Redirect to the profile page
+      navigate('/profile');
+      alert('StartSnap updated successfully!');
     } catch (error) {
-      console.error('Error creating StartSnap:', error);
-      alert('Error creating StartSnap. Please try again.');
+      console.error('Error updating StartSnap:', error);
+      alert('Error updating StartSnap. Please try again.');
     } finally {
-      setLoading(false);
+      setUpdating(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-startsnap-candlelight">
+        <p className="text-xl font-bold text-startsnap-ebony-clay">Loading project data...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col w-full items-center gap-8 pt-8 pb-24 px-8 bg-startsnap-candlelight">
       <h2 className="text-5xl font-bold text-startsnap-ebony-clay text-center font-['Space_Grotesk',Helvetica] leading-[48px]">
-        Launch Your Project
+        Edit Your Project
       </h2>
 
       <Card className="max-w-2xl w-full bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]">
@@ -408,11 +471,11 @@ export const CreateStartSnap = (): JSX.Element => {
 
             <Separator className="border-gray-300 my-6" />
 
-            {/* Initial Vibe Log Entry */}
+            {/* New Vibe Log Entry */}
             <div className="space-y-2">
               <div className="flex items-center">
                 <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
-                  Initial Vibe Log Entry
+                  Add New Vibe Log Entry
                 </h3>
                 <span className="ml-2 text-startsnap-corn text-xl material-icons">
                   insights
@@ -433,9 +496,8 @@ export const CreateStartSnap = (): JSX.Element => {
                       <SelectValue placeholder="Select entry type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="launch">🚀 Launch</SelectItem>
-                      <SelectItem value="feature">✨ New Feature</SelectItem>
                       <SelectItem value="update">🔄 Update/Fix</SelectItem>
+                      <SelectItem value="feature">✨ New Feature</SelectItem>
                       <SelectItem value="idea">💡 Idea</SelectItem>
                       <SelectItem value="feedback">🔍 Seeking Feedback</SelectItem>
                     </SelectContent>
@@ -450,7 +512,7 @@ export const CreateStartSnap = (): JSX.Element => {
                     name="vibeLogTitle"
                     value={formState.vibeLogTitle}
                     onChange={handleChange}
-                    placeholder="e.g., Project Launch!"
+                    placeholder="e.g., New Feature Added!"
                     className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
                   />
                 </div>
@@ -463,7 +525,7 @@ export const CreateStartSnap = (): JSX.Element => {
                     name="vibeLogContent"
                     value={formState.vibeLogContent}
                     onChange={handleChange}
-                    placeholder="Share your thoughts about launching this project..."
+                    placeholder="Share updates about your project..."
                     className="border-2 border-solid border-gray-800 rounded-lg p-3.5 min-h-[107px] font-['Roboto',Helvetica] text-startsnap-pale-sky"
                   />
                 </div>
@@ -474,17 +536,17 @@ export const CreateStartSnap = (): JSX.Element => {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => navigate('/')}
+                onClick={() => navigate('/profile')}
                 className="startsnap-button bg-startsnap-mischka text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
               >
                 Cancel
               </Button>
               <Button 
                 type="submit"
-                disabled={loading}
+                disabled={updating}
                 className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
               >
-                {loading ? 'Launching...' : 'Launch Project'}
+                {updating ? 'Saving...' : 'Save Changes'}
               </Button>
             </div>
           </form>
