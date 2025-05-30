@@ -4,6 +4,7 @@ import { FooterSection } from "./sections/FooterSection/FooterSection";
 import { HeaderSection } from "./sections/HeaderSection/HeaderSection";
 import { MainContentSection } from "./sections/MainContentSection/MainContentSection";
 import { ProjectDetail } from "../ProjectDetail";
+import { CreateStartSnap } from "../CreateStartSnap";
 
 export const Frame = (): JSX.Element => {
   return (
@@ -13,6 +14,7 @@ export const Frame = (): JSX.Element => {
         <Routes>
           <Route path="/" element={<MainContentSection />} />
           <Route path="/project/quantum-leap-synthesizer" element={<ProjectDetail />} />
+          <Route path="/create" element={<CreateStartSnap />} />
         </Routes>
       </div>
       <FooterSection />

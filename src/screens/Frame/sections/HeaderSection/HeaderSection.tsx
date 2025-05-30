@@ -39,7 +39,7 @@ export const HeaderSection = (): JSX.Element => {
 
   const navLinks = [
     { title: "Feed", href: "#" },
-    { title: "Create Project", href: "#" },
+    { title: "Create StartSnap", href: "/create" },
     { title: "Profile", href: "#" },
   ];
 
