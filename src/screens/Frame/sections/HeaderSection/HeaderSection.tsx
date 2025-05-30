@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "../../../../components/ui/button";
 import {
   NavigationMenu,
@@ -60,7 +61,9 @@ export const HeaderSection = (): JSX.Element => {
     <header className="sticky top-0 z-50 w-full flex justify-center p-6 bg-startsnap-candlelight shadow-[0px_2px_4px_-2px_#0000001a,0px_4px_6px_-1px_#0000001a]">
       <div className="flex items-center justify-between w-full max-w-screen-2xl">
         <div className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-3xl leading-9">
-          startsnap.fun
+          <Link to="/" className="hover:text-startsnap-french-rose transition-colors">
+            startsnap.fun
+          </Link>
         </div>
 
         <div className="flex items-center gap-6">
