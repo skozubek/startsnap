@@ -5,6 +5,7 @@ import { HeaderSection } from "./sections/HeaderSection/HeaderSection";
 import { MainContentSection } from "./sections/MainContentSection/MainContentSection";
 import { ProjectDetail } from "../ProjectDetail";
 import { CreateStartSnap } from "../CreateStartSnap";
+import { Profile } from "../Profile";
 import { supabase } from "../../lib/supabase";
 
 export const Frame = (): JSX.Element => {
@@ -49,6 +50,14 @@ export const Frame = (): JSX.Element => {
             element={
               <ProtectedRoute>
                 <CreateStartSnap />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/profile" 
+            element={
+              <ProtectedRoute>
+                <Profile />
               </ProtectedRoute>
             } 
           />
