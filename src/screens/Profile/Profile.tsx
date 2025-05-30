@@ -454,7 +454,7 @@ export const Profile = (): JSX.Element => {
                       className="startsnap-button w-full mt-4 bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]" 
                       asChild
                     >
-                      <Link to={`/project/${startsnap.id}`}>View Project</Link>
+                      <Link to={`/edit/${startsnap.id}`}>Edit Project</Link>
                     </Button>
                   </CardContent>
                 </Card>
