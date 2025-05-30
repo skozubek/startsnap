@@ -273,15 +273,13 @@ export const ProjectDetail = (): JSX.Element => {
             </div>
 
             {/* Project title and category - restructured for full width heading */}
-            <div className="w-full mb-4">
-              <h1 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-4xl leading-10 w-full mb-2">
-                {startsnap.name}
-              </h1>
-              <div className="flex justify-end">
-                <Badge className={`${categoryDisplay.bgColor} ${categoryDisplay.textColor} border ${categoryDisplay.borderColor} rounded-full px-[13px] py-[5px] font-['Space_Mono',Helvetica]`}>
-                  {categoryDisplay.name}
-                </Badge>
-              </div>
+            <h1 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-4xl leading-10 w-full mb-4">
+              {startsnap.name}
+            </h1>
+            <div className="flex justify-end mb-4">
+              <Badge className={`${categoryDisplay.bgColor} ${categoryDisplay.textColor} border ${categoryDisplay.borderColor} rounded-full px-[13px] py-[5px] font-['Space_Mono',Helvetica]`}>
+                {categoryDisplay.name}
+              </Badge>
             </div>
 
             <p className="font-['Roboto',Helvetica] font-normal text-startsnap-river-bed text-base leading-6 mb-6">
