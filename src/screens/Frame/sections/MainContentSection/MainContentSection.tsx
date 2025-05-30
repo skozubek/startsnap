@@ -173,8 +173,8 @@ export const MainContentSection = (): JSX.Element => {
               </CardContent>
 
               <CardFooter className="p-7 pt-0">
-                <Button className="startsnap-button w-full bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] py-3.5">
-                  View StartSnap
+                <Button className="startsnap-button w-full bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]">
+                  View Project
                 </Button>
               </CardFooter>
             </Card>
@@ -185,7 +185,7 @@ export const MainContentSection = (): JSX.Element => {
       {/* Submit Your StartSnap Section */}
       <div className="flex flex-col items-center gap-8 w-full">
         <h2 className="text-5xl font-bold text-startsnap-ebony-clay text-center font-['Space_Grotesk',Helvetica] leading-[48px]">
-          Submit Your StartSnap
+          Launch Your Project
         </h2>
 
         <Card className="max-w-2xl w-full bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]">
@@ -236,7 +236,7 @@ export const MainContentSection = (): JSX.Element => {
                   <UploadIcon className="w-12 h-12 text-startsnap-gray-chateau mb-2" />
                   <div className="flex items-center gap-1">
                     <span className="text-startsnap-cerise text-sm font-['Roboto',Helvetica] font-medium">
-                      UploadIcon a file
+                      Upload a file
                     </span>
                     <span className="text-startsnap-river-bed text-sm font-['Roboto',Helvetica]">
                       or drag and drop
@@ -261,12 +261,12 @@ export const MainContentSection = (): JSX.Element => {
               <div className="flex justify-center gap-4 pt-4">
                 <Button
                   variant="outline"
-                  className="startsnap-button bg-startsnap-mischka text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] px-[26px] py-3.5"
+                  className="startsnap-button bg-startsnap-mischka text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
                 >
                   Save Draft
                 </Button>
-                <Button className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] px-[26px] py-3.5">
-                  Launch StartSnap
+                <Button className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]">
+                  Launch Project
                 </Button>
               </div>
             </form>
@@ -335,11 +335,11 @@ export const MainContentSection = (): JSX.Element => {
             </div>
 
             <div className="flex gap-4">
-              <Button className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] px-[26px] py-3.5 flex items-center gap-2">
+              <Button className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-2">
                 <span className="material-icons text-xl">thumb_up</span>
-                Support StartSnap
+                Support Project
               </Button>
-              <Button className="startsnap-button bg-startsnap-mountain-meadow text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] px-[26px] py-3.5 flex items-center gap-2">
+              <Button className="startsnap-button bg-startsnap-mountain-meadow text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-2">
                 <span className="material-icons text-xl">forum</span>
                 Give Feedback
               </Button>
@@ -434,7 +434,7 @@ export const MainContentSection = (): JSX.Element => {
                 placeholder="Share your thoughts, suggestions, or bug reports..."
                 className="border-2 border-solid border-gray-800 rounded-lg p-3.5 min-h-[120px] font-['Roboto',Helvetica] text-startsnap-pale-sky mb-4"
               />
-              <Button className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] px-[26px] py-3.5">
+              <Button className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]">
                 Submit Feedback
               </Button>
             </div>
