@@ -1,10 +1,4 @@
 import React, { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@radix-ui/react-dialog";
 import { Button } from "./button";
 import { Input } from "./input";
 import { Label } from "./label";
