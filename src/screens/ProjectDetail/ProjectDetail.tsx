@@ -6,6 +6,7 @@ import { Card, CardContent } from "../../components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
 import { Textarea } from "../../components/ui/textarea";
 import { supabase } from "../../lib/supabase";
+import { GridThumbnail } from "../../components/ui/project-thumbnail";
 
 export const ProjectDetail = (): JSX.Element => {
   const { id } = useParams();
@@ -263,7 +264,13 @@ export const ProjectDetail = (): JSX.Element => {
               )}
             </div>
 
-            <div className="h-64 rounded-lg border-2 border-solid border-gray-800 mb-6"></div>
+            <div className="h-64 rounded-lg border-2 border-solid border-gray-800 mb-6">
+              <GridThumbnail 
+                projectId={startsnap.id} 
+                projectType={startsnap.type} 
+                category={startsnap.category}
+              />
+            </div>
 
             <div className="flex justify-between items-start mb-4">
               <h1 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-4xl leading-10">

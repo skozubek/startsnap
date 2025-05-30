@@ -5,6 +5,7 @@ import { Button } from "../../../../components/ui/button";
 import { Card, CardContent, CardFooter } from "../../../../components/ui/card";
 import { Link } from "react-router-dom";
 import { supabase } from "../../../../lib/supabase";
+import { GridThumbnail } from "../../../../components/ui/project-thumbnail";
 
 export const MainContentSection = (): JSX.Element => {
   const [startSnaps, setStartSnaps] = useState([]);
@@ -156,6 +157,15 @@ export const MainContentSection = (): JSX.Element => {
                   className="bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]"
                 >
                   <CardContent className="p-7 pt-[219px] relative">
+                    {/* Project thumbnail */}
+                    <div className="absolute top-0 left-0 right-0 h-[200px] p-7 pb-0">
+                      <GridThumbnail 
+                        projectId={startsnap.id} 
+                        projectType={startsnap.type} 
+                        category={startsnap.category}
+                      />
+                    </div>
+                  
                     {/* Status badges - positioned in the top right corner */}
                     <div className="absolute top-3 right-3 flex flex-col gap-2 items-end">
                       {/* Project type badge */}
