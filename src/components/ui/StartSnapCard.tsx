@@ -5,17 +5,10 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
-import Avatar from "boring-avatars";
-import { Avatar as ShadcnAvatar, AvatarFallback } from "./avatar";
 import { Badge } from "./badge";
 import { Button } from "./button";
 import { Card, CardContent, CardFooter } from "./card";
-import {
-  MinimalistThumbnail,
-  GridThumbnail,
-  ChevronPatternThumbnail,
-  PolkaDotPatternThumbnail
-} from "./project-thumbnail";
+import { UserAvatar } from "./user-avatar";
 
 /**
  * @description Available thumbnail style options for project cards
@@ -68,12 +61,10 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
   startsnap,
   showCreator = false,
   creatorName = 'Anonymous',
-  creatorInitials = 'A',
   variant = 'main-page',
   isOwner = false,
   formatDate,
   getCategoryDisplay,
-  thumbnailStyle = 'minimalist', // Default style
 }) => {
   const categoryDisplay = getCategoryDisplay(startsnap.category);
 
@@ -146,12 +137,11 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
           {showCreator && (
             <div className="flex items-center pt-5 mt-1 border-t border-gray-200/80">
               <div className="flex items-center gap-4">
-                <div className="w-9 h-9 rounded-full border-2 border-solid border-gray-800 shadow-sm overflow-hidden bg-white">
-                  <Avatar
+                <div className="w-9 h-9">
+                  <UserAvatar
                     name={creatorName}
-                    variant="beam"
                     size={36}
-                    colors={["#264653", "#2a9d8f", "#e9c46a", "#f4a261", "#e76f51"]}
+                    className="w-full h-full"
                   />
                 </div>
                 <div className="min-w-0 flex-1">

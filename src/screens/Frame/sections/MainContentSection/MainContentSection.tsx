@@ -13,13 +13,37 @@ import { formatDate } from "../../../../lib/utils";
 import Typed from 'typed.js';
 
 /**
+ * @description Type definition for StartSnap project data
+ */
+interface StartSnapType {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  type: "live" | "idea";
+  is_hackathon_entry?: boolean;
+  tags?: string[];
+  tools_used?: string[];
+  feedback_tags?: string[];
+  created_at: string;
+  user_id: string;
+}
+
+/**
+ * @description Type definition for creators mapping object
+ */
+interface CreatorsMap {
+  [userId: string]: string;
+}
+
+/**
  * @description Renders the main content of the home page including hero section and StartSnap cards
  * @returns {JSX.Element} Main content section with hero and StartSnap cards
  */
 export const MainContentSection = (): JSX.Element => {
-  const [startSnaps, setStartSnaps] = useState([]);
+  const [startSnaps, setStartSnaps] = useState<StartSnapType[]>([]);
   const [loading, setLoading] = useState(true);
-  const [creators, setCreators] = useState({});
+  const [creators, setCreators] = useState<CreatorsMap>({});
   const typedRef = useRef(null);
 
   useEffect(() => {
@@ -75,8 +99,8 @@ export const MainContentSection = (): JSX.Element => {
 
         if (profilesError) throw profilesError;
 
-        const creatorsMap = {};
-        profilesData.forEach(profile => {
+        const creatorsMap: CreatorsMap = {};
+        profilesData?.forEach(profile => {
           creatorsMap[profile.user_id] = profile.username;
         });
 

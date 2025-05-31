@@ -8,13 +8,12 @@ import { useParams, Link } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
 import { Card, CardContent } from "../../components/ui/card";
-import { Avatar as ShadcnAvatar, AvatarFallback } from "../../components/ui/avatar";
 import { Textarea } from "../../components/ui/textarea";
 import { supabase } from "../../lib/supabase";
-import { MinimalistThumbnail } from "../../components/ui/project-thumbnail";
 import { getCategoryDisplay, getVibeLogDisplay } from "../../config/categories";
 import { formatDetailedDate } from "../../lib/utils";
-import Avatar from "boring-avatars";
+import { useAuth } from "../../context/AuthContext";
+import { UserAvatar, getAvatarName } from "../../components/ui/user-avatar";
 
 /**
  * @description Page component that displays detailed project information
@@ -23,23 +22,18 @@ import Avatar from "boring-avatars";
 export const ProjectDetail = (): JSX.Element => {
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
-  const [startsnap, setStartsnap] = useState(null);
-  const [creator, setCreator] = useState(null);
-  const [vibeLogEntries, setVibeLogEntries] = useState([]);
-  const [feedbackEntries, setFeedbackEntries] = useState([]);
+  const [startsnap, setStartsnap] = useState<any>(null);
+  const [creator, setCreator] = useState<any>(null);
+  const [vibeLogEntries, setVibeLogEntries] = useState<any[]>([]);
+  const [feedbackEntries, setFeedbackEntries] = useState<any[]>([]);
   const [feedbackContent, setFeedbackContent] = useState("");
-  const [currentUser, setCurrentUser] = useState(null);
+  const { user: currentUser } = useAuth();
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   useEffect(() => {
-    // Check current user
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setCurrentUser(session?.user || null);
-    });
-
     fetchProjectData();
   }, [id]);
 
@@ -210,12 +204,11 @@ export const ProjectDetail = (): JSX.Element => {
             {/* Creator info - consistent with cards */}
             <div className="flex items-center pt-6 mt-2 border-t border-gray-200/80">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full border-2 border-solid border-gray-800 overflow-hidden bg-white">
-                  <Avatar
-                    name={creatorName}
-                    variant="beam"
+                <div className="w-12 h-12">
+                  <UserAvatar
+                    name={creator?.username || 'Anonymous'}
                     size={48}
-                    colors={["#264653", "#2a9d8f", "#e9c46a", "#f4a261", "#e76f51"]}
+                    className="w-full h-full"
                   />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -236,7 +229,7 @@ export const ProjectDetail = (): JSX.Element => {
                 <div className="flex items-start gap-3">
                   <span className="material-icons text-startsnap-oxford-blue text-lg mt-1 shrink-0">tag</span>
                   <div className="flex flex-wrap gap-2 flex-1">
-                    {startsnap.tags.map((tag, idx) => (
+                    {startsnap.tags.map((tag: string, idx: number) => (
                       <Badge
                         key={`tag-${idx}`}
                         variant="outline"
@@ -254,7 +247,7 @@ export const ProjectDetail = (): JSX.Element => {
                 <div className="flex items-start gap-3">
                   <span className="material-icons text-startsnap-persian-blue text-lg mt-1 shrink-0">build</span>
                   <div className="flex flex-wrap gap-2 flex-1">
-                    {startsnap.tools_used.map((tool, idx) => (
+                    {startsnap.tools_used.map((tool: string, idx: number) => (
                       <Badge
                         key={`tool-${idx}`}
                         variant="outline"
@@ -272,7 +265,7 @@ export const ProjectDetail = (): JSX.Element => {
                 <div className="flex items-start gap-3">
                   <span className="material-icons text-startsnap-jewel text-lg mt-1 shrink-0">forum</span>
                   <div className="flex flex-wrap gap-2 flex-1">
-                    {startsnap.feedback_tags.map((feedback, idx) => (
+                    {startsnap.feedback_tags.map((feedback: string, idx: number) => (
                       <Badge
                         key={`feedback-${idx}`}
                         variant="outline"
@@ -348,7 +341,7 @@ export const ProjectDetail = (): JSX.Element => {
             </div>
 
             {vibeLogEntries.length > 0 ? (
-              vibeLogEntries.map((entry, index) => {
+              vibeLogEntries.map((entry: any, index: number) => {
                 const logType = entry.log_type || 'update';
                 const iconData = getVibeLogDisplay(logType);
 
@@ -393,19 +386,18 @@ export const ProjectDetail = (): JSX.Element => {
               </span>
             </div>
 
-            {feedbackEntries.map((feedback, index) => (
+            {feedbackEntries.map((feedback: any, index: number) => (
               <Card
                 key={index}
                 className="mb-6 shadow-[0px_2px_4px_-2px_#0000001a,0px_4px_6px_-1px_#0000001a] bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800"
               >
                 <CardContent className="p-5">
                   <div className="flex items-start">
-                    <div className="w-10 h-10 rounded-full border-2 border-solid border-gray-800 overflow-hidden bg-white">
-                      <Avatar
+                    <div className="w-10 h-10">
+                      <UserAvatar
                         name={feedback.username}
-                        variant="beam"
                         size={40}
-                        colors={["#264653", "#2a9d8f", "#e9c46a", "#f4a261", "#e76f51"]}
+                        className="w-full h-full"
                       />
                     </div>
                     <div className="ml-4">

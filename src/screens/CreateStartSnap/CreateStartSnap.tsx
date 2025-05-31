@@ -3,10 +3,11 @@
  * @description Component for creating a new StartSnap project
  */
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { ProjectForm } from "../../components/ui/project-form";
 import { supabase } from "../../lib/supabase";
+import { useAuth } from "../../context/AuthContext";
 
 /**
  * @description Page component for creating a new StartSnap project
@@ -14,20 +15,7 @@ import { supabase } from "../../lib/supabase";
  */
 export const CreateStartSnap = (): JSX.Element => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    // Check if user is logged in
-    const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) {
-        navigate('/');
-        return;
-      }
-      setUser(session.user);
-    };
-    checkUser();
-  }, [navigate]);
+  const { user } = useAuth();
 
   /**
    * @description Handles form submission to create a new StartSnap
@@ -35,7 +23,7 @@ export const CreateStartSnap = (): JSX.Element => {
    * @param {Object} formData - Form data containing project information
    * @sideEffects Inserts new StartSnap into database and redirects on success
    */
-  const handleSubmit = async (formData) => {
+  const handleSubmit = async (formData: any) => {
     if (!user) {
       alert('You need to be logged in to create a project.');
       return;
@@ -88,7 +76,6 @@ export const CreateStartSnap = (): JSX.Element => {
 
       <ProjectForm
         mode="create"
-        defaultVibeLogType={true}
         onSubmit={handleSubmit}
         onCancel={() => navigate('/')}
       />

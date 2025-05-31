@@ -5,26 +5,19 @@
 
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import Avatar from "boring-avatars";
-import { AvatarFallback } from "../../components/ui/avatar";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import { Badge } from "../../components/ui/badge";
 import { Input } from "../../components/ui/input";
 import { Textarea } from "../../components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "../../components/ui/select";
 import { Popover, PopoverTrigger, PopoverContent } from "../../components/ui/popover";
 import { supabase } from "../../lib/supabase";
 import { FaGithub, FaXTwitter, FaLinkedinIn } from "react-icons/fa6";
 import { StartSnapCard } from "../../components/ui/StartSnapCard";
-import { getCategoryDisplay, getUserStatusOptions, getUserStatusDisplay } from "../../config/categories";
+import { getCategoryDisplay, getUserStatusOptions} from "../../config/categories";
 import { formatDate, validateSocialLinks, LinkValidationErrors, ProfileLinks } from "../../lib/utils";
+import { useAuth } from "../../context/AuthContext";
+import { UserAvatar, getAvatarName } from "../../components/ui/user-avatar";
 
 /**
  * @description User profile page with settings and project management
@@ -34,7 +27,7 @@ export const Profile = (): JSX.Element => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
-  const [user, setUser] = useState(null);
+  const { user } = useAuth();
   const [profile, setProfile] = useState({
     username: "",
     bio: "",
@@ -44,7 +37,7 @@ export const Profile = (): JSX.Element => {
     linkedin: "",
     website: ""
   });
-  const [userStartSnaps, setUserStartSnaps] = useState([]);
+  const [userStartSnaps, setUserStartSnaps] = useState<any[]>([]);
   const [loadingStartSnaps, setLoadingStartSnaps] = useState(true);
   const [linkErrors, setLinkErrors] = useState<LinkValidationErrors>({
     github: "",
@@ -55,23 +48,19 @@ export const Profile = (): JSX.Element => {
   const [statusPopoverOpen, setStatusPopoverOpen] = useState(false);
 
   useEffect(() => {
-    const fetchUserAndProfile = async () => {
+    // If no user is authenticated, redirect to home
+    if (!user) {
+      navigate('/');
+      return;
+    }
+
+    const fetchProfile = async () => {
       try {
-        // Get current user
-        const { data: { session } } = await supabase.auth.getSession();
-
-        if (!session?.user) {
-          navigate('/');
-          return;
-        }
-
-        setUser(session.user);
-
         // Fetch profile data
         const { data, error } = await supabase
           .from('profiles')
           .select('*')
-          .eq('user_id', session.user.id)
+          .eq('user_id', user.id)
           .single();
 
         if (error && error.code !== 'PGRST116') {
@@ -82,7 +71,7 @@ export const Profile = (): JSX.Element => {
         // If profile exists, use it; otherwise, use default values
         if (data) {
           setProfile({
-            username: data.username || session.user.email?.split('@')[0] || '',
+            username: data.username || user.email?.split('@')[0] || '',
             bio: data.bio || '',
             status: data.status || 'brainstorming',
             github: data.github_url || '',
@@ -94,12 +83,12 @@ export const Profile = (): JSX.Element => {
           // Set default username from email if no profile exists
           setProfile(prev => ({
             ...prev,
-            username: session.user.email?.split('@')[0] || ''
+            username: user.email?.split('@')[0] || ''
           }));
         }
 
         // Fetch user's StartSnaps
-        fetchUserStartSnaps(session.user.id);
+        fetchUserStartSnaps(user.id);
       } catch (error) {
         console.error('Error:', error);
       } finally {
@@ -107,8 +96,8 @@ export const Profile = (): JSX.Element => {
       }
     };
 
-    fetchUserAndProfile();
-  }, [navigate]);
+    fetchProfile();
+  }, [user, navigate]);
 
   /**
    * @description Fetches StartSnap projects created by the current user
@@ -116,7 +105,7 @@ export const Profile = (): JSX.Element => {
    * @param {string} userId - User ID to fetch projects for
    * @sideEffects Updates state with user's projects
    */
-  const fetchUserStartSnaps = async (userId) => {
+  const fetchUserStartSnaps = async (userId: string) => {
     try {
       setLoadingStartSnaps(true);
 
@@ -143,7 +132,7 @@ export const Profile = (): JSX.Element => {
    * @description Handles input changes for profile form fields
    * @param {React.ChangeEvent<HTMLInputElement|HTMLTextAreaElement>} e - Change event
    */
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setProfile(prev => ({ ...prev, [name]: value }));
 
@@ -157,7 +146,7 @@ export const Profile = (): JSX.Element => {
    * @description Handles status selection change
    * @param {string} value - New status value
    */
-  const handleStatusChange = (value) => {
+  const handleStatusChange = (value: string) => {
     setProfile(prev => ({ ...prev, status: value }));
     setStatusPopoverOpen(false); // Close popover after selection
   };
@@ -235,7 +224,7 @@ export const Profile = (): JSX.Element => {
    * @param {string} statusValue - Status value to get icon for
    * @returns {string} Material icon name for the status
    */
-  const getStatusIcon = (statusValue) => {
+  const getStatusIcon = (statusValue: string) => {
     const option = getUserStatusOptions().find(opt => opt.value === statusValue);
     return option ? option.icon : 'lightbulb';
   };
@@ -251,12 +240,11 @@ export const Profile = (): JSX.Element => {
           <CardContent className="p-8">
             <div className="flex flex-col md:flex-row gap-8">
               <div className="flex flex-col items-center min-w-[250px]">
-                <div className="w-32 h-32 border-[3px] border-gray-800 rounded-full overflow-hidden bg-white">
-                  <Avatar
-                    name={profile.username || user?.email || 'Anonymous'}
-                    variant="beam"
+                <div className="w-32 h-32">
+                  <UserAvatar
+                    name={getAvatarName(user, profile.username)}
                     size={128}
-                    colors={["#264653", "#2a9d8f", "#e9c46a", "#f4a261", "#e76f51"]}
+                    className="w-full h-full"
                   />
                 </div>
 
@@ -330,7 +318,7 @@ export const Profile = (): JSX.Element => {
                       {/* GitHub Link */}
                       <div className="space-y-1">
                         <div className="flex items-center">
-                          <FaGithub className="text-black mr-2 text-lg" />
+                          {React.createElement(FaGithub as any, { className: "text-black mr-2 text-lg" })}
                           <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">GitHub</label>
                         </div>
                         <Input
@@ -348,7 +336,7 @@ export const Profile = (): JSX.Element => {
                       {/* Twitter Link */}
                       <div className="space-y-1">
                         <div className="flex items-center">
-                          <FaXTwitter className="text-black mr-2 text-lg" />
+                          {React.createElement(FaXTwitter as any, { className: "text-black mr-2 text-lg" })}
                           <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">Twitter</label>
                         </div>
                         <Input
@@ -366,7 +354,7 @@ export const Profile = (): JSX.Element => {
                       {/* LinkedIn Link */}
                       <div className="space-y-1">
                         <div className="flex items-center">
-                          <FaLinkedinIn className="text-black mr-2 text-lg" />
+                          {React.createElement(FaLinkedinIn as any, { className: "text-black mr-2 text-lg" })}
                           <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">LinkedIn</label>
                         </div>
                         <Input
@@ -437,7 +425,6 @@ export const Profile = (): JSX.Element => {
                 isOwner={true}
                 formatDate={formatDate}
                 getCategoryDisplay={getCategoryDisplay}
-                thumbnailStyle="minimalist"
               />
             ))}
           </div>

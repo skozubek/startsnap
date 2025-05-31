@@ -5,6 +5,7 @@
 
 import React from "react";
 import { FaXTwitter, FaInstagram, FaYoutube } from "react-icons/fa6";
+import { IconType } from "react-icons";
 
 /**
  * @description Renders the application footer with social media links and navigation
@@ -19,7 +20,7 @@ export const FooterSection = (): JSX.Element => {
   ];
 
   // Social media links
-  const socialLinks = [
+  const socialLinks: Array<{ icon: IconType; href: string; label: string }> = [
     { icon: FaXTwitter, href: "#", label: "X (Twitter)" },
     { icon: FaInstagram, href: "#", label: "Instagram" },
     { icon: FaYoutube, href: "#", label: "YouTube" },
@@ -31,7 +32,7 @@ export const FooterSection = (): JSX.Element => {
         {/* Social Media Icons */}
         <div className="flex items-center gap-8">
           {socialLinks.map((link, index) => {
-            const Icon = link.icon;
+            const Icon = link.icon as React.ComponentType<{ size: number }>;
             return (
               <a
                 key={index}

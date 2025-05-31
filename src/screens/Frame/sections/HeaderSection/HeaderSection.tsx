@@ -5,7 +5,6 @@
 
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Avatar from "boring-avatars";
 import { Button } from "../../../../components/ui/button";
 import {
   NavigationMenu,
@@ -14,7 +13,6 @@ import {
   NavigationMenuList,
 } from "../../../../components/ui/navigation-menu";
 import { AuthDialog } from "../../../../components/ui/auth-dialog";
-import { Avatar as ShadcnAvatar, AvatarFallback } from "../../../../components/ui/avatar";
 import { supabase } from "../../../../lib/supabase";
 import {
   DropdownMenu,
@@ -23,6 +21,8 @@ import {
   DropdownMenuTrigger,
 } from "../../../../components/ui/dropdown-menu";
 import { LogOut, User } from "lucide-react";
+import { useAuth } from "../../../../context/AuthContext";
+import { UserAvatar, getAvatarName } from "../../../../components/ui/user-avatar";
 
 /**
  * @description Header component with navigation and authentication UI
@@ -31,21 +31,36 @@ import { LogOut, User } from "lucide-react";
 export const HeaderSection = (): JSX.Element => {
   const [authMode, setAuthMode] = useState<'signup' | 'login'>('login');
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [userProfile, setUserProfile] = useState<{ username?: string } | null>(null);
+  const { user } = useAuth();
 
+  // Fetch user profile when user changes to get consistent username
   useEffect(() => {
-    // Check current session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user || null);
-    });
+    if (user) {
+      const fetchUserProfile = async () => {
+        try {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('username')
+            .eq('user_id', user.id)
+            .single();
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user || null);
-    });
+          if (error && error.code !== 'PGRST116') {
+            console.error('Error fetching user profile for header:', error);
+            return;
+          }
 
-    return () => subscription.unsubscribe();
-  }, []);
+          setUserProfile(data);
+        } catch (error) {
+          console.error('Error:', error);
+        }
+      };
+
+      fetchUserProfile();
+    } else {
+      setUserProfile(null);
+    }
+  }, [user]);
 
   // Only "Feed" is visible to all users
   const navLinks = [
@@ -121,12 +136,11 @@ export const HeaderSection = (): JSX.Element => {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger className="outline-none">
-                <div className="w-10 h-10 border-2 border-gray-800 cursor-pointer hover:border-startsnap-french-rose transition-colors rounded-full overflow-hidden bg-white">
-                  <Avatar
-                    name={user.email || 'Anonymous'}
-                    variant="beam"
+                <div className="w-10 h-10 cursor-pointer hover:opacity-80 transition-opacity">
+                  <UserAvatar
+                    name={getAvatarName(user, userProfile?.username)}
                     size={40}
-                    colors={["#264653", "#2a9d8f", "#e9c46a", "#f4a261", "#e76f51"]}
+                    className="w-full h-full"
                   />
                 </div>
               </DropdownMenuTrigger>

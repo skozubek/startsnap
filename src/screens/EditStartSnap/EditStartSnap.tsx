@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ProjectForm } from "../../components/ui/project-form";
 import { supabase } from "../../lib/supabase";
+import { useAuth } from "../../context/AuthContext";
 
 /**
  * @description Page component for editing an existing StartSnap project
@@ -15,24 +16,22 @@ import { supabase } from "../../lib/supabase";
 export const EditStartSnap = (): JSX.Element => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [user, setUser] = useState(null);
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [initialData, setInitialData] = useState(null);
+  const [initialData, setInitialData] = useState<any>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   useEffect(() => {
-    const checkUserAndFetchData = async () => {
-      // Get session
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) {
-        navigate('/');
-        return;
-      }
-      setUser(session.user);
-      
+    // If no user is authenticated, redirect to home
+    if (!user) {
+      navigate('/');
+      return;
+    }
+
+    const fetchData = async () => {
       // Fetch project data
       try {
         const { data, error } = await supabase
@@ -40,22 +39,22 @@ export const EditStartSnap = (): JSX.Element => {
           .select('*')
           .eq('id', id)
           .single();
-        
+
         if (error) throw error;
-        
+
         if (!data) {
           alert('Project not found');
           navigate('/profile');
           return;
         }
-        
+
         // Verify ownership
-        if (data.user_id !== session.user.id) {
+        if (data.user_id !== user.id) {
           alert('You do not have permission to edit this project');
           navigate('/profile');
           return;
         }
-        
+
         // Transform data to match form state structure
         setInitialData({
           projectType: data.type || 'idea',
@@ -72,7 +71,7 @@ export const EditStartSnap = (): JSX.Element => {
           feedbackInput: '',
           feedbackAreas: data.feedback_tags || []
         });
-        
+
         setLoading(false);
       } catch (error) {
         console.error('Error fetching project data:', error);
@@ -81,8 +80,8 @@ export const EditStartSnap = (): JSX.Element => {
       }
     };
 
-    checkUserAndFetchData();
-  }, [id, navigate]);
+    fetchData();
+  }, [id, navigate, user]);
 
   /**
    * @description Handles form submission to update an existing StartSnap
@@ -90,7 +89,7 @@ export const EditStartSnap = (): JSX.Element => {
    * @param {Object} formData - Form data containing updated project information
    * @sideEffects Updates StartSnap in database and redirects on success
    */
-  const handleSubmit = async (formData) => {
+  const handleSubmit = async (formData: any) => {
     // Update the startsnap
     const { error: startsnapError } = await supabase
       .from('startsnaps')
