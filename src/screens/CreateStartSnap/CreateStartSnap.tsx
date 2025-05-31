@@ -52,7 +52,7 @@ export const CreateStartSnap = (): JSX.Element => {
         .from('vibelogs')
         .insert({
           startsnap_id: startsnap[0].id,
-          log_type: formData.vibeLogType,
+          log_type: formData.projectType === 'live' ? 'launch' : 'idea',
           title: formData.vibeLogTitle,
           content: formData.vibeLogContent
         });
