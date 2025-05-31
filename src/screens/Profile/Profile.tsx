@@ -40,6 +40,12 @@ export const Profile = (): JSX.Element => {
   });
   const [userStartSnaps, setUserStartSnaps] = useState([]);
   const [loadingStartSnaps, setLoadingStartSnaps] = useState(true);
+  const [linkErrors, setLinkErrors] = useState({
+    github: "",
+    twitter: "",
+    linkedin: "",
+    website: ""
+  });
 
   // Status options with Material Icons
   const statusOptions = [
@@ -195,6 +201,11 @@ export const Profile = (): JSX.Element => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProfile(prev => ({ ...prev, [name]: value }));
+    
+    // Clear error when field is edited
+    if (name in linkErrors) {
+      setLinkErrors(prev => ({ ...prev, [name]: "" }));
+    }
   };
 
   /**
@@ -206,12 +217,100 @@ export const Profile = (): JSX.Element => {
   };
 
   /**
+   * @description Validates a URL string
+   * @param {string} url - URL to validate
+   * @returns {boolean} Whether the URL is valid
+   */
+  const isValidUrl = (url) => {
+    if (!url) return true; // Empty is valid (optional field)
+    try {
+      new URL(url);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  };
+
+  /**
+   * @description Validates a GitHub URL
+   * @param {string} url - URL to validate
+   * @returns {boolean} Whether the URL is a valid GitHub URL
+   */
+  const isValidGithubUrl = (url) => {
+    if (!url) return true; // Empty is valid (optional field)
+    return isValidUrl(url) && url.match(/^https?:\/\/(www\.)?github\.com\/[a-zA-Z0-9-]+\/?.*$/);
+  };
+
+  /**
+   * @description Validates a Twitter URL
+   * @param {string} url - URL to validate
+   * @returns {boolean} Whether the URL is a valid Twitter URL
+   */
+  const isValidTwitterUrl = (url) => {
+    if (!url) return true; // Empty is valid (optional field)
+    return isValidUrl(url) && url.match(/^https?:\/\/(www\.)?(twitter\.com|x\.com)\/[a-zA-Z0-9_]+\/?.*$/);
+  };
+
+  /**
+   * @description Validates a LinkedIn URL
+   * @param {string} url - URL to validate
+   * @returns {boolean} Whether the URL is a valid LinkedIn URL
+   */
+  const isValidLinkedInUrl = (url) => {
+    if (!url) return true; // Empty is valid (optional field)
+    return isValidUrl(url) && url.match(/^https?:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9-]+\/?.*$/);
+  };
+
+  /**
+   * @description Validates all external links
+   * @returns {boolean} Whether all links are valid
+   */
+  const validateLinks = () => {
+    const errors = {
+      github: "",
+      twitter: "",
+      linkedin: "",
+      website: ""
+    };
+    
+    let isValid = true;
+    
+    if (profile.github && !isValidGithubUrl(profile.github)) {
+      errors.github = "Please enter a valid GitHub URL (e.g., https://github.com/username)";
+      isValid = false;
+    }
+    
+    if (profile.twitter && !isValidTwitterUrl(profile.twitter)) {
+      errors.twitter = "Please enter a valid Twitter URL (e.g., https://twitter.com/username)";
+      isValid = false;
+    }
+    
+    if (profile.linkedin && !isValidLinkedInUrl(profile.linkedin)) {
+      errors.linkedin = "Please enter a valid LinkedIn URL (e.g., https://linkedin.com/in/username)";
+      isValid = false;
+    }
+    
+    if (profile.website && !isValidUrl(profile.website)) {
+      errors.website = "Please enter a valid website URL";
+      isValid = false;
+    }
+    
+    setLinkErrors(errors);
+    return isValid;
+  };
+
+  /**
    * @description Updates the user profile in the database
    * @async
    * @sideEffects Updates profile information in Supabase
    */
   const updateProfile = async () => {
     if (!user) return;
+    
+    // Validate links before updating
+    if (!validateLinks()) {
+      return;
+    }
     
     try {
       setUpdating(true);
@@ -380,8 +479,11 @@ export const Profile = (): JSX.Element => {
                           value={profile.github}
                           onChange={handleChange}
                           placeholder="https://github.com/username"
-                          className="border-2 border-solid border-gray-800 rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky"
+                          className={`border-2 border-solid ${linkErrors.github ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
                         />
+                        {linkErrors.github && (
+                          <p className="text-red-500 text-xs mt-1">{linkErrors.github}</p>
+                        )}
                       </div>
                       <div className="space-y-1">
                         <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky text-sm">Twitter</label>
@@ -390,8 +492,11 @@ export const Profile = (): JSX.Element => {
                           value={profile.twitter}
                           onChange={handleChange}
                           placeholder="https://twitter.com/username"
-                          className="border-2 border-solid border-gray-800 rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky"
+                          className={`border-2 border-solid ${linkErrors.twitter ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
                         />
+                        {linkErrors.twitter && (
+                          <p className="text-red-500 text-xs mt-1">{linkErrors.twitter}</p>
+                        )}
                       </div>
                       <div className="space-y-1">
                         <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky text-sm">LinkedIn</label>
@@ -400,8 +505,11 @@ export const Profile = (): JSX.Element => {
                           value={profile.linkedin}
                           onChange={handleChange}
                           placeholder="https://linkedin.com/in/username"
-                          className="border-2 border-solid border-gray-800 rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky"
+                          className={`border-2 border-solid ${linkErrors.linkedin ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
                         />
+                        {linkErrors.linkedin && (
+                          <p className="text-red-500 text-xs mt-1">{linkErrors.linkedin}</p>
+                        )}
                       </div>
                       <div className="space-y-1">
                         <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky text-sm">Website</label>
@@ -410,13 +518,16 @@ export const Profile = (): JSX.Element => {
                           value={profile.website}
                           onChange={handleChange}
                           placeholder="https://yourwebsite.com"
-                          className="border-2 border-solid border-gray-800 rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky"
+                          className={`border-2 border-solid ${linkErrors.website ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
                         />
+                        {linkErrors.website && (
+                          <p className="text-red-500 text-xs mt-1">{linkErrors.website}</p>
+                        )}
                       </div>
                     </div>
                   </div>
                   
-                  <div className="flex justify-center pt-4">
+                  <div className="flex justify-end pt-4">
                     <Button 
                       type="button"
                       onClick={updateProfile}
