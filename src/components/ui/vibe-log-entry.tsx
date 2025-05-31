@@ -10,6 +10,8 @@ import {
   SelectValue,
 } from "./select";
 import { getVibeLogOptions, getVibeLogDisplay } from "../../config/categories";
+import { formatDetailedDate } from "../../lib/utils";
+import Avatar from "boring-avatars";
 
 interface VibeLogEntryProps {
   title: string;
