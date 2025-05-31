@@ -249,7 +249,6 @@ export const MainContentSection = (): JSX.Element => {
 
                     <p className="mt-4 font-['Roboto',Helvetica] font-normal text-startsnap-river-bed text-base leading-6 line-clamp-2 h-12 overflow-hidden">
                       {startsnap.description}
-                      <span className="text-startsnap-french-rose text-xs italic ml-1">see more</span>
                     </p>
 
                     <div className="flex items-center mt-7">
