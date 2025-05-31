@@ -3,14 +3,9 @@
  * @description Authentication dialog component for login and signup
  */
 
-import React from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "./dialog";
-import { AuthForm } from "./auth-form";
+import React from 'react';
+import { Dialog, DialogContent } from './dialog';
+import { AuthForm } from './auth-form';
 
 interface AuthDialogProps {
   isOpen: boolean;
@@ -26,18 +21,14 @@ interface AuthDialogProps {
 export const AuthDialog = ({ isOpen, onClose, mode }: AuthDialogProps): JSX.Element => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] p-0 gap-0">
-        <div className="bg-startsnap-french-pass border-b-[3px] border-gray-800 p-6">
-          <DialogHeader>
-            <DialogTitle className="text-3xl font-bold text-startsnap-persian-blue text-center font-['Space_Grotesk',Helvetica]">
-              {mode === 'login' ? 'Welcome Back!' : 'Join StartSnap'}
-            </DialogTitle>
-          </DialogHeader>
-        </div>
-        <div className="p-6">
-          <AuthForm mode={mode} onClose={onClose} />
+      <DialogContent className="bg-startsnap-white p-0 border-2 border-gray-800 rounded-xl shadow-[5px_5px_0px_#1f2937] max-w-md w-full">
+        <div className="p-8">
+          <h2 className="text-3xl font-bold text-startsnap-ebony-clay mb-8 font-['Space_Grotesk',Helvetica]">
+            {mode === 'login' ? 'Welcome Back!' : 'Join StartSnap'}
+          </h2>
+          <AuthForm mode={mode} onSuccess={onClose} />
         </div>
       </DialogContent>
     </Dialog>
   );
-};
+}
