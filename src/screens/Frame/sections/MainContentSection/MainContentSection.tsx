@@ -17,7 +17,7 @@ export const MainContentSection = (): JSX.Element => {
   useEffect(() => {
     // Initialize Typed.js
     const typed = new Typed(typedRef.current, {
-      strings: ['Startups^1000', 'Start<del class="text-gray-400">ups</del>snaps'],
+      strings: ['Startups^1000', 'Start<del class="text-gray-400 text-sm font-normal">ups</del>snaps'],
       typeSpeed: 50,
       backSpeed: 50,
       startDelay: 500,
