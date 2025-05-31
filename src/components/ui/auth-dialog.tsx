@@ -1,11 +1,12 @@
 /**
  * src/components/ui/auth-dialog.tsx
- * @description Authentication dialog component that handles user login and signup
+ * @description Authentication dialog component for user login and signup
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { Dialog, DialogContent, DialogTitle } from "./dialog";
 import { AuthForm } from "./auth-form";
+import { supabase } from "../../lib/supabase";
 
 interface AuthDialogProps {
   isOpen: boolean;
@@ -19,35 +20,88 @@ interface AuthDialogProps {
  * @returns {JSX.Element} Authentication dialog with form
  */
 export const AuthDialog = ({ isOpen, onClose, mode: initialMode }: AuthDialogProps): JSX.Element => {
-  const [mode, setMode] = React.useState(initialMode);
+  const [mode, setMode] = useState(initialMode);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  // Update mode when initialMode prop changes
-  React.useEffect(() => {
-    setMode(initialMode);
-  }, [initialMode]);
+  /**
+   * @description Handles form submission for authentication
+   * @async
+   * @param {Object} data - Form data containing email and password
+   * @sideEffects Attempts to authenticate user via Supabase
+   */
+  const handleSubmit = async (data: { email: string; password: string }) => {
+    setError(null);
+    setLoading(true);
 
+    try {
+      if (mode === 'signup') {
+        const { error } = await supabase.auth.signUp({
+          email: data.email,
+          password: data.password,
+        });
+
+        if (error) {
+          if (error.message.includes('already registered')) {
+            setError('This email is already registered. Please try logging in instead.');
+          } else {
+            setError(error.message);
+          }
+          return;
+        }
+
+        onClose();
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: data.email,
+          password: data.password,
+        });
+
+        if (error) {
+          setError('Invalid login credentials. Please try again.');
+          return;
+        }
+
+        onClose();
+      }
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /**
+   * @description Toggles between login and signup modes
+   */
   const toggleMode = () => {
     setMode(mode === 'login' ? 'signup' : 'login');
+    setError(null);
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] bg-white p-0 gap-0">
-        <DialogTitle className="text-2xl font-bold text-startsnap-ebony-clay text-center p-6 border-b border-gray-200">
-          {mode === 'login' ? 'Welcome Back' : 'Join StartSnap'}
+      <DialogContent className="sm:max-w-[425px] bg-white p-6 rounded-xl border-2 border-gray-800">
+        <DialogTitle className="text-2xl font-bold text-startsnap-ebony-clay mb-6 font-['Space_Grotesk',Helvetica]">
+          {mode === 'login' ? 'Welcome Back' : 'Create Account'}
         </DialogTitle>
-        <div className="p-6">
-          <AuthForm mode={mode} onClose={onClose} />
-          <div className="mt-4 text-center">
-            <button
-              onClick={toggleMode}
-              className="text-startsnap-persian-blue hover:text-startsnap-french-rose transition-colors text-sm"
-            >
-              {mode === 'login' 
-                ? "Don't have an account? Sign up" 
-                : "Already have an account? Log in"}
-            </button>
-          </div>
+
+        <AuthForm
+          mode={mode}
+          onSubmit={handleSubmit}
+          error={error}
+          loading={loading}
+        />
+
+        <div className="mt-6 text-center">
+          <button
+            onClick={toggleMode}
+            className="text-startsnap-french-rose hover:underline font-['Roboto',Helvetica] text-sm"
+          >
+            {mode === 'login'
+              ? "Don't have an account? Sign up"
+              : 'Already have an account? Log in'}
+          </button>
         </div>
       </DialogContent>
     </Dialog>
