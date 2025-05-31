@@ -33,15 +33,15 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
     liveUrl: "",
     videoUrl: "",
     tagsInput: "",
-    tags: [],
+    tags: [] as string[],
     isHackathon: false,
-    vibeLogType: mode === 'create' ? "launch" : "update",
-    vibeLogTitle: mode === 'create' ? "Initial Launch" : "Project Update",
+    vibeLogType: mode === 'create' ? "idea" : "update",
+    vibeLogTitle: mode === 'create' ? "Initial Idea" : "Project Update",
     vibeLogContent: "",
     toolsInput: "",
-    toolsUsed: [],
+    toolsUsed: [] as string[],
     feedbackInput: "",
-    feedbackAreas: []
+    feedbackAreas: [] as string[]
   });
 
   // Load initial data for edit mode
@@ -69,18 +69,18 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
   }, [formState, mode]);
 
   // Handle form field changes
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormState(prev => ({ ...prev, [name]: value }));
   };
 
   // Handle checkbox change
-  const handleCheckboxChange = (checked) => {
+  const handleCheckboxChange = (checked: boolean) => {
     setFormState(prev => ({ ...prev, isHackathon: checked }));
   };
 
   // Handle tools tag input
-  const handleToolsInputKeyDown = (e) => {
+  const handleToolsInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && formState.toolsInput.trim()) {
       e.preventDefault();
       const newTool = formState.toolsInput.trim();
@@ -95,7 +95,7 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
   };
 
   // Handle feedback tag input
-  const handleFeedbackInputKeyDown = (e) => {
+  const handleFeedbackInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && formState.feedbackInput.trim()) {
       e.preventDefault();
       const newFeedback = formState.feedbackInput.trim();
@@ -110,7 +110,7 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
   };
 
   // Handle general tags input
-  const handleTagsInputKeyDown = (e) => {
+  const handleTagsInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && formState.tagsInput.trim()) {
       e.preventDefault();
       const newTag = formState.tagsInput.trim();
@@ -125,7 +125,7 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
   };
 
   // Remove a tool tag
-  const removeTool = (tool) => {
+  const removeTool = (tool: string) => {
     setFormState(prev => ({
       ...prev,
       toolsUsed: prev.toolsUsed.filter(t => t !== tool)
@@ -133,7 +133,7 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
   };
 
   // Remove a feedback tag
-  const removeFeedback = (feedback) => {
+  const removeFeedback = (feedback: string) => {
     setFormState(prev => ({
       ...prev,
       feedbackAreas: prev.feedbackAreas.filter(f => f !== feedback)
@@ -141,7 +141,7 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
   };
 
   // Remove a general tag
-  const removeTag = (tag) => {
+  const removeTag = (tag: string) => {
     setFormState(prev => ({
       ...prev,
       tags: prev.tags.filter(t => t !== tag)
@@ -161,7 +161,17 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
     setFormState(prev => ({ ...prev, vibeLogType: value }));
   };
 
-  const handleSubmit = (e) => {
+  // Update vibe log type and title when project type changes
+  const handleProjectTypeChange = (newProjectType: string) => {
+    setFormState(prev => ({
+      ...prev,
+      projectType: newProjectType,
+      vibeLogType: newProjectType === 'live' ? 'launch' : 'idea',
+      vibeLogTitle: mode === 'create' ? (newProjectType === 'live' ? 'Initial Launch' : 'Initial Idea') : prev.vibeLogTitle
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formState.projectName.trim() || !formState.description.trim() || !formState.category) {
       alert('Please fill in all required fields.');
@@ -180,28 +190,28 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
           {/* Project Type Selection */}
           <div className="space-y-2">
             <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
-              Project Type
+              StartSnap Type
             </label>
             <div className="flex gap-4">
               <Button
                 type="button"
                 className={`flex-1 startsnap-button ${
-                  formState.projectType === "idea" 
-                    ? "bg-startsnap-french-rose text-startsnap-white" 
+                  formState.projectType === "idea"
+                    ? "bg-startsnap-french-rose text-startsnap-white"
                     : "bg-startsnap-mischka text-startsnap-ebony-clay"
                 } font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]`}
-                onClick={() => setFormState(prev => ({ ...prev, projectType: "idea" }))}
+                onClick={() => handleProjectTypeChange("idea")}
               >
                 Idea / Concept
               </Button>
               <Button
                 type="button"
                 className={`flex-1 startsnap-button ${
-                  formState.projectType === "live" 
-                    ? "bg-startsnap-french-rose text-startsnap-white" 
+                  formState.projectType === "live"
+                    ? "bg-startsnap-french-rose text-startsnap-white"
                     : "bg-startsnap-mischka text-startsnap-ebony-clay"
                 } font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]`}
-                onClick={() => setFormState(prev => ({ ...prev, projectType: "live" }))}
+                onClick={() => handleProjectTypeChange("live")}
               >
                 Live Project
               </Button>
@@ -210,8 +220,8 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
 
           {/* Hackathon Entry Checkbox */}
           <div className="flex items-center space-x-2">
-            <Checkbox 
-              id="hackathon" 
+            <Checkbox
+              id="hackathon"
               checked={formState.isHackathon}
               onCheckedChange={handleCheckboxChange}
             />
@@ -225,7 +235,7 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
 
           <div className="space-y-2">
             <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
-              Project Name*
+              StartSnap Name*
             </label>
             <Input
               name="projectName"
@@ -255,8 +265,8 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
             <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
               Category*
             </label>
-            <Select 
-              name="category" 
+            <Select
+              name="category"
               value={formState.category}
               onValueChange={(value) => setFormState(prev => ({ ...prev, category: value }))}
               required
@@ -265,7 +275,7 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="tech">Tech</SelectItem>
+                <SelectItem value="tech">Blockchain</SelectItem>
                 <SelectItem value="gaming">Gaming</SelectItem>
                 <SelectItem value="community">Community</SelectItem>
                 <SelectItem value="music">Music Tech</SelectItem>
@@ -323,14 +333,14 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
             />
             <div className="flex flex-wrap gap-2 mt-2">
               {formState.toolsUsed.map((tool, index) => (
-                <Badge 
-                  key={index} 
+                <Badge
+                  key={index}
                   className="bg-startsnap-french-pass text-startsnap-persian-blue font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-blue-700 px-[13px] py-[5px] flex items-center gap-1"
                 >
                   {tool}
-                  <button 
-                    type="button" 
-                    onClick={() => removeTool(tool)} 
+                  <button
+                    type="button"
+                    onClick={() => removeTool(tool)}
                     className="ml-1 hover:text-red-500"
                   >
                     ×
@@ -355,14 +365,14 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
             />
             <div className="flex flex-wrap gap-2 mt-2">
               {formState.feedbackAreas.map((feedback, index) => (
-                <Badge 
-                  key={index} 
+                <Badge
+                  key={index}
                   className="bg-startsnap-ice-cold text-startsnap-jewel font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-green-700 px-[13px] py-[5px] flex items-center gap-1"
                 >
                   {feedback}
-                  <button 
-                    type="button" 
-                    onClick={() => removeFeedback(feedback)} 
+                  <button
+                    type="button"
+                    onClick={() => removeFeedback(feedback)}
                     className="ml-1 hover:text-red-500"
                   >
                     ×
@@ -386,14 +396,14 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
             />
             <div className="flex flex-wrap gap-2 mt-2">
               {formState.tags.map((tag, index) => (
-                <Badge 
-                  key={index} 
+                <Badge
+                  key={index}
                   className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-gray-800 px-[13px] py-[5px] flex items-center gap-1"
                 >
                   {tag}
-                  <button 
-                    type="button" 
-                    onClick={() => removeTag(tag)} 
+                  <button
+                    type="button"
+                    onClick={() => removeTag(tag)}
                     className="ml-1 hover:text-red-500"
                   >
                     ×
@@ -423,6 +433,7 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
                 onContentChange={handleVibeLogContentChange}
                 onTypeChange={handleVibeLogTypeChange}
                 showAllTypes={false}
+                singleOptionType={formState.projectType === 'live' ? 'launch' : 'idea'}
               />
             </div>
           )}
@@ -436,11 +447,14 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
             >
               Cancel
             </Button>
-            <Button 
+            <Button
               type="submit"
               className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
             >
-              {mode === 'create' ? 'Launch Project' : 'Save Changes'}
+              {mode === 'create'
+                ? (formState.projectType === 'live' ? 'Launch StartSnap' : 'Publish Idea')
+                : 'Save Changes'
+              }
             </Button>
           </div>
         </form>
