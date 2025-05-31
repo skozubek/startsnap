@@ -417,6 +417,28 @@ export const Profile = (): JSX.Element => {
                     {statusOptions.find(opt => opt.value === profile.status)?.label}
                   </Badge>
                 </div>
+                
+                {/* Status selection moved here */}
+                <div className="mt-4 w-full">
+                  <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7 mb-2 text-center">
+                    New Status
+                  </label>
+                  <Select value={profile.status} onValueChange={handleStatusChange}>
+                    <SelectTrigger className="border-2 border-solid border-gray-800 rounded-lg h-[52px] font-['Roboto',Helvetica]">
+                      <SelectValue placeholder="Set your status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {statusOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          <div className="flex items-center">
+                            <span className="material-icons text-sm mr-2">{option.icon}</span>
+                            {option.label}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               
               <div className="flex-1">
@@ -445,27 +467,6 @@ export const Profile = (): JSX.Element => {
                       placeholder="Tell us about yourself, your skills, interests, and what you're working on..."
                       className="border-2 border-solid border-gray-800 rounded-lg p-3.5 min-h-[120px] font-['Roboto',Helvetica] text-startsnap-pale-sky"
                     />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
-                      Status
-                    </label>
-                    <Select value={profile.status} onValueChange={handleStatusChange}>
-                      <SelectTrigger className="border-2 border-solid border-gray-800 rounded-lg h-[52px] font-['Roboto',Helvetica]">
-                        <SelectValue placeholder="Set your status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {statusOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            <div className="flex items-center">
-                              <span className="material-icons text-sm mr-2">{option.icon}</span>
-                              {option.label}
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
                   </div>
                   
                   <div className="space-y-2">
