@@ -14,9 +14,25 @@ export const authFormSchema = z.object({
     .min(1, { message: "Email is required" })
     .email({ message: "Please enter a valid email address" })
     .refine((email) => {
-      // More strict email validation
+      // Enhanced email validation that properly validates the domain structure
       const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      return emailRegex.test(email);
+      
+      // Check if basic format is correct
+      if (!emailRegex.test(email)) return false;
+      
+      // Extract domain and ensure it follows proper format
+      const domain = email.split('@')[1];
+      
+      // Check for common domain format errors
+      if (domain.includes('..') || domain.startsWith('.') || domain.endsWith('.')) return false;
+      
+      // Check each domain part is valid
+      const domainParts = domain.split('.');
+      for (const part of domainParts) {
+        if (!part || part.startsWith('-') || part.endsWith('-')) return false;
+      }
+      
+      return true;
     }, { message: "Please enter a valid email address" }),
   password: z.string().min(6, { message: "Password must be at least 6 characters" })
 });
