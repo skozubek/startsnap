@@ -6,6 +6,7 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogTitle } from './dialog';
 import { AuthForm } from './auth-form';
+import { Button } from './button';
 
 interface AuthDialogProps {
   isOpen: boolean;
