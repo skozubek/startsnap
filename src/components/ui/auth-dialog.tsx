@@ -29,17 +29,41 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode }: AuthDialogPro
    * @async
    * @param {Object} data - Form data containing email and password
    * @sideEffects Attempts to authenticate user via Supabase
+   * @throws {Error} When form validation fails
    */
   const handleSubmit = async (data: { email: string; password: string }) => {
     setError(null);
     setLoading(true);
 
     try {
+      // Validate required fields
+      if (!data.email?.trim()) {
+        setError('Email is required');
+        setLoading(false);
+        return;
+      }
+
+      if (!data.password?.trim()) {
+        setError('Password is required');
+        setLoading(false);
+        return;
+      }
+
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(data.email.trim())) {
+        setError('Please enter a valid email address');
+        setLoading(false);
+        return;
+      }
+
+      const credentials = {
+        email: data.email.trim(),
+        password: data.password
+      };
+
       if (mode === 'signup') {
-        const { error } = await supabase.auth.signUp({
-          email: data.email,
-          password: data.password,
-        });
+        const { error } = await supabase.auth.signUp(credentials);
 
         if (error) {
           if (error.message.includes('already registered')) {
@@ -52,10 +76,7 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode }: AuthDialogPro
 
         onClose();
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email: data.email,
-          password: data.password,
-        });
+        const { error } = await supabase.auth.signInWithPassword(credentials);
 
         if (error) {
           setError('Invalid login credentials. Please try again.');
