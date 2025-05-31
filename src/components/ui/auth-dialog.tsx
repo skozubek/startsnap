@@ -1,82 +1,53 @@
-import React, { useState } from "react";
+/**
+ * src/components/ui/auth-dialog.tsx
+ * @description Authentication dialog component that handles user login and signup
+ */
+
+import React from "react";
 import { Dialog, DialogContent, DialogTitle } from "./dialog";
 import { AuthForm } from "./auth-form";
-import { supabase } from "../../lib/supabase";
 
-/**
- * @description Authentication dialog component that handles user login and signup
- * @param {boolean} isOpen - Controls dialog visibility
- * @param {() => void} onClose - Callback function to close the dialog
- * @param {"login" | "signup"} mode - Determines whether the dialog is in login or signup mode
- */
 interface AuthDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  mode: "login" | "signup";
+  mode: 'signup' | 'login';
 }
 
-export const AuthDialog = ({ isOpen, onClose, mode }: AuthDialogProps): JSX.Element => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+/**
+ * @description Dialog component for user authentication
+ * @param {AuthDialogProps} props - Component props
+ * @returns {JSX.Element} Authentication dialog with form
+ */
+export const AuthDialog = ({ isOpen, onClose, mode: initialMode }: AuthDialogProps): JSX.Element => {
+  const [mode, setMode] = React.useState(initialMode);
 
-  /**
-   * @description Handles user authentication (login or signup)
-   * @async
-   * @param {string} email - User's email
-   * @param {string} password - User's password
-   * @sideEffects Authenticates user via Supabase auth
-   */
-  const handleSubmit = async (email: string, password: string) => {
-    setLoading(true);
-    setError("");
+  // Update mode when initialMode prop changes
+  React.useEffect(() => {
+    setMode(initialMode);
+  }, [initialMode]);
 
-    try {
-      if (mode === "login") {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-        });
-        if (error) throw error;
-      }
-    } catch (error: any) {
-      console.error('Authentication error:', error);
-      setError(error.error_description || error.message || 'An error occurred');
-    } finally {
-      setLoading(false);
-    }
+  const toggleMode = () => {
+    setMode(mode === 'login' ? 'signup' : 'login');
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 border-[3px] border-gray-800">
-        <DialogTitle className="text-3xl font-bold text-startsnap-ebony-clay mb-8 font-['Space_Grotesk',Helvetica]">
-          {mode === "login" ? "Welcome Back" : "Create Account"}
+      <DialogContent className="sm:max-w-[425px] bg-white p-0 gap-0">
+        <DialogTitle className="text-2xl font-bold text-startsnap-ebony-clay text-center p-6 border-b border-gray-200">
+          {mode === 'login' ? 'Welcome Back' : 'Join StartSnap'}
         </DialogTitle>
-        <AuthForm
-          mode={mode}
-          onSubmit={handleSubmit}
-          isLoading={loading}
-        />
-        {error && (
-          <div className="bg-red-100 text-red-600 p-3 rounded-lg text-sm mt-4">
-            {error}
+        <div className="p-6">
+          <AuthForm mode={mode} onClose={onClose} />
+          <div className="mt-4 text-center">
+            <button
+              onClick={toggleMode}
+              className="text-startsnap-persian-blue hover:text-startsnap-french-rose transition-colors text-sm"
+            >
+              {mode === 'login' 
+                ? "Don't have an account? Sign up" 
+                : "Already have an account? Log in"}
+            </button>
           </div>
-        )}
-        <div className="text-center mt-6">
-          <button
-            onClick={() => onClose()}
-            className="text-startsnap-pale-sky hover:text-startsnap-french-rose transition-colors"
-          >
-            {mode === "login"
-              ? "Don't have an account? Sign up"
-              : "Already have an account? Log in"}
-          </button>
         </div>
       </DialogContent>
     </Dialog>
