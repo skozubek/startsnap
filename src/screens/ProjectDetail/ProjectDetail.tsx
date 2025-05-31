@@ -17,10 +17,6 @@ export const ProjectDetail = (): JSX.Element => {
   const [feedbackEntries, setFeedbackEntries] = useState([]);
   const [feedbackContent, setFeedbackContent] = useState("");
   const [currentUser, setCurrentUser] = useState(null);
-  const [newVibeLogContent, setNewVibeLogContent] = useState("");
-  const [newVibeLogType, setNewVibeLogType] = useState("update");
-  const [newVibeLogTitle, setNewVibeLogTitle] = useState("");
-  const [isAddingVibeLog, setIsAddingVibeLog] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -183,45 +179,6 @@ export const ProjectDetail = (): JSX.Element => {
       console.error('Error fetching project data:', error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleAddVibeLog = async () => {
-    if (!currentUser || !isOwner) {
-      alert('You need to be the project owner to add vibe logs');
-      return;
-    }
-
-    if (!newVibeLogContent.trim() || !newVibeLogTitle.trim()) {
-      alert('Please fill in both title and content');
-      return;
-    }
-
-    try {
-      const { error: vibeLogError } = await supabase
-        .from('vibelogs')
-        .insert({
-          startsnap_id: id,
-          log_type: newVibeLogType,
-          title: newVibeLogTitle,
-          content: newVibeLogContent
-        });
-
-      if (vibeLogError) throw vibeLogError;
-
-      // Reset form
-      setNewVibeLogContent("");
-      setNewVibeLogTitle("");
-      setNewVibeLogType("update");
-      setIsAddingVibeLog(false);
-
-      // Refresh vibe logs
-      fetchProjectData();
-
-      alert('Vibe log added successfully!');
-    } catch (error) {
-      console.error('Error adding vibe log:', error);
-      alert('Error adding vibe log. Please try again.');
     }
   };
 
@@ -469,75 +426,7 @@ export const ProjectDetail = (): JSX.Element => {
               <span className="ml-1 text-startsnap-corn text-2xl material-icons">
                 insights
               </span>
-              {isOwner && (
-                <Button
-                  onClick={() => setIsAddingVibeLog(!isAddingVibeLog)}
-                  className="ml-auto startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-2"
-                >
-                  <span className="material-icons text-xl">add</span>
-                  Add Vibe Log
-                </Button>
-              )}
             </div>
-
-            {isAddingVibeLog && isOwner && (
-              <div className="mb-8 border-2 border-gray-800 rounded-lg p-6 bg-white">
-                <div className="space-y-4">
-                  <div>
-                    <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-sm mb-2">
-                      Entry Type
-                    </label>
-                    <select
-                      value={newVibeLogType}
-                      onChange={(e) => setNewVibeLogType(e.target.value)}
-                      className="w-full border-2 border-solid border-gray-800 rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky"
-                    >
-                      <option value="update">📝 General Update</option>
-                      <option value="feature">✨ New Feature</option>
-                      <option value="idea">💡 New Idea</option>
-                      <option value="feedback">💬 Seeking Feedback</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-sm mb-2">
-                      Title
-                    </label>
-                    <input
-                      type="text"
-                      value={newVibeLogTitle}
-                      onChange={(e) => setNewVibeLogTitle(e.target.value)}
-                      placeholder="What's new?"
-                      className="w-full border-2 border-solid border-gray-800 rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky"
-                    />
-                  </div>
-                  <div>
-                    <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-sm mb-2">
-                      Content
-                    </label>
-                    <Textarea
-                      value={newVibeLogContent}
-                      onChange={(e) => setNewVibeLogContent(e.target.value)}
-                      placeholder="Share your progress, thoughts, or updates..."
-                      className="border-2 border-solid border-gray-800 rounded-lg p-3.5 min-h-[120px] font-['Roboto',Helvetica] text-startsnap-pale-sky"
-                    />
-                  </div>
-                  <div className="flex justify-end gap-2">
-                    <Button
-                      onClick={() => setIsAddingVibeLog(false)}
-                      className="startsnap-button bg-startsnap-mischka text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      onClick={handleAddVibeLog}
-                      className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
-                    >
-                      Post Update
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            )}
 
             {vibeLogEntries.length > 0 ? (
               vibeLogEntries.map((entry, index) => {
