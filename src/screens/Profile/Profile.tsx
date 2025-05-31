@@ -18,8 +18,8 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "../../components/ui/select";
+import { Popover, PopoverTrigger, PopoverContent } from "../../components/ui/popover";
 import { supabase } from "../../lib/supabase";
-import { FaGithub, FaXTwitter, FaLinkedinIn, FaGlobe } from "react-icons/fa6";
 
 /**
  * @description User profile page with settings and project management
@@ -404,41 +404,46 @@ export const Profile = (): JSX.Element => {
         <Card className="bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] mb-8">
           <CardContent className="p-8">
             <div className="flex flex-col md:flex-row gap-8">
-              <div className="flex flex-col items-center">
+              <div className="flex flex-col items-center min-w-[250px]">
                 <Avatar className="w-32 h-32 border-3 border-gray-800">
                   <AvatarImage src={user?.user_metadata?.avatar_url} />
                   <AvatarFallback className="text-4xl">
                     {profile.username.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                <div className="mt-4 text-center">
-                  <Badge className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-gray-800 px-3 py-1.5">
-                    <span className="material-icons text-sm mr-1">{getStatusIcon(profile.status)}</span>
-                    {statusOptions.find(opt => opt.value === profile.status)?.label}
-                  </Badge>
-                </div>
                 
-                {/* Status selection moved here */}
-                <div className="mt-4 w-full">
-                  <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7 mb-2 text-center">
-                    New Status
-                  </label>
-                  <Select value={profile.status} onValueChange={handleStatusChange}>
-                    <SelectTrigger className="border-2 border-solid border-gray-800 rounded-lg h-[52px] font-['Roboto',Helvetica]">
-                      <SelectValue placeholder="Set your status" />
-                    </SelectTrigger>
-                    <SelectContent>
+                {/* Popover status selector */}
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <div className="mt-4 text-center cursor-pointer hover:scale-105 transition-transform">
+                      <Badge className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-gray-800 px-3 py-1.5 hover:bg-gray-200">
+                        <span className="material-icons text-sm mr-1">{getStatusIcon(profile.status)}</span>
+                        {statusOptions.find(opt => opt.value === profile.status)?.label}
+                      </Badge>
+                    </div>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-56 p-0 bg-white border-2 border-gray-800 rounded-lg shadow-[3px_3px_0px_#1f2937]">
+                    <div className="p-2">
+                      <p className="text-xs text-center text-startsnap-pale-sky mb-2 font-['Roboto',Helvetica]">
+                        Select your status
+                      </p>
                       {statusOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          <div className="flex items-center">
-                            <span className="material-icons text-sm mr-2">{option.icon}</span>
-                            {option.label}
-                          </div>
-                        </SelectItem>
+                        <div
+                          key={option.value}
+                          className={`flex items-center p-2 rounded-md cursor-pointer transition-colors ${
+                            profile.status === option.value 
+                              ? 'bg-startsnap-french-pass text-startsnap-persian-blue' 
+                              : 'hover:bg-startsnap-athens-gray'
+                          }`}
+                          onClick={() => handleStatusChange(option.value)}
+                        >
+                          <span className="material-icons text-sm mr-2">{option.icon}</span>
+                          <span className="font-['Roboto',Helvetica]">{option.label}</span>
+                        </div>
                       ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
               </div>
               
               <div className="flex-1">
@@ -477,7 +482,7 @@ export const Profile = (): JSX.Element => {
                       {/* GitHub Link */}
                       <div className="space-y-1">
                         <div className="flex items-center">
-                          <FaGithub className="text-black mr-2 text-lg" />
+                          <span className="material-icons text-black mr-2 text-lg">code</span>
                           <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">GitHub</label>
                         </div>
                         <Input
@@ -495,7 +500,7 @@ export const Profile = (): JSX.Element => {
                       {/* Twitter Link */}
                       <div className="space-y-1">
                         <div className="flex items-center">
-                          <FaXTwitter className="text-black mr-2 text-lg" />
+                          <span className="material-icons text-black mr-2 text-lg">tag</span>
                           <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">Twitter</label>
                         </div>
                         <Input
@@ -513,7 +518,7 @@ export const Profile = (): JSX.Element => {
                       {/* LinkedIn Link */}
                       <div className="space-y-1">
                         <div className="flex items-center">
-                          <FaLinkedinIn className="text-black mr-2 text-lg" />
+                          <span className="material-icons text-black mr-2 text-lg">work</span>
                           <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">LinkedIn</label>
                         </div>
                         <Input
@@ -531,7 +536,7 @@ export const Profile = (): JSX.Element => {
                       {/* Website Link */}
                       <div className="space-y-1">
                         <div className="flex items-center">
-                          <FaGlobe className="text-black mr-2 text-lg" />
+                          <span className="material-icons text-black mr-2 text-lg">public</span>
                           <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">Website</label>
                         </div>
                         <Input
