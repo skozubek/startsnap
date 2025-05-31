@@ -11,29 +11,49 @@ import { Checkbox } from "../../components/ui/checkbox";
 import { Separator } from "../../components/ui/separator";
 import { supabase } from "../../lib/supabase";
 
+// Form state type for better type safety
+type FormState = {
+  projectType: string;
+  projectName: string;
+  description: string;
+  category: string;
+  liveUrl: string;
+  videoUrl: string;
+  tags: string;
+  isHackathon: boolean;
+  vibeLogType: string;
+  vibeLogTitle: string;
+  vibeLogContent: string;
+  toolsInput: string;
+  toolsUsed: string[];
+  feedbackInput: string;
+  feedbackAreas: string[];
+};
+
+// Initial form state
+const initialFormState: FormState = {
+  projectType: "idea",
+  projectName: "",
+  description: "",
+  category: "",
+  liveUrl: "",
+  videoUrl: "",
+  tags: "",
+  isHackathon: false,
+  vibeLogType: "launch",
+  vibeLogTitle: "Initial Launch",
+  vibeLogContent: "",
+  toolsInput: "",
+  toolsUsed: [],
+  feedbackInput: "",
+  feedbackAreas: []
+};
+
 export const CreateStartSnap = (): JSX.Element => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [formState, setFormState] = useState({
-    projectType: "idea", // Default to 'idea'
-    projectName: "",
-    description: "",
-    category: "",
-    liveUrl: "",
-    videoUrl: "",
-    tags: "", // For general tags
-    isHackathon: false,
-    // First vibe log
-    vibeLogType: "launch",
-    vibeLogTitle: "Initial Launch",
-    vibeLogContent: "",
-    // Tools used and feedback tags
-    toolsInput: "", // For input field
-    toolsUsed: [], // Stored as array
-    feedbackInput: "", // For input field
-    feedbackAreas: [] // Stored as array
-  });
+  const [formState, setFormState] = useState<FormState>(initialFormState);
 
   useEffect(() => {
     // Check if user is logged in
@@ -46,7 +66,29 @@ export const CreateStartSnap = (): JSX.Element => {
       setUser(session.user);
     };
     checkUser();
+
+    // Load saved form data from localStorage
+    const savedFormData = localStorage.getItem('createStartSnapForm');
+    if (savedFormData) {
+      try {
+        const parsedData = JSON.parse(savedFormData);
+        setFormState(parsedData);
+      } catch (error) {
+        console.error('Error parsing saved form data:', error);
+        localStorage.removeItem('createStartSnapForm');
+      }
+    }
+
+    // Cleanup function to save form data when component unmounts
+    return () => {
+      localStorage.setItem('createStartSnapForm', JSON.stringify(formState));
+    };
   }, [navigate]);
+
+  // Save form data whenever it changes
+  useEffect(() => {
+    localStorage.setItem('createStartSnapForm', JSON.stringify(formState));
+  }, [formState]);
 
   // Handle form field changes
   const handleChange = (e) => {
@@ -160,6 +202,9 @@ export const CreateStartSnap = (): JSX.Element => {
 
         if (vibeLogError) throw vibeLogError;
       }
+
+      // Clear saved form data after successful submission
+      localStorage.removeItem('createStartSnapForm');
 
       // Redirect to the project detail page or projects list
       navigate('/');
@@ -474,7 +519,10 @@ export const CreateStartSnap = (): JSX.Element => {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => navigate('/')}
+                onClick={() => {
+                  localStorage.removeItem('createStartSnapForm');
+                  navigate('/');
+                }}
                 className="startsnap-button bg-startsnap-mischka text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
               >
                 Cancel
