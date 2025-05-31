@@ -1,135 +1,137 @@
 /**
  * src/components/ui/auth-form.tsx
- * @description Authentication form component for login and signup
+ * @description Form component for handling authentication with validation
  */
 
 import React, { useState } from 'react';
 import { Button } from './button';
 import { Input } from './input';
-import { Label } from './label';
-import { supabase } from '../../lib/supabase';
 
 interface AuthFormProps {
   mode: 'login' | 'signup';
-  onSuccess: () => void;
+  onSubmit: (email: string, password: string) => Promise<void>;
+  isLoading: boolean;
+}
+
+interface ValidationErrors {
+  email: string;
+  password: string;
 }
 
 /**
- * @description Form component for handling user authentication
+ * @description Form component with validation for login and signup
  * @param {AuthFormProps} props - Component props
- * @returns {JSX.Element} Authentication form with email/password fields
+ * @returns {JSX.Element} Authentication form with validation
  */
-export const AuthForm = ({ mode, onSuccess }: AuthFormProps): JSX.Element => {
+export const AuthForm = ({ mode, onSubmit, isLoading }: AuthFormProps): JSX.Element => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState<ValidationErrors>({
+    email: '',
+    password: ''
+  });
 
   /**
-   * @description Handles form submission for both login and signup
-   * @async
+   * @description Validates email format using regex
+   * @param {string} email - Email to validate
+   * @returns {boolean} Whether the email is valid
+   */
+  const isValidEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  /**
+   * @description Validates form fields and returns whether the form is valid
+   * @returns {boolean} Whether all form fields are valid
+   */
+  const validateForm = (): boolean => {
+    const newErrors: ValidationErrors = {
+      email: '',
+      password: ''
+    };
+
+    let isValid = true;
+
+    // Email validation
+    if (!email.trim()) {
+      newErrors.email = 'Email is required';
+      isValid = false;
+    } else if (!isValidEmail(email)) {
+      newErrors.email = 'Please enter a valid email address';
+      isValid = false;
+    }
+
+    // Password validation
+    if (!password) {
+      newErrors.password = 'Password is required';
+      isValid = false;
+    } else if (mode === 'signup' && password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  /**
+   * @description Handles form submission with validation
    * @param {React.FormEvent} e - Form submission event
-   * @sideEffects Authenticates user via Supabase auth
    */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    try {
-      if (mode === 'signup') {
-        const { error: signUpError } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: window.location.origin
-          }
-        });
-
-        if (signUpError) {
-          if (signUpError.message.includes('already registered')) {
-            setError('This email is already registered. Please try logging in instead.');
-          } else {
-            throw signUpError;
-          }
-        } else {
-          alert('Please check your email to confirm your account!');
-          onSuccess();
-        }
-      } else {
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password
-        });
-
-        if (signInError) {
-          if (signInError.message.includes('Invalid login credentials')) {
-            setError('Invalid email or password. Please try again.');
-          } else {
-            throw signInError;
-          }
-        } else {
-          onSuccess();
-        }
-      }
-    } catch (err) {
-      console.error('Auth error:', err);
-      setError('An unexpected error occurred. Please try again.');
-    } finally {
-      setLoading(false);
+    
+    if (validateForm()) {
+      await onSubmit(email, password);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="email" className="text-startsnap-oxford-blue font-['Space_Grotesk',Helvetica] font-bold">
-          Email
-        </Label>
         <Input
-          id="email"
           type="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
-          placeholder="Enter your email"
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (errors.email) setErrors(prev => ({ ...prev, email: '' }));
+          }}
+          placeholder="Email"
+          className={`w-full p-3 border-2 ${
+            errors.email ? 'border-red-500' : 'border-gray-800'
+          } rounded-lg font-['Roboto',Helvetica]`}
         />
+        {errors.email && (
+          <p className="text-red-500 text-sm">{errors.email}</p>
+        )}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="password" className="text-startsnap-oxford-blue font-['Space_Grotesk',Helvetica] font-bold">
-          Password
-        </Label>
         <Input
-          id="password"
           type="password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
-          placeholder="Enter your password"
+          onChange={(e) => {
+            setPassword(e.target.value);
+            if (errors.password) setErrors(prev => ({ ...prev, password: '' }));
+          }}
+          placeholder="Password"
+          className={`w-full p-3 border-2 ${
+            errors.password ? 'border-red-500' : 'border-gray-800'
+          } rounded-lg font-['Roboto',Helvetica]`}
         />
+        {errors.password && (
+          <p className="text-red-500 text-sm">{errors.password}</p>
+        )}
       </div>
-
-      {error && (
-        <p className="text-startsnap-french-rose text-sm">{error}</p>
-      )}
 
       <Button
         type="submit"
-        disabled={loading}
-        className="w-full startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center justify-center gap-2"
+        disabled={isLoading}
+        className="w-full startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
       >
-        {loading ? (
-          <>
-            <span className="material-icons animate-spin">refresh</span>
-            {mode === 'login' ? 'Logging in...' : 'Signing up...'}
-          </>
-        ) : (
-          mode === 'login' ? 'Login' : 'Sign Up'
-        )}
+        {isLoading ? 'Loading...' : mode === 'login' ? 'Log In' : 'Sign Up'}
       </Button>
     </form>
   );
-}
+};
