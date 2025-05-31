@@ -1,16 +1,16 @@
 /**
  * src/components/ui/auth-dialog.tsx
- * @description Authentication dialog component that handles user login and signup
+ * @description Authentication dialog component for login and signup
  */
 
-import React, { useState } from 'react';
+import React from "react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from './dialog';
-import { AuthForm } from './auth-form';
+} from "./dialog";
+import { AuthForm } from "./auth-form";
 
 interface AuthDialogProps {
   isOpen: boolean;
@@ -19,39 +19,23 @@ interface AuthDialogProps {
 }
 
 /**
- * @description Dialog component for authentication that supports both login and signup
+ * @description Dialog component that contains the authentication form
  * @param {AuthDialogProps} props - Component props
  * @returns {JSX.Element} Authentication dialog with form
  */
-export const AuthDialog = ({ isOpen, onClose, mode: initialMode }: AuthDialogProps): JSX.Element => {
-  const [mode, setMode] = useState(initialMode);
-
-  const toggleMode = () => {
-    setMode(mode === 'login' ? 'signup' : 'login');
-  };
-
+export const AuthDialog = ({ isOpen, onClose, mode }: AuthDialogProps): JSX.Element => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] bg-white p-0 gap-0">
-        <DialogHeader className="bg-startsnap-french-pass p-6 rounded-t-lg border-b-2 border-gray-800">
-          <DialogTitle className="text-2xl font-bold text-startsnap-ebony-clay text-center font-['Space_Grotesk',Helvetica]">
-            {mode === 'login' ? 'Welcome Back!' : 'Join StartSnap'}
-          </DialogTitle>
-        </DialogHeader>
-        
+      <DialogContent className="bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] p-0 gap-0">
+        <div className="bg-startsnap-french-pass border-b-[3px] border-gray-800 p-6">
+          <DialogHeader>
+            <DialogTitle className="text-3xl font-bold text-startsnap-persian-blue text-center font-['Space_Grotesk',Helvetica]">
+              {mode === 'login' ? 'Welcome Back!' : 'Join StartSnap'}
+            </DialogTitle>
+          </DialogHeader>
+        </div>
         <div className="p-6">
-          <AuthForm mode={mode} onSuccess={onClose} />
-          
-          <div className="mt-4 text-center">
-            <button
-              onClick={toggleMode}
-              className="text-startsnap-persian-blue hover:text-startsnap-french-rose transition-colors font-['Roboto',Helvetica]"
-            >
-              {mode === 'login' 
-                ? "Don't have an account? Sign up" 
-                : "Already have an account? Log in"}
-            </button>
-          </div>
+          <AuthForm mode={mode} onClose={onClose} />
         </div>
       </DialogContent>
     </Dialog>

@@ -1,164 +1,141 @@
 /**
  * src/components/ui/auth-form.tsx
- * @description Authentication form component for handling login and signup
+ * @description Authentication form component for login and signup
  */
 
-import React, { useState } from 'react';
-import { Button } from './button';
-import { Input } from './input';
-import { Label } from './label';
-import { supabase } from '../../lib/supabase';
+import React, { useState } from "react";
+import { Button } from "./button";
+import { Input } from "./input";
+import { Label } from "./label";
+import { supabase } from "../../lib/supabase";
 
 interface AuthFormProps {
   mode: 'login' | 'signup';
-  onSuccess: () => void;
-}
-
-interface FormData {
-  email: string;
-  password: string;
-}
-
-interface FormErrors {
-  email?: string;
-  password?: string;
-  general?: string;
+  onClose: () => void;
 }
 
 /**
  * @description Form component for handling user authentication
  * @param {AuthFormProps} props - Component props
- * @returns {JSX.Element} Authentication form with validation and error handling
+ * @returns {JSX.Element} Authentication form with email/password inputs
  */
-export const AuthForm = ({ mode, onSuccess }: AuthFormProps): JSX.Element => {
-  const [formData, setFormData] = useState<FormData>({ email: '', password: '' });
-  const [errors, setErrors] = useState<FormErrors>({});
+export const AuthForm = ({ mode, onClose }: AuthFormProps): JSX.Element => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
-    
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
-    }
-    
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    // Clear error when user starts typing
-    if (errors[name as keyof FormErrors]) {
-      setErrors(prev => ({ ...prev, [name]: undefined }));
-    }
-  };
-
+  /**
+   * @description Handles form submission for both login and signup
+   * @async
+   * @param {React.FormEvent} e - Form submission event
+   * @sideEffects Authenticates user via Supabase auth
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!validateForm()) return;
-    
+    setError('');
     setLoading(true);
-    setErrors({});
 
     try {
       if (mode === 'signup') {
         const { error } = await supabase.auth.signUp({
-          email: formData.email,
-          password: formData.password,
+          email,
+          password,
         });
-
+        
         if (error) {
           if (error.message.includes('already registered')) {
-            setErrors({ general: 'An account with this email already exists. Please log in instead.' });
+            setError('This email is already registered. Please log in instead.');
           } else {
-            setErrors({ general: error.message });
+            setError(error.message);
           }
           return;
         }
-
-        onSuccess();
-        alert('Please check your email to verify your account!');
+        
+        onClose();
+        alert('Check your email to confirm your account!');
       } else {
         const { error } = await supabase.auth.signInWithPassword({
-          email: formData.email,
-          password: formData.password,
+          email,
+          password,
         });
 
         if (error) {
-          if (error.message.includes('Invalid login')) {
-            setErrors({ general: 'Invalid email or password' });
+          if (error.message.includes('Invalid login credentials')) {
+            setError('Invalid email or password.');
           } else {
-            setErrors({ general: error.message });
+            setError(error.message);
           }
           return;
         }
 
-        onSuccess();
+        onClose();
       }
-    } catch (error) {
-      setErrors({ general: 'An unexpected error occurred. Please try again.' });
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {errors.general && (
-        <div className="p-3 rounded bg-red-50 border border-red-200 text-red-600 text-sm">
-          {errors.general}
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="email" className="text-startsnap-oxford-blue font-['Space_Grotesk',Helvetica] font-bold">
+            Email
+          </Label>
+          <Input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setError('');
+            }}
+            placeholder="you@example.com"
+            required
+            className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
+          />
         </div>
-      )}
-      
-      <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
-          name="email"
-          type="email"
-          value={formData.email}
-          onChange={handleChange}
-          className={`border-2 ${errors.email ? 'border-red-500' : 'border-gray-800'}`}
-          placeholder="Enter your email"
-        />
-        {errors.email && (
-          <p className="text-red-500 text-sm">{errors.email}</p>
-        )}
-      </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
-        <Input
-          id="password"
-          name="password"
-          type="password"
-          value={formData.password}
-          onChange={handleChange}
-          className={`border-2 ${errors.password ? 'border-red-500' : 'border-gray-800'}`}
-          placeholder="Enter your password"
-        />
-        {errors.password && (
-          <p className="text-red-500 text-sm">{errors.password}</p>
+        <div className="space-y-2">
+          <Label htmlFor="password" className="text-startsnap-oxford-blue font-['Space_Grotesk',Helvetica] font-bold">
+            Password
+          </Label>
+          <Input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setError('');
+            }}
+            placeholder="••••••••"
+            required
+            minLength={6}
+            className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
+          />
+        </div>
+
+        {error && (
+          <p className="text-startsnap-french-rose text-sm font-['Roboto',Helvetica]">{error}</p>
         )}
       </div>
 
       <Button
         type="submit"
         disabled={loading}
-        className="w-full startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+        className="w-full startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] py-6"
       >
-        {loading ? 'Please wait...' : mode === 'login' ? 'Log In' : 'Sign Up'}
+        {loading ? (
+          <span className="flex items-center justify-center">
+            <span className="material-icons animate-spin mr-2">refresh</span>
+            {mode === 'login' ? 'Logging in...' : 'Signing up...'}
+          </span>
+        ) : (
+          mode === 'login' ? 'Login' : 'Sign Up'
+        )}
       </Button>
     </form>
   );
