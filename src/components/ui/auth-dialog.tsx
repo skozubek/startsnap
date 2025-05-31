@@ -27,16 +27,28 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode }: AuthDialogPro
    * @description Handles form submission for authentication
    * @async
    * @param {Object} data - Form data containing email and password
+   * @throws {Error} When email or password is missing
    * @sideEffects Attempts to authenticate user via Supabase
    */
   const handleSubmit = async (data: { email: string; password: string }) => {
     try {
       setError(null);
+
+      // Validate required fields
+      if (!data.email?.trim()) {
+        setError('Email is required');
+        return;
+      }
+
+      if (!data.password?.trim()) {
+        setError('Password is required');
+        return;
+      }
       
       if (mode === 'signup') {
         const { error } = await supabase.auth.signUp({
-          email: data.email,
-          password: data.password,
+          email: data.email.trim(),
+          password: data.password.trim(),
         });
 
         if (error) {
@@ -51,8 +63,8 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode }: AuthDialogPro
         onClose();
       } else {
         const { error } = await supabase.auth.signInWithPassword({
-          email: data.email,
-          password: data.password,
+          email: data.email.trim(),
+          password: data.password.trim(),
         });
 
         if (error) {
