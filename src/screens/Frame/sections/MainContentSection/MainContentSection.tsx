@@ -148,21 +148,12 @@ export const MainContentSection = (): JSX.Element => {
               Start Building Today
             </Button>
           </div>
-          <div className="w-[40%] relative">
-            <div className="absolute inset-0 bg-startsnap-french-rose opacity-10" 
-                 style={{ 
-                   clipPath: "polygon(0% 20%, 60% 20%, 60% 0%, 100% 0%, 100% 75%, 40% 75%, 40% 100%, 0% 100%)"
-                 }} />
-            <div className="relative" 
-                 style={{ 
-                   clipPath: "polygon(0% 20%, 60% 20%, 60% 0%, 100% 0%, 100% 75%, 40% 75%, 40% 100%, 0% 100%)"
-                 }}>
-              <img 
-                src="https://ik.imagekit.io/craftsnap/startsnap/vibe-coder.png" 
-                alt="Collaborative team working together" 
-                className="w-full h-auto"
-              />
-            </div>
+          <div className="w-[40%]">
+            <img 
+              src="https://ik.imagekit.io/craftsnap/startsnap/vibe-coder.png" 
+              alt="Collaborative team working together" 
+              className="rounded-lg border-2 border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] w-full h-auto"
+            />
           </div>
         </div>
       </div>
