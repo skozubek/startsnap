@@ -49,11 +49,28 @@ const initialFormState: FormState = {
   feedbackAreas: []
 };
 
+// Function to save form state to localStorage
+const saveFormState = (state: FormState) => {
+  try {
+    localStorage.setItem('createStartSnapForm', JSON.stringify(state));
+  } catch (error) {
+    console.error('Error saving form state:', error);
+  }
+};
+
 export const CreateStartSnap = (): JSX.Element => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [formState, setFormState] = useState<FormState>(initialFormState);
+  const [formState, setFormState] = useState<FormState>(() => {
+    try {
+      const savedForm = localStorage.getItem('createStartSnapForm');
+      return savedForm ? JSON.parse(savedForm) : initialFormState;
+    } catch (error) {
+      console.error('Error loading saved form:', error);
+      return initialFormState;
+    }
+  });
 
   useEffect(() => {
     // Check if user is logged in
@@ -66,39 +83,21 @@ export const CreateStartSnap = (): JSX.Element => {
       setUser(session.user);
     };
     checkUser();
-
-    // Load saved form data from localStorage
-    const savedFormData = localStorage.getItem('createStartSnapForm');
-    if (savedFormData) {
-      try {
-        const parsedData = JSON.parse(savedFormData);
-        setFormState(parsedData);
-      } catch (error) {
-        console.error('Error parsing saved form data:', error);
-        localStorage.removeItem('createStartSnapForm');
-      }
-    }
-
-    // Cleanup function to save form data when component unmounts
-    return () => {
-      localStorage.setItem('createStartSnapForm', JSON.stringify(formState));
-    };
   }, [navigate]);
-
-  // Save form data whenever it changes
-  useEffect(() => {
-    localStorage.setItem('createStartSnapForm', JSON.stringify(formState));
-  }, [formState]);
 
   // Handle form field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormState(prev => ({ ...prev, [name]: value }));
+    const newState = { ...formState, [name]: value };
+    setFormState(newState);
+    saveFormState(newState);
   };
 
   // Handle checkbox change
   const handleCheckboxChange = (checked) => {
-    setFormState(prev => ({ ...prev, isHackathon: checked }));
+    const newState = { ...formState, isHackathon: checked };
+    setFormState(newState);
+    saveFormState(newState);
   };
 
   // Handle tools tag input
@@ -107,11 +106,13 @@ export const CreateStartSnap = (): JSX.Element => {
       e.preventDefault();
       const newTool = formState.toolsInput.trim();
       if (!formState.toolsUsed.includes(newTool)) {
-        setFormState(prev => ({
-          ...prev,
-          toolsUsed: [...prev.toolsUsed, newTool],
+        const newState = {
+          ...formState,
+          toolsUsed: [...formState.toolsUsed, newTool],
           toolsInput: ''
-        }));
+        };
+        setFormState(newState);
+        saveFormState(newState);
       }
     }
   };
@@ -122,29 +123,35 @@ export const CreateStartSnap = (): JSX.Element => {
       e.preventDefault();
       const newFeedback = formState.feedbackInput.trim();
       if (!formState.feedbackAreas.includes(newFeedback)) {
-        setFormState(prev => ({
-          ...prev,
-          feedbackAreas: [...prev.feedbackAreas, newFeedback],
+        const newState = {
+          ...formState,
+          feedbackAreas: [...formState.feedbackAreas, newFeedback],
           feedbackInput: ''
-        }));
+        };
+        setFormState(newState);
+        saveFormState(newState);
       }
     }
   };
 
   // Remove a tool tag
   const removeTool = (tool) => {
-    setFormState(prev => ({
-      ...prev,
-      toolsUsed: prev.toolsUsed.filter(t => t !== tool)
-    }));
+    const newState = {
+      ...formState,
+      toolsUsed: formState.toolsUsed.filter(t => t !== tool)
+    };
+    setFormState(newState);
+    saveFormState(newState);
   };
 
   // Remove a feedback tag
   const removeFeedback = (feedback) => {
-    setFormState(prev => ({
-      ...prev,
-      feedbackAreas: prev.feedbackAreas.filter(f => f !== feedback)
-    }));
+    const newState = {
+      ...formState,
+      feedbackAreas: formState.feedbackAreas.filter(f => f !== feedback)
+    };
+    setFormState(newState);
+    saveFormState(newState);
   };
 
   // Handle form submission
@@ -239,7 +246,11 @@ export const CreateStartSnap = (): JSX.Element => {
                       ? "bg-startsnap-french-rose text-startsnap-white" 
                       : "bg-startsnap-mischka text-startsnap-ebony-clay"
                   } font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]`}
-                  onClick={() => setFormState(prev => ({ ...prev, projectType: "idea" }))}
+                  onClick={() => {
+                    const newState = { ...formState, projectType: "idea" };
+                    setFormState(newState);
+                    saveFormState(newState);
+                  }}
                 >
                   Idea / Concept
                 </Button>
@@ -250,7 +261,11 @@ export const CreateStartSnap = (): JSX.Element => {
                       ? "bg-startsnap-french-rose text-startsnap-white" 
                       : "bg-startsnap-mischka text-startsnap-ebony-clay"
                   } font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]`}
-                  onClick={() => setFormState(prev => ({ ...prev, projectType: "live" }))}
+                  onClick={() => {
+                    const newState = { ...formState, projectType: "live" };
+                    setFormState(newState);
+                    saveFormState(newState);
+                  }}
                 >
                   Live Project
                 </Button>
@@ -292,7 +307,11 @@ export const CreateStartSnap = (): JSX.Element => {
               <Select 
                 name="category" 
                 value={formState.category}
-                onValueChange={(value) => setFormState(prev => ({ ...prev, category: value }))}
+                onValueChange={(value) => {
+                  const newState = { ...formState, category: value };
+                  setFormState(newState);
+                  saveFormState(newState);
+                }}
                 required
               >
                 <SelectTrigger className="border-2 border-solid border-gray-800 rounded-lg h-[52px] font-['Roboto',Helvetica]">
@@ -472,7 +491,11 @@ export const CreateStartSnap = (): JSX.Element => {
                   <Select 
                     name="vibeLogType" 
                     value={formState.vibeLogType}
-                    onValueChange={(value) => setFormState(prev => ({ ...prev, vibeLogType: value }))}
+                    onValueChange={(value) => {
+                      const newState = { ...formState, vibeLogType: value };
+                      setFormState(newState);
+                      saveFormState(newState);
+                    }}
                   >
                     <SelectTrigger className="border-2 border-solid border-gray-800 rounded-lg h-[52px] font-['Roboto',Helvetica]">
                       <SelectValue placeholder="Select entry type" />
