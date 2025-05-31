@@ -47,6 +47,7 @@ export const Profile = (): JSX.Element => {
     linkedin: "",
     website: ""
   });
+  const [statusPopoverOpen, setStatusPopoverOpen] = useState(false);
 
   // Status options with Material Icons
   const statusOptions = [
@@ -54,7 +55,7 @@ export const Profile = (): JSX.Element => {
     { value: "brainstorming", label: "Brainstorming New Ideas", icon: "lightbulb" },
     { value: "collaborating", label: "Open to Collaboration", icon: "handshake" },
     { value: "feedback", label: "Seeking Feedback", icon: "search" },
-    { value: "job_ready", label: "Looking for Work / Job Ready", icon: "work" },
+    { value: "job_ready", label: "Looking for Work", icon: "work" },
     { value: "break", label: "Taking a Break", icon: "hourglass_empty" }
   ];
 
@@ -215,6 +216,7 @@ export const Profile = (): JSX.Element => {
    */
   const handleStatusChange = (value) => {
     setProfile(prev => ({ ...prev, status: value }));
+    setStatusPopoverOpen(false); // Close popover after selection
   };
 
   /**
@@ -413,7 +415,7 @@ export const Profile = (): JSX.Element => {
                 </Avatar>
                 
                 {/* Popover status selector */}
-                <Popover>
+                <Popover open={statusPopoverOpen} onOpenChange={setStatusPopoverOpen}>
                   <PopoverTrigger asChild>
                     <div className="mt-4 text-center cursor-pointer hover:scale-105 transition-transform">
                       <Badge className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-gray-800 px-3 py-1.5 hover:bg-gray-200">

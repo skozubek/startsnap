@@ -1,25 +1,24 @@
 /**
  * src/components/ui/popover.tsx
- * @description Popover component using Radix UI for displaying floating content
+ * @description Radix UI Popover component with custom styling
  */
 
-import * as React from "react"
-import * as PopoverPrimitive from "@radix-ui/react-popover"
-
-import { cn } from "../../lib/utils"
+import * as React from "react";
+import * as PopoverPrimitive from "@radix-ui/react-popover";
+import { cn } from "../../lib/utils";
 
 /**
- * @description Root component for the popover
+ * @description Root Popover component
  */
-const Popover = PopoverPrimitive.Root
+const Popover = PopoverPrimitive.Root;
 
 /**
- * @description Trigger element that opens the popover when clicked
+ * @description Popover trigger component
  */
-const PopoverTrigger = PopoverPrimitive.Trigger
+const PopoverTrigger = PopoverPrimitive.Trigger;
 
 /**
- * @description Content component for the popover that appears when triggered
+ * @description Styled Popover content component
  */
 const PopoverContent = React.forwardRef<
   React.ElementRef<typeof PopoverPrimitive.Content>,
@@ -37,7 +36,7 @@ const PopoverContent = React.forwardRef<
       {...props}
     />
   </PopoverPrimitive.Portal>
-))
-PopoverContent.displayName = PopoverPrimitive.Content.displayName
+));
+PopoverContent.displayName = PopoverPrimitive.Content.displayName;
 
-export { Popover, PopoverTrigger, PopoverContent }
+export { Popover, PopoverTrigger, PopoverContent };
