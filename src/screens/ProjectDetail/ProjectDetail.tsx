@@ -158,10 +158,25 @@ export const ProjectDetail = (): JSX.Element => {
     <div className="flex flex-col w-full items-center gap-16 pt-8 pb-24 px-8 bg-startsnap-candlelight">
       <Card className="max-w-4xl w-full bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]">
         <CardContent className="p-0">
-          {/* Project Header Section */}
-          <div className="border-b-2 border-gray-800 p-8 relative">
-            {/* Status badges - positioned in the top right corner */}
-            <div className="absolute top-3 right-3 flex flex-col gap-2 items-end z-10">
+          {/* Project Header Section - Category-colored header like cards */}
+          <div className={`${categoryDisplay.bgColor} px-8 py-6 border-b-2 border-gray-800`}>
+            <div className="flex justify-between items-start gap-6 mb-4">
+              {/* Project Title - Hero element */}
+              <h1 className={`${categoryDisplay.textColor} font-[var(--startsnap-semantic-heading-3-font-family)] font-black tracking-tight leading-tight flex-1 text-4xl lg:text-5xl`}>
+                {startsnap.name}
+              </h1>
+
+              {/* Category Badge */}
+              <Badge
+                variant="outline"
+                className={`${categoryDisplay.bgColor} ${categoryDisplay.textColor} border ${categoryDisplay.borderColor} rounded-full px-4 py-2 font-['Space_Mono',Helvetica] font-normal shrink-0 text-sm`}
+              >
+                {categoryDisplay.name}
+              </Badge>
+            </div>
+
+            {/* Status badges - now in header */}
+            <div className="flex gap-3 flex-wrap">
               {/* Project type badge */}
               {startsnap.type === "live" ? (
                 <Badge variant="outline" className="bg-startsnap-mountain-meadow text-white font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-green-700 px-3 py-1 flex items-center gap-1">
@@ -183,65 +198,49 @@ export const ProjectDetail = (): JSX.Element => {
                 </Badge>
               )}
             </div>
+          </div>
 
-            <div className="h-64 mb-6">
-              <MinimalistThumbnail
-                projectId={startsnap.id}
-                projectType={startsnap.type}
-                category={startsnap.category}
-              />
-            </div>
-
-            {/* Project title and category - restructured for full width heading */}
-            <h1 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-4xl leading-10 w-full mb-4">
-              {startsnap.name}
-            </h1>
-            <div className="flex justify-end mb-4">
-              <Badge variant="outline" className={`${categoryDisplay.bgColor} ${categoryDisplay.textColor} border ${categoryDisplay.borderColor} rounded-full px-[13px] py-[5px] font-['Space_Mono',Helvetica]`}>
-                {categoryDisplay.name}
-              </Badge>
-            </div>
-
-            <p className="font-['Roboto',Helvetica] font-normal text-startsnap-river-bed text-base leading-6 mb-6">
+          {/* Main Content Section - Clean and spacious */}
+          <div className="p-8 space-y-8">
+            {/* Project Description - Hero treatment */}
+            <p className="font-['Roboto',Helvetica] font-normal text-startsnap-river-bed leading-relaxed text-lg">
               {startsnap.description}
             </p>
 
-            <div className="flex items-start mb-6">
-              <div className="w-12 h-12 rounded-full border-2 border-solid border-gray-800 overflow-hidden bg-white">
-                <Avatar
-                  name={creatorName}
-                  variant="beam"
-                  size={48}
-                  colors={["#264653", "#2a9d8f", "#e9c46a", "#f4a261", "#e76f51"]}
-                />
-              </div>
-              <div className="ml-4">
-                <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-base leading-7">
-                  {creatorName}
-                </p>
-                <p className="font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-5">
-                  Launched: {new Date(startsnap.created_at).toLocaleDateString()}
-                </p>
+            {/* Creator info - consistent with cards */}
+            <div className="flex items-center pt-6 mt-2 border-t border-gray-200/80">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full border-2 border-solid border-gray-800 overflow-hidden bg-white">
+                  <Avatar
+                    name={creatorName}
+                    variant="beam"
+                    size={48}
+                    colors={["#264653", "#2a9d8f", "#e9c46a", "#f4a261", "#e76f51"]}
+                  />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-base leading-tight tracking-wide">
+                    {creatorName}
+                  </p>
+                  <p className="font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-sm leading-relaxed mt-0.5">
+                    Launched: {new Date(startsnap.created_at).toLocaleDateString()}
+                  </p>
+                </div>
               </div>
             </div>
 
-            {/* Separated tag sections */}
-            <div className="space-y-4 mb-8">
+            {/* Separated tag sections - improved spacing like cards */}
+            <div className="space-y-6">
               {/* General Tags Section */}
               {startsnap.tags && startsnap.tags.length > 0 && (
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <span className="material-icons text-startsnap-oxford-blue text-lg">tag</span>
-                    <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-sm">
-                      Tags
-                    </h3>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
+                <div className="flex items-start gap-3">
+                  <span className="material-icons text-startsnap-oxford-blue text-lg mt-1 shrink-0">tag</span>
+                  <div className="flex flex-wrap gap-2 flex-1">
                     {startsnap.tags.map((tag, idx) => (
                       <Badge
                         key={`tag-${idx}`}
                         variant="outline"
-                        className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] font-normal text-sm rounded-full border border-solid border-gray-800 px-[13px] py-[5px]"
+                        className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-gray-800 px-3 py-1"
                       >
                         #{tag}
                       </Badge>
@@ -252,19 +251,14 @@ export const ProjectDetail = (): JSX.Element => {
 
               {/* Tools Used Section */}
               {startsnap.tools_used && startsnap.tools_used.length > 0 && (
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <span className="material-icons text-startsnap-persian-blue text-lg">build</span>
-                    <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-sm">
-                      Tools Used
-                    </h3>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
+                <div className="flex items-start gap-3">
+                  <span className="material-icons text-startsnap-persian-blue text-lg mt-1 shrink-0">build</span>
+                  <div className="flex flex-wrap gap-2 flex-1">
                     {startsnap.tools_used.map((tool, idx) => (
                       <Badge
                         key={`tool-${idx}`}
                         variant="outline"
-                        className="bg-startsnap-french-pass text-startsnap-persian-blue font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-blue-700 px-[13px] py-[5px]"
+                        className="bg-startsnap-french-pass text-startsnap-persian-blue font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-blue-700 px-3 py-1"
                       >
                         {tool}
                       </Badge>
@@ -275,19 +269,14 @@ export const ProjectDetail = (): JSX.Element => {
 
               {/* Looking For Feedback Section */}
               {startsnap.feedback_tags && startsnap.feedback_tags.length > 0 && (
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <span className="material-icons text-startsnap-jewel text-lg">forum</span>
-                    <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-sm">
-                      Looking For Feedback On
-                    </h3>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
+                <div className="flex items-start gap-3">
+                  <span className="material-icons text-startsnap-jewel text-lg mt-1 shrink-0">forum</span>
+                  <div className="flex flex-wrap gap-2 flex-1">
                     {startsnap.feedback_tags.map((feedback, idx) => (
                       <Badge
                         key={`feedback-${idx}`}
                         variant="outline"
-                        className="bg-startsnap-ice-cold text-startsnap-jewel font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-green-700 px-[13px] py-[5px]"
+                        className="bg-startsnap-ice-cold text-startsnap-jewel font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-green-700 px-3 py-1"
                       >
                         {feedback}
                       </Badge>
@@ -297,7 +286,8 @@ export const ProjectDetail = (): JSX.Element => {
               )}
             </div>
 
-            <div className="flex gap-4">
+            {/* Action buttons */}
+            <div className="flex gap-4 pt-4">
               <Button className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-2">
                 <span className="material-icons text-xl">thumb_up</span>
                 Support Project
@@ -318,25 +308,30 @@ export const ProjectDetail = (): JSX.Element => {
 
             {/* Links section */}
             {(startsnap.live_demo_url || startsnap.demo_video_url) && (
-              <div className="mt-6 space-y-2">
-                {startsnap.live_demo_url && (
-                  <div className="flex items-center">
-                    <span className="material-icons text-startsnap-oxford-blue mr-2">public</span>
-                    <a href={startsnap.live_demo_url} target="_blank" rel="noopener noreferrer"
-                      className="text-startsnap-persian-blue hover:underline">
-                      Live Demo: {startsnap.live_demo_url}
-                    </a>
-                  </div>
-                )}
-                {startsnap.demo_video_url && (
-                  <div className="flex items-center">
-                    <span className="material-icons text-startsnap-oxford-blue mr-2">videocam</span>
-                    <a href={startsnap.demo_video_url} target="_blank" rel="noopener noreferrer"
-                      className="text-startsnap-persian-blue hover:underline">
-                      Demo Video: {startsnap.demo_video_url}
-                    </a>
-                  </div>
-                )}
+              <div className="space-y-3 pt-4 border-t border-gray-200/80">
+                <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg">
+                  Project Links
+                </h3>
+                <div className="space-y-2">
+                  {startsnap.live_demo_url && (
+                    <div className="flex items-center">
+                      <span className="material-icons text-startsnap-oxford-blue mr-3">public</span>
+                      <a href={startsnap.live_demo_url} target="_blank" rel="noopener noreferrer"
+                        className="text-startsnap-persian-blue hover:underline font-['Roboto',Helvetica]">
+                        Live Demo: {startsnap.live_demo_url}
+                      </a>
+                    </div>
+                  )}
+                  {startsnap.demo_video_url && (
+                    <div className="flex items-center">
+                      <span className="material-icons text-startsnap-oxford-blue mr-3">videocam</span>
+                      <a href={startsnap.demo_video_url} target="_blank" rel="noopener noreferrer"
+                        className="text-startsnap-persian-blue hover:underline font-['Roboto',Helvetica]">
+                        Demo Video: {startsnap.demo_video_url}
+                      </a>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
