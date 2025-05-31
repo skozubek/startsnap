@@ -290,7 +290,7 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
           {/* Tools Used Tags */}
           <div className="space-y-2">
             <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
-              Tools Used (press Enter to add)
+              Tools (press Enter to add)
             </label>
             <Input
               name="toolsInput"

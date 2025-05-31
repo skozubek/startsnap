@@ -97,7 +97,7 @@ export const ProjectDetail = (): JSX.Element => {
       iconBorder: "border-yellow-500",
     },
     feedback: {
-      icon: "search",
+      icon: "forum",
       iconBg: "bg-startsnap-french-pass",
       iconColor: "text-startsnap-persian-blue",
       iconBorder: "border-blue-500",
