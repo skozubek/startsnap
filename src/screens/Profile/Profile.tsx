@@ -471,54 +471,73 @@ export const Profile = (): JSX.Element => {
                     <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
                       External Links
                     </label>
-                    <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-4">
+                      {/* GitHub Link */}
                       <div className="space-y-1">
-                        <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky text-sm">GitHub</label>
+                        <div className="flex items-center">
+                          <span className="material-icons text-gray-700 mr-2">code</span>
+                          <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">GitHub</label>
+                        </div>
                         <Input
                           name="github"
                           value={profile.github}
                           onChange={handleChange}
                           placeholder="https://github.com/username"
-                          className={`border-2 border-solid ${linkErrors.github ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
+                          className={`border-2 border-solid ${linkErrors.github ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky pl-10`}
                         />
                         {linkErrors.github && (
                           <p className="text-red-500 text-xs mt-1">{linkErrors.github}</p>
                         )}
                       </div>
+
+                      {/* Twitter Link */}
                       <div className="space-y-1">
-                        <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky text-sm">Twitter</label>
+                        <div className="flex items-center">
+                          <span className="material-icons text-sky-500 mr-2">alternate_email</span>
+                          <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">Twitter</label>
+                        </div>
                         <Input
                           name="twitter"
                           value={profile.twitter}
                           onChange={handleChange}
                           placeholder="https://twitter.com/username"
-                          className={`border-2 border-solid ${linkErrors.twitter ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
+                          className={`border-2 border-solid ${linkErrors.twitter ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky pl-10`}
                         />
                         {linkErrors.twitter && (
                           <p className="text-red-500 text-xs mt-1">{linkErrors.twitter}</p>
                         )}
                       </div>
+
+                      {/* LinkedIn Link */}
                       <div className="space-y-1">
-                        <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky text-sm">LinkedIn</label>
+                        <div className="flex items-center">
+                          <span className="material-icons text-blue-700 mr-2">business</span>
+                          <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">LinkedIn</label>
+                        </div>
                         <Input
                           name="linkedin"
                           value={profile.linkedin}
                           onChange={handleChange}
                           placeholder="https://linkedin.com/in/username"
-                          className={`border-2 border-solid ${linkErrors.linkedin ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
+                          className={`border-2 border-solid ${linkErrors.linkedin ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky pl-10`}
                         />
                         {linkErrors.linkedin && (
                           <p className="text-red-500 text-xs mt-1">{linkErrors.linkedin}</p>
                         )}
                       </div>
+
+                      {/* Website Link */}
                       <div className="space-y-1">
-                        <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky text-sm">Website</label>
+                        <div className="flex items-center">
+                          <span className="material-icons text-green-600 mr-2">language</span>
+                          <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">Website</label>
+                        </div>
                         <Input
                           name="website"
                           value={profile.website}
                           onChange={handleChange}
                           placeholder="https://yourwebsite.com"
-                          className={`border-2 border-solid ${linkErrors.website ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
+                          className={`border-2 border-solid ${linkErrors.website ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky pl-10`}
                         />
                         {linkErrors.website && (
                           <p className="text-red-500 text-xs mt-1">{linkErrors.website}</p>
