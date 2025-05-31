@@ -3,7 +3,7 @@
  * @description Application header with navigation and authentication controls
  */
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Avatar from "boring-avatars";
 import { Button } from "../../../../components/ui/button";
@@ -23,6 +23,7 @@ import {
   DropdownMenuTrigger,
 } from "../../../../components/ui/dropdown-menu";
 import { LogOut, User } from "lucide-react";
+import { useAuth } from "../../../../context/AuthContext";
 
 /**
  * @description Header component with navigation and authentication UI
@@ -31,21 +32,7 @@ import { LogOut, User } from "lucide-react";
 export const HeaderSection = (): JSX.Element => {
   const [authMode, setAuthMode] = useState<'signup' | 'login'>('login');
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
-  const [user, setUser] = useState<any>(null);
-
-  useEffect(() => {
-    // Check current session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user || null);
-    });
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user || null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+  const { user } = useAuth();
 
   // Only "Feed" is visible to all users
   const navLinks = [
