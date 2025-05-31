@@ -17,7 +17,7 @@ export const MainContentSection = (): JSX.Element => {
   useEffect(() => {
     // Initialize Typed.js
     const typed = new Typed(typedRef.current, {
-      strings: ['Startups^1000', 'Start<del>ups</del>snaps'],
+      strings: ['Startups^1000', 'Start<del class="text-gray-400">ups</del>snaps'],
       typeSpeed: 50,
       backSpeed: 50,
       startDelay: 500,
@@ -160,7 +160,7 @@ export const MainContentSection = (): JSX.Element => {
         <div className="max-w-screen-2xl mx-auto px-8 py-24 flex items-center">
           <div className="w-[60%] pr-16">
             <h1 className="text-6xl font-bold text-startsnap-ebony-clay mb-6 font-['Space_Grotesk',Helvetica] leading-tight">
-              We are Vibe Coding,<br />
+              We're Vibe Coding,<br />
               We Build <span ref={typedRef}></span>
             </h1>
             <p className="text-xl text-startsnap-river-bed mb-8 font-['Roboto',Helvetica] leading-relaxed">
