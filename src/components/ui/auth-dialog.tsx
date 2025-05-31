@@ -12,6 +12,7 @@ interface AuthDialogProps {
   isOpen: boolean;
   onClose: () => void;
   mode: 'login' | 'signup';
+  onModeChange: (mode: 'login' | 'signup') => void;
 }
 
 /**
@@ -19,7 +20,7 @@ interface AuthDialogProps {
  * @param {AuthDialogProps} props - Component props
  * @returns {JSX.Element} Authentication dialog with form
  */
-export const AuthDialog = ({ isOpen, onClose, mode }: AuthDialogProps): JSX.Element => {
+export const AuthDialog = ({ isOpen, onClose, mode, onModeChange }: AuthDialogProps): JSX.Element => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-startsnap-white p-0 border-2 border-gray-800 rounded-xl shadow-[5px_5px_0px_#1f2937] max-w-md w-full">
@@ -37,7 +38,7 @@ export const AuthDialog = ({ isOpen, onClose, mode }: AuthDialogProps): JSX.Elem
             </p>
             <Button
               variant="link"
-              onClick={handleModeSwitch}
+              onClick={() => onModeChange(mode === 'login' ? 'signup' : 'login')}
               className="text-startsnap-french-rose hover:text-startsnap-cerise font-semibold p-0"
             >
               {mode === 'login' ? 'Sign up here' : 'Sign in here'}
