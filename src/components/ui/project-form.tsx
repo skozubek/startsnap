@@ -277,7 +277,7 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
               <SelectContent>
                 <SelectItem value="ai">AI Powered Tool</SelectItem>
                 <SelectItem value="productivity">Productivity</SelectItem>
-                <SelectItem value="tech">Blockchain</SelectItem>
+                <SelectItem value="blockchain">Blockchain</SelectItem>
                 <SelectItem value="gaming">Gaming</SelectItem>
                 <SelectItem value="community">Community</SelectItem>
                 <SelectItem value="design">Design</SelectItem>

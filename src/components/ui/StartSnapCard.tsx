@@ -73,7 +73,10 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
     <Card className="bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]">
       <CardContent className={`${cardPadding} ${thumbnailPadding} relative`}>
         {/* Project thumbnail */}
-        <div className={`absolute top-0 left-0 right-0 h-[${thumbnailHeight.replace('px', '')}px] p-7 pb-0`}>
+        <div
+          className="absolute top-0 left-0 right-0"
+          style={{ height: thumbnailHeight }}
+        >
           <MinimalistThumbnail
             projectId={startsnap.id}
             projectType={startsnap.type}
@@ -106,7 +109,7 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
         </div>
 
         <div className="flex justify-between items-start">
-          <h3 className={`font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay ${variant === 'main-page' ? 'text-2xl leading-8' : 'text-xl leading-7'} flex-1`}>
+          <h3 className={`${variant === 'main-page' ? 'text-[var(--startsnap-semantic-heading-3-font-size)] leading-[var(--startsnap-semantic-heading-3-line-height)]' : 'text-xl leading-7'} font-[var(--startsnap-semantic-heading-3-font-family)] font-[var(--startsnap-semantic-heading-3-font-weight)] tracking-[var(--startsnap-semantic-heading-3-letter-spacing)] text-startsnap-ebony-clay flex-1`}>
             {startsnap.name}
           </h3>
           <Badge

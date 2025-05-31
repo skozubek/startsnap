@@ -89,8 +89,14 @@ export const MainContentSection = (): JSX.Element => {
 
   // Category to color mapping
   const categoryColorMap = {
-    tech: {
-      name: "Tech",
+    ai: {
+      name: "AI Powered Tool",
+      bgColor: "bg-violet-200",
+      textColor: "text-violet-700",
+      borderColor: "border-violet-700",
+    },
+    blockchain: {
+      name: "Blockchain",
       bgColor: "bg-blue-200",
       textColor: "text-blue-700",
       borderColor: "border-blue-700",
