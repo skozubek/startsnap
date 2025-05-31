@@ -11,6 +11,10 @@ export const EditStartSnap = (): JSX.Element => {
   const [initialData, setInitialData] = useState(null);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     const checkUserAndFetchData = async () => {
       // Get session
       const { data: { session } } = await supabase.auth.getSession();
