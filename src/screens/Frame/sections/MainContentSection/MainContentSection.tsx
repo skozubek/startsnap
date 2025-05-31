@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
 import { Badge } from "../../../../components/ui/badge";
 import { Button } from "../../../../components/ui/button";
@@ -6,11 +6,75 @@ import { Card, CardContent, CardFooter } from "../../../../components/ui/card";
 import { Link } from "react-router-dom";
 import { supabase } from "../../../../lib/supabase";
 import { MinimalistThumbnail } from "../../../../components/ui/project-thumbnail";
+import Typed from 'typed.js';
 
 export const MainContentSection = (): JSX.Element => {
   const [startSnaps, setStartSnaps] = useState([]);
   const [loading, setLoading] = useState(true);
   const [creators, setCreators] = useState({});
+  const typedRef = useRef(null);
+
+  useEffect(() => {
+    // Initialize Typed.js
+    const typed = new Typed(typedRef.current, {
+      strings: ['Startups^1000', 'Start<del>ups</del>snaps'],
+      typeSpeed: 50,
+      backSpeed: 50,
+      startDelay: 500,
+      showCursor: true,
+      cursorChar: '|',
+      autoInsertCss: true,
+      loop: false
+    });
+
+    // Cleanup
+    return () => {
+      typed.destroy();
+    };
+  }, []);
+
+  useEffect(() => {
+    fetchStartSnaps();
+  }, []);
+
+  const fetchStartSnaps = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch startsnaps
+      const { data, error } = await supabase
+        .from('startsnaps')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(6);
+      
+      if (error) throw error;
+      
+      setStartSnaps(data || []);
+      
+      // Fetch creators information
+      if (data && data.length > 0) {
+        const userIds = [...new Set(data.map(snap => snap.user_id))];
+        const { data: profilesData, error: profilesError } = await supabase
+          .from('profiles')
+          .select('user_id, username')
+          .in('user_id', userIds);
+        
+        if (profilesError) throw profilesError;
+        
+        const creatorsMap = {};
+        profilesData.forEach(profile => {
+          creatorsMap[profile.user_id] = profile.username;
+        });
+        
+        setCreators(creatorsMap);
+      }
+    } catch (error) {
+      console.error('Error fetching startsnaps:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Category to color mapping
   const categoryColorMap = {
@@ -64,49 +128,6 @@ export const MainContentSection = (): JSX.Element => {
     },
   };
 
-  useEffect(() => {
-    fetchStartSnaps();
-  }, []);
-
-  const fetchStartSnaps = async () => {
-    try {
-      setLoading(true);
-      
-      // Fetch startsnaps
-      const { data, error } = await supabase
-        .from('startsnaps')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(6);
-      
-      if (error) throw error;
-      
-      setStartSnaps(data || []);
-      
-      // Fetch creators information
-      if (data && data.length > 0) {
-        const userIds = [...new Set(data.map(snap => snap.user_id))];
-        const { data: profilesData, error: profilesError } = await supabase
-          .from('profiles')
-          .select('user_id, username')
-          .in('user_id', userIds);
-        
-        if (profilesError) throw profilesError;
-        
-        const creatorsMap = {};
-        profilesData.forEach(profile => {
-          creatorsMap[profile.user_id] = profile.username;
-        });
-        
-        setCreators(creatorsMap);
-      }
-    } catch (error) {
-      console.error('Error fetching startsnaps:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   // Helper function to get category display info
   const getCategoryDisplay = (category) => {
     return categoryColorMap[category] || categoryColorMap.other;
@@ -139,10 +160,11 @@ export const MainContentSection = (): JSX.Element => {
         <div className="max-w-screen-2xl mx-auto px-8 py-24 flex items-center">
           <div className="w-[60%] pr-16">
             <h1 className="text-6xl font-bold text-startsnap-ebony-clay mb-6 font-['Space_Grotesk',Helvetica] leading-tight">
-              We are Vibe Coders,<br />We Build StartSnaps!
+              We are Vibe Coding,<br />
+              We Build <span ref={typedRef}></span>
             </h1>
             <p className="text-xl text-startsnap-river-bed mb-8 font-['Roboto',Helvetica] leading-relaxed">
-              Join our community of passionate developers, designers, and creators. Share your projects, get feedback, and connect with like-minded individuals.
+              Vibe Coders! Showcase your journey, build in public, get real feedback, and find your creative tribe here
             </p>
             <Button className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-lg px-8 py-6 rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]">
               Start Building Today
