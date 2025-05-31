@@ -52,7 +52,7 @@ export const CreateStartSnap = (): JSX.Element => {
         .from('vibelogs')
         .insert({
           startsnap_id: startsnap[0].id,
-          log_type: formData.projectType === 'live' ? 'launch' : 'idea',
+          log_type: formData.vibeLogType,
           title: formData.vibeLogTitle,
           content: formData.vibeLogContent
         });
@@ -73,7 +73,7 @@ export const CreateStartSnap = (): JSX.Element => {
 
       <ProjectForm
         mode="create"
-        defaultVibeLogType="idea"
+        defaultVibeLogType={true}
         onSubmit={handleSubmit}
         onCancel={() => navigate('/')}
       />

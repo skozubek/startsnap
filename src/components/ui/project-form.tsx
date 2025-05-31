@@ -35,7 +35,7 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
     tagsInput: "",
     tags: [],
     isHackathon: false,
-    vibeLogType: "idea",
+    vibeLogType: mode === 'create' ? "launch" : "update",
     vibeLogTitle: mode === 'create' ? "Initial Launch" : "Project Update",
     vibeLogContent: "",
     toolsInput: "",
@@ -190,13 +190,7 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
                     ? "bg-startsnap-french-rose text-startsnap-white" 
                     : "bg-startsnap-mischka text-startsnap-ebony-clay"
                 } font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]`}
-                onClick={() => {
-                  setFormState(prev => ({ 
-                    ...prev, 
-                    projectType: "idea",
-                    vibeLogType: "idea"
-                  }));
-                }}
+                onClick={() => setFormState(prev => ({ ...prev, projectType: "idea" }))}
               >
                 Idea / Concept
               </Button>
@@ -207,13 +201,7 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
                     ? "bg-startsnap-french-rose text-startsnap-white" 
                     : "bg-startsnap-mischka text-startsnap-ebony-clay"
                 } font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]`}
-                onClick={() => {
-                  setFormState(prev => ({ 
-                    ...prev, 
-                    projectType: "live",
-                    vibeLogType: "launch"
-                  }));
-                }}
+                onClick={() => setFormState(prev => ({ ...prev, projectType: "live" }))}
               >
                 Live Project
               </Button>
@@ -435,7 +423,6 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
                 onContentChange={handleVibeLogContentChange}
                 onTypeChange={handleVibeLogTypeChange}
                 showAllTypes={false}
-                disabled={true}
               />
             </div>
           )}
