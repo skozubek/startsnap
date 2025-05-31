@@ -41,14 +41,14 @@ export const Profile = (): JSX.Element => {
   const [userStartSnaps, setUserStartSnaps] = useState([]);
   const [loadingStartSnaps, setLoadingStartSnaps] = useState(true);
 
-  // Status options with emojis
+  // Status options with Material Icons
   const statusOptions = [
-    { value: "building", label: "🚀 Actively Building" },
-    { value: "brainstorming", label: "💡 Brainstorming New Ideas" },
-    { value: "collaborating", label: "🤝 Open to Collaboration" },
-    { value: "feedback", label: "🔍 Seeking Feedback" },
-    { value: "job_ready", label: "💼 Looking for Work / Job Ready" },
-    { value: "break", label: "⏳ Taking a Break" }
+    { value: "building", label: "Actively Building", icon: "rocket_launch" },
+    { value: "brainstorming", label: "Brainstorming New Ideas", icon: "lightbulb" },
+    { value: "collaborating", label: "Open to Collaboration", icon: "handshake" },
+    { value: "feedback", label: "Seeking Feedback", icon: "search" },
+    { value: "job_ready", label: "Looking for Work / Job Ready", icon: "work" },
+    { value: "break", label: "Taking a Break", icon: "hourglass_empty" }
   ];
 
   // Category to color mapping
@@ -285,13 +285,13 @@ export const Profile = (): JSX.Element => {
   }
 
   /**
-   * @description Gets the emoji part of a status label
-   * @param {string} statusValue - Status value to get emoji for
-   * @returns {string} Emoji for the status
+   * @description Gets the icon for a status value
+   * @param {string} statusValue - Status value to get icon for
+   * @returns {string} Material icon name for the status
    */
-  const getStatusEmoji = (statusValue) => {
+  const getStatusIcon = (statusValue) => {
     const option = statusOptions.find(opt => opt.value === statusValue);
-    return option ? option.label.split(' ')[0] : '💡';
+    return option ? option.icon : 'lightbulb';
   };
 
   return (
@@ -313,7 +313,8 @@ export const Profile = (): JSX.Element => {
                 </Avatar>
                 <div className="mt-4 text-center">
                   <Badge className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-gray-800 px-3 py-1.5">
-                    {getStatusEmoji(profile.status)} {statusOptions.find(opt => opt.value === profile.status)?.label.split(' ').slice(1).join(' ')}
+                    <span className="material-icons text-sm mr-1">{getStatusIcon(profile.status)}</span>
+                    {statusOptions.find(opt => opt.value === profile.status)?.label}
                   </Badge>
                 </div>
               </div>
@@ -357,7 +358,10 @@ export const Profile = (): JSX.Element => {
                       <SelectContent>
                         {statusOptions.map((option) => (
                           <SelectItem key={option.value} value={option.value}>
-                            {option.label}
+                            <div className="flex items-center">
+                              <span className="material-icons text-sm mr-2">{option.icon}</span>
+                              {option.label}
+                            </div>
                           </SelectItem>
                         ))}
                       </SelectContent>
