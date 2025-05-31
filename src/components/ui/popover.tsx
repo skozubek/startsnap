@@ -1,30 +1,24 @@
 /**
  * src/components/ui/popover.tsx
- * @description Popover component based on Radix UI's Popover primitive
+ * @description Radix UI Popover component with custom styling
  */
 
-import * as React from "react"
-import * as PopoverPrimitive from "@radix-ui/react-popover"
-
-import { cn } from "../../lib/utils"
+import * as React from "react";
+import * as PopoverPrimitive from "@radix-ui/react-popover";
+import { cn } from "../../lib/utils";
 
 /**
- * @description Root component for the Popover
+ * @description Root Popover component
  */
-const Popover = PopoverPrimitive.Root
+const Popover = PopoverPrimitive.Root;
 
 /**
- * @description Trigger component for the Popover
+ * @description Popover trigger component
  */
-const PopoverTrigger = PopoverPrimitive.Trigger
+const PopoverTrigger = PopoverPrimitive.Trigger;
 
 /**
- * @description Content component for the Popover with styling
- * @param {Object} props - Component props
- * @param {React.ReactNode} props.children - Content to display in the popover
- * @param {string} [props.className] - Additional CSS classes
- * @param {React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>} props.props - Other props
- * @returns {JSX.Element} Styled popover content
+ * @description Styled Popover content component
  */
 const PopoverContent = React.forwardRef<
   React.ElementRef<typeof PopoverPrimitive.Content>,
@@ -42,7 +36,7 @@ const PopoverContent = React.forwardRef<
       {...props}
     />
   </PopoverPrimitive.Portal>
-))
-PopoverContent.displayName = PopoverPrimitive.Content.displayName
+));
+PopoverContent.displayName = PopoverPrimitive.Content.displayName;
 
-export { Popover, PopoverTrigger, PopoverContent }
+export { Popover, PopoverTrigger, PopoverContent };
