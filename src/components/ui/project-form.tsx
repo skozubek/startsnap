@@ -406,19 +406,29 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
                   onValueChange={(value) => setFormState(prev => ({ ...prev, vibeLogType: value }))}
                 >
                   <SelectTrigger className="border-2 border-solid border-gray-800 rounded-lg h-[52px] font-['Roboto',Helvetica]">
-                    <SelectValue placeholder="Select entry type" />
+                    <SelectValue placeholder="Select log type" />
                   </SelectTrigger>
                   <SelectContent>
-                    {mode === 'create' ? (
-                      <SelectItem value="launch">🚀 Launch</SelectItem>
-                    ) : (
-                      <>
-                        <SelectItem value="update">🔄 Update/Fix</SelectItem>
-                        <SelectItem value="feature">✨ New Feature</SelectItem>
-                        <SelectItem value="idea">💡 Idea</SelectItem>
-                        <SelectItem value="feedback">🔍 Seeking Feedback</SelectItem>
-                      </>
-                    )}
+                    <SelectItem value="general" className="flex items-center gap-2">
+                      <span className="material-icons text-lg">campaign</span>
+                      <span> General Update</span>
+                    </SelectItem>
+                    <SelectItem value="launch" className="flex items-center gap-2">
+                      <span className="material-icons text-lg">rocket_launch</span>
+                      <span> Launch</span>
+                    </SelectItem>
+                    <SelectItem value="update" className="flex items-center gap-2">
+                      <span className="material-icons text-lg">construction</span>
+                      <span> Fix / New Feature</span>
+                    </SelectItem>
+                    <SelectItem value="idea" className="flex items-center gap-2">
+                      <span className="material-icons text-lg">lightbulb</span>
+                      <span> Idea</span>
+                    </SelectItem>
+                    <SelectItem value="feedback" className="flex items-center gap-2">
+                      <span className="material-icons text-lg">forum</span>
+                      <span> Seeking Feedback</span>
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>

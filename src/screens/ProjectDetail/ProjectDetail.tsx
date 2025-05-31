@@ -18,6 +18,10 @@ export const ProjectDetail = (): JSX.Element => {
   const [feedbackContent, setFeedbackContent] = useState("");
   const [currentUser, setCurrentUser] = useState(null);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // Category to color mapping
   const categoryColorMap = {
     tech: {
