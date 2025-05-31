@@ -4,7 +4,7 @@
  */
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { User, Session } from '@supabase/supabase-js';
+import { User, Session, AuthChangeEvent } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 
 interface AuthContextType {
@@ -31,19 +31,19 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
-    // Check current session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user || null);
-      setSession(session);
-      setLoading(false);
-    });
-
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user || null);
-      setSession(session);
-      setLoading(false);
-    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event: AuthChangeEvent, session) => {
+        // If initial session check returns no session, clear any stale tokens
+        if (event === 'INITIAL_SESSION' && !session) {
+          await supabase.auth.signOut();
+        }
+        
+        setUser(session?.user || null);
+        setSession(session);
+        setLoading(false);
+      }
+    );
 
     return () => subscription.unsubscribe();
   }, []);
