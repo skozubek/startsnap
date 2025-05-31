@@ -10,7 +10,14 @@ import { isValidUrl, isValidGithubUrl, isValidTwitterUrl, isValidLinkedInUrl } f
  * @description Schema for authentication forms
  */
 export const authFormSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address" }),
+  email: z.string()
+    .min(1, { message: "Email is required" })
+    .email({ message: "Please enter a valid email address" })
+    .refine((email) => {
+      // More strict email validation
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      return emailRegex.test(email);
+    }, { message: "Please enter a valid email address" }),
   password: z.string().min(6, { message: "Password must be at least 6 characters" })
 });
 
@@ -56,6 +63,10 @@ export const projectFormSchema = z.object({
   isHackathon: z.boolean().default(false),
   toolsUsed: z.array(z.string()),
   feedbackAreas: z.array(z.string()),
+  // Form input fields for array management
+  tagsInput: z.string().optional(),
+  toolsInput: z.string().optional(),
+  feedbackInput: z.string().optional(),
   // Vibe log fields (optional for edit mode)
   vibeLogType: z.string().optional(),
   vibeLogTitle: z.string().min(3, { message: "Title must be at least 3 characters" }).max(100).optional(),

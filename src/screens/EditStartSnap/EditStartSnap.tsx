@@ -63,9 +63,12 @@ export const EditStartSnap = (): JSX.Element => {
           category: data.category || '',
           liveUrl: data.live_demo_url || '',
           videoUrl: data.demo_video_url || '',
+          tagsInput: '',
           tags: data.tags || [],
           isHackathon: data.is_hackathon_entry || false,
+          toolsInput: '',
           toolsUsed: data.tools_used || [],
+          feedbackInput: '',
           feedbackAreas: data.feedback_tags || []
         });
 

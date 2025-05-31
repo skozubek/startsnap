@@ -1,34 +1,32 @@
 /**
  * src/components/ui/dialog.tsx
- * @description Dialog component from Shadcn UI library
+ * @description Dialog component based on Radix UI Dialog primitive
  */
 
-import * as React from "react"
-import * as DialogPrimitive from "@radix-ui/react-dialog"
-import { X } from "lucide-react"
-
-import { cn } from "../../lib/utils"
+import * as React from "react";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { cn } from "../../lib/utils";
 
 /**
- * @description Base Dialog component with Radix Dialog primitive
+ * @description Root Dialog component
  */
-const Dialog = DialogPrimitive.Root
+const Dialog = DialogPrimitive.Root;
 
 /**
  * @description Dialog trigger component
  */
-const DialogTrigger = DialogPrimitive.Trigger
+const DialogTrigger = DialogPrimitive.Trigger;
 
 /**
- * @description Dialog portal component for rendering content outside the DOM hierarchy
+ * @description Dialog portal component to render content into a portal
  */
 const DialogPortal = ({
   className,
   ...props
 }: DialogPrimitive.DialogPortalProps) => (
   <DialogPrimitive.Portal className={cn(className)} {...props} />
-)
-DialogPortal.displayName = DialogPrimitive.Portal.displayName
+);
+DialogPortal.displayName = DialogPrimitive.Portal.displayName;
 
 /**
  * @description Dialog overlay component for background dimming
@@ -45,11 +43,11 @@ const DialogOverlay = React.forwardRef<
     )}
     {...props}
   />
-))
-DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
+));
+DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
 /**
- * @description Main dialog content component
+ * @description Dialog content component that contains the dialog UI
  */
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
@@ -66,17 +64,13 @@ const DialogContent = React.forwardRef<
       {...props}
     >
       {children}
-      <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-        <X className="h-4 w-4" />
-        <span className="sr-only">Close</span>
-      </DialogPrimitive.Close>
     </DialogPrimitive.Content>
   </DialogPortal>
-))
-DialogContent.displayName = DialogPrimitive.Content.displayName
+));
+DialogContent.displayName = DialogPrimitive.Content.displayName;
 
 /**
- * @description Dialog header component
+ * @description Dialog header component for consistent dialog header styling
  */
 const DialogHeader = ({
   className,
@@ -84,16 +78,16 @@ const DialogHeader = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      "flex flex-col space-y-1.5 text-center sm:text-left",
+      "flex flex-col space-y-1.5 text-left",
       className
     )}
     {...props}
   />
-)
-DialogHeader.displayName = "DialogHeader"
+);
+DialogHeader.displayName = "DialogHeader";
 
 /**
- * @description Dialog footer component
+ * @description Dialog footer component for consistent dialog footer styling
  */
 const DialogFooter = ({
   className,
@@ -106,11 +100,11 @@ const DialogFooter = ({
     )}
     {...props}
   />
-)
-DialogFooter.displayName = "DialogFooter"
+);
+DialogFooter.displayName = "DialogFooter";
 
 /**
- * @description Dialog title component
+ * @description Dialog title component for dialog headings
  */
 const DialogTitle = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Title>,
@@ -124,11 +118,11 @@ const DialogTitle = React.forwardRef<
     )}
     {...props}
   />
-))
-DialogTitle.displayName = DialogPrimitive.Title.displayName
+));
+DialogTitle.displayName = DialogPrimitive.Title.displayName;
 
 /**
- * @description Dialog description component
+ * @description Dialog description component for dialog descriptions
  */
 const DialogDescription = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Description>,
@@ -139,8 +133,8 @@ const DialogDescription = React.forwardRef<
     className={cn("text-sm text-muted-foreground", className)}
     {...props}
   />
-))
-DialogDescription.displayName = DialogPrimitive.Description.displayName
+));
+DialogDescription.displayName = DialogPrimitive.Description.displayName;
 
 export {
   Dialog,
@@ -150,4 +144,4 @@ export {
   DialogFooter,
   DialogTitle,
   DialogDescription,
-}
+};

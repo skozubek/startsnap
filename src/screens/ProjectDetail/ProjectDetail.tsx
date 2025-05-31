@@ -158,6 +158,7 @@ export const ProjectDetail = (): JSX.Element => {
 
   const categoryDisplay = getCategoryDisplay(startsnap.category);
   const creatorName = creator?.username || 'Anonymous';
+  const creatorInitials = creatorName.substring(0, 2).toUpperCase();
   const isOwner = currentUser && currentUser.id === startsnap.user_id;
 
   return (
