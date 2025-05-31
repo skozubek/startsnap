@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "./button";
 import { Card, CardContent } from "./card";
 import { Input } from "./input";
@@ -8,100 +7,68 @@ import { Textarea } from "./textarea";
 import { Badge } from "./badge";
 import { Checkbox } from "./checkbox";
 import { Separator } from "./separator";
-import { supabase } from "../../lib/supabase";
-
-// Form state type for better type safety
-type FormState = {
-  projectType: string;
-  projectName: string;
-  description: string;
-  category: string;
-  liveUrl: string;
-  videoUrl: string;
-  tagsInput: string;
-  tags: string[];
-  isHackathon: boolean;
-  vibeLogType: string;
-  vibeLogTitle: string;
-  vibeLogContent: string;
-  toolsInput: string;
-  toolsUsed: string[];
-  feedbackInput: string;
-  feedbackAreas: string[];
-};
-
-// Initial form state
-const initialFormState: FormState = {
-  projectType: "idea",
-  projectName: "",
-  description: "",
-  category: "",
-  liveUrl: "",
-  videoUrl: "",
-  tagsInput: "",
-  tags: [],
-  isHackathon: false,
-  vibeLogType: "launch",
-  vibeLogTitle: "Initial Launch",
-  vibeLogContent: "",
-  toolsInput: "",
-  toolsUsed: [],
-  feedbackInput: "",
-  feedbackAreas: []
-};
 
 interface ProjectFormProps {
   mode: 'create' | 'edit';
   projectId?: string;
-  initialData?: FormState;
-  onSubmit: (formData: FormState) => Promise<void>;
+  initialData?: any;
+  onSubmit: (formData: any) => void;
   onCancel: () => void;
 }
 
-export const ProjectForm: React.FC<ProjectFormProps> = ({
-  mode,
-  projectId,
-  initialData,
-  onSubmit,
-  onCancel
-}) => {
-  const [loading, setLoading] = useState(false);
-  const [formState, setFormState] = useState<FormState>(() => {
-    if (mode === 'edit' && initialData) {
-      return initialData;
-    }
-    
-    try {
-      const savedForm = localStorage.getItem('startSnapForm');
-      return savedForm ? JSON.parse(savedForm) : initialFormState;
-    } catch (error) {
-      console.error('Error loading saved form:', error);
-      return initialFormState;
-    }
+export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }: ProjectFormProps): JSX.Element => {
+  const [formState, setFormState] = useState({
+    projectType: "idea",
+    projectName: "",
+    description: "",
+    category: "",
+    liveUrl: "",
+    videoUrl: "",
+    tagsInput: "",
+    tags: [],
+    isHackathon: false,
+    vibeLogType: mode === 'create' ? "launch" : "update",
+    vibeLogTitle: mode === 'create' ? "Initial Launch" : "Project Update",
+    vibeLogContent: "",
+    toolsInput: "",
+    toolsUsed: [],
+    feedbackInput: "",
+    feedbackAreas: []
   });
 
-  // Save form state to localStorage
-  const saveFormState = (state: FormState) => {
-    try {
-      localStorage.setItem('startSnapForm', JSON.stringify(state));
-    } catch (error) {
-      console.error('Error saving form state:', error);
+  // Load initial data for edit mode
+  useEffect(() => {
+    if (mode === 'edit' && initialData) {
+      setFormState(initialData);
     }
-  };
+  }, [mode, initialData]);
+
+  // Save form state to localStorage in create mode
+  useEffect(() => {
+    if (mode === 'create') {
+      const savedState = localStorage.getItem('createProjectFormState');
+      if (savedState) {
+        setFormState(JSON.parse(savedState));
+      }
+    }
+  }, [mode]);
+
+  // Update localStorage when form state changes in create mode
+  useEffect(() => {
+    if (mode === 'create') {
+      localStorage.setItem('createProjectFormState', JSON.stringify(formState));
+    }
+  }, [formState, mode]);
 
   // Handle form field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    const newState = { ...formState, [name]: value };
-    setFormState(newState);
-    if (mode === 'create') saveFormState(newState);
+    setFormState(prev => ({ ...prev, [name]: value }));
   };
 
   // Handle checkbox change
   const handleCheckboxChange = (checked) => {
-    const newState = { ...formState, isHackathon: checked };
-    setFormState(newState);
-    if (mode === 'create') saveFormState(newState);
+    setFormState(prev => ({ ...prev, isHackathon: checked }));
   };
 
   // Handle tools tag input
@@ -110,13 +77,11 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
       e.preventDefault();
       const newTool = formState.toolsInput.trim();
       if (!formState.toolsUsed.includes(newTool)) {
-        const newState = {
-          ...formState,
-          toolsUsed: [...formState.toolsUsed, newTool],
+        setFormState(prev => ({
+          ...prev,
+          toolsUsed: [...prev.toolsUsed, newTool],
           toolsInput: ''
-        };
-        setFormState(newState);
-        if (mode === 'create') saveFormState(newState);
+        }));
       }
     }
   };
@@ -127,13 +92,11 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
       e.preventDefault();
       const newFeedback = formState.feedbackInput.trim();
       if (!formState.feedbackAreas.includes(newFeedback)) {
-        const newState = {
-          ...formState,
-          feedbackAreas: [...formState.feedbackAreas, newFeedback],
+        setFormState(prev => ({
+          ...prev,
+          feedbackAreas: [...prev.feedbackAreas, newFeedback],
           feedbackInput: ''
-        };
-        setFormState(newState);
-        if (mode === 'create') saveFormState(newState);
+        }));
       }
     }
   };
@@ -144,68 +107,48 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
       e.preventDefault();
       const newTag = formState.tagsInput.trim();
       if (!formState.tags.includes(newTag)) {
-        const newState = {
-          ...formState,
-          tags: [...formState.tags, newTag],
+        setFormState(prev => ({
+          ...prev,
+          tags: [...prev.tags, newTag],
           tagsInput: ''
-        };
-        setFormState(newState);
-        if (mode === 'create') saveFormState(newState);
+        }));
       }
     }
   };
 
   // Remove a tool tag
   const removeTool = (tool) => {
-    const newState = {
-      ...formState,
-      toolsUsed: formState.toolsUsed.filter(t => t !== tool)
-    };
-    setFormState(newState);
-    if (mode === 'create') saveFormState(newState);
+    setFormState(prev => ({
+      ...prev,
+      toolsUsed: prev.toolsUsed.filter(t => t !== tool)
+    }));
   };
 
   // Remove a feedback tag
   const removeFeedback = (feedback) => {
-    const newState = {
-      ...formState,
-      feedbackAreas: formState.feedbackAreas.filter(f => f !== feedback)
-    };
-    setFormState(newState);
-    if (mode === 'create') saveFormState(newState);
+    setFormState(prev => ({
+      ...prev,
+      feedbackAreas: prev.feedbackAreas.filter(f => f !== feedback)
+    }));
   };
 
   // Remove a general tag
   const removeTag = (tag) => {
-    const newState = {
-      ...formState,
-      tags: formState.tags.filter(t => t !== tag)
-    };
-    setFormState(newState);
-    if (mode === 'create') saveFormState(newState);
+    setFormState(prev => ({
+      ...prev,
+      tags: prev.tags.filter(t => t !== tag)
+    }));
   };
 
-  // Handle form submission
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    
     if (!formState.projectName.trim() || !formState.description.trim() || !formState.category) {
       alert('Please fill in all required fields.');
       return;
     }
-
-    try {
-      setLoading(true);
-      await onSubmit(formState);
-      
-      if (mode === 'create') {
-        localStorage.removeItem('startSnapForm');
-      }
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      alert('Error submitting form. Please try again.');
-    } finally {
-      setLoading(false);
+    onSubmit(formState);
+    if (mode === 'create') {
+      localStorage.removeItem('createProjectFormState');
     }
   };
 
@@ -226,11 +169,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
                     ? "bg-startsnap-french-rose text-startsnap-white" 
                     : "bg-startsnap-mischka text-startsnap-ebony-clay"
                 } font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]`}
-                onClick={() => {
-                  const newState = { ...formState, projectType: "idea" };
-                  setFormState(newState);
-                  if (mode === 'create') saveFormState(newState);
-                }}
+                onClick={() => setFormState(prev => ({ ...prev, projectType: "idea" }))}
               >
                 Idea / Concept
               </Button>
@@ -241,15 +180,26 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
                     ? "bg-startsnap-french-rose text-startsnap-white" 
                     : "bg-startsnap-mischka text-startsnap-ebony-clay"
                 } font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]`}
-                onClick={() => {
-                  const newState = { ...formState, projectType: "live" };
-                  setFormState(newState);
-                  if (mode === 'create') saveFormState(newState);
-                }}
+                onClick={() => setFormState(prev => ({ ...prev, projectType: "live" }))}
               >
                 Live Project
               </Button>
             </div>
+          </div>
+
+          {/* Hackathon Entry Checkbox */}
+          <div className="flex items-center space-x-2">
+            <Checkbox 
+              id="hackathon" 
+              checked={formState.isHackathon}
+              onCheckedChange={handleCheckboxChange}
+            />
+            <label
+              htmlFor="hackathon"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 font-['Roboto',Helvetica] text-startsnap-oxford-blue"
+            >
+              This is a Hackathon Entry
+            </label>
           </div>
 
           <div className="space-y-2">
@@ -287,11 +237,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
             <Select 
               name="category" 
               value={formState.category}
-              onValueChange={(value) => {
-                const newState = { ...formState, category: value };
-                setFormState(newState);
-                if (mode === 'create') saveFormState(newState);
-              }}
+              onValueChange={(value) => setFormState(prev => ({ ...prev, category: value }))}
               required
             >
               <SelectTrigger className="border-2 border-solid border-gray-800 rounded-lg h-[52px] font-['Roboto',Helvetica]">
@@ -310,33 +256,36 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
             </Select>
           </div>
 
-          {/* Link to Live Demo (optional) */}
-          <div className="space-y-2">
-            <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
-              Link to Live Demo/App (optional)
-            </label>
-            <Input
-              name="liveUrl"
-              value={formState.liveUrl}
-              onChange={handleChange}
-              placeholder="https://your-demo-url.com"
-              className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
-            />
-          </div>
+          {/* Live Demo and Video URLs - Only show for live projects */}
+          {formState.projectType === "live" && (
+            <>
+              <div className="space-y-2">
+                <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+                  Link to Live Demo/App (optional)
+                </label>
+                <Input
+                  name="liveUrl"
+                  value={formState.liveUrl}
+                  onChange={handleChange}
+                  placeholder="https://your-demo-url.com"
+                  className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
+                />
+              </div>
 
-          {/* Link to Demo Video (optional) */}
-          <div className="space-y-2">
-            <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
-              Link to Demo Video (optional)
-            </label>
-            <Input
-              name="videoUrl"
-              value={formState.videoUrl}
-              onChange={handleChange}
-              placeholder="https://youtube.com/watch?v=..."
-              className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
-            />
-          </div>
+              <div className="space-y-2">
+                <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+                  Link to Demo Video (optional)
+                </label>
+                <Input
+                  name="videoUrl"
+                  value={formState.videoUrl}
+                  onChange={handleChange}
+                  placeholder="https://youtube.com/watch?v=..."
+                  className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
+                />
+              </div>
+            </>
+          )}
 
           {/* Tools Used Tags */}
           <div className="space-y-2">
@@ -402,21 +351,6 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
             </div>
           </div>
 
-          {/* Is Hackathon Entry Checkbox */}
-          <div className="flex items-center space-x-2">
-            <Checkbox 
-              id="hackathon" 
-              checked={formState.isHackathon}
-              onCheckedChange={handleCheckboxChange}
-            />
-            <label
-              htmlFor="hackathon"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 font-['Roboto',Helvetica] text-startsnap-oxford-blue"
-            >
-              This is a Hackathon Entry
-            </label>
-          </div>
-
           <div className="space-y-2">
             <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
               General Tags (press Enter to add)
@@ -469,11 +403,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
                 <Select 
                   name="vibeLogType" 
                   value={formState.vibeLogType}
-                  onValueChange={(value) => {
-                    const newState = { ...formState, vibeLogType: value };
-                    setFormState(newState);
-                    if (mode === 'create') saveFormState(newState);
-                  }}
+                  onValueChange={(value) => setFormState(prev => ({ ...prev, vibeLogType: value }))}
                 >
                   <SelectTrigger className="border-2 border-solid border-gray-800 rounded-lg h-[52px] font-['Roboto',Helvetica]">
                     <SelectValue placeholder="Select entry type" />
@@ -525,22 +455,16 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
             <Button
               type="button"
               variant="outline"
-              onClick={() => {
-                if (mode === 'create') {
-                  localStorage.removeItem('startSnapForm');
-                }
-                onCancel();
-              }}
+              onClick={onCancel}
               className="startsnap-button bg-startsnap-mischka text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
             >
               Cancel
             </Button>
             <Button 
               type="submit"
-              disabled={loading}
               className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
             >
-              {loading ? (mode === 'create' ? 'Launching...' : 'Saving...') : (mode === 'create' ? 'Launch Project' : 'Save Changes')}
+              {mode === 'create' ? 'Launch Project' : 'Save Changes'}
             </Button>
           </div>
         </form>
