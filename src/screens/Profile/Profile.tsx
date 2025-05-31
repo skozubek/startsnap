@@ -19,6 +19,7 @@ import {
   SelectValue 
 } from "../../components/ui/select";
 import { supabase } from "../../lib/supabase";
+import { FaGithub, FaXTwitter, FaLinkedinIn, FaGlobe } from "react-icons/fa6";
 
 /**
  * @description User profile page with settings and project management
@@ -475,7 +476,7 @@ export const Profile = (): JSX.Element => {
                       {/* GitHub Link */}
                       <div className="space-y-1">
                         <div className="flex items-center">
-                          <span className="material-icons text-gray-700 mr-2">code</span>
+                          <FaGithub className="text-black mr-2 text-lg" />
                           <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">GitHub</label>
                         </div>
                         <Input
@@ -493,7 +494,7 @@ export const Profile = (): JSX.Element => {
                       {/* Twitter Link */}
                       <div className="space-y-1">
                         <div className="flex items-center">
-                          <span className="material-icons text-sky-500 mr-2">alternate_email</span>
+                          <FaXTwitter className="text-black mr-2 text-lg" />
                           <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">Twitter</label>
                         </div>
                         <Input
@@ -511,7 +512,7 @@ export const Profile = (): JSX.Element => {
                       {/* LinkedIn Link */}
                       <div className="space-y-1">
                         <div className="flex items-center">
-                          <span className="material-icons text-blue-700 mr-2">business</span>
+                          <FaLinkedinIn className="text-black mr-2 text-lg" />
                           <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">LinkedIn</label>
                         </div>
                         <Input
@@ -529,7 +530,7 @@ export const Profile = (): JSX.Element => {
                       {/* Website Link */}
                       <div className="space-y-1">
                         <div className="flex items-center">
-                          <span className="material-icons text-green-600 mr-2">language</span>
+                          <FaGlobe className="text-black mr-2 text-lg" />
                           <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">Website</label>
                         </div>
                         <Input
