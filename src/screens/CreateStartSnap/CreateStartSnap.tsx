@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { UploadIcon } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
@@ -356,26 +355,6 @@ export const CreateStartSnap = (): JSX.Element => {
                 placeholder="https://youtube.com/watch?v=..."
                 className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
               />
-            </div>
-
-            <div className="space-y-2">
-              <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
-                Project Thumbnail
-              </label>
-              <div className="border-2 border-dashed border-gray-800 rounded-lg h-[147px] flex flex-col items-center justify-center text-center p-4">
-                <UploadIcon className="w-12 h-12 text-startsnap-gray-chateau mb-2" />
-                <div className="flex items-center gap-1">
-                  <span className="text-startsnap-cerise text-sm font-['Roboto',Helvetica] font-medium">
-                    Upload a file
-                  </span>
-                  <span className="text-startsnap-river-bed text-sm font-['Roboto',Helvetica]">
-                    or drag and drop
-                  </span>
-                </div>
-                <p className="text-startsnap-pale-sky text-xs font-['Roboto',Helvetica] mt-1">
-                  PNG, JPG, GIF up to 10MB
-                </p>
-              </div>
             </div>
 
             {/* Tools Used Tags */}
