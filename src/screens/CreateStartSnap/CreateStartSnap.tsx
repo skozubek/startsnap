@@ -18,7 +18,8 @@ type FormState = {
   category: string;
   liveUrl: string;
   videoUrl: string;
-  tags: string;
+  tagsInput: string;
+  tags: string[];
   isHackathon: boolean;
   vibeLogType: string;
   vibeLogTitle: string;
@@ -37,7 +38,8 @@ const initialFormState: FormState = {
   category: "",
   liveUrl: "",
   videoUrl: "",
-  tags: "",
+  tagsInput: "",
+  tags: [],
   isHackathon: false,
   vibeLogType: "launch",
   vibeLogTitle: "Initial Launch",
@@ -133,6 +135,23 @@ export const CreateStartSnap = (): JSX.Element => {
     }
   };
 
+  // Handle general tags input
+  const handleTagsInputKeyDown = (e) => {
+    if (e.key === 'Enter' && formState.tagsInput.trim()) {
+      e.preventDefault();
+      const newTag = formState.tagsInput.trim();
+      if (!formState.tags.includes(newTag)) {
+        const newState = {
+          ...formState,
+          tags: [...formState.tags, newTag],
+          tagsInput: ''
+        };
+        setFormState(newState);
+        saveFormState(newState);
+      }
+    }
+  };
+
   // Remove a tool tag
   const removeTool = (tool) => {
     const newState = {
@@ -148,6 +167,16 @@ export const CreateStartSnap = (): JSX.Element => {
     const newState = {
       ...formState,
       feedbackAreas: formState.feedbackAreas.filter(f => f !== feedback)
+    };
+    setFormState(newState);
+    saveFormState(newState);
+  };
+
+  // Remove a general tag
+  const removeTag = (tag) => {
+    const newState = {
+      ...formState,
+      tags: formState.tags.filter(t => t !== tag)
     };
     setFormState(newState);
     saveFormState(newState);
@@ -170,11 +199,6 @@ export const CreateStartSnap = (): JSX.Element => {
     try {
       setLoading(true);
 
-      // Parse general tags
-      const generalTags = formState.tags.split(',')
-        .map(tag => tag.trim())
-        .filter(tag => tag.length > 0);
-
       // Insert the startsnap
       const { data: startsnap, error: startsnapError } = await supabase
         .from('startsnaps')
@@ -189,7 +213,7 @@ export const CreateStartSnap = (): JSX.Element => {
           tools_used: formState.toolsUsed,
           feedback_tags: formState.feedbackAreas,
           is_hackathon_entry: formState.isHackathon,
-          tags: generalTags
+          tags: formState.tags
         })
         .select();
 
@@ -438,15 +462,33 @@ export const CreateStartSnap = (): JSX.Element => {
 
             <div className="space-y-2">
               <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
-                General Tags (comma separated)
+                General Tags (press Enter to add)
               </label>
               <Input
-                name="tags"
-                value={formState.tags}
+                name="tagsInput"
+                value={formState.tagsInput}
                 onChange={handleChange}
+                onKeyDown={handleTagsInputKeyDown}
                 placeholder="e.g., AI, SaaS, Mobile"
                 className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
               />
+              <div className="flex flex-wrap gap-2 mt-2">
+                {formState.tags.map((tag, index) => (
+                  <Badge 
+                    key={index} 
+                    className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-gray-800 px-[13px] py-[5px] flex items-center gap-1"
+                  >
+                    {tag}
+                    <button 
+                      type="button" 
+                      onClick={() => removeTag(tag)} 
+                      className="ml-1 hover:text-red-500"
+                    >
+                      ×
+                    </button>
+                  </Badge>
+                ))}
+              </div>
             </div>
 
             <Separator className="border-gray-300 my-6" />
