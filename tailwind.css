@@ -55,31 +55,8 @@
     background-color: rgba(209, 213, 219, 0.9); /* More subtle mischka */
   }
 
-  /* More subtle hover effects for labels and tags */
-  .bg-purple-200:hover {
-    background-color: rgba(233, 213, 255, 0.95) !important; /* Very subtle purple change */
-  }
-
-  .bg-startsnap-athens-gray:hover {
-    background-color: rgba(229, 231, 235, 0.95) !important; /* Very subtle gray change */
-  }
-
-  .bg-startsnap-ice-cold:hover {
-    background-color: rgba(187, 247, 208, 0.95) !important; /* Very subtle green change for Gaming */
-  }
-
-  .bg-startsnap-french-pass:hover {
-    background-color: rgba(191, 219, 254, 0.95) !important; /* Very subtle blue change for Community */
-  }
-
-  /* General badge hover effect override for more subtlety */
-  [class*="bg-purple-200"].hover\:bg-primary\/80:hover,
-  [class*="bg-startsnap-athens-gray"].hover\:bg-secondary\/80:hover,
-  [class*="bg-startsnap-ice-cold"].hover\:bg-secondary\/80:hover,
-  [class*="bg-startsnap-french-pass"].hover\:bg-secondary\/80:hover {
-    opacity: 0.95;
-    transition: opacity 0.2s ease-in-out;
-  }
+  /* Remove hover effects for badges and labels */
+  /* No hover effects for any badge types to ensure consistent UI */
 }
 
 @layer base {

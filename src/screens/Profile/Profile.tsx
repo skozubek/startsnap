@@ -418,7 +418,7 @@ export const Profile = (): JSX.Element => {
                 <Popover open={statusPopoverOpen} onOpenChange={setStatusPopoverOpen}>
                   <PopoverTrigger asChild>
                     <div className="mt-4 text-center cursor-pointer hover:scale-105 transition-transform">
-                      <Badge className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-gray-800 px-3 py-1.5 hover:bg-gray-200">
+                      <Badge className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-gray-800 px-3 py-1.5">
                         <span className="material-icons text-sm mr-1">{getStatusIcon(profile.status)}</span>
                         {statusOptions.find(opt => opt.value === profile.status)?.label}
                       </Badge>
