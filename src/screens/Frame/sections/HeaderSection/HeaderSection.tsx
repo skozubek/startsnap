@@ -82,6 +82,13 @@ export const HeaderSection = (): JSX.Element => {
   };
 
   /**
+   * @description Handles switching between login and signup modes
+   * @param {('signup'|'login')} newMode - The new authentication mode
+   */
+  const handleAuthModeChange = (newMode: 'signup' | 'login') => {
+    setAuthMode(newMode);
+
+  /**
    * @description Handles user sign out process
    * @async
    * @sideEffects Signs out the current user via Supabase auth
@@ -185,6 +192,7 @@ export const HeaderSection = (): JSX.Element => {
         isOpen={isAuthDialogOpen}
         onClose={() => setIsAuthDialogOpen(false)}
         mode={authMode}
+        onModeChange={handleAuthModeChange}
       />
     </header>
   );

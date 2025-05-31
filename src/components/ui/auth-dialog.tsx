@@ -30,6 +30,18 @@ export const AuthDialog = ({ isOpen, onClose, mode }: AuthDialogProps): JSX.Elem
             {mode === 'login' ? 'Welcome Back!' : 'Join StartSnap'}
           </h2>
           <AuthForm mode={mode} onSuccess={onClose} />
+          <div className="mt-6 text-center">
+            <p className="text-startsnap-pale-sky mb-2">
+              {mode === 'login' ? "Don't have an account?" : "Already have an account?"}
+            </p>
+            <Button
+              variant="link"
+              onClick={handleModeSwitch}
+              className="text-startsnap-french-rose hover:text-startsnap-cerise font-semibold p-0"
+            >
+              {mode === 'login' ? 'Sign up here' : 'Sign in here'}
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
