@@ -41,17 +41,17 @@ export const VibeLogEntry = ({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="launch" className="flex items-center">
-              <span className="material-icons text-base mr-2 leading-none">rocket_launch</span>
+              <span className="material-icons text-base mr-2 leading-none">campaign</span>
               <span>Launch</span>
             </SelectItem>
             {showAllTypes && (
               <>
                 <SelectItem value="update" className="flex items-center">
-                  <span className="material-icons text-base mr-2 leading-none">campaign</span>
+                  <span className="material-icons text-base mr-2 leading-none">construction</span>
                   <span>General Update</span>
                 </SelectItem>
                 <SelectItem value="feature" className="flex items-center">
-                  <span className="material-icons text-base mr-2 leading-none">tools</span>
+                  <span className="material-icons text-base mr-2 leading-none">auto_awesome</span>
                   <span>Fix / New Feature</span>
                 </SelectItem>
                 <SelectItem value="idea" className="flex items-center">

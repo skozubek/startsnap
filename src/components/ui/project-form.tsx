@@ -265,7 +265,7 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="tech">Blockchain</SelectItem>
+                <SelectItem value="tech">Tech</SelectItem>
                 <SelectItem value="gaming">Gaming</SelectItem>
                 <SelectItem value="community">Community</SelectItem>
                 <SelectItem value="music">Music Tech</SelectItem>
