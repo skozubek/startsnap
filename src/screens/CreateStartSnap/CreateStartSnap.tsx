@@ -68,11 +68,12 @@ export const CreateStartSnap = (): JSX.Element => {
   return (
     <div className="flex flex-col w-full items-center gap-8 pt-8 pb-24 px-8 bg-startsnap-candlelight">
       <h2 className="text-5xl font-bold text-startsnap-ebony-clay text-center font-['Space_Grotesk',Helvetica] leading-[48px]">
-        Launch Your Project
+        Launch your StartSnap
       </h2>
 
       <ProjectForm
         mode="create"
+        defaultVibeLogType={true}
         onSubmit={handleSubmit}
         onCancel={() => navigate('/')}
       />
