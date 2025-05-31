@@ -253,7 +253,7 @@ export const Profile = (): JSX.Element => {
               <div className="flex flex-col items-center min-w-[250px]">
                 <div className="w-32 h-32 border-[3px] border-gray-800 rounded-full overflow-hidden bg-white">
                   <Avatar
-                    name={profile.username || user?.email || 'Anonymous'}
+                    name={profile.username || user?.email?.split('@')[0] || 'Anonymous'}
                     variant="beam"
                     size={128}
                     colors={["#264653", "#2a9d8f", "#e9c46a", "#f4a261", "#e76f51"]}

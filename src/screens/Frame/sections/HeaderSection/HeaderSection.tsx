@@ -32,20 +32,51 @@ export const HeaderSection = (): JSX.Element => {
   const [authMode, setAuthMode] = useState<'signup' | 'login'>('login');
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [userProfile, setUserProfile] = useState<any>(null);
 
   useEffect(() => {
     // Check current session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user || null);
+
+      // Fetch user profile for consistent avatar
+      if (session?.user) {
+        fetchUserProfile(session.user.id);
+      }
     });
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user || null);
+
+      if (session?.user) {
+        fetchUserProfile(session.user.id);
+      } else {
+        setUserProfile(null);
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  /**
+   * @description Fetches user profile for consistent avatar generation
+   * @async
+   * @param {string} userId - User ID to fetch profile for
+   */
+  const fetchUserProfile = async (userId: string) => {
+    try {
+      const { data } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('user_id', userId)
+        .single();
+
+      setUserProfile(data);
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+    }
+  };
 
   // Only "Feed" is visible to all users
   const navLinks = [
@@ -123,7 +154,7 @@ export const HeaderSection = (): JSX.Element => {
               <DropdownMenuTrigger className="outline-none">
                 <div className="w-10 h-10 border-2 border-gray-800 cursor-pointer hover:border-startsnap-french-rose transition-colors rounded-full overflow-hidden bg-white">
                   <Avatar
-                    name={user.email || 'Anonymous'}
+                    name={userProfile?.username || user.email?.split('@')[0] || 'Anonymous'}
                     variant="beam"
                     size={40}
                     colors={["#264653", "#2a9d8f", "#e9c46a", "#f4a261", "#e76f51"]}
