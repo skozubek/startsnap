@@ -15,6 +15,7 @@ import { MinimalistThumbnail } from "../../components/ui/project-thumbnail";
 import { getCategoryDisplay, getVibeLogDisplay } from "../../config/categories";
 import { formatDetailedDate } from "../../lib/utils";
 import Avatar from "boring-avatars";
+import { useAuth } from "../../context/AuthContext";
 
 /**
  * @description Page component that displays detailed project information
@@ -28,18 +29,13 @@ export const ProjectDetail = (): JSX.Element => {
   const [vibeLogEntries, setVibeLogEntries] = useState([]);
   const [feedbackEntries, setFeedbackEntries] = useState([]);
   const [feedbackContent, setFeedbackContent] = useState("");
-  const [currentUser, setCurrentUser] = useState(null);
+  const { user: currentUser } = useAuth();
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   useEffect(() => {
-    // Check current user
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setCurrentUser(session?.user || null);
-    });
-
     fetchProjectData();
   }, [id]);
 

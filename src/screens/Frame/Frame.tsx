@@ -13,6 +13,7 @@ import { CreateStartSnap } from "../CreateStartSnap";
 import { EditStartSnap } from "../EditStartSnap";
 import { Profile } from "../Profile";
 import { supabase } from "../../lib/supabase";
+import { AuthProvider } from "../../context/AuthContext";
 
 /**
  * @description Main application container that manages routes and auth state
@@ -55,38 +56,40 @@ export const Frame = (): JSX.Element => {
 
   return (
     <div className="flex flex-col min-h-screen w-full bg-startsnap-candlelight">
-      <HeaderSection />
-      <div className="flex flex-col w-full min-h-screen overflow-y-auto">
-        <Routes>
-          <Route path="/" element={<MainContentSection />} />
-          <Route path="/project/:id" element={<ProjectDetail />} />
-          <Route 
-            path="/create" 
-            element={
-              <ProtectedRoute>
-                <CreateStartSnap />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/edit/:id" 
-            element={
-              <ProtectedRoute>
-                <EditStartSnap />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/profile" 
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            } 
-          />
-        </Routes>
-      </div>
-      <FooterSection />
+      <AuthProvider>
+        <HeaderSection />
+        <div className="flex flex-col w-full min-h-screen overflow-y-auto">
+          <Routes>
+            <Route path="/" element={<MainContentSection />} />
+            <Route path="/project/:id" element={<ProjectDetail />} />
+            <Route 
+              path="/create" 
+              element={
+                <ProtectedRoute>
+                  <CreateStartSnap />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/edit/:id" 
+              element={
+                <ProtectedRoute>
+                  <EditStartSnap />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/profile" 
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              } 
+            />
+          </Routes>
+        </div>
+        <FooterSection />
+      </AuthProvider>
     </div>
   );
 };
