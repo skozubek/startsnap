@@ -136,7 +136,7 @@ export const MainContentSection = (): JSX.Element => {
     <section className="flex flex-col w-full items-center bg-startsnap-candlelight">
       {/* Hero Section */}
       <div className="w-full bg-[--startsnap-beige]">
-        <div className="max-w-screen-2xl mx-auto px-8 flex items-center min-h-[calc(100vh-88px)]">
+        <div className="max-w-screen-2xl mx-auto px-8 py-24 flex items-center">
           <div className="w-[60%] pr-16">
             <h1 className="text-6xl font-bold text-startsnap-ebony-clay mb-6 font-['Space_Grotesk',Helvetica] leading-tight">
               We are Vibe Coders,<br />We Build StartSnaps!
@@ -152,7 +152,7 @@ export const MainContentSection = (): JSX.Element => {
             <img 
               src="https://ik.imagekit.io/craftsnap/startsnap/vibe-coder.png" 
               alt="Collaborative team working together" 
-              className="rounded-lg border-2 border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] w-full h-auto"
+              className="w-full h-auto"
             />
           </div>
         </div>
