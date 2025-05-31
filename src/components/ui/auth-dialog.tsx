@@ -1,78 +1,140 @@
-import React, { useState } from "react";
-import { Dialog, DialogContent } from "./dialog";
-import { AuthForm } from "./auth-form";
+import React, { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
+import { Button } from "./button";
+import { Input } from "./input";
+import { Label } from "./label";
 
-interface AuthDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-  mode: "login" | "signup";
-}
-
-export const AuthDialog = ({ isOpen, onClose, mode }: AuthDialogProps): JSX.Element => {
+export function AuthDialog({ 
+  isOpen, 
+  onClose, 
+  mode: initialMode 
+}) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(null);
+  const [currentMode, setCurrentMode] = useState(initialMode);
 
-  /**
-   * @description Handles user authentication (login or signup)
-   * @async
-   * @param {string} email - User's email
-   * @param {string} password - User's password
-   * @sideEffects Authenticates user via Supabase auth
-   */
-  const handleSubmit = async (email: string, password: string) => {
+  // Reset to initial mode whenever dialog is opened
+  useEffect(() => {
+    if (isOpen) {
+      setCurrentMode(initialMode);
+      // Reset form state
+      setEmail("");
+      setPassword("");
+      setError(null);
+      setLoading(false);
+    }
+  }, [isOpen, initialMode]);
+
+  const handleToggleMode = () => {
+    setCurrentMode(currentMode === "login" ? "signup" : "login");
+    setError(null);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setLoading(true);
-    setError("");
+    setError(null);
 
     try {
-      if (mode === "login") {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (error) throw error;
-      } else {
+      if (currentMode === "signup") {
         const { error } = await supabase.auth.signUp({
           email,
           password,
         });
         if (error) throw error;
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) throw error;
       }
-    } catch (error: any) {
-      console.error('Authentication error:', error);
-      setError(error.error_description || error.message || 'An error occurred');
+      
+      onClose();
+    } catch (error) {
+      setError(error.message);
     } finally {
       setLoading(false);
     }
   };
 
+  if (!isOpen) return null;
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 border-[3px] border-gray-800">
-        <h2 className="text-3xl font-bold text-startsnap-ebony-clay mb-8 font-['Space_Grotesk',Helvetica]">
-          {mode === "login" ? "Welcome Back" : "Create Account"}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 border-[3px] border-gray-800">
+        <h2 className="text-4xl font-bold text-startsnap-ebony-clay mb-8 font-['Space_Grotesk',Helvetica]">
+          {currentMode === "signup" ? "Create Account" : "Welcome Back"}
         </h2>
-        <AuthForm
-          mode={mode}
-          onSubmit={handleSubmit}
-          isLoading={loading}
-        />
-        {error && (
-          <div className="bg-red-100 text-red-600 p-3 rounded-lg text-sm mt-4">
-            {error}
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="email" className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg">
+              Email
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica]"
+              required
+            />
           </div>
-        )}
-        <div className="text-center mt-6">
-          <button
-            onClick={() => onClose()}
-            className="text-startsnap-pale-sky hover:text-startsnap-french-rose transition-colors"
-          >
-            {mode === "login"
-              ? "Don't have an account? Sign up"
-              : "Already have an account? Log in"}
-          </button>
-        </div>
-      </DialogContent>
-    </Dialog>
+
+          <div className="space-y-2">
+            <Label htmlFor="password" className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg">
+              Password
+            </Label>
+            <Input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica]"
+              required
+            />
+          </div>
+
+          {error && (
+            <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+              {error}
+            </div>
+          )}
+
+          <div className="flex justify-center gap-4 pt-4">
+            <Button
+              type="button"
+              onClick={onClose}
+              variant="outline"
+              className="startsnap-button bg-startsnap-mischka text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] w-40"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={loading}
+              className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] w-40"
+            >
+              {loading ? "Processing..." : currentMode === "signup" ? "Sign Up" : "Log In"}
+            </Button>
+          </div>
+
+          <div className="text-center mt-4">
+            <button
+              type="button"
+              onClick={handleToggleMode}
+              className="text-startsnap-french-rose hover:underline focus:outline-none"
+            >
+              {currentMode === "signup"
+                ? "Already have an account? Log in"
+                : "Don't have an account? Sign up"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
-};
+}
