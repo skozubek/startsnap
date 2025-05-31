@@ -1,6 +1,6 @@
 /**
  * src/components/ui/dialog.tsx
- * @description Dialog component implementation based on Radix UI
+ * @description Dialog component from Shadcn UI library
  */
 
 import * as React from "react"
@@ -9,12 +9,18 @@ import { X } from "lucide-react"
 
 import { cn } from "../../lib/utils"
 
+/**
+ * @description Base Dialog component with Radix Dialog primitive
+ */
 const Dialog = DialogPrimitive.Root
 
+/**
+ * @description Dialog trigger component
+ */
 const DialogTrigger = DialogPrimitive.Trigger
 
 /**
- * @description Portal component for rendering dialog content outside the DOM hierarchy
+ * @description Dialog portal component for rendering content outside the DOM hierarchy
  */
 const DialogPortal = ({
   className,
@@ -25,7 +31,7 @@ const DialogPortal = ({
 DialogPortal.displayName = DialogPrimitive.Portal.displayName
 
 /**
- * @description Overlay component that dims the background when the dialog is open
+ * @description Dialog overlay component for background dimming
  */
 const DialogOverlay = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Overlay>,
@@ -34,7 +40,7 @@ const DialogOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      "fixed inset-0 z-50 bg-black/50 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      "fixed inset-0 z-50 bg-black/80 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
       className
     )}
     {...props}
@@ -43,7 +49,7 @@ const DialogOverlay = React.forwardRef<
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
 
 /**
- * @description The main dialog content container
+ * @description Main dialog content component
  */
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
@@ -54,7 +60,7 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg md:w-full",
+        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg md:w-full",
         className
       )}
       {...props}
@@ -70,7 +76,7 @@ const DialogContent = React.forwardRef<
 DialogContent.displayName = DialogPrimitive.Content.displayName
 
 /**
- * @description Header component for dialog content
+ * @description Dialog header component
  */
 const DialogHeader = ({
   className,
@@ -87,7 +93,7 @@ const DialogHeader = ({
 DialogHeader.displayName = "DialogHeader"
 
 /**
- * @description Footer component for dialog content
+ * @description Dialog footer component
  */
 const DialogFooter = ({
   className,
@@ -104,7 +110,7 @@ const DialogFooter = ({
 DialogFooter.displayName = "DialogFooter"
 
 /**
- * @description Title component for dialog
+ * @description Dialog title component
  */
 const DialogTitle = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Title>,
@@ -122,7 +128,7 @@ const DialogTitle = React.forwardRef<
 DialogTitle.displayName = DialogPrimitive.Title.displayName
 
 /**
- * @description Description component for dialog
+ * @description Dialog description component
  */
 const DialogDescription = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Description>,

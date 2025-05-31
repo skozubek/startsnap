@@ -1,256 +1,153 @@
 /**
  * src/components/ui/auth-dialog.tsx
- * @description Authentication dialog component for user login and signup
+ * @description Authentication dialog component for login and signup functionality
  */
 
-import React, { useState } from "react";
-import { Button } from "./button";
-import { Input } from "./input";
-import { Label } from "./label";
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from "./dialog";
-import { supabase } from "../../lib/supabase";
+import React, { useState } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './dialog';
+import { Button } from './button';
+import { Input } from './input';
+import { Label } from './label';
+import { supabase } from '../../lib/supabase';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { authFormSchema } from '../../lib/form-schemas';
+import * as z from 'zod';
 
 interface AuthDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  mode: 'signup' | 'login';
+  mode: 'login' | 'signup';
 }
 
 /**
- * @description Component for handling user authentication (login/signup)
- * @param {AuthDialogProps} props - Component props
- * @returns {JSX.Element} Authentication dialog with form fields
- * @sideEffects Interacts with Supabase auth API for user authentication
+ * @description Authentication dialog component for handling user login and signup
+ * @param {AuthDialogProps} props - Component props containing dialog state and mode
+ * @returns {JSX.Element} Authentication dialog with form fields and submit button
  */
-export const AuthDialog = ({ isOpen, onClose, mode: initialMode }: AuthDialogProps): JSX.Element => {
-  const [mode, setMode] = useState<'signup' | 'login'>(initialMode);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
+export const AuthDialog = ({ isOpen, onClose, mode }: AuthDialogProps): JSX.Element => {
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [emailError, setEmailError] = useState<string | null>(null);
-  const [passwordError, setPasswordError] = useState<string | null>(null);
 
-  /**
-   * @description Toggles between login and signup modes
-   */
-  const toggleMode = () => {
-    setMode(mode === 'login' ? 'signup' : 'login');
-    setError(null);
-    setEmailError(null);
-    setPasswordError(null);
-  };
-
-  /**
-   * @description Clears the dialog state and closes it
-   */
-  const handleClose = () => {
-    setEmail('');
-    setPassword('');
-    setError(null);
-    setEmailError(null);
-    setPasswordError(null);
-    setLoading(false);
-    onClose();
-  };
-
-  /**
-   * @description Validates the email format
-   * @param {string} email - Email to validate
-   * @returns {boolean} Whether the email is valid
-   */
-  const validateEmail = (email: string): boolean => {
-    if (!email.trim()) {
-      setEmailError('Email is required');
-      return false;
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset
+  } = useForm<z.infer<typeof authFormSchema>>({
+    resolver: zodResolver(authFormSchema),
+    defaultValues: {
+      email: '',
+      password: ''
     }
-    
-    // More comprehensive email validation
-    const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    if (!emailRegex.test(email)) {
-      setEmailError('Please enter a valid email address');
-      return false;
-    }
-    
-    setEmailError(null);
-    return true;
-  };
+  });
 
   /**
-   * @description Validates the password
-   * @param {string} password - Password to validate
-   * @returns {boolean} Whether the password is valid
-   */
-  const validatePassword = (password: string): boolean => {
-    if (!password) {
-      setPasswordError('Password is required');
-      return false;
-    }
-
-    if (password.length < 6) {
-      setPasswordError('Password must be at least 6 characters');
-      return false;
-    }
-
-    setPasswordError(null);
-    return true;
-  };
-
-  /**
-   * @description Handles the login submission
+   * @description Handles form submission for both login and signup flows
+   * @param {Object} data - Form data with email and password
    * @async
-   * @sideEffects Attempts to sign in the user via Supabase auth
+   * @sideEffects Authenticates user with Supabase and updates auth state
    */
-  const handleLogin = async () => {
-    // Validate inputs first
-    const isEmailValid = validateEmail(email);
-    const isPasswordValid = validatePassword(password);
-    
-    if (!isEmailValid || !isPasswordValid) {
-      return;
-    }
+  const onSubmit = async (data: z.infer<typeof authFormSchema>) => {
+    setIsLoading(true);
+    setError(null);
 
     try {
-      setLoading(true);
-      setError(null);
+      if (mode === 'signup') {
+        const { error: signUpError } = await supabase.auth.signUp({
+          email: data.email,
+          password: data.password,
+        });
 
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+        if (signUpError) throw signUpError;
+        
+        // Close the dialog on successful signup
+        onClose();
+        reset();
+        alert('Check your email for the confirmation link!');
+      } else {
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email: data.email,
+          password: data.password,
+        });
 
-      if (error) throw error;
-      
-      handleClose();
+        if (signInError) throw signInError;
+        
+        // Close the dialog on successful login
+        onClose();
+        reset();
+      }
     } catch (error: any) {
-      console.error('Error logging in:', error);
-      setError(error.message || 'Invalid login credentials');
+      console.error('Authentication error:', error);
+      setError(error.message || 'An error occurred during authentication');
     } finally {
-      setLoading(false);
-    }
-  };
-
-  /**
-   * @description Handles the signup submission
-   * @async
-   * @sideEffects Creates a new user account via Supabase auth
-   */
-  const handleSignUp = async () => {
-    // Validate inputs first
-    const isEmailValid = validateEmail(email);
-    const isPasswordValid = validatePassword(password);
-    
-    if (!isEmailValid || !isPasswordValid) {
-      return;
-    }
-
-    try {
-      setLoading(true);
-      setError(null);
-
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-
-      if (error) throw error;
-
-      handleClose();
-      alert('Check your email for the confirmation link!');
-    } catch (error: any) {
-      console.error('Error signing up:', error);
-      setError(error.message || 'An error occurred during sign up');
-    } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md bg-white p-8 rounded-lg border-3 border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]">
-        <DialogTitle className="text-4xl font-bold text-startsnap-ebony-clay text-center font-['Space_Grotesk',Helvetica] leading-tight mb-8">
-          {mode === 'login' ? 'Welcome Back' : 'Create Your Account'}
-        </DialogTitle>
-
-        <div className="space-y-6">
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      if (!open) {
+        onClose();
+        reset();
+        setError(null);
+      }
+    }}>
+      <DialogContent className="sm:max-w-[425px] bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica]">
+            {mode === 'login' ? 'Log In' : 'Sign Up'}
+          </DialogTitle>
+        </DialogHeader>
+        
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label
-              htmlFor="email"
-              className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-xl leading-7"
-            >
+            <Label htmlFor="email" className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue">
               Email
             </Label>
             <Input
               id="email"
-              type="email"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                setEmailError(null);
-                setError(null);
-              }}
-              className={`w-full border-2 border-solid ${emailError ? 'border-red-500' : 'border-gray-800'} rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
+              {...register('email')}
               placeholder="your.email@example.com"
+              className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
             />
-            {emailError && (
-              <p className="text-red-500 text-sm mt-1">{emailError}</p>
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
             )}
           </div>
-
+          
           <div className="space-y-2">
-            <Label
-              htmlFor="password"
-              className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-xl leading-7"
-            >
+            <Label htmlFor="password" className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue">
               Password
             </Label>
             <Input
               id="password"
               type="password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                setPasswordError(null);
-                setError(null);
-              }}
-              className={`w-full border-2 border-solid ${passwordError ? 'border-red-500' : 'border-gray-800'} rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
+              {...register('password')}
+              placeholder="Your password"
+              className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
             />
-            {passwordError && (
-              <p className="text-red-500 text-sm mt-1">{passwordError}</p>
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
             )}
           </div>
-
+          
           {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md">
-              {error}
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+              <span className="block sm:inline">{error}</span>
             </div>
           )}
-
-          <div className="flex gap-4 pt-2">
+          
+          <div className="flex justify-end mt-6">
             <Button
-              type="button"
-              variant="outline"
-              onClick={handleClose}
-              className="flex-1 startsnap-button bg-gray-200 text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+              type="submit"
+              disabled={isLoading}
+              className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
             >
-              Cancel
-            </Button>
-            <Button
-              type="button"
-              onClick={mode === 'login' ? handleLogin : handleSignUp}
-              disabled={loading}
-              className="flex-1 startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
-            >
-              {loading ? (mode === 'login' ? 'Logging In...' : 'Signing Up...') : (mode === 'login' ? 'Log In' : 'Sign Up')}
+              {isLoading ? 'Processing...' : mode === 'login' ? 'Log In' : 'Sign Up'}
             </Button>
           </div>
-
-          <div className="text-center text-startsnap-french-rose hover:underline cursor-pointer">
-            <span onClick={toggleMode}>
-              {mode === 'login' ? "Don't have an account? Sign up" : "Already have an account? Log in"}
-            </span>
-          </div>
-        </div>
+        </form>
       </DialogContent>
     </Dialog>
   );
