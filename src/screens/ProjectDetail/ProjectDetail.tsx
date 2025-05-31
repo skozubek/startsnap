@@ -8,12 +8,13 @@ import { useParams, Link } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
 import { Card, CardContent } from "../../components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
+import { Avatar as ShadcnAvatar, AvatarFallback } from "../../components/ui/avatar";
 import { Textarea } from "../../components/ui/textarea";
 import { supabase } from "../../lib/supabase";
 import { MinimalistThumbnail } from "../../components/ui/project-thumbnail";
 import { getCategoryDisplay, getVibeLogDisplay } from "../../config/categories";
 import { formatDetailedDate } from "../../lib/utils";
+import Avatar from "boring-avatars";
 
 /**
  * @description Page component that displays detailed project information
@@ -206,9 +207,14 @@ export const ProjectDetail = (): JSX.Element => {
             </p>
 
             <div className="flex items-start mb-6">
-              <Avatar className="w-12 h-12 rounded-full border-2 border-solid border-gray-800">
-                <AvatarFallback>{creatorInitials}</AvatarFallback>
-              </Avatar>
+              <div className="w-12 h-12 rounded-full border-2 border-solid border-gray-800 overflow-hidden bg-white">
+                <Avatar
+                  name={creatorName}
+                  variant="beam"
+                  size={48}
+                  colors={["#264653", "#2a9d8f", "#e9c46a", "#f4a261", "#e76f51"]}
+                />
+              </div>
               <div className="ml-4">
                 <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-base leading-7">
                   {creatorName}
@@ -399,15 +405,14 @@ export const ProjectDetail = (): JSX.Element => {
               >
                 <CardContent className="p-5">
                   <div className="flex items-start">
-                    <Avatar className="w-10 h-10 rounded-full border-2 border-solid border-gray-800">
-                      <AvatarImage
-                        src={feedback.avatarSrc}
-                        alt={feedback.username}
+                    <div className="w-10 h-10 rounded-full border-2 border-solid border-gray-800 overflow-hidden bg-white">
+                      <Avatar
+                        name={feedback.username}
+                        variant="beam"
+                        size={40}
+                        colors={["#264653", "#2a9d8f", "#e9c46a", "#f4a261", "#e76f51"]}
                       />
-                      <AvatarFallback>
-                        {feedback.username.substring(0, 2)}
-                      </AvatarFallback>
-                    </Avatar>
+                    </div>
                     <div className="ml-4">
                       <div className="flex items-center">
                         <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-base leading-6">

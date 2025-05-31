@@ -143,6 +143,7 @@ export const MainContentSection = (): JSX.Element => {
                   isOwner={false}
                   formatDate={formatDate}
                   getCategoryDisplay={getCategoryDisplay}
+                  thumbnailStyle="minimalist"
                 />
               );
             })}

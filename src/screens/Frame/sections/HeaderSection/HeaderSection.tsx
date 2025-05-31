@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import Avatar from "boring-avatars";
 import { Button } from "../../../../components/ui/button";
 import {
   NavigationMenu,
@@ -13,7 +14,7 @@ import {
   NavigationMenuList,
 } from "../../../../components/ui/navigation-menu";
 import { AuthDialog } from "../../../../components/ui/auth-dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
+import { Avatar as ShadcnAvatar, AvatarFallback } from "../../../../components/ui/avatar";
 import { supabase } from "../../../../lib/supabase";
 import {
   DropdownMenu,
@@ -30,7 +31,7 @@ import { LogOut, User } from "lucide-react";
 export const HeaderSection = (): JSX.Element => {
   const [authMode, setAuthMode] = useState<'signup' | 'login'>('login');
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
     // Check current session
@@ -102,7 +103,7 @@ export const HeaderSection = (): JSX.Element => {
                   </NavigationMenuLink>
                 </NavigationMenuItem>
               ))}
-              
+
               {/* Only show authenticated links if user is logged in */}
               {user && authenticatedNavLinks.map((link, index) => (
                 <NavigationMenuItem key={`auth-${index}`}>
@@ -120,10 +121,14 @@ export const HeaderSection = (): JSX.Element => {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger className="outline-none">
-                <Avatar className="w-10 h-10 border-2 border-gray-800 cursor-pointer hover:border-startsnap-french-rose transition-colors">
-                  <AvatarImage src={user.user_metadata?.avatar_url} />
-                  <AvatarFallback>{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
-                </Avatar>
+                <div className="w-10 h-10 border-2 border-gray-800 cursor-pointer hover:border-startsnap-french-rose transition-colors rounded-full overflow-hidden bg-white">
+                  <Avatar
+                    name={user.email || 'Anonymous'}
+                    variant="beam"
+                    size={40}
+                    colors={["#264653", "#2a9d8f", "#e9c46a", "#f4a261", "#e76f51"]}
+                  />
+                </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuItem className="cursor-pointer hover:bg-startsnap-mischka/50 flex items-center gap-2" asChild>
@@ -132,7 +137,7 @@ export const HeaderSection = (): JSX.Element => {
                     <span>Profile</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem 
+                <DropdownMenuItem
                   onClick={handleSignOut}
                   className="cursor-pointer text-startsnap-french-rose hover:text-startsnap-french-rose hover:bg-startsnap-mischka/50 flex items-center gap-2"
                 >

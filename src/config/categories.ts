@@ -5,97 +5,97 @@
  */
 
 export const CATEGORY_CONFIG = {
-  ai: {
-    value: 'ai',
-    label: 'AI Powered Tool',
-    hue: 290, // Violet - Intelligence, innovation, future tech
-    display: {
-      bgColor: 'bg-violet-200',
-      textColor: 'text-violet-700',
-      borderColor: 'border-violet-700'
+    ai: { // VIOLET - CORRECT
+      value: 'ai',
+      label: 'AI Powered Tool',
+      hue: 290, //
+      display: {
+        bgColor: 'bg-violet-200',
+        textColor: 'text-violet-700',
+        borderColor: 'border-violet-700'
+      }
+    },
+    blockchain: {
+      value: 'blockchain',
+      label: 'Blockchain',
+      hue: 210, // Blue - Trust, technology, innovation
+      display: {
+        bgColor: 'bg-blue-200',
+        textColor: 'text-blue-700',
+        borderColor: 'border-blue-700'
+      }
+    },
+    gaming: {
+      value: 'gaming',
+      label: 'Gaming',
+      hue: 120, // Green - Energy, play, achievement
+      display: {
+        bgColor: 'bg-startsnap-ice-cold',
+        textColor: 'text-startsnap-jewel',
+        borderColor: 'border-green-700'
+      }
+    },
+    community: {
+      value: 'community',
+      label: 'Community',
+      hue: 270, // Purple - Connection, collaboration, creativity
+      display: {
+        bgColor: 'bg-purple-200',
+        textColor: 'text-purple-700',
+        borderColor: 'border-purple-700'
+      }
+    },
+    music: {
+      value: 'music',
+      label: 'Music Tech',
+      hue: 330, // Pink/Magenta - Rhythm, creativity, expression
+      display: {
+        bgColor: 'bg-pink-200',
+        textColor: 'text-pink-700',
+        borderColor: 'border-pink-700'
+      }
+    },
+    design: {
+      value: 'design',
+      label: 'Design',
+      hue: 30, // Orange - Creativity, warmth, inspiration
+      display: {
+        bgColor: 'bg-orange-200',
+        textColor: 'text-orange-700',
+        borderColor: 'border-orange-700'
     }
-  },
-  blockchain: {
-    value: 'blockchain',
-    label: 'Blockchain',
-    hue: 210, // Blue - Trust, technology, innovation
-    display: {
-      bgColor: 'bg-blue-200',
-      textColor: 'text-blue-700',
-      borderColor: 'border-blue-700'
+},
+    education: {
+      value: 'education',
+      label: 'Education',
+      hue: 60, // Yellow - Knowledge, enlightenment, learning
+      display: {
+        bgColor: 'bg-yellow-200',
+        textColor: 'text-yellow-700',
+        borderColor: 'border-yellow-700'
+      }
+    },
+    productivity: {
+      value: 'productivity',
+      label: 'Productivity',
+      hue: 180, // Cyan - Efficiency, clarity, focus
+      display: {
+        bgColor: 'bg-cyan-200',
+        textColor: 'text-cyan-700',
+        borderColor: 'border-cyan-700'
+      }
+    },
+    other: {
+      value: 'other',
+      label: 'Other',
+      hue: 210, // Neutral blue-gray - Balanced, inclusive, flexible
+      display: {
+        bgColor: 'bg-gray-200',           // Changed from bg-red-200 to neutral gray
+        textColor: 'text-gray-700',       // Changed from text-red-700 to neutral gray
+        borderColor: 'border-gray-700'    // Changed from border-red-700 to neutral gray
+      }
     }
-  },
-  gaming: {
-    value: 'gaming',
-    label: 'Gaming',
-    hue: 120, // Green - Energy, play, achievement
-    display: {
-      bgColor: 'bg-startsnap-ice-cold',
-      textColor: 'text-startsnap-jewel',
-      borderColor: 'border-green-700'
-    }
-  },
-  community: {
-    value: 'community',
-    label: 'Community',
-    hue: 270, // Purple - Connection, collaboration, creativity
-    display: {
-      bgColor: 'bg-startsnap-french-pass',
-      textColor: 'text-startsnap-persian-blue',
-      borderColor: 'border-blue-700'
-    }
-  },
-  music: {
-    value: 'music',
-    label: 'Music Tech',
-    hue: 330, // Pink/Magenta - Rhythm, creativity, expression
-    display: {
-      bgColor: 'bg-purple-200',
-      textColor: 'text-startsnap-purple-heart',
-      borderColor: 'border-purple-700'
-    }
-  },
-  design: {
-    value: 'design',
-    label: 'Design',
-    hue: 30, // Orange - Creativity, warmth, inspiration
-    display: {
-      bgColor: 'bg-pink-200',
-      textColor: 'text-pink-700',
-      borderColor: 'border-pink-700'
-    }
-  },
-  education: {
-    value: 'education',
-    label: 'Education',
-    hue: 60, // Yellow - Knowledge, enlightenment, learning
-    display: {
-      bgColor: 'bg-yellow-200',
-      textColor: 'text-yellow-700',
-      borderColor: 'border-yellow-700'
-    }
-  },
-  productivity: {
-    value: 'productivity',
-    label: 'Productivity',
-    hue: 180, // Cyan - Efficiency, clarity, focus
-    display: {
-      bgColor: 'bg-orange-200',
-      textColor: 'text-orange-700',
-      borderColor: 'border-orange-700'
-    }
-  },
-  other: {
-    value: 'other',
-    label: 'Other',
-    hue: 0, // Red - Passion, energy, standout
-    display: {
-      bgColor: 'bg-gray-200',
-      textColor: 'text-gray-700',
-      borderColor: 'border-gray-700'
-    }
-  }
-} as const;
+  } as const;
 
 /**
  * @description Configuration for vibe log entry types

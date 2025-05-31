@@ -5,7 +5,8 @@
 
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
+import Avatar from "boring-avatars";
+import { AvatarFallback } from "../../components/ui/avatar";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import { Badge } from "../../components/ui/badge";
@@ -250,12 +251,14 @@ export const Profile = (): JSX.Element => {
           <CardContent className="p-8">
             <div className="flex flex-col md:flex-row gap-8">
               <div className="flex flex-col items-center min-w-[250px]">
-                <Avatar className="w-32 h-32 border-3 border-gray-800">
-                  <AvatarImage src={user?.user_metadata?.avatar_url} />
-                  <AvatarFallback className="text-4xl">
-                    {profile.username.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
+                <div className="w-32 h-32 border-[3px] border-gray-800 rounded-full overflow-hidden bg-white">
+                  <Avatar
+                    name={profile.username || user?.email || 'Anonymous'}
+                    variant="beam"
+                    size={128}
+                    colors={["#264653", "#2a9d8f", "#e9c46a", "#f4a261", "#e76f51"]}
+                  />
+                </div>
 
                 {/* Popover status selector */}
                 <Popover open={statusPopoverOpen} onOpenChange={setStatusPopoverOpen}>
@@ -434,6 +437,7 @@ export const Profile = (): JSX.Element => {
                 isOwner={true}
                 formatDate={formatDate}
                 getCategoryDisplay={getCategoryDisplay}
+                thumbnailStyle="minimalist"
               />
             ))}
           </div>

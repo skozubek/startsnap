@@ -94,3 +94,52 @@ export const MinimalistThumbnail: React.FC<ThumbnailProps> = ({ projectId, proje
     />
   );
 };
+
+/**
+ * Geometric Thumbnail: Chevrons
+ * @description Creates a chevron pattern using diagonal gradients for a neobrutalist aesthetic
+ * @param {ThumbnailProps} props - Component props including projectId, projectType, and category
+ * @returns {JSX.Element} Chevron pattern thumbnail
+ */
+export const ChevronPatternThumbnail: React.FC<ThumbnailProps> = ({ projectId, projectType, category }) => {
+  const chevronColor = generateColor(projectId, category, 0.2); // Primary color for chevrons
+  const bgColor = generateColor(projectId.split("").reverse().join(""), category, 0.05); // Softer background
+
+  return (
+    <div
+      className="w-full h-full rounded-lg overflow-hidden"
+      style={{
+        backgroundColor: bgColor,
+        backgroundImage: `
+          repeating-linear-gradient(45deg, ${chevronColor}, ${chevronColor} 10px, transparent 10px, transparent 25px),
+          repeating-linear-gradient(-45deg, ${chevronColor}, ${chevronColor} 10px, transparent 10px, transparent 25px)
+        `,
+        // Note: Pixel values (10px, 25px) can be adjusted for desired chevron size and spacing
+      }}
+    />
+  );
+};
+
+/**
+ * Geometric Thumbnail: Polka Dots
+ * @description Creates a polka dot pattern using radial gradients with dynamic sizing based on project type
+ * @param {ThumbnailProps} props - Component props including projectId, projectType, and category
+ * @returns {JSX.Element} Polka dot pattern thumbnail
+ */
+export const PolkaDotPatternThumbnail: React.FC<ThumbnailProps> = ({ projectId, projectType, category }) => {
+  const dotColor = generateColor(projectId, category, 0.3);
+  const bgColor = generateColor(projectId.split("").reverse().join(""), category, 0.03);
+  const dotSize = projectType === 'live' ? '8px' : '12px'; // Example: smaller dots for live projects
+  const spacing = projectType === 'live' ? '20px' : '30px';
+
+  return (
+    <div
+      className="w-full h-full rounded-lg overflow-hidden"
+      style={{
+        backgroundColor: bgColor,
+        backgroundImage: `radial-gradient(${dotColor} ${dotSize}, transparent ${dotSize})`,
+        backgroundSize: `${spacing} ${spacing}`,
+      }}
+    />
+  );
+};
