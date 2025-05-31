@@ -1,8 +1,14 @@
 import React, { useState } from "react";
-import { Dialog, DialogContent } from "./dialog";
+import { Dialog, DialogContent, DialogTitle } from "./dialog";
 import { AuthForm } from "./auth-form";
 import { supabase } from "../../lib/supabase";
 
+/**
+ * @description Authentication dialog component that handles user login and signup
+ * @param {boolean} isOpen - Controls dialog visibility
+ * @param {() => void} onClose - Callback function to close the dialog
+ * @param {"login" | "signup"} mode - Determines whether the dialog is in login or signup mode
+ */
 interface AuthDialogProps {
   isOpen: boolean;
   onClose: () => void;
@@ -49,9 +55,9 @@ export const AuthDialog = ({ isOpen, onClose, mode }: AuthDialogProps): JSX.Elem
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 border-[3px] border-gray-800">
-        <h2 className="text-3xl font-bold text-startsnap-ebony-clay mb-8 font-['Space_Grotesk',Helvetica]">
+        <DialogTitle className="text-3xl font-bold text-startsnap-ebony-clay mb-8 font-['Space_Grotesk',Helvetica]">
           {mode === "login" ? "Welcome Back" : "Create Account"}
-        </h2>
+        </DialogTitle>
         <AuthForm
           mode={mode}
           onSubmit={handleSubmit}
