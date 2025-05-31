@@ -29,48 +29,43 @@ export const CreateStartSnap = (): JSX.Element => {
       return;
     }
 
-    try {
-      // Insert the startsnap
-      const { data: startsnap, error: startsnapError } = await supabase
-        .from('startsnaps')
+    // Insert the startsnap
+    const { data: startsnap, error: startsnapError } = await supabase
+      .from('startsnaps')
+      .insert({
+        user_id: user.id,
+        name: formData.projectName,
+        description: formData.description,
+        category: formData.category,
+        type: formData.projectType,
+        live_demo_url: formData.liveUrl,
+        demo_video_url: formData.videoUrl,
+        tools_used: formData.toolsUsed,
+        feedback_tags: formData.feedbackAreas,
+        is_hackathon_entry: formData.isHackathon,
+        tags: formData.tags
+      })
+      .select();
+
+    if (startsnapError) throw startsnapError;
+
+    // Insert the initial vibe log
+    if (formData.vibeLogContent.trim()) {
+      const { error: vibeLogError } = await supabase
+        .from('vibelogs')
         .insert({
-          user_id: user.id,
-          name: formData.projectName,
-          description: formData.description,
-          category: formData.category,
-          type: formData.projectType,
-          live_demo_url: formData.liveUrl,
-          demo_video_url: formData.videoUrl,
-          tools_used: formData.toolsUsed,
-          feedback_tags: formData.feedbackAreas,
-          is_hackathon_entry: formData.isHackathon,
-          tags: formData.tags
-        })
-        .select();
+          startsnap_id: startsnap[0].id,
+          log_type: formData.vibeLogType,
+          title: formData.vibeLogTitle,
+          content: formData.vibeLogContent
+        });
 
-      if (startsnapError) throw startsnapError;
-
-      // Insert the initial vibe log
-      if (formData.vibeLogContent && formData.vibeLogTitle) {
-        const { error: vibeLogError } = await supabase
-          .from('vibelogs')
-          .insert({
-            startsnap_id: startsnap[0].id,
-            log_type: formData.vibeLogType,
-            title: formData.vibeLogTitle,
-            content: formData.vibeLogContent
-          });
-
-        if (vibeLogError) throw vibeLogError;
-      }
-
-      // Redirect to the project detail page
-      navigate('/');
-      alert('StartSnap created successfully!');
-    } catch (error) {
-      console.error('Error creating StartSnap:', error);
-      alert('Error creating StartSnap. Please try again.');
+      if (vibeLogError) throw vibeLogError;
     }
+
+    // Redirect to the project detail page
+    navigate('/');
+    alert('StartSnap created successfully!');
   };
 
   return (

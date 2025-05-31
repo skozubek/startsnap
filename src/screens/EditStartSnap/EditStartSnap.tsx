@@ -90,34 +90,29 @@ export const EditStartSnap = (): JSX.Element => {
    * @sideEffects Updates StartSnap in database and redirects on success
    */
   const handleSubmit = async (formData: any) => {
-    try {
-      // Update the startsnap
-      const { error: startsnapError } = await supabase
-        .from('startsnaps')
-        .update({
-          name: formData.projectName,
-          description: formData.description,
-          category: formData.category,
-          type: formData.projectType,
-          live_demo_url: formData.liveUrl,
-          demo_video_url: formData.videoUrl,
-          tools_used: formData.toolsUsed,
-          feedback_tags: formData.feedbackAreas,
-          is_hackathon_entry: formData.isHackathon,
-          tags: formData.tags,
-          updated_at: new Date()
-        })
-        .eq('id', id);
+    // Update the startsnap
+    const { error: startsnapError } = await supabase
+      .from('startsnaps')
+      .update({
+        name: formData.projectName,
+        description: formData.description,
+        category: formData.category,
+        type: formData.projectType,
+        live_demo_url: formData.liveUrl,
+        demo_video_url: formData.videoUrl,
+        tools_used: formData.toolsUsed,
+        feedback_tags: formData.feedbackAreas,
+        is_hackathon_entry: formData.isHackathon,
+        tags: formData.tags,
+        updated_at: new Date()
+      })
+      .eq('id', id);
 
-      if (startsnapError) throw startsnapError;
+    if (startsnapError) throw startsnapError;
 
-      // Redirect to the profile page
-      navigate('/profile');
-      alert('StartSnap updated successfully!');
-    } catch (error) {
-      console.error('Error updating StartSnap:', error);
-      alert('Error updating StartSnap. Please try again.');
-    }
+    // Redirect to the profile page
+    navigate('/profile');
+    alert('StartSnap updated successfully!');
   };
 
   if (loading) {

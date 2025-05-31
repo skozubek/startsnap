@@ -14,12 +14,6 @@ import { getCategoryDisplay, getVibeLogDisplay } from "../../config/categories";
 import { formatDetailedDate } from "../../lib/utils";
 import { useAuth } from "../../context/AuthContext";
 import { UserAvatar, getAvatarName } from "../../components/ui/user-avatar";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { feedbackFormSchema } from "../../lib/form-schemas";
-import * as z from "zod";
-
-type FeedbackFormValues = z.infer<typeof feedbackFormSchema>;
 
 /**
  * @description Page component that displays detailed project information
@@ -32,19 +26,8 @@ export const ProjectDetail = (): JSX.Element => {
   const [creator, setCreator] = useState<any>(null);
   const [vibeLogEntries, setVibeLogEntries] = useState<any[]>([]);
   const [feedbackEntries, setFeedbackEntries] = useState<any[]>([]);
+  const [feedbackContent, setFeedbackContent] = useState("");
   const { user: currentUser } = useAuth();
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset
-  } = useForm<FeedbackFormValues>({
-    resolver: zodResolver(feedbackFormSchema),
-    defaultValues: {
-      content: ""
-    }
-  });
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -126,10 +109,14 @@ export const ProjectDetail = (): JSX.Element => {
 
   /**
    * @description Handles feedback submission
-   * @param {FeedbackFormValues} data - Validated feedback form data
    * @sideEffects Shows alert for now (placeholder for actual submission)
    */
-  const onSubmitFeedback = (data: FeedbackFormValues) => {
+  const handleSubmitFeedback = () => {
+    if (!feedbackContent.trim()) {
+      alert('Please enter some feedback');
+      return;
+    }
+
     if (!currentUser) {
       alert('You need to be logged in to submit feedback');
       return;
@@ -137,7 +124,7 @@ export const ProjectDetail = (): JSX.Element => {
 
     // In a real implementation, you would save the feedback to the database
     alert('Feedback submission functionality will be implemented soon!');
-    reset();
+    setFeedbackContent('');
   };
 
   if (loading) {
@@ -435,23 +422,19 @@ export const ProjectDetail = (): JSX.Element => {
               <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7 mb-4">
                 Leave Your Feedback
               </h3>
-              <form onSubmit={handleSubmit(onSubmitFeedback)}>
-                <Textarea
-                  {...register("content")}
-                  placeholder="Share your thoughts, suggestions, or bug reports..."
-                  className="border-2 border-solid border-gray-800 rounded-lg p-3.5 min-h-[120px] font-['Roboto',Helvetica] text-startsnap-pale-sky mb-4"
-                />
-                {errors.content && (
-                  <p className="text-red-500 text-sm mb-2">{errors.content.message}</p>
-                )}
-                <Button
-                  type="submit"
-                  className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
-                  disabled={!currentUser}
-                >
-                  {currentUser ? 'Submit Feedback' : 'Login to Submit Feedback'}
-                </Button>
-              </form>
+              <Textarea
+                placeholder="Share your thoughts, suggestions, or bug reports..."
+                className="border-2 border-solid border-gray-800 rounded-lg p-3.5 min-h-[120px] font-['Roboto',Helvetica] text-startsnap-pale-sky mb-4"
+                value={feedbackContent}
+                onChange={(e) => setFeedbackContent(e.target.value)}
+              />
+              <Button
+                className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+                onClick={handleSubmitFeedback}
+                disabled={!currentUser}
+              >
+                {currentUser ? 'Submit Feedback' : 'Login to Submit Feedback'}
+              </Button>
             </div>
           </div>
         </CardContent>

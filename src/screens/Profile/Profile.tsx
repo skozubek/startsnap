@@ -15,15 +15,9 @@ import { supabase } from "../../lib/supabase";
 import { FaGithub, FaXTwitter, FaLinkedinIn } from "react-icons/fa6";
 import { StartSnapCard } from "../../components/ui/StartSnapCard";
 import { getCategoryDisplay, getUserStatusOptions} from "../../config/categories";
-import { formatDate } from "../../lib/utils";
+import { formatDate, validateSocialLinks, LinkValidationErrors, ProfileLinks } from "../../lib/utils";
 import { useAuth } from "../../context/AuthContext";
 import { UserAvatar, getAvatarName } from "../../components/ui/user-avatar";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { profileFormSchema } from "../../lib/form-schemas";
-import * as z from "zod";
-
-type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
 /**
  * @description User profile page with settings and project management
@@ -34,32 +28,24 @@ export const Profile = (): JSX.Element => {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const { user } = useAuth();
+  const [profile, setProfile] = useState({
+    username: "",
+    bio: "",
+    status: "brainstorming",
+    github: "",
+    twitter: "",
+    linkedin: "",
+    website: ""
+  });
   const [userStartSnaps, setUserStartSnaps] = useState<any[]>([]);
   const [loadingStartSnaps, setLoadingStartSnaps] = useState(true);
-  const [statusPopoverOpen, setStatusPopoverOpen] = useState(false);
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-    watch,
-    reset,
-  } = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileFormSchema),
-    defaultValues: {
-      username: "",
-      bio: "",
-      status: "brainstorming",
-      github: "",
-      twitter: "",
-      linkedin: "",
-      website: ""
-    }
+  const [linkErrors, setLinkErrors] = useState<LinkValidationErrors>({
+    github: "",
+    twitter: "",
+    linkedin: "",
+    website: ""
   });
-
-  // Get current status from form
-  const currentStatus = watch("status");
+  const [statusPopoverOpen, setStatusPopoverOpen] = useState(false);
 
   useEffect(() => {
     // If no user is authenticated, redirect to home
@@ -84,8 +70,7 @@ export const Profile = (): JSX.Element => {
 
         // If profile exists, use it; otherwise, use default values
         if (data) {
-          // Reset form with data from database
-          reset({
+          setProfile({
             username: data.username || user.email?.split('@')[0] || '',
             bio: data.bio || '',
             status: data.status || 'brainstorming',
@@ -96,7 +81,10 @@ export const Profile = (): JSX.Element => {
           });
         } else {
           // Set default username from email if no profile exists
-          setValue('username', user.email?.split('@')[0] || '');
+          setProfile(prev => ({
+            ...prev,
+            username: user.email?.split('@')[0] || ''
+          }));
         }
 
         // Fetch user's StartSnaps
@@ -109,7 +97,7 @@ export const Profile = (): JSX.Element => {
     };
 
     fetchProfile();
-  }, [user, navigate, reset, setValue]);
+  }, [user, navigate]);
 
   /**
    * @description Fetches StartSnap projects created by the current user
@@ -141,22 +129,57 @@ export const Profile = (): JSX.Element => {
   };
 
   /**
+   * @description Handles input changes for profile form fields
+   * @param {React.ChangeEvent<HTMLInputElement|HTMLTextAreaElement>} e - Change event
+   */
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setProfile(prev => ({ ...prev, [name]: value }));
+
+    // Clear error when field is edited
+    if (name in linkErrors) {
+      setLinkErrors(prev => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  /**
    * @description Handles status selection change
    * @param {string} value - New status value
    */
   const handleStatusChange = (value: string) => {
-    setValue('status', value);
+    setProfile(prev => ({ ...prev, status: value }));
     setStatusPopoverOpen(false); // Close popover after selection
+  };
+
+  /**
+   * @description Validates all external links using centralized validation
+   * @returns {boolean} Whether all links are valid
+   */
+  const validateLinks = () => {
+    const profileLinks: ProfileLinks = {
+      github: profile.github,
+      twitter: profile.twitter,
+      linkedin: profile.linkedin,
+      website: profile.website
+    };
+
+    const { isValid, errors } = validateSocialLinks(profileLinks);
+    setLinkErrors(errors);
+    return isValid;
   };
 
   /**
    * @description Updates the user profile in the database
    * @async
-   * @param {ProfileFormValues} data - Validated form data
    * @sideEffects Updates profile information in Supabase
    */
-  const onSubmit = async (data: ProfileFormValues) => {
+  const updateProfile = async () => {
     if (!user) return;
+
+    // Validate links before updating
+    if (!validateLinks()) {
+      return;
+    }
 
     try {
       setUpdating(true);
@@ -165,13 +188,13 @@ export const Profile = (): JSX.Element => {
         .from('profiles')
         .upsert({
           user_id: user.id,
-          username: data.username,
-          bio: data.bio || "",
-          status: data.status,
-          github_url: data.github || "",
-          twitter_url: data.twitter || "",
-          linkedin_url: data.linkedin || "",
-          website_url: data.website || "",
+          username: profile.username,
+          bio: profile.bio,
+          status: profile.status,
+          github_url: profile.github,
+          twitter_url: profile.twitter,
+          linkedin_url: profile.linkedin,
+          website_url: profile.website,
           updated_at: new Date()
         }, {
           onConflict: 'user_id'
@@ -219,7 +242,7 @@ export const Profile = (): JSX.Element => {
               <div className="flex flex-col items-center min-w-[250px]">
                 <div className="w-32 h-32">
                   <UserAvatar
-                    name={getAvatarName(user, watch('username'))}
+                    name={getAvatarName(user, profile.username)}
                     size={128}
                     className="w-full h-full"
                   />
@@ -230,8 +253,8 @@ export const Profile = (): JSX.Element => {
                   <PopoverTrigger asChild>
                     <div className="mt-4 text-center cursor-pointer hover:scale-105 transition-transform">
                       <Badge variant="outline" className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-gray-800 px-3 py-1.5">
-                        <span className="material-icons text-sm mr-1">{getStatusIcon(currentStatus)}</span>
-                        {getUserStatusOptions().find(opt => opt.value === currentStatus)?.label}
+                        <span className="material-icons text-sm mr-1">{getStatusIcon(profile.status)}</span>
+                        {getUserStatusOptions().find(opt => opt.value === profile.status)?.label}
                       </Badge>
                     </div>
                   </PopoverTrigger>
@@ -244,7 +267,7 @@ export const Profile = (): JSX.Element => {
                         <div
                           key={option.value}
                           className={`flex items-center p-2 rounded-md cursor-pointer transition-colors ${
-                            currentStatus === option.value
+                            profile.status === option.value
                               ? 'bg-startsnap-french-pass text-startsnap-persian-blue'
                               : 'hover:bg-startsnap-athens-gray'
                           }`}
@@ -260,19 +283,18 @@ export const Profile = (): JSX.Element => {
               </div>
 
               <div className="flex-1">
-                <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+                <form className="space-y-6">
                   <div className="space-y-2">
                     <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
                       Username
                     </label>
                     <Input
-                      {...register('username')}
+                      name="username"
+                      value={profile.username}
+                      onChange={handleChange}
                       placeholder="Your username"
                       className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
                     />
-                    {errors.username && (
-                      <p className="text-red-500 text-sm mt-1">{errors.username.message}</p>
-                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -280,13 +302,12 @@ export const Profile = (): JSX.Element => {
                       Bio
                     </label>
                     <Textarea
-                      {...register('bio')}
+                      name="bio"
+                      value={profile.bio}
+                      onChange={handleChange}
                       placeholder="Tell us about yourself, your skills, interests, and what you're working on..."
                       className="border-2 border-solid border-gray-800 rounded-lg p-3.5 min-h-[120px] font-['Roboto',Helvetica] text-startsnap-pale-sky"
                     />
-                    {errors.bio && (
-                      <p className="text-red-500 text-sm mt-1">{errors.bio.message}</p>
-                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -301,12 +322,14 @@ export const Profile = (): JSX.Element => {
                           <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">GitHub</label>
                         </div>
                         <Input
-                          {...register('github')}
+                          name="github"
+                          value={profile.github}
+                          onChange={handleChange}
                           placeholder="https://github.com/username"
-                          className={`border-2 border-solid ${errors.github ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky pl-10`}
+                          className={`border-2 border-solid ${linkErrors.github ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky pl-10`}
                         />
-                        {errors.github && (
-                          <p className="text-red-500 text-sm mt-1">{errors.github.message}</p>
+                        {linkErrors.github && (
+                          <p className="text-red-500 text-xs mt-1">{linkErrors.github}</p>
                         )}
                       </div>
 
@@ -317,12 +340,14 @@ export const Profile = (): JSX.Element => {
                           <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">Twitter</label>
                         </div>
                         <Input
-                          {...register('twitter')}
+                          name="twitter"
+                          value={profile.twitter}
+                          onChange={handleChange}
                           placeholder="https://twitter.com/username"
-                          className={`border-2 border-solid ${errors.twitter ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky pl-10`}
+                          className={`border-2 border-solid ${linkErrors.twitter ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky pl-10`}
                         />
-                        {errors.twitter && (
-                          <p className="text-red-500 text-sm mt-1">{errors.twitter.message}</p>
+                        {linkErrors.twitter && (
+                          <p className="text-red-500 text-xs mt-1">{linkErrors.twitter}</p>
                         )}
                       </div>
 
@@ -333,12 +358,14 @@ export const Profile = (): JSX.Element => {
                           <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">LinkedIn</label>
                         </div>
                         <Input
-                          {...register('linkedin')}
+                          name="linkedin"
+                          value={profile.linkedin}
+                          onChange={handleChange}
                           placeholder="https://linkedin.com/in/username"
-                          className={`border-2 border-solid ${errors.linkedin ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky pl-10`}
+                          className={`border-2 border-solid ${linkErrors.linkedin ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky pl-10`}
                         />
-                        {errors.linkedin && (
-                          <p className="text-red-500 text-sm mt-1">{errors.linkedin.message}</p>
+                        {linkErrors.linkedin && (
+                          <p className="text-red-500 text-xs mt-1">{linkErrors.linkedin}</p>
                         )}
                       </div>
 
@@ -349,12 +376,14 @@ export const Profile = (): JSX.Element => {
                           <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">Website</label>
                         </div>
                         <Input
-                          {...register('website')}
+                          name="website"
+                          value={profile.website}
+                          onChange={handleChange}
                           placeholder="https://yourwebsite.com"
-                          className={`border-2 border-solid ${errors.website ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky pl-10`}
+                          className={`border-2 border-solid ${linkErrors.website ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky pl-10`}
                         />
-                        {errors.website && (
-                          <p className="text-red-500 text-sm mt-1">{errors.website.message}</p>
+                        {linkErrors.website && (
+                          <p className="text-red-500 text-xs mt-1">{linkErrors.website}</p>
                         )}
                       </div>
                     </div>
@@ -362,16 +391,14 @@ export const Profile = (): JSX.Element => {
 
                   <div className="flex justify-end pt-4">
                     <Button
-                      type="submit"
+                      type="button"
+                      onClick={updateProfile}
                       disabled={updating}
                       className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
                     >
                       {updating ? 'Saving...' : 'Save Profile'}
                     </Button>
                   </div>
-
-                  {/* Hidden input for status - managed by the popover */}
-                  <input type="hidden" {...register('status')} />
                 </form>
               </div>
             </div>
