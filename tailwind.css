@@ -216,6 +216,7 @@
     --startsnap-white: rgba(255, 255, 255, 1);
     --startsnap-white-candlelight: rgba(255, 255, 255, 1);
     --startsnap-wisp-pink: rgba(243, 232, 255, 1);
+    --startsnap-beige: #f9f5f2;
   }
 
   .dark {
