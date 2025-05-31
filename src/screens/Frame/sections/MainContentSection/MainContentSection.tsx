@@ -4,13 +4,10 @@
  */
 
 import React, { useState, useEffect, useRef } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
-import { Badge } from "../../../../components/ui/badge";
 import { Button } from "../../../../components/ui/button";
-import { Card, CardContent, CardFooter } from "../../../../components/ui/card";
 import { Link } from "react-router-dom";
 import { supabase } from "../../../../lib/supabase";
-import { MinimalistThumbnail } from "../../../../components/ui/project-thumbnail";
+import { StartSnapCard } from "../../../../components/ui/StartSnapCard";
 import Typed from 'typed.js';
 
 /**
@@ -54,18 +51,18 @@ export const MainContentSection = (): JSX.Element => {
   const fetchStartSnaps = async () => {
     try {
       setLoading(true);
-      
+
       // Fetch startsnaps
       const { data, error } = await supabase
         .from('startsnaps')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(6);
-      
+
       if (error) throw error;
-      
+
       setStartSnaps(data || []);
-      
+
       // Fetch creators information
       if (data && data.length > 0) {
         const userIds = [...new Set(data.map(snap => snap.user_id))];
@@ -73,14 +70,14 @@ export const MainContentSection = (): JSX.Element => {
           .from('profiles')
           .select('user_id, username')
           .in('user_id', userIds);
-        
+
         if (profilesError) throw profilesError;
-        
+
         const creatorsMap = {};
         profilesData.forEach(profile => {
           creatorsMap[profile.user_id] = profile.username;
         });
-        
+
         setCreators(creatorsMap);
       }
     } catch (error) {
@@ -160,7 +157,7 @@ export const MainContentSection = (): JSX.Element => {
     const date = new Date(dateString);
     const now = new Date();
     const diffInDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
-    
+
     if (diffInDays === 0) {
       return "Launched: Today";
     } else if (diffInDays === 1) {
@@ -193,9 +190,9 @@ export const MainContentSection = (): JSX.Element => {
             </Button>
           </div>
           <div className="w-[40%]">
-            <img 
-              src="https://ik.imagekit.io/craftsnap/startsnap/vibe-coder.png" 
-              alt="Collaborative team working together" 
+            <img
+              src="https://ik.imagekit.io/craftsnap/startsnap/vibe-coder.png"
+              alt="Collaborative team working together"
               className="w-full h-auto"
             />
           </div>
@@ -215,156 +212,21 @@ export const MainContentSection = (): JSX.Element => {
         ) : startSnaps.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {startSnaps.map((startsnap) => {
-              const categoryDisplay = getCategoryDisplay(startsnap.category);
               const creatorName = creators[startsnap.user_id] || 'Anonymous';
               const creatorInitials = creatorName.substring(0, 2).toUpperCase();
-              
+
               return (
-                <Card
+                <StartSnapCard
                   key={startsnap.id}
-                  className="bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]"
-                >
-                  <CardContent className="p-7 pt-[219px] relative">
-                    {/* Project thumbnail */}
-                    <div className="absolute top-0 left-0 right-0 h-[200px] p-7 pb-0">
-                      <MinimalistThumbnail 
-                        projectId={startsnap.id} 
-                        projectType={startsnap.type} 
-                        category={startsnap.category}
-                      />
-                    </div>
-                  
-                    {/* Status badges - positioned in the top right corner */}
-                    <div className="absolute top-3 right-3 flex flex-col gap-2 items-end z-10">
-                      {/* Project type badge */}
-                      {startsnap.type === "live" ? (
-                        <Badge className="bg-startsnap-mountain-meadow text-white font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-green-700 px-2 py-0.5 flex items-center gap-1">
-                          <span className="material-icons text-xs">rocket_launch</span>
-                          Live Project
-                        </Badge>
-                      ) : (
-                        <Badge className="bg-startsnap-corn text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-yellow-700 px-2 py-0.5 flex items-center gap-1">
-                          <span className="material-icons text-xs">lightbulb</span>
-                          Idea
-                        </Badge>
-                      )}
-                      
-                      {/* Hackathon badge */}
-                      {startsnap.is_hackathon_entry && (
-                        <Badge className="bg-startsnap-heliotrope text-white font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-purple-700 px-2 py-0.5 flex items-center gap-1">
-                          <span className="material-icons text-xs">emoji_events</span>
-                          Hackathon Entry
-                        </Badge>
-                      )}
-                    </div>
-
-                    <div className="flex justify-between items-start">
-                      <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-2xl leading-8 flex-1">
-                        {startsnap.name}
-                      </h3>
-                      <Badge
-                        className={`${categoryDisplay.bgColor} ${categoryDisplay.textColor} border ${categoryDisplay.borderColor} rounded-full px-[13px] py-[5px] font-['Space_Mono',Helvetica] font-normal text-sm`}
-                      >
-                        {categoryDisplay.name}
-                      </Badge>
-                    </div>
-
-                    <p className="mt-4 font-['Roboto',Helvetica] font-normal text-startsnap-river-bed text-base leading-6 line-clamp-2 h-12 overflow-hidden">
-                      {startsnap.description}
-                    </p>
-
-                    <div className="flex items-center mt-7">
-                      <Avatar className="w-10 h-10 rounded-full border-2 border-solid border-gray-800">
-                        <AvatarFallback>
-                          {creatorInitials}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="ml-3">
-                        <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-base leading-6">
-                          {creatorName}
-                        </p>
-                        <p className="font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4">
-                          {formatDate(startsnap.created_at)}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Separated tag sections */}
-                    <div className="space-y-2 mt-4">
-                      {/* General Tags Section */}
-                      {startsnap.tags && startsnap.tags.length > 0 && (
-                        <div className="flex items-center gap-2">
-                          <span className="material-icons text-startsnap-oxford-blue text-sm">tag</span>
-                          <div className="flex flex-wrap gap-1 flex-1">
-                            {startsnap.tags.slice(0, 2).map((tag, idx) => (
-                              <Badge 
-                                key={`tag-${idx}`}
-                                className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-gray-800 px-2 py-0.5"
-                              >
-                                #{tag}
-                              </Badge>
-                            ))}
-                            {startsnap.tags.length > 2 && (
-                              <Badge className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-gray-800 px-2 py-0.5">
-                                +{startsnap.tags.length - 2} more
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* Tools Used Section */}
-                      {startsnap.tools_used && startsnap.tools_used.length > 0 && (
-                        <div className="flex items-center gap-2">
-                          <span className="material-icons text-startsnap-persian-blue text-sm">build</span>
-                          <div className="flex flex-wrap gap-1 flex-1">
-                            {startsnap.tools_used.slice(0, 2).map((tool, idx) => (
-                              <Badge 
-                                key={`tool-${idx}`}
-                                className="bg-startsnap-french-pass text-startsnap-persian-blue font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-blue-700 px-2 py-0.5"
-                              >
-                                {tool}
-                              </Badge>
-                            ))}
-                            {startsnap.tools_used.length > 2 && (
-                              <Badge className="bg-startsnap-french-pass text-startsnap-persian-blue font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-blue-700 px-2 py-0.5">
-                                +{startsnap.tools_used.length - 2} more
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* Looking For Feedback Section */}
-                      {startsnap.feedback_tags && startsnap.feedback_tags.length > 0 && (
-                        <div className="flex items-center gap-2">
-                          <span className="material-icons text-startsnap-jewel text-sm">forum</span>
-                          <div className="flex flex-wrap gap-1 flex-1">
-                            {startsnap.feedback_tags.slice(0, 2).map((feedback, idx) => (
-                              <Badge 
-                                key={`feedback-${idx}`}
-                                className="bg-startsnap-ice-cold text-startsnap-jewel font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-green-700 px-2 py-0.5"
-                              >
-                                {feedback}
-                              </Badge>
-                            ))}
-                            {startsnap.feedback_tags.length > 2 && (
-                              <Badge className="bg-startsnap-ice-cold text-startsnap-jewel font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-green-700 px-2 py-0.5">
-                                +{startsnap.feedback_tags.length - 2} more
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-
-                  <CardFooter className="p-7 pt-0">
-                    <Button className="startsnap-button w-full bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]" asChild>
-                      <Link to={`/project/${startsnap.id}`}>View Project</Link>
-                    </Button>
-                  </CardFooter>
-                </Card>
+                  startsnap={startsnap}
+                  showCreator={true}
+                  creatorName={creatorName}
+                  creatorInitials={creatorInitials}
+                  variant="main-page"
+                  isOwner={false}
+                  formatDate={formatDate}
+                  getCategoryDisplay={getCategoryDisplay}
+                />
               );
             })}
           </div>

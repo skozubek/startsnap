@@ -275,13 +275,14 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="ai">AI Powered Tool</SelectItem>
+                <SelectItem value="productivity">Productivity</SelectItem>
                 <SelectItem value="tech">Blockchain</SelectItem>
                 <SelectItem value="gaming">Gaming</SelectItem>
                 <SelectItem value="community">Community</SelectItem>
-                <SelectItem value="music">Music Tech</SelectItem>
                 <SelectItem value="design">Design</SelectItem>
                 <SelectItem value="education">Education</SelectItem>
-                <SelectItem value="productivity">Productivity</SelectItem>
+                <SelectItem value="music">Music Tech</SelectItem>
                 <SelectItem value="other">Other</SelectItem>
               </SelectContent>
             </Select>
@@ -335,6 +336,7 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
               {formState.toolsUsed.map((tool, index) => (
                 <Badge
                   key={index}
+                  variant="outline"
                   className="bg-startsnap-french-pass text-startsnap-persian-blue font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-blue-700 px-[13px] py-[5px] flex items-center gap-1"
                 >
                   {tool}
@@ -367,6 +369,7 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
               {formState.feedbackAreas.map((feedback, index) => (
                 <Badge
                   key={index}
+                  variant="outline"
                   className="bg-startsnap-ice-cold text-startsnap-jewel font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-green-700 px-[13px] py-[5px] flex items-center gap-1"
                 >
                   {feedback}
@@ -398,6 +401,7 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
               {formState.tags.map((tag, index) => (
                 <Badge
                   key={index}
+                  variant="outline"
                   className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-gray-800 px-[13px] py-[5px] flex items-center gap-1"
                 >
                   {tag}

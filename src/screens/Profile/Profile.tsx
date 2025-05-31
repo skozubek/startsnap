@@ -11,16 +11,17 @@ import { Card, CardContent } from "../../components/ui/card";
 import { Badge } from "../../components/ui/badge";
 import { Input } from "../../components/ui/input";
 import { Textarea } from "../../components/ui/textarea";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
 } from "../../components/ui/select";
 import { Popover, PopoverTrigger, PopoverContent } from "../../components/ui/popover";
 import { supabase } from "../../lib/supabase";
 import { FaGithub, FaXTwitter, FaLinkedinIn } from "react-icons/fa6";
+import { StartSnapCard } from "../../components/ui/StartSnapCard";
 
 /**
  * @description User profile page with settings and project management
@@ -117,26 +118,26 @@ export const Profile = (): JSX.Element => {
       try {
         // Get current user
         const { data: { session } } = await supabase.auth.getSession();
-        
+
         if (!session?.user) {
           navigate('/');
           return;
         }
-        
+
         setUser(session.user);
-        
+
         // Fetch profile data
         const { data, error } = await supabase
           .from('profiles')
           .select('*')
           .eq('user_id', session.user.id)
           .single();
-        
+
         if (error && error.code !== 'PGRST116') {
           console.error('Error fetching profile:', error);
           return;
         }
-        
+
         // If profile exists, use it; otherwise, use default values
         if (data) {
           setProfile({
@@ -177,18 +178,18 @@ export const Profile = (): JSX.Element => {
   const fetchUserStartSnaps = async (userId) => {
     try {
       setLoadingStartSnaps(true);
-      
+
       // Fetch startsnaps for the user
       const { data, error } = await supabase
         .from('startsnaps')
         .select('*')
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
-      
+
       if (error) {
         throw error;
       }
-      
+
       setUserStartSnaps(data || []);
     } catch (error) {
       console.error('Error fetching user StartSnaps:', error);
@@ -204,7 +205,7 @@ export const Profile = (): JSX.Element => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProfile(prev => ({ ...prev, [name]: value }));
-    
+
     // Clear error when field is edited
     if (name in linkErrors) {
       setLinkErrors(prev => ({ ...prev, [name]: "" }));
@@ -276,29 +277,29 @@ export const Profile = (): JSX.Element => {
       linkedin: "",
       website: ""
     };
-    
+
     let isValid = true;
-    
+
     if (profile.github && !isValidGithubUrl(profile.github)) {
       errors.github = "Please enter a valid GitHub URL (e.g., https://github.com/username)";
       isValid = false;
     }
-    
+
     if (profile.twitter && !isValidTwitterUrl(profile.twitter)) {
       errors.twitter = "Please enter a valid Twitter URL (e.g., https://twitter.com/username)";
       isValid = false;
     }
-    
+
     if (profile.linkedin && !isValidLinkedInUrl(profile.linkedin)) {
       errors.linkedin = "Please enter a valid LinkedIn URL (e.g., https://linkedin.com/in/username)";
       isValid = false;
     }
-    
+
     if (profile.website && !isValidUrl(profile.website)) {
       errors.website = "Please enter a valid website URL";
       isValid = false;
     }
-    
+
     setLinkErrors(errors);
     return isValid;
   };
@@ -310,15 +311,15 @@ export const Profile = (): JSX.Element => {
    */
   const updateProfile = async () => {
     if (!user) return;
-    
+
     // Validate links before updating
     if (!validateLinks()) {
       return;
     }
-    
+
     try {
       setUpdating(true);
-      
+
       const { error } = await supabase
         .from('profiles')
         .upsert({
@@ -331,12 +332,12 @@ export const Profile = (): JSX.Element => {
           linkedin_url: profile.linkedin,
           website_url: profile.website,
           updated_at: new Date()
-        }, { 
-          onConflict: 'user_id' 
+        }, {
+          onConflict: 'user_id'
         });
-      
+
       if (error) throw error;
-      
+
       alert('Profile updated successfully!');
     } catch (error) {
       console.error('Error updating profile:', error);
@@ -364,7 +365,7 @@ export const Profile = (): JSX.Element => {
     const date = new Date(dateString);
     const now = new Date();
     const diffInDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
-    
+
     if (diffInDays === 0) {
       return "Launched: Today";
     } else if (diffInDays === 1) {
@@ -402,7 +403,7 @@ export const Profile = (): JSX.Element => {
       <h2 className="text-5xl font-bold text-startsnap-ebony-clay text-center font-['Space_Grotesk',Helvetica] leading-[48px]">
         Your Profile
       </h2>
-      
+
       <div className="w-full max-w-4xl">
         <Card className="bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] mb-8">
           <CardContent className="p-8">
@@ -414,12 +415,12 @@ export const Profile = (): JSX.Element => {
                     {profile.username.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                
+
                 {/* Popover status selector */}
                 <Popover open={statusPopoverOpen} onOpenChange={setStatusPopoverOpen}>
                   <PopoverTrigger asChild>
                     <div className="mt-4 text-center cursor-pointer hover:scale-105 transition-transform">
-                      <Badge className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-gray-800 px-3 py-1.5 hover:opacity-90 hover:-translate-y-px transition-all duration-200">
+                      <Badge variant="outline" className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-gray-800 px-3 py-1.5">
                         <span className="material-icons text-sm mr-1">{getStatusIcon(profile.status)}</span>
                         {statusOptions.find(opt => opt.value === profile.status)?.label}
                       </Badge>
@@ -434,8 +435,8 @@ export const Profile = (): JSX.Element => {
                         <div
                           key={option.value}
                           className={`flex items-center p-2 rounded-md cursor-pointer transition-colors ${
-                            profile.status === option.value 
-                              ? 'bg-startsnap-french-pass text-startsnap-persian-blue' 
+                            profile.status === option.value
+                              ? 'bg-startsnap-french-pass text-startsnap-persian-blue'
                               : 'hover:bg-startsnap-athens-gray'
                           }`}
                           onClick={() => handleStatusChange(option.value)}
@@ -448,7 +449,7 @@ export const Profile = (): JSX.Element => {
                   </PopoverContent>
                 </Popover>
               </div>
-              
+
               <div className="flex-1">
                 <form className="space-y-6">
                   <div className="space-y-2">
@@ -463,7 +464,7 @@ export const Profile = (): JSX.Element => {
                       className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
                       Bio
@@ -476,7 +477,7 @@ export const Profile = (): JSX.Element => {
                       className="border-2 border-solid border-gray-800 rounded-lg p-3.5 min-h-[120px] font-['Roboto',Helvetica] text-startsnap-pale-sky"
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
                       External Links
@@ -555,9 +556,9 @@ export const Profile = (): JSX.Element => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex justify-end pt-4">
-                    <Button 
+                    <Button
                       type="button"
                       onClick={updateProfile}
                       disabled={updating}
@@ -571,164 +572,36 @@ export const Profile = (): JSX.Element => {
             </div>
           </CardContent>
         </Card>
-        
+
         {/* StartSnaps Portfolio Section */}
         <h3 className="text-3xl font-bold text-startsnap-ebony-clay mb-6 font-['Space_Grotesk',Helvetica]">
           Your StartSnaps
         </h3>
-        
+
         {loadingStartSnaps ? (
           <div className="text-center py-8">
             <p className="text-lg text-startsnap-pale-sky">Loading your StartSnaps...</p>
           </div>
         ) : userStartSnaps.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {userStartSnaps.map((startsnap) => {
-              const categoryDisplay = getCategoryDisplay(startsnap.category);
-              
-              return (
-                <Card
-                  key={startsnap.id}
-                  className="bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]"
-                >
-                  <CardContent className="p-7 pt-[140px] relative">
-                    {/* Status badges - positioned in the top right corner */}
-                    <div className="absolute top-3 right-3 flex flex-col gap-2 items-end">
-                      {/* Project type badge */}
-                      {startsnap.type === "live" ? (
-                        <Badge className="bg-startsnap-mountain-meadow text-white font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-green-700 px-2 py-0.5 flex items-center gap-1 hover:opacity-90 hover:-translate-y-px transition-all duration-200">
-                          <span className="material-icons text-xs">rocket_launch</span>
-                          Live Project
-                        </Badge>
-                      ) : (
-                        <Badge className="bg-startsnap-corn text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-yellow-700 px-2 py-0.5 flex items-center gap-1 hover:opacity-90 hover:-translate-y-px transition-all duration-200">
-                          <span className="material-icons text-xs">lightbulb</span>
-                          Idea
-                        </Badge>
-                      )}
-                      
-                      {/* Hackathon badge */}
-                      {startsnap.is_hackathon_entry && (
-                        <Badge className="bg-startsnap-heliotrope text-white font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-purple-700 px-2 py-0.5 flex items-center gap-1 hover:opacity-90 hover:-translate-y-px transition-all duration-200">
-                          <span className="material-icons text-xs">emoji_events</span>
-                          Hackathon Entry
-                        </Badge>
-                      )}
-                    </div>
-                    
-                    <div className="flex justify-between items-start">
-                      <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-xl leading-7">
-                        {startsnap.name}
-                      </h3>
-                      <Badge
-                        className={`${categoryDisplay.bgColor} ${categoryDisplay.textColor} border ${categoryDisplay.borderColor} rounded-full px-3 py-1 font-['Space_Mono',Helvetica] text-xs hover:opacity-90 hover:-translate-y-px transition-all duration-200`}
-                      >
-                        {categoryDisplay.name}
-                      </Badge>
-                    </div>
-
-                    <p className="mt-3 font-['Roboto',Helvetica] font-normal text-startsnap-river-bed text-sm leading-5 line-clamp-2 h-10 overflow-hidden">
-                      {startsnap.description}
-                    </p>
-
-                    <p className="mt-4 font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs">
-                      {formatDate(startsnap.created_at)}
-                    </p>
-
-                    {/* Separated tag sections */}
-                    <div className="space-y-1 mt-3">
-                      {/* General Tags Section */}
-                      {startsnap.tags && startsnap.tags.length > 0 && (
-                        <div className="flex items-center gap-1">
-                          <span className="material-icons text-startsnap-oxford-blue text-xs">tag</span>
-                          <div className="flex flex-wrap gap-1 flex-1">
-                            {startsnap.tags.slice(0, 2).map((tag, idx) => (
-                              <Badge 
-                                key={`tag-${idx}`}
-                                className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-gray-800 px-2 py-0.5 hover:opacity-90 hover:-translate-y-px transition-all duration-200"
-                              >
-                                #{tag}
-                              </Badge>
-                            ))}
-                            {startsnap.tags.length > 2 && (
-                              <Badge className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-gray-800 px-2 py-0.5 hover:opacity-90 hover:-translate-y-px transition-all duration-200">
-                                +{startsnap.tags.length - 2} more
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* Tools Used Section */}
-                      {startsnap.tools_used && startsnap.tools_used.length > 0 && (
-                        <div className="flex items-center gap-1">
-                          <span className="material-icons text-startsnap-persian-blue text-xs">build</span>
-                          <div className="flex flex-wrap gap-1 flex-1">
-                            {startsnap.tools_used.slice(0, 2).map((tool, idx) => (
-                              <Badge 
-                                key={`tool-${idx}`}
-                                className="bg-startsnap-french-pass text-startsnap-persian-blue font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-blue-700 px-2 py-0.5 hover:opacity-90 hover:-translate-y-px transition-all duration-200"
-                              >
-                                {tool}
-                              </Badge>
-                            ))}
-                            {startsnap.tools_used.length > 2 && (
-                              <Badge className="bg-startsnap-french-pass text-startsnap-persian-blue font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-blue-700 px-2 py-0.5 hover:opacity-90 hover:-translate-y-px transition-all duration-200">
-                                +{startsnap.tools_used.length - 2} more
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* Looking For Feedback Section */}
-                      {startsnap.feedback_tags && startsnap.feedback_tags.length > 0 && (
-                        <div className="flex items-center gap-1">
-                          <span className="material-icons text-startsnap-jewel text-xs">forum</span>
-                          <div className="flex flex-wrap gap-1 flex-1">
-                            {startsnap.feedback_tags.slice(0, 2).map((feedback, idx) => (
-                              <Badge 
-                                key={`feedback-${idx}`}
-                                className="bg-startsnap-ice-cold text-startsnap-jewel font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-green-700 px-2 py-0.5 hover:opacity-90 hover:-translate-y-px transition-all duration-200"
-                              >
-                                {feedback}
-                              </Badge>
-                            ))}
-                            {startsnap.feedback_tags.length > 2 && (
-                              <Badge className="bg-startsnap-ice-cold text-startsnap-jewel font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-green-700 px-2 py-0.5 hover:opacity-90 hover:-translate-y-px transition-all duration-200">
-                                +{startsnap.feedback_tags.length - 2} more
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="flex gap-2 mt-4">
-                      <Button 
-                        className="startsnap-button flex-1 bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] text-sm" 
-                        asChild
-                      >
-                        <Link to={`/edit/${startsnap.id}`}>Edit Project</Link>
-                      </Button>
-                      <Button 
-                        className="startsnap-button flex-1 bg-startsnap-mischka text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] text-sm" 
-                        asChild
-                      >
-                        <Link to={`/project/${startsnap.id}`}>View Project</Link>
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+            {userStartSnaps.map((startsnap) => (
+              <StartSnapCard
+                key={startsnap.id}
+                startsnap={startsnap}
+                showCreator={false}
+                variant="profile"
+                isOwner={true}
+                formatDate={formatDate}
+                getCategoryDisplay={getCategoryDisplay}
+              />
+            ))}
           </div>
         ) : (
           <Card className="bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] p-8">
             <div className="text-center">
               <p className="text-lg text-startsnap-pale-sky mb-4">You haven't created any StartSnaps yet!</p>
-              <Button 
-                className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]" 
+              <Button
+                className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
                 asChild
               >
                 <Link to="/create">Create Your First StartSnap</Link>

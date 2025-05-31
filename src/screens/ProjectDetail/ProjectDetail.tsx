@@ -273,12 +273,12 @@ export const ProjectDetail = (): JSX.Element => {
             <div className="absolute top-3 right-3 flex flex-col gap-2 items-end z-10">
               {/* Project type badge */}
               {startsnap.type === "live" ? (
-                <Badge className="bg-startsnap-mountain-meadow text-white font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-green-700 px-3 py-1 flex items-center gap-1 hover:opacity-90 hover:-translate-y-px transition-all duration-200">
+                <Badge variant="outline" className="bg-startsnap-mountain-meadow text-white font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-green-700 px-3 py-1 flex items-center gap-1">
                   <span className="material-icons text-sm">rocket_launch</span>
                   Live Project
                 </Badge>
               ) : (
-                <Badge className="bg-startsnap-corn text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-yellow-700 px-3 py-1 flex items-center gap-1 hover:opacity-90 hover:-translate-y-px transition-all duration-200">
+                <Badge variant="outline" className="bg-startsnap-corn text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-yellow-700 px-3 py-1 flex items-center gap-1">
                   <span className="material-icons text-sm">lightbulb</span>
                   Idea / Concept
                 </Badge>
@@ -286,7 +286,7 @@ export const ProjectDetail = (): JSX.Element => {
 
               {/* Hackathon badge */}
               {startsnap.is_hackathon_entry && (
-                <Badge className="bg-startsnap-heliotrope text-white font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-purple-700 px-3 py-1 flex items-center gap-1 hover:opacity-90 hover:-translate-y-px transition-all duration-200">
+                <Badge variant="outline" className="bg-startsnap-heliotrope text-white font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-purple-700 px-3 py-1 flex items-center gap-1">
                   <span className="material-icons text-sm">emoji_events</span>
                   Hackathon Entry
                 </Badge>
@@ -306,7 +306,7 @@ export const ProjectDetail = (): JSX.Element => {
               {startsnap.name}
             </h1>
             <div className="flex justify-end mb-4">
-              <Badge className={`${categoryDisplay.bgColor} ${categoryDisplay.textColor} border ${categoryDisplay.borderColor} rounded-full px-[13px] py-[5px] font-['Space_Mono',Helvetica] hover:opacity-90 hover:-translate-y-px transition-all duration-200`}>
+              <Badge variant="outline" className={`${categoryDisplay.bgColor} ${categoryDisplay.textColor} border ${categoryDisplay.borderColor} rounded-full px-[13px] py-[5px] font-['Space_Mono',Helvetica]`}>
                 {categoryDisplay.name}
               </Badge>
             </div>
@@ -344,7 +344,8 @@ export const ProjectDetail = (): JSX.Element => {
                     {startsnap.tags.map((tag, idx) => (
                       <Badge
                         key={`tag-${idx}`}
-                        className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] font-normal text-sm rounded-full border border-solid border-gray-800 px-[13px] py-[5px] hover:opacity-90 hover:-translate-y-px transition-all duration-200"
+                        variant="outline"
+                        className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] font-normal text-sm rounded-full border border-solid border-gray-800 px-[13px] py-[5px]"
                       >
                         #{tag}
                       </Badge>
@@ -366,7 +367,8 @@ export const ProjectDetail = (): JSX.Element => {
                     {startsnap.tools_used.map((tool, idx) => (
                       <Badge
                         key={`tool-${idx}`}
-                        className="bg-startsnap-french-pass text-startsnap-persian-blue font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-blue-700 px-[13px] py-[5px] hover:opacity-90 hover:-translate-y-px transition-all duration-200"
+                        variant="outline"
+                        className="bg-startsnap-french-pass text-startsnap-persian-blue font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-blue-700 px-[13px] py-[5px]"
                       >
                         {tool}
                       </Badge>
@@ -388,7 +390,8 @@ export const ProjectDetail = (): JSX.Element => {
                     {startsnap.feedback_tags.map((feedback, idx) => (
                       <Badge
                         key={`feedback-${idx}`}
-                        className="bg-startsnap-ice-cold text-startsnap-jewel font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-green-700 px-[13px] py-[5px] hover:opacity-90 hover:-translate-y-px transition-all duration-200"
+                        variant="outline"
+                        className="bg-startsnap-ice-cold text-startsnap-jewel font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-green-700 px-[13px] py-[5px]"
                       >
                         {feedback}
                       </Badge>
