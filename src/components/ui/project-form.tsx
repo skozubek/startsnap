@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "./button";
 import { Card, CardContent } from "./card";
+import { Label } from "./label";
 import { Input } from "./input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./select";
 import { Textarea } from "./textarea";
+import { VibeLogEntry } from "./vibe-log-entry";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "./select";
 import { Badge } from "./badge";
 import { Checkbox } from "./checkbox";
 import { Separator } from "./separator";
@@ -138,6 +146,19 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
       ...prev,
       tags: prev.tags.filter(t => t !== tag)
     }));
+  };
+
+  // Handle vibe log changes
+  const handleVibeLogTitleChange = (value: string) => {
+    setFormState(prev => ({ ...prev, vibeLogTitle: value }));
+  };
+
+  const handleVibeLogContentChange = (value: string) => {
+    setFormState(prev => ({ ...prev, vibeLogContent: value }));
+  };
+
+  const handleVibeLogTypeChange = (value: string) => {
+    setFormState(prev => ({ ...prev, vibeLogType: value }));
   };
 
   const handleSubmit = (e) => {
@@ -384,82 +405,27 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
 
           <Separator className="border-gray-300 my-6" />
 
-          {/* Vibe Log Entry */}
-          <div className="space-y-2">
-            <div className="flex items-center">
-              <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
-                {mode === 'create' ? 'Initial Vibe Log Entry' : 'Add New Vibe Log Entry'}
+          {/* Initial Vibe Log Entry Section */}
+          {mode === "create" && (
+            <div className="space-y-6">
+              <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-2xl leading-8 flex items-center gap-2 mb-6">
+                Initial Vibe Log Entry
+                <span className="text-startsnap-corn text-2xl material-icons">
+                  insights
+                </span>
               </h3>
-              <span className="ml-2 text-startsnap-corn text-xl material-icons">
-                insights
-              </span>
+
+              <VibeLogEntry
+                title={formState.vibeLogTitle}
+                content={formState.vibeLogContent}
+                type={formState.vibeLogType}
+                onTitleChange={handleVibeLogTitleChange}
+                onContentChange={handleVibeLogContentChange}
+                onTypeChange={handleVibeLogTypeChange}
+                showAllTypes={false}
+              />
             </div>
-
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky text-sm">
-                  Entry Type
-                </label>
-                <Select 
-                  name="vibeLogType" 
-                  value={formState.vibeLogType}
-                  onValueChange={(value) => setFormState(prev => ({ ...prev, vibeLogType: value }))}
-                >
-                  <SelectTrigger className="border-2 border-solid border-gray-800 rounded-lg h-[52px] font-['Roboto',Helvetica]">
-                    <SelectValue placeholder="Select log type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="general" className="flex items-center gap-2">
-                      <span className="material-icons text-lg">campaign</span>
-                      <span> General Update</span>
-                    </SelectItem>
-                    <SelectItem value="launch" className="flex items-center gap-2">
-                      <span className="material-icons text-lg">rocket_launch</span>
-                      <span> Launch</span>
-                    </SelectItem>
-                    <SelectItem value="update" className="flex items-center gap-2">
-                      <span className="material-icons text-lg">construction</span>
-                      <span> Fix / New Feature</span>
-                    </SelectItem>
-                    <SelectItem value="idea" className="flex items-center gap-2">
-                      <span className="material-icons text-lg">lightbulb</span>
-                      <span> Idea</span>
-                    </SelectItem>
-                    <SelectItem value="feedback" className="flex items-center gap-2">
-                      <span className="material-icons text-lg">forum</span>
-                      <span> Seeking Feedback</span>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky text-sm">
-                  Entry Title
-                </label>
-                <Input
-                  name="vibeLogTitle"
-                  value={formState.vibeLogTitle}
-                  onChange={handleChange}
-                  placeholder={mode === 'create' ? "e.g., Project Launch!" : "e.g., New Feature Added!"}
-                  className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky text-sm">
-                  Entry Content
-                </label>
-                <Textarea
-                  name="vibeLogContent"
-                  value={formState.vibeLogContent}
-                  onChange={handleChange}
-                  placeholder={mode === 'create' ? "Share your thoughts about launching this project..." : "Share updates about your project..."}
-                  className="border-2 border-solid border-gray-800 rounded-lg p-3.5 min-h-[107px] font-['Roboto',Helvetica] text-startsnap-pale-sky"
-                />
-              </div>
-            </div>
-          </div>
+          )}
 
           <div className="flex justify-center gap-4 pt-4">
             <Button
