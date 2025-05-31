@@ -20,6 +20,7 @@ import {
 } from "../../components/ui/select";
 import { Popover, PopoverTrigger, PopoverContent } from "../../components/ui/popover";
 import { supabase } from "../../lib/supabase";
+import { FaGithub, FaXTwitter, FaLinkedinIn } from "react-icons/fa6";
 
 /**
  * @description User profile page with settings and project management
@@ -484,7 +485,7 @@ export const Profile = (): JSX.Element => {
                       {/* GitHub Link */}
                       <div className="space-y-1">
                         <div className="flex items-center">
-                          <span className="material-icons text-black mr-2 text-lg">code</span>
+                          <FaGithub className="text-black mr-2 text-lg" />
                           <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">GitHub</label>
                         </div>
                         <Input
@@ -502,7 +503,7 @@ export const Profile = (): JSX.Element => {
                       {/* Twitter Link */}
                       <div className="space-y-1">
                         <div className="flex items-center">
-                          <span className="material-icons text-black mr-2 text-lg">tag</span>
+                          <FaXTwitter className="text-black mr-2 text-lg" />
                           <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">Twitter</label>
                         </div>
                         <Input
@@ -520,7 +521,7 @@ export const Profile = (): JSX.Element => {
                       {/* LinkedIn Link */}
                       <div className="space-y-1">
                         <div className="flex items-center">
-                          <span className="material-icons text-black mr-2 text-lg">work</span>
+                          <FaLinkedinIn className="text-black mr-2 text-lg" />
                           <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">LinkedIn</label>
                         </div>
                         <Input
