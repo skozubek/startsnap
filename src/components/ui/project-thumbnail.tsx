@@ -1,4 +1,10 @@
+/**
+ * src/components/ui/project-thumbnail.tsx
+ * @description Project thumbnail components with various visual styles
+ */
+
 import React from 'react';
+import { getCategoryHueMap } from '../../config/categories';
 
 // Properties for the thumbnail components
 interface ThumbnailProps {
@@ -14,27 +20,22 @@ const generateColor = (id: string, category: string, opacity: number = 0.1) => {
     return char.charCodeAt(0) + ((acc << 5) - acc);
   }, 0);
 
-  // Map category to base hue
-  const categoryHues: Record<string, number> = {
-    ai: 290,          // Violet - Intelligence, innovation, future tech
-    blockchain: 210,  // Blue - Trust, technology, innovation
-    gaming: 120,      // Green - Energy, play, achievement
-    community: 270,   // Purple - Connection, collaboration, creativity
-    music: 330,       // Pink/Magenta - Rhythm, creativity, expression
-    design: 30,       // Orange - Creativity, warmth, inspiration
-    education: 60,    // Yellow - Knowledge, enlightenment, learning
-    productivity: 180, // Cyan - Efficiency, clarity, focus
-    other: 0          // Red - Passion, energy, standout
-  };
+  // Get category hues from central config
+  const categoryHues = getCategoryHueMap();
 
-  // Get category-specific variations
+  // Get base hue from category
+  const baseHue = categoryHues[category] || categoryHues.other;
+
+  // Add some variation based on the hash (±15 degrees)
+  const hueVariation = (hash % 30) - 15;
+  const finalHue = (baseHue + hueVariation + 360) % 360;
+
+  // Category influences saturation and lightness for more variety
   const categoryHash = category.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const saturation = 45 + (categoryHash % 30); // 45-75%
+  const lightness = 85 + (hash % 10); // 85-95% for subtle backgrounds
 
-  const hue = categoryHues[category] || (hash % 360); // Fallback to hash-based hue
-  const saturation = 65 + (hash % 25) + (categoryHash % 10); // 65-99% with category variation
-  const lightness = 80 + (hash % 15) + (categoryHash % 5);  // 80-99% (very light) with category variation
-
-  return `hsla(${hue}, ${saturation}%, ${lightness}%, ${opacity})`;
+  return `hsla(${finalHue}, ${saturation}%, ${lightness}%, ${opacity})`;
 };
 
 /**

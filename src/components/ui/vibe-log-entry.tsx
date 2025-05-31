@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./select";
+import { getVibeLogOptions, getVibeLogDisplay } from "../../config/categories";
 
 interface VibeLogEntryProps {
   title: string;
@@ -43,42 +44,26 @@ export const VibeLogEntry = ({
               <SelectValue placeholder="Select entry type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="launch" className="flex items-center">
-                <span className="material-icons text-base mr-2 leading-none">rocket_launch</span>
-                <span>Launch</span>
-              </SelectItem>
-              <SelectItem value="update" className="flex items-center">
-                <span className="material-icons text-base mr-2 leading-none">construction</span>
-                <span>General Update</span>
-              </SelectItem>
-              <SelectItem value="feature" className="flex items-center">
-                <span className="material-icons text-base mr-2 leading-none">auto_awesome</span>
-                <span>Fix / New Feature</span>
-              </SelectItem>
-              <SelectItem value="idea" className="flex items-center">
-                <span className="material-icons text-base mr-2 leading-none">lightbulb</span>
-                <span>Idea</span>
-              </SelectItem>
-              <SelectItem value="feedback" className="flex items-center">
-                <span className="material-icons text-base mr-2 leading-none">forum</span>
-                <span>Seeking Feedback</span>
-              </SelectItem>
+              {getVibeLogOptions().map((option) => (
+                <SelectItem key={option.value} value={option.value} className="flex items-center">
+                  <span className="material-icons text-base mr-2 leading-none">{option.icon}</span>
+                  <span>{option.label}</span>
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         ) : (
           <div className="border-2 border-solid border-gray-800 rounded-lg h-[52px] font-['Roboto',Helvetica] bg-startsnap-athens-gray flex items-center px-4">
             <div className="flex items-center text-startsnap-ebony-clay">
-              {singleOptionType === 'launch' ? (
-                <>
-                  <span className="material-icons text-base mr-3 leading-none text-startsnap-french-rose">rocket_launch</span>
-                  <span className="font-medium">Launch</span>
-                </>
-              ) : (
-                <>
-                  <span className="material-icons text-base mr-3 leading-none text-startsnap-corn">lightbulb</span>
-                  <span className="font-medium">Idea</span>
-                </>
-              )}
+              {(() => {
+                const displayData = getVibeLogDisplay(singleOptionType);
+                return (
+                  <>
+                    <span className={`material-icons text-base mr-3 leading-none ${displayData.iconColor}`}>{displayData.icon}</span>
+                    <span className="font-medium">{displayData.label}</span>
+                  </>
+                );
+              })()}
             </div>
           </div>
         )}

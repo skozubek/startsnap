@@ -15,6 +15,7 @@ import {
 import { Badge } from "./badge";
 import { Checkbox } from "./checkbox";
 import { Separator } from "./separator";
+import { getFormOptions } from "../../config/categories";
 
 interface ProjectFormProps {
   mode: 'create' | 'edit';
@@ -275,15 +276,11 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="ai">AI Powered Tool</SelectItem>
-                <SelectItem value="productivity">Productivity</SelectItem>
-                <SelectItem value="blockchain">Blockchain</SelectItem>
-                <SelectItem value="gaming">Gaming</SelectItem>
-                <SelectItem value="community">Community</SelectItem>
-                <SelectItem value="design">Design</SelectItem>
-                <SelectItem value="education">Education</SelectItem>
-                <SelectItem value="music">Music Tech</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
+                {getFormOptions().map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

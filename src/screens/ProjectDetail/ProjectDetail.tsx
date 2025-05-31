@@ -12,6 +12,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar"
 import { Textarea } from "../../components/ui/textarea";
 import { supabase } from "../../lib/supabase";
 import { MinimalistThumbnail } from "../../components/ui/project-thumbnail";
+import { getCategoryDisplay, getVibeLogDisplay } from "../../config/categories";
+import { formatDetailedDate } from "../../lib/utils";
 
 /**
  * @description Page component that displays detailed project information
@@ -30,98 +32,6 @@ export const ProjectDetail = (): JSX.Element => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
-  // Category to color mapping
-  const categoryColorMap = {
-    ai: {
-      name: "AI Powered Tool",
-      bgColor: "bg-violet-200",
-      textColor: "text-violet-700",
-      borderColor: "border-violet-700",
-    },
-    blockchain: {
-      name: "Blockchain",
-      bgColor: "bg-blue-200",
-      textColor: "text-blue-700",
-      borderColor: "border-blue-700",
-    },
-    gaming: {
-      name: "Gaming",
-      bgColor: "bg-startsnap-ice-cold",
-      textColor: "text-startsnap-jewel",
-      borderColor: "border-green-700",
-    },
-    community: {
-      name: "Community",
-      bgColor: "bg-startsnap-french-pass",
-      textColor: "text-startsnap-persian-blue",
-      borderColor: "border-blue-700",
-    },
-    music: {
-      name: "Music Tech",
-      bgColor: "bg-purple-200",
-      textColor: "text-startsnap-purple-heart",
-      borderColor: "border-purple-700",
-    },
-    design: {
-      name: "Design",
-      bgColor: "bg-pink-200",
-      textColor: "text-pink-700",
-      borderColor: "border-pink-700",
-    },
-    education: {
-      name: "Education",
-      bgColor: "bg-yellow-200",
-      textColor: "text-yellow-700",
-      borderColor: "border-yellow-700",
-    },
-    productivity: {
-      name: "Productivity",
-      bgColor: "bg-orange-200",
-      textColor: "text-orange-700",
-      borderColor: "border-orange-700",
-    },
-    other: {
-      name: "Other",
-      bgColor: "bg-gray-200",
-      textColor: "text-gray-700",
-      borderColor: "border-gray-700",
-    },
-  };
-
-  // Vibe log type to icon mapping
-  const vibeLogTypeIcons = {
-    launch: {
-      icon: "campaign",
-      iconBg: "bg-startsnap-wisp-pink",
-      iconColor: "text-startsnap-french-rose",
-      iconBorder: "border-pink-500",
-    },
-    feature: {
-      icon: "auto_awesome",
-      iconBg: "bg-startsnap-blue-chalk",
-      iconColor: "text-startsnap-heliotrope",
-      iconBorder: "border-purple-500",
-    },
-    update: {
-      icon: "construction",
-      iconBg: "bg-startsnap-blue-chalk",
-      iconColor: "text-startsnap-heliotrope",
-      iconBorder: "border-purple-500",
-    },
-    idea: {
-      icon: "lightbulb",
-      iconBg: "bg-yellow-100",
-      iconColor: "text-yellow-600",
-      iconBorder: "border-yellow-500",
-    },
-    feedback: {
-      icon: "forum",
-      iconBg: "bg-startsnap-french-pass",
-      iconColor: "text-startsnap-persian-blue",
-      iconBorder: "border-blue-500",
-    },
-  };
 
   useEffect(() => {
     // Check current user
@@ -200,32 +110,6 @@ export const ProjectDetail = (): JSX.Element => {
     } finally {
       setLoading(false);
     }
-  };
-
-  /**
-   * @description Formats a date string into a human-readable format
-   * @param {string} dateString - ISO date string to format
-   * @returns {string} Formatted date and time string
-   */
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleString('en-US', {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    });
-  };
-
-  /**
-   * @description Returns the display information for a given category
-   * @param {string} category - The category identifier
-   * @returns {Object} Display information including name, colors, etc.
-   */
-  const getCategoryDisplay = (category) => {
-    return categoryColorMap[category] || categoryColorMap.other;
   };
 
   /**
@@ -465,7 +349,7 @@ export const ProjectDetail = (): JSX.Element => {
             {vibeLogEntries.length > 0 ? (
               vibeLogEntries.map((entry, index) => {
                 const logType = entry.log_type || 'update';
-                const iconData = vibeLogTypeIcons[logType] || vibeLogTypeIcons.update;
+                const iconData = getVibeLogDisplay(logType);
 
                 return (
                   <div key={index} className="mb-8 last:mb-0">
@@ -477,7 +361,7 @@ export const ProjectDetail = (): JSX.Element => {
                       </div>
                       <div className="ml-4">
                         <p className="font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4">
-                          {formatDate(entry.created_at)}
+                          {formatDetailedDate(entry.created_at)}
                         </p>
                         <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7 mt-1">
                           {entry.title}

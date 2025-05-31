@@ -8,6 +8,8 @@ import { Button } from "../../../../components/ui/button";
 import { Link } from "react-router-dom";
 import { supabase } from "../../../../lib/supabase";
 import { StartSnapCard } from "../../../../components/ui/StartSnapCard";
+import { getCategoryDisplay } from "../../../../config/categories";
+import { formatDate } from "../../../../lib/utils";
 import Typed from 'typed.js';
 
 /**
@@ -84,97 +86,6 @@ export const MainContentSection = (): JSX.Element => {
       console.error('Error fetching startsnaps:', error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  // Category to color mapping
-  const categoryColorMap = {
-    ai: {
-      name: "AI Powered Tool",
-      bgColor: "bg-violet-200",
-      textColor: "text-violet-700",
-      borderColor: "border-violet-700",
-    },
-    blockchain: {
-      name: "Blockchain",
-      bgColor: "bg-blue-200",
-      textColor: "text-blue-700",
-      borderColor: "border-blue-700",
-    },
-    gaming: {
-      name: "Gaming",
-      bgColor: "bg-startsnap-ice-cold",
-      textColor: "text-startsnap-jewel",
-      borderColor: "border-green-700",
-    },
-    community: {
-      name: "Community",
-      bgColor: "bg-startsnap-french-pass",
-      textColor: "text-startsnap-persian-blue",
-      borderColor: "border-blue-700",
-    },
-    music: {
-      name: "Music Tech",
-      bgColor: "bg-purple-200",
-      textColor: "text-startsnap-purple-heart",
-      borderColor: "border-purple-700",
-    },
-    design: {
-      name: "Design",
-      bgColor: "bg-pink-200",
-      textColor: "text-pink-700",
-      borderColor: "border-pink-700",
-    },
-    education: {
-      name: "Education",
-      bgColor: "bg-yellow-200",
-      textColor: "text-yellow-700",
-      borderColor: "border-yellow-700",
-    },
-    productivity: {
-      name: "Productivity",
-      bgColor: "bg-orange-200",
-      textColor: "text-orange-700",
-      borderColor: "border-orange-700",
-    },
-    other: {
-      name: "Other",
-      bgColor: "bg-gray-200",
-      textColor: "text-gray-700",
-      borderColor: "border-gray-700",
-    },
-  };
-
-  /**
-   * @description Returns the display information for a given category
-   * @param {string} category - The category identifier
-   * @returns {Object} Display information including name, colors, etc.
-   */
-  const getCategoryDisplay = (category) => {
-    return categoryColorMap[category] || categoryColorMap.other;
-  };
-
-  /**
-   * @description Formats a date string into a human-readable relative time
-   * @param {string} dateString - ISO date string to format
-   * @returns {string} Formatted relative time string (e.g., "Today", "2 days ago")
-   */
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
-
-    if (diffInDays === 0) {
-      return "Launched: Today";
-    } else if (diffInDays === 1) {
-      return "Launched: Yesterday";
-    } else if (diffInDays < 7) {
-      return `Launched: ${diffInDays} days ago`;
-    } else if (diffInDays < 30) {
-      const weeks = Math.floor(diffInDays / 7);
-      return `Launched: ${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`;
-    } else {
-      return `Launched: ${date.toLocaleDateString()}`;
     }
   };
 

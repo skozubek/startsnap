@@ -22,6 +22,8 @@ import { Popover, PopoverTrigger, PopoverContent } from "../../components/ui/pop
 import { supabase } from "../../lib/supabase";
 import { FaGithub, FaXTwitter, FaLinkedinIn } from "react-icons/fa6";
 import { StartSnapCard } from "../../components/ui/StartSnapCard";
+import { getCategoryDisplay, getUserStatusOptions, getUserStatusDisplay } from "../../config/categories";
+import { formatDate, validateSocialLinks, LinkValidationErrors, ProfileLinks } from "../../lib/utils";
 
 /**
  * @description User profile page with settings and project management
@@ -43,81 +45,13 @@ export const Profile = (): JSX.Element => {
   });
   const [userStartSnaps, setUserStartSnaps] = useState([]);
   const [loadingStartSnaps, setLoadingStartSnaps] = useState(true);
-  const [linkErrors, setLinkErrors] = useState({
+  const [linkErrors, setLinkErrors] = useState<LinkValidationErrors>({
     github: "",
     twitter: "",
     linkedin: "",
     website: ""
   });
   const [statusPopoverOpen, setStatusPopoverOpen] = useState(false);
-
-  // Status options with Material Icons
-  const statusOptions = [
-    { value: "building", label: "Actively Building", icon: "rocket_launch" },
-    { value: "brainstorming", label: "Brainstorming New Ideas", icon: "lightbulb" },
-    { value: "collaborating", label: "Open to Collaboration", icon: "handshake" },
-    { value: "feedback", label: "Seeking Feedback", icon: "search" },
-    { value: "job_ready", label: "Looking for Work", icon: "work" },
-    { value: "break", label: "Taking a Break", icon: "hourglass_empty" }
-  ];
-
-  // Category to color mapping
-  const categoryColorMap = {
-    ai: {
-      name: "AI Powered Tool",
-      bgColor: "bg-violet-200",
-      textColor: "text-violet-700",
-      borderColor: "border-violet-700",
-    },
-    blockchain: {
-      name: "Blockchain",
-      bgColor: "bg-blue-200",
-      textColor: "text-blue-700",
-      borderColor: "border-blue-700",
-    },
-    gaming: {
-      name: "Gaming",
-      bgColor: "bg-startsnap-ice-cold",
-      textColor: "text-startsnap-jewel",
-      borderColor: "border-green-700",
-    },
-    community: {
-      name: "Community",
-      bgColor: "bg-startsnap-french-pass",
-      textColor: "text-startsnap-persian-blue",
-      borderColor: "border-blue-700",
-    },
-    music: {
-      name: "Music Tech",
-      bgColor: "bg-purple-200",
-      textColor: "text-startsnap-purple-heart",
-      borderColor: "border-purple-700",
-    },
-    design: {
-      name: "Design",
-      bgColor: "bg-pink-200",
-      textColor: "text-pink-700",
-      borderColor: "border-pink-700",
-    },
-    education: {
-      name: "Education",
-      bgColor: "bg-yellow-200",
-      textColor: "text-yellow-700",
-      borderColor: "border-yellow-700",
-    },
-    productivity: {
-      name: "Productivity",
-      bgColor: "bg-orange-200",
-      textColor: "text-orange-700",
-      borderColor: "border-orange-700",
-    },
-    other: {
-      name: "Other",
-      bgColor: "bg-gray-200",
-      textColor: "text-gray-700",
-      borderColor: "border-gray-700",
-    },
-  };
 
   useEffect(() => {
     const fetchUserAndProfile = async () => {
@@ -228,84 +162,18 @@ export const Profile = (): JSX.Element => {
   };
 
   /**
-   * @description Validates a URL string
-   * @param {string} url - URL to validate
-   * @returns {boolean} Whether the URL is valid
-   */
-  const isValidUrl = (url) => {
-    if (!url) return true; // Empty is valid (optional field)
-    try {
-      new URL(url);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  };
-
-  /**
-   * @description Validates a GitHub URL
-   * @param {string} url - URL to validate
-   * @returns {boolean} Whether the URL is a valid GitHub URL
-   */
-  const isValidGithubUrl = (url) => {
-    if (!url) return true; // Empty is valid (optional field)
-    return isValidUrl(url) && url.match(/^https?:\/\/(www\.)?github\.com\/[a-zA-Z0-9-]+\/?.*$/);
-  };
-
-  /**
-   * @description Validates a Twitter URL
-   * @param {string} url - URL to validate
-   * @returns {boolean} Whether the URL is a valid Twitter URL
-   */
-  const isValidTwitterUrl = (url) => {
-    if (!url) return true; // Empty is valid (optional field)
-    return isValidUrl(url) && url.match(/^https?:\/\/(www\.)?(twitter\.com|x\.com)\/[a-zA-Z0-9_]+\/?.*$/);
-  };
-
-  /**
-   * @description Validates a LinkedIn URL
-   * @param {string} url - URL to validate
-   * @returns {boolean} Whether the URL is a valid LinkedIn URL
-   */
-  const isValidLinkedInUrl = (url) => {
-    if (!url) return true; // Empty is valid (optional field)
-    return isValidUrl(url) && url.match(/^https?:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9-]+\/?.*$/);
-  };
-
-  /**
-   * @description Validates all external links
+   * @description Validates all external links using centralized validation
    * @returns {boolean} Whether all links are valid
    */
   const validateLinks = () => {
-    const errors = {
-      github: "",
-      twitter: "",
-      linkedin: "",
-      website: ""
+    const profileLinks: ProfileLinks = {
+      github: profile.github,
+      twitter: profile.twitter,
+      linkedin: profile.linkedin,
+      website: profile.website
     };
 
-    let isValid = true;
-
-    if (profile.github && !isValidGithubUrl(profile.github)) {
-      errors.github = "Please enter a valid GitHub URL (e.g., https://github.com/username)";
-      isValid = false;
-    }
-
-    if (profile.twitter && !isValidTwitterUrl(profile.twitter)) {
-      errors.twitter = "Please enter a valid Twitter URL (e.g., https://twitter.com/username)";
-      isValid = false;
-    }
-
-    if (profile.linkedin && !isValidLinkedInUrl(profile.linkedin)) {
-      errors.linkedin = "Please enter a valid LinkedIn URL (e.g., https://linkedin.com/in/username)";
-      isValid = false;
-    }
-
-    if (profile.website && !isValidUrl(profile.website)) {
-      errors.website = "Please enter a valid website URL";
-      isValid = false;
-    }
-
+    const { isValid, errors } = validateSocialLinks(profileLinks);
     setLinkErrors(errors);
     return isValid;
   };
@@ -353,39 +221,6 @@ export const Profile = (): JSX.Element => {
     }
   };
 
-  /**
-   * @description Returns the display information for a given category
-   * @param {string} category - The category identifier
-   * @returns {Object} Display information including name, colors, etc.
-   */
-  const getCategoryDisplay = (category) => {
-    return categoryColorMap[category] || categoryColorMap.other;
-  };
-
-  /**
-   * @description Formats a date string into a human-readable relative time
-   * @param {string} dateString - ISO date string to format
-   * @returns {string} Formatted relative time string (e.g., "Today", "2 days ago")
-   */
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
-
-    if (diffInDays === 0) {
-      return "Launched: Today";
-    } else if (diffInDays === 1) {
-      return "Launched: Yesterday";
-    } else if (diffInDays < 7) {
-      return `Launched: ${diffInDays} days ago`;
-    } else if (diffInDays < 30) {
-      const weeks = Math.floor(diffInDays / 7);
-      return `Launched: ${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`;
-    } else {
-      return `Launched: ${date.toLocaleDateString()}`;
-    }
-  };
-
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-startsnap-candlelight">
@@ -400,7 +235,7 @@ export const Profile = (): JSX.Element => {
    * @returns {string} Material icon name for the status
    */
   const getStatusIcon = (statusValue) => {
-    const option = statusOptions.find(opt => opt.value === statusValue);
+    const option = getUserStatusOptions().find(opt => opt.value === statusValue);
     return option ? option.icon : 'lightbulb';
   };
 
@@ -428,7 +263,7 @@ export const Profile = (): JSX.Element => {
                     <div className="mt-4 text-center cursor-pointer hover:scale-105 transition-transform">
                       <Badge variant="outline" className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-gray-800 px-3 py-1.5">
                         <span className="material-icons text-sm mr-1">{getStatusIcon(profile.status)}</span>
-                        {statusOptions.find(opt => opt.value === profile.status)?.label}
+                        {getUserStatusOptions().find(opt => opt.value === profile.status)?.label}
                       </Badge>
                     </div>
                   </PopoverTrigger>
@@ -437,7 +272,7 @@ export const Profile = (): JSX.Element => {
                       <p className="text-xs text-center text-startsnap-pale-sky mb-2 font-['Roboto',Helvetica]">
                         Select your status
                       </p>
-                      {statusOptions.map((option) => (
+                      {getUserStatusOptions().map((option) => (
                         <div
                           key={option.value}
                           className={`flex items-center p-2 rounded-md cursor-pointer transition-colors ${
