@@ -1,8 +1,17 @@
+/**
+ * src/screens/EditStartSnap/EditStartSnap.tsx
+ * @description Component for editing an existing StartSnap project
+ */
+
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ProjectForm } from "../../components/ui/project-form";
 import { supabase } from "../../lib/supabase";
 
+/**
+ * @description Page component for editing an existing StartSnap project
+ * @returns {JSX.Element} EditStartSnap page with project form populated with project data
+ */
 export const EditStartSnap = (): JSX.Element => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -75,6 +84,12 @@ export const EditStartSnap = (): JSX.Element => {
     checkUserAndFetchData();
   }, [id, navigate]);
 
+  /**
+   * @description Handles form submission to update an existing StartSnap
+   * @async
+   * @param {Object} formData - Form data containing updated project information
+   * @sideEffects Updates StartSnap in database and redirects on success
+   */
   const handleSubmit = async (formData) => {
     // Update the startsnap
     const { error: startsnapError } = await supabase

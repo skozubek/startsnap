@@ -1,3 +1,8 @@
+/**
+ * src/screens/Frame/sections/MainContentSection/MainContentSection.tsx
+ * @description Main content section of the home page with hero section and StartSnap cards
+ */
+
 import React, { useState, useEffect, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
 import { Badge } from "../../../../components/ui/badge";
@@ -8,6 +13,10 @@ import { supabase } from "../../../../lib/supabase";
 import { MinimalistThumbnail } from "../../../../components/ui/project-thumbnail";
 import Typed from 'typed.js';
 
+/**
+ * @description Renders the main content of the home page including hero section and StartSnap cards
+ * @returns {JSX.Element} Main content section with hero and StartSnap cards
+ */
 export const MainContentSection = (): JSX.Element => {
   const [startSnaps, setStartSnaps] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,6 +46,11 @@ export const MainContentSection = (): JSX.Element => {
     fetchStartSnaps();
   }, []);
 
+  /**
+   * @description Fetches StartSnap projects and their creator information from Supabase
+   * @async
+   * @sideEffects Updates state with fetched data
+   */
   const fetchStartSnaps = async () => {
     try {
       setLoading(true);
@@ -128,12 +142,20 @@ export const MainContentSection = (): JSX.Element => {
     },
   };
 
-  // Helper function to get category display info
+  /**
+   * @description Returns the display information for a given category
+   * @param {string} category - The category identifier
+   * @returns {Object} Display information including name, colors, etc.
+   */
   const getCategoryDisplay = (category) => {
     return categoryColorMap[category] || categoryColorMap.other;
   };
 
-  // Helper function to format date
+  /**
+   * @description Formats a date string into a human-readable relative time
+   * @param {string} dateString - ISO date string to format
+   * @returns {string} Formatted relative time string (e.g., "Today", "2 days ago")
+   */
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const now = new Date();

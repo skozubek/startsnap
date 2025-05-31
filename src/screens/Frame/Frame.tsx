@@ -1,3 +1,8 @@
+/**
+ * src/screens/Frame/Frame.tsx
+ * @description Main application frame component that handles routing and authentication state
+ */
+
 import React, { useEffect, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { FooterSection } from "./sections/FooterSection/FooterSection";
@@ -9,6 +14,10 @@ import { EditStartSnap } from "../EditStartSnap";
 import { Profile } from "../Profile";
 import { supabase } from "../../lib/supabase";
 
+/**
+ * @description Main application container that manages routes and auth state
+ * @returns {JSX.Element} The application frame with header, content area, and footer
+ */
 export const Frame = (): JSX.Element => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -28,7 +37,12 @@ export const Frame = (): JSX.Element => {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Protected route component
+  /**
+   * @description Component that protects routes requiring authentication
+   * @param {Object} props - Component props
+   * @param {React.ReactNode} props.children - Child components to render when authenticated
+   * @returns {JSX.Element} The children when authenticated, or a redirect to home
+   */
   const ProtectedRoute = ({ children }) => {
     if (loading) return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
     

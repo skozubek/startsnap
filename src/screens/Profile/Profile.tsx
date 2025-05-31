@@ -1,3 +1,8 @@
+/**
+ * src/screens/Profile/Profile.tsx
+ * @description User profile page component for viewing and editing user information and projects
+ */
+
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
@@ -15,6 +20,10 @@ import {
 } from "../../components/ui/select";
 import { supabase } from "../../lib/supabase";
 
+/**
+ * @description User profile page with settings and project management
+ * @returns {JSX.Element} Profile page with user info editing and project list
+ */
 export const Profile = (): JSX.Element => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -150,6 +159,12 @@ export const Profile = (): JSX.Element => {
     fetchUserAndProfile();
   }, [navigate]);
 
+  /**
+   * @description Fetches StartSnap projects created by the current user
+   * @async
+   * @param {string} userId - User ID to fetch projects for
+   * @sideEffects Updates state with user's projects
+   */
   const fetchUserStartSnaps = async (userId) => {
     try {
       setLoadingStartSnaps(true);
@@ -173,15 +188,28 @@ export const Profile = (): JSX.Element => {
     }
   };
 
+  /**
+   * @description Handles input changes for profile form fields
+   * @param {React.ChangeEvent<HTMLInputElement|HTMLTextAreaElement>} e - Change event
+   */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProfile(prev => ({ ...prev, [name]: value }));
   };
 
+  /**
+   * @description Handles status selection change
+   * @param {string} value - New status value
+   */
   const handleStatusChange = (value) => {
     setProfile(prev => ({ ...prev, status: value }));
   };
 
+  /**
+   * @description Updates the user profile in the database
+   * @async
+   * @sideEffects Updates profile information in Supabase
+   */
   const updateProfile = async () => {
     if (!user) return;
     
@@ -215,12 +243,20 @@ export const Profile = (): JSX.Element => {
     }
   };
 
-  // Helper function to get category display info
+  /**
+   * @description Returns the display information for a given category
+   * @param {string} category - The category identifier
+   * @returns {Object} Display information including name, colors, etc.
+   */
   const getCategoryDisplay = (category) => {
     return categoryColorMap[category] || categoryColorMap.other;
   };
 
-  // Helper function to format date
+  /**
+   * @description Formats a date string into a human-readable relative time
+   * @param {string} dateString - ISO date string to format
+   * @returns {string} Formatted relative time string (e.g., "Today", "2 days ago")
+   */
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -248,7 +284,11 @@ export const Profile = (): JSX.Element => {
     );
   }
 
-  // Get status emoji
+  /**
+   * @description Gets the emoji part of a status label
+   * @param {string} statusValue - Status value to get emoji for
+   * @returns {string} Emoji for the status
+   */
   const getStatusEmoji = (statusValue) => {
     const option = statusOptions.find(opt => opt.value === statusValue);
     return option ? option.label.split(' ')[0] : '💡';
@@ -445,7 +485,6 @@ export const Profile = (): JSX.Element => {
 
                     <p className="mt-3 font-['Roboto',Helvetica] font-normal text-startsnap-river-bed text-sm leading-5 line-clamp-2 h-10 overflow-hidden">
                       {startsnap.description}
-                      <span className="text-startsnap-french-rose text-xs italic ml-1">see more</span>
                     </p>
 
                     <p className="mt-4 font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs">

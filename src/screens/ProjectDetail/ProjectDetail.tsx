@@ -1,3 +1,8 @@
+/**
+ * src/screens/ProjectDetail/ProjectDetail.tsx
+ * @description Component for displaying detailed information about a StartSnap project
+ */
+
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "../../components/ui/button";
@@ -8,6 +13,10 @@ import { Textarea } from "../../components/ui/textarea";
 import { supabase } from "../../lib/supabase";
 import { MinimalistThumbnail } from "../../components/ui/project-thumbnail";
 
+/**
+ * @description Page component that displays detailed project information
+ * @returns {JSX.Element} Project detail page with project info, vibe log, and feedback
+ */
 export const ProjectDetail = (): JSX.Element => {
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
@@ -117,6 +126,11 @@ export const ProjectDetail = (): JSX.Element => {
     fetchProjectData();
   }, [id]);
 
+  /**
+   * @description Fetches project data, creator profile, and vibe logs from Supabase
+   * @async
+   * @sideEffects Updates state with fetched project data and related information
+   */
   const fetchProjectData = async () => {
     try {
       setLoading(true);
@@ -182,7 +196,11 @@ export const ProjectDetail = (): JSX.Element => {
     }
   };
 
-  // Helper function to format date
+  /**
+   * @description Formats a date string into a human-readable format
+   * @param {string} dateString - ISO date string to format
+   * @returns {string} Formatted date and time string
+   */
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleString('en-US', {
@@ -195,12 +213,19 @@ export const ProjectDetail = (): JSX.Element => {
     });
   };
 
-  // Helper function to get category display
+  /**
+   * @description Returns the display information for a given category
+   * @param {string} category - The category identifier
+   * @returns {Object} Display information including name, colors, etc.
+   */
   const getCategoryDisplay = (category) => {
     return categoryColorMap[category] || categoryColorMap.other;
   };
 
-  // Handle feedback submission
+  /**
+   * @description Handles feedback submission
+   * @sideEffects Shows alert for now (placeholder for actual submission)
+   */
   const handleSubmitFeedback = () => {
     if (!feedbackContent.trim()) {
       alert('Please enter some feedback');

@@ -1,6 +1,15 @@
+/**
+ * src/screens/Frame/sections/FooterSection/FooterSection.tsx
+ * @description Footer component with social media links and site navigation
+ */
+
 import React from "react";
 import { FaXTwitter, FaInstagram, FaYoutube } from "react-icons/fa6";
 
+/**
+ * @description Renders the application footer with social media links and navigation
+ * @returns {JSX.Element} Footer component with social media and navigation links
+ */
 export const FooterSection = (): JSX.Element => {
   // Footer navigation links data
   const footerLinks = [

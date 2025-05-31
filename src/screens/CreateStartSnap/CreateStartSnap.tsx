@@ -1,8 +1,17 @@
+/**
+ * src/screens/CreateStartSnap/CreateStartSnap.tsx
+ * @description Component for creating a new StartSnap project
+ */
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ProjectForm } from "../../components/ui/project-form";
 import { supabase } from "../../lib/supabase";
 
+/**
+ * @description Page component for creating a new StartSnap project
+ * @returns {JSX.Element} CreateStartSnap page with project form
+ */
 export const CreateStartSnap = (): JSX.Element => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -20,6 +29,12 @@ export const CreateStartSnap = (): JSX.Element => {
     checkUser();
   }, [navigate]);
 
+  /**
+   * @description Handles form submission to create a new StartSnap
+   * @async
+   * @param {Object} formData - Form data containing project information
+   * @sideEffects Inserts new StartSnap into database and redirects on success
+   */
   const handleSubmit = async (formData) => {
     if (!user) {
       alert('You need to be logged in to create a project.');

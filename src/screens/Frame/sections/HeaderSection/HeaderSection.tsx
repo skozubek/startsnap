@@ -1,3 +1,8 @@
+/**
+ * src/screens/Frame/sections/HeaderSection/HeaderSection.tsx
+ * @description Application header with navigation and authentication controls
+ */
+
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "../../../../components/ui/button";
@@ -18,6 +23,10 @@ import {
 } from "../../../../components/ui/dropdown-menu";
 import { LogOut, User } from "lucide-react";
 
+/**
+ * @description Header component with navigation and authentication UI
+ * @returns {JSX.Element} Application header with responsive navigation and auth controls
+ */
 export const HeaderSection = (): JSX.Element => {
   const [authMode, setAuthMode] = useState<'signup' | 'login'>('login');
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
@@ -47,11 +56,20 @@ export const HeaderSection = (): JSX.Element => {
     { title: "Create StartSnap", href: "/create" },
   ];
 
+  /**
+   * @description Opens the authentication dialog with the specified mode
+   * @param {('signup'|'login')} mode - The authentication mode to open
+   */
   const handleAuthClick = (mode: 'signup' | 'login') => {
     setAuthMode(mode);
     setIsAuthDialogOpen(true);
   };
 
+  /**
+   * @description Handles user sign out process
+   * @async
+   * @sideEffects Signs out the current user via Supabase auth
+   */
   const handleSignOut = async () => {
     try {
       await supabase.auth.signOut();
