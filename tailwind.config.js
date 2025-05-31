@@ -30,6 +30,7 @@ module.exports = {
         "startsnap-white": "var(--startsnap-white)",
         "startsnap-white-candlelight": "var(--startsnap-white-candlelight)",
         "startsnap-wisp-pink": "var(--startsnap-wisp-pink)",
+        "startsnap-beige": "var(--startsnap-beige)",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

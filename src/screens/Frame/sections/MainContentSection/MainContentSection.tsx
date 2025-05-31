@@ -133,9 +133,33 @@ export const MainContentSection = (): JSX.Element => {
   };
 
   return (
-    <section className="flex flex-col w-full items-center gap-16 pt-8 pb-24 px-8 bg-startsnap-candlelight">
+    <section className="flex flex-col w-full items-center bg-startsnap-candlelight">
+      {/* Hero Section */}
+      <div className="w-full bg-[--startsnap-beige]">
+        <div className="max-w-screen-2xl mx-auto px-8 flex items-center min-h-[calc(100vh-88px)]">
+          <div className="w-[60%] pr-16">
+            <h1 className="text-6xl font-bold text-startsnap-ebony-clay mb-6 font-['Space_Grotesk',Helvetica] leading-tight">
+              We are Vibe Coders,<br />We Build StartSnaps
+            </h1>
+            <p className="text-xl text-startsnap-river-bed mb-8 font-['Roboto',Helvetica] leading-relaxed">
+              Join our community of passionate developers, designers, and creators. Share your projects, get feedback, and connect with like-minded individuals.
+            </p>
+            <Button className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-lg px-8 py-6 rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]">
+              Start Building Today
+            </Button>
+          </div>
+          <div className="w-[40%]">
+            <img 
+              src="https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg" 
+              alt="Collaborative team working together" 
+              className="rounded-lg border-2 border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] w-full h-auto"
+            />
+          </div>
+        </div>
+      </div>
+
       {/* StartSnaps Cards Section */}
-      <div className="w-full max-w-screen-2xl">
+      <div className="w-full max-w-screen-2xl px-8 py-16">
         <h2 className="text-5xl font-bold text-startsnap-ebony-clay text-center mb-20 font-['Space_Grotesk',Helvetica]">
           StartSnaps
         </h2>

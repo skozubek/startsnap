@@ -62,7 +62,7 @@ export const HeaderSection = (): JSX.Element => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full flex justify-center p-6 bg-startsnap-candlelight shadow-[0px_2px_4px_-2px_#0000001a,0px_4px_6px_-1px_#0000001a]">
+    <header className="sticky top-0 z-50 w-full flex justify-center p-6 bg-[--startsnap-beige] shadow-[0px_2px_4px_-2px_#0000001a,0px_4px_6px_-1px_#0000001a]">
       <div className="flex items-center justify-between w-full max-w-screen-2xl">
         <div className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-3xl leading-9">
           <Link to="/" className="hover:text-startsnap-french-rose transition-colors">
