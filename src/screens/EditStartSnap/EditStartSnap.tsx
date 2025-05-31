@@ -58,9 +58,6 @@ export const EditStartSnap = (): JSX.Element => {
           tagsInput: '',
           tags: data.tags || [],
           isHackathon: data.is_hackathon_entry || false,
-          vibeLogType: 'update',
-          vibeLogTitle: 'Project Update',
-          vibeLogContent: '',
           toolsInput: '',
           toolsUsed: data.tools_used || [],
           feedbackInput: '',
@@ -98,20 +95,6 @@ export const EditStartSnap = (): JSX.Element => {
       .eq('id', id);
 
     if (startsnapError) throw startsnapError;
-
-    // Insert a new vibe log if content is provided
-    if (formData.vibeLogContent.trim()) {
-      const { error: vibeLogError } = await supabase
-        .from('vibelogs')
-        .insert({
-          startsnap_id: id,
-          log_type: formData.vibeLogType,
-          title: formData.vibeLogTitle,
-          content: formData.vibeLogContent
-        });
-
-      if (vibeLogError) throw vibeLogError;
-    }
 
     // Redirect to the profile page
     navigate('/profile');
