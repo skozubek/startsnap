@@ -54,16 +54,6 @@
   .startsnap-button.bg-startsnap-mischka:hover {
     background-color: rgba(209, 213, 219, 0.9); /* More subtle mischka */
   }
-  
-  /* Unified hover effect for all badges */
-  [class*="bg-"].rounded-full {
-    transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
-  }
-  
-  [class*="bg-"].rounded-full:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
-  }
 }
 
 @layer base {
