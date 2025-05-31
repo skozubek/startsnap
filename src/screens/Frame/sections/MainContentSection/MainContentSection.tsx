@@ -248,6 +248,7 @@ export const MainContentSection = (): JSX.Element => {
                     </div>
 
                     <p className="mt-4 font-['Roboto',Helvetica] font-normal text-startsnap-river-bed text-base leading-6 line-clamp-2 h-12 overflow-hidden">
+                      <span className="material-icons text-base mr-2 leading-none">campaign</span>
                       {startsnap.description}
                     </p>
 
