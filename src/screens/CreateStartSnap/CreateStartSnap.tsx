@@ -73,7 +73,7 @@ export const CreateStartSnap = (): JSX.Element => {
 
       <ProjectForm
         mode="create"
-        defaultVibeLogType={true}
+        defaultVibeLogType="idea"
         onSubmit={handleSubmit}
         onCancel={() => navigate('/')}
       />
