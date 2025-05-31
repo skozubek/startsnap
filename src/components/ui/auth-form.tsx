@@ -1,106 +1,136 @@
 /**
  * src/components/ui/auth-form.tsx
- * @description Form component for handling authentication with validation
+ * @description Authentication form component for handling login and signup
  */
 
 import React, { useState } from 'react';
 import { Button } from './button';
 import { Input } from './input';
+import { Label } from './label';
+import { supabase } from '../../lib/supabase';
 
 interface AuthFormProps {
   mode: 'login' | 'signup';
-  onSubmit: (email: string, password: string) => Promise<void>;
-  isLoading: boolean;
+  onSuccess: () => void;
 }
 
-interface ValidationErrors {
+interface FormData {
   email: string;
   password: string;
 }
 
+interface FormErrors {
+  email?: string;
+  password?: string;
+  general?: string;
+}
+
 /**
- * @description Form component with validation for login and signup
+ * @description Form component for handling user authentication
  * @param {AuthFormProps} props - Component props
- * @returns {JSX.Element} Authentication form with validation
+ * @returns {JSX.Element} Authentication form with validation and error handling
  */
-export const AuthForm = ({ mode, onSubmit, isLoading }: AuthFormProps): JSX.Element => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState<ValidationErrors>({
-    email: '',
-    password: ''
-  });
+export const AuthForm = ({ mode, onSuccess }: AuthFormProps): JSX.Element => {
+  const [formData, setFormData] = useState<FormData>({ email: '', password: '' });
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [loading, setLoading] = useState(false);
 
-  /**
-   * @description Validates email format using regex
-   * @param {string} email - Email to validate
-   * @returns {boolean} Whether the email is valid
-   */
-  const isValidEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  /**
-   * @description Validates form fields and returns whether the form is valid
-   * @returns {boolean} Whether all form fields are valid
-   */
   const validateForm = (): boolean => {
-    const newErrors: ValidationErrors = {
-      email: '',
-      password: ''
-    };
-
-    let isValid = true;
-
-    // Email validation
-    if (!email.trim()) {
+    const newErrors: FormErrors = {};
+    
+    if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
-      isValid = false;
-    } else if (!isValidEmail(email)) {
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email address';
-      isValid = false;
     }
-
-    // Password validation
-    if (!password) {
+    
+    if (!formData.password) {
       newErrors.password = 'Password is required';
-      isValid = false;
-    } else if (mode === 'signup' && password.length < 6) {
+    } else if (formData.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
-      isValid = false;
     }
-
+    
     setErrors(newErrors);
-    return isValid;
+    return Object.keys(newErrors).length === 0;
   };
 
-  /**
-   * @description Handles form submission with validation
-   * @param {React.FormEvent} e - Form submission event
-   */
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    // Clear error when user starts typing
+    if (errors[name as keyof FormErrors]) {
+      setErrors(prev => ({ ...prev, [name]: undefined }));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (validateForm()) {
-      await onSubmit(email, password);
+    if (!validateForm()) return;
+    
+    setLoading(true);
+    setErrors({});
+
+    try {
+      if (mode === 'signup') {
+        const { error } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password,
+        });
+
+        if (error) {
+          if (error.message.includes('already registered')) {
+            setErrors({ general: 'An account with this email already exists. Please log in instead.' });
+          } else {
+            setErrors({ general: error.message });
+          }
+          return;
+        }
+
+        onSuccess();
+        alert('Please check your email to verify your account!');
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: formData.email,
+          password: formData.password,
+        });
+
+        if (error) {
+          if (error.message.includes('Invalid login')) {
+            setErrors({ general: 'Invalid email or password' });
+          } else {
+            setErrors({ general: error.message });
+          }
+          return;
+        }
+
+        onSuccess();
+      }
+    } catch (error) {
+      setErrors({ general: 'An unexpected error occurred. Please try again.' });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {errors.general && (
+        <div className="p-3 rounded bg-red-50 border border-red-200 text-red-600 text-sm">
+          {errors.general}
+        </div>
+      )}
+      
       <div className="space-y-2">
+        <Label htmlFor="email">Email</Label>
         <Input
+          id="email"
+          name="email"
           type="email"
-          value={email}
-          onChange={(e) => {
-            setEmail(e.target.value);
-            if (errors.email) setErrors(prev => ({ ...prev, email: '' }));
-          }}
-          placeholder="Email"
-          className={`w-full p-3 border-2 ${
-            errors.email ? 'border-red-500' : 'border-gray-800'
-          } rounded-lg font-['Roboto',Helvetica]`}
+          value={formData.email}
+          onChange={handleChange}
+          className={`border-2 ${errors.email ? 'border-red-500' : 'border-gray-800'}`}
+          placeholder="Enter your email"
         />
         {errors.email && (
           <p className="text-red-500 text-sm">{errors.email}</p>
@@ -108,17 +138,15 @@ export const AuthForm = ({ mode, onSubmit, isLoading }: AuthFormProps): JSX.Elem
       </div>
 
       <div className="space-y-2">
+        <Label htmlFor="password">Password</Label>
         <Input
+          id="password"
+          name="password"
           type="password"
-          value={password}
-          onChange={(e) => {
-            setPassword(e.target.value);
-            if (errors.password) setErrors(prev => ({ ...prev, password: '' }));
-          }}
-          placeholder="Password"
-          className={`w-full p-3 border-2 ${
-            errors.password ? 'border-red-500' : 'border-gray-800'
-          } rounded-lg font-['Roboto',Helvetica]`}
+          value={formData.password}
+          onChange={handleChange}
+          className={`border-2 ${errors.password ? 'border-red-500' : 'border-gray-800'}`}
+          placeholder="Enter your password"
         />
         {errors.password && (
           <p className="text-red-500 text-sm">{errors.password}</p>
@@ -127,10 +155,10 @@ export const AuthForm = ({ mode, onSubmit, isLoading }: AuthFormProps): JSX.Elem
 
       <Button
         type="submit"
-        disabled={isLoading}
-        className="w-full startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+        disabled={loading}
+        className="w-full startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
       >
-        {isLoading ? 'Loading...' : mode === 'login' ? 'Log In' : 'Sign Up'}
+        {loading ? 'Please wait...' : mode === 'login' ? 'Log In' : 'Sign Up'}
       </Button>
     </form>
   );

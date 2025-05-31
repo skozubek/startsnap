@@ -1,110 +1,58 @@
 /**
  * src/components/ui/auth-dialog.tsx
- * @description Authentication dialog component for user login and signup
+ * @description Authentication dialog component that handles user login and signup
  */
 
-import React, { useState } from "react";
-import { Dialog, DialogContent, DialogTitle } from "./dialog";
-import { AuthForm } from "./auth-form";
-import { supabase } from "../../lib/supabase";
+import React, { useState } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from './dialog';
+import { AuthForm } from './auth-form';
 
 interface AuthDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  mode: 'signup' | 'login';
+  mode: 'login' | 'signup';
 }
 
 /**
- * @description Dialog component for user authentication
+ * @description Dialog component for authentication that supports both login and signup
  * @param {AuthDialogProps} props - Component props
  * @returns {JSX.Element} Authentication dialog with form
  */
 export const AuthDialog = ({ isOpen, onClose, mode: initialMode }: AuthDialogProps): JSX.Element => {
   const [mode, setMode] = useState(initialMode);
-  const [error, setError] = useState<string | null>(null);
 
-  /**
-   * @description Handles form submission for authentication
-   * @async
-   * @param {Object} data - Form data containing email and password
-   * @throws {Error} When email or password is missing
-   * @sideEffects Attempts to authenticate user via Supabase
-   */
-  const handleSubmit = async (data: { email: string; password: string }) => {
-    try {
-      setError(null);
-
-      // Validate required fields
-      if (!data.email?.trim()) {
-        setError('Email is required');
-        return;
-      }
-
-      if (!data.password?.trim()) {
-        setError('Password is required');
-        return;
-      }
-      
-      if (mode === 'signup') {
-        const { error } = await supabase.auth.signUp({
-          email: data.email.trim(),
-          password: data.password.trim(),
-        });
-
-        if (error) {
-          if (error.message.includes('User already registered')) {
-            setError('This email is already registered. Please try logging in instead.');
-          } else {
-            setError(error.message);
-          }
-          return;
-        }
-
-        onClose();
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email: data.email.trim(),
-          password: data.password.trim(),
-        });
-
-        if (error) {
-          if (error.message.includes('Invalid login credentials')) {
-            setError('Invalid email or password. Please try again.');
-          } else {
-            setError(error.message);
-          }
-          return;
-        }
-
-        onClose();
-      }
-    } catch (err) {
-      console.error('Authentication error:', err);
-      setError('An unexpected error occurred. Please try again.');
-    }
-  };
-
-  /**
-   * @description Toggles between login and signup modes
-   */
   const toggleMode = () => {
-    setError(null);
-    setMode(mode === 'signup' ? 'login' : 'signup');
+    setMode(mode === 'login' ? 'signup' : 'login');
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] bg-white p-6 rounded-xl border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]">
-        <DialogTitle className="text-2xl font-bold text-startsnap-ebony-clay mb-6 font-['Space_Grotesk',Helvetica]">
-          {mode === 'signup' ? 'Create your account' : 'Welcome back!'}
-        </DialogTitle>
-
-        <AuthForm
-          mode={mode}
-          onSubmit={handleSubmit}
-          error={error}
-          onToggleMode={toggleMode}
-        />
+      <DialogContent className="sm:max-w-[425px] bg-white p-0 gap-0">
+        <DialogHeader className="bg-startsnap-french-pass p-6 rounded-t-lg border-b-2 border-gray-800">
+          <DialogTitle className="text-2xl font-bold text-startsnap-ebony-clay text-center font-['Space_Grotesk',Helvetica]">
+            {mode === 'login' ? 'Welcome Back!' : 'Join StartSnap'}
+          </DialogTitle>
+        </DialogHeader>
+        
+        <div className="p-6">
+          <AuthForm mode={mode} onSuccess={onClose} />
+          
+          <div className="mt-4 text-center">
+            <button
+              onClick={toggleMode}
+              className="text-startsnap-persian-blue hover:text-startsnap-french-rose transition-colors font-['Roboto',Helvetica]"
+            >
+              {mode === 'login' 
+                ? "Don't have an account? Sign up" 
+                : "Already have an account? Log in"}
+            </button>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );
