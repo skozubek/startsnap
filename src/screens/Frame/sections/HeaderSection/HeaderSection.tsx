@@ -87,6 +87,7 @@ export const HeaderSection = (): JSX.Element => {
    */
   const handleAuthModeChange = (newMode: 'signup' | 'login') => {
     setAuthMode(newMode);
+  };
 
   /**
    * @description Handles user sign out process
