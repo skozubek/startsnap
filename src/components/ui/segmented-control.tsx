@@ -1,54 +1,52 @@
 /**
  * src/components/ui/segmented-control.tsx
- * @description A segmented control component for selection between multiple options
+ * @description A segmented control component for toggle selection between multiple options
  */
 
 import React from "react";
 import { cn } from "../../lib/utils";
 
-export interface SegmentOption {
+interface SegmentedControlOption {
   value: string;
   label: string;
 }
 
 interface SegmentedControlProps {
-  options: SegmentOption[];
+  options: SegmentedControlOption[];
   value: string;
   onChange: (value: string) => void;
+  name?: string;
   className?: string;
 }
 
 /**
- * @description A segmented control component that allows selection between multiple options
+ * @description Segmented control component for binary or multiple choice selection
  * @param {SegmentedControlProps} props - Component props
- * @returns {JSX.Element} Segmented control UI component
+ * @returns {JSX.Element} Segmented control component
  */
-export function SegmentedControl({
+export const SegmentedControl: React.FC<SegmentedControlProps> = ({
   options,
   value,
   onChange,
+  name,
   className,
-}: SegmentedControlProps): JSX.Element {
+}) => {
   return (
-    <div
-      className={cn(
-        "flex w-full border-2 border-gray-800 rounded-lg overflow-hidden",
-        className
-      )}
-    >
+    <div className={cn("p-1 bg-startsnap-athens-gray border-2 border-solid border-gray-800 rounded-lg flex", className)}>
       {options.map((option) => {
-        const isSelected = option.value === value;
+        const isActive = value === option.value;
         return (
           <button
             key={option.value}
             type="button"
-            onClick={() => onChange(option.value)}
             className={cn(
-              "flex-1 py-3 px-4 text-center transition-colors font-['Roboto',Helvetica] font-bold text-base",
-              isSelected 
-                ? "bg-startsnap-french-rose text-startsnap-white" 
-                : "bg-startsnap-athens-gray text-startsnap-ebony-clay hover:bg-gray-300"
+              "flex-1 px-4 py-2 text-center rounded-md transition-all duration-200 font-medium",
+              isActive
+                ? "bg-startsnap-french-pass text-startsnap-persian-blue"
+                : "bg-gray-200 text-startsnap-oxford-blue hover:bg-gray-300"
             )}
+            onClick={() => onChange(option.value)}
+            aria-pressed={isActive}
           >
             {option.label}
           </button>
@@ -56,4 +54,4 @@ export function SegmentedControl({
       })}
     </div>
   );
-}
+};
