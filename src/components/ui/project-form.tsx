@@ -24,6 +24,28 @@ interface ProjectFormProps {
 }
 
 /**
+ * Form state interface with proper typing
+ */
+interface FormState {
+  projectType: "idea" | "live";
+  projectName: string;
+  description: string;
+  category: string;
+  liveUrl: string;
+  videoUrl: string;
+  tagsInput: string;
+  tags: string[];
+  isHackathon: boolean;
+  toolsInput: string;
+  toolsUsed: string[];
+  feedbackInput: string;
+  feedbackAreas: string[];
+  vibeLogType: string;
+  vibeLogTitle: string;
+  vibeLogContent: string;
+}
+
+/**
  * @description Form component for creating and editing StartSnap projects
  * @param {ProjectFormProps} props - Component props
  * @returns {JSX.Element} Project form UI component
@@ -35,7 +57,7 @@ export function ProjectForm({
   initialData,
   projectId,
 }: ProjectFormProps): JSX.Element {
-  const [formState, setFormState] = useState({
+  const [formState, setFormState] = useState<FormState>({
     projectType: "idea",
     projectName: "",
     description: "",
@@ -155,7 +177,7 @@ export function ProjectForm({
   };
 
   // Handle project type changes
-  const handleProjectTypeChange = (value: string) => {
+  const handleProjectTypeChange = (value: "idea" | "live") => {
     setFormState(prev => ({ ...prev, projectType: value }));
   };
 
@@ -170,20 +192,21 @@ export function ProjectForm({
   };
 
   // Handle tag-like inputs (tags, tools, feedback areas)
-  const handleTagInput = (type: "tags" | "toolsUsed" | "feedbackAreas", inputName: string) => {
-    const inputValue = formState[`${inputName}Input`].trim();
+  const handleTagInput = (type: "tags" | "toolsUsed" | "feedbackAreas", inputName: "tags" | "tools" | "feedback") => {
+    const inputKey = `${inputName}Input` as keyof FormState;
+    const inputValue = (formState[inputKey] as string).trim();
     
     if (inputValue && !formState[type].includes(inputValue)) {
       setFormState(prev => ({
         ...prev,
         [type]: [...prev[type], inputValue],
-        [`${inputName}Input`]: ""
+        [inputKey]: ""
       }));
     }
   };
 
   // Handle tag-like input key press (Enter)
-  const handleTagInputKeyPress = (e: React.KeyboardEvent, type: "tags" | "toolsUsed" | "feedbackAreas", inputName: string) => {
+  const handleTagInputKeyPress = (e: React.KeyboardEvent, type: "tags" | "toolsUsed" | "feedbackAreas", inputName: "tags" | "tools" | "feedback") => {
     if (e.key === "Enter") {
       e.preventDefault();
       handleTagInput(type, inputName);
@@ -218,10 +241,6 @@ export function ProjectForm({
             </label>
             
             <SegmentedControl
-              options={[
-                { value: "idea", label: "Idea / Concept" },
-                { value: "live", label: "Live Project" }
-              ]}
               value={formState.projectType}
               onChange={handleProjectTypeChange}
             />
