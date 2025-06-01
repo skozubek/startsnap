@@ -1,60 +1,60 @@
 /**
  * src/components/ui/segmented-control.tsx
- * @description A segmented control component for switching between project types
+ * @description A segmented control component for selecting between two options (idea/concept vs live project)
  */
 
 import React from "react";
 import { cn } from "../../lib/utils";
 
 interface SegmentedControlProps {
-  value: 'idea' | 'live';
-  onChange: (value: 'idea' | 'live') => void;
+  value: "idea" | "live";
+  onChange: (value: "idea" | "live") => void;
   className?: string;
 }
 
 /**
- * @description A segmented control component for switching between project types
- * @param {SegmentedControlProps} props - Component props
- * @returns {JSX.Element} Segmented control component
+ * @description A segmented control component that allows selecting between idea/concept and live project
+ * @param {SegmentedControlProps} props - Component props including current value and change handler
+ * @returns {JSX.Element} Segmented control with two selectable options
  */
 export const SegmentedControl = ({
   value,
   onChange,
-  className
+  className,
 }: SegmentedControlProps): JSX.Element => {
   return (
-    <div 
+    <div
       className={cn(
-        "flex overflow-hidden rounded-lg border-2 border-solid border-gray-800 w-full max-w-xs", 
+        "flex w-full border-2 border-solid border-gray-800 rounded-lg overflow-hidden",
         className
       )}
     >
       <button
         type="button"
-        onClick={() => onChange('idea')}
+        onClick={() => onChange("idea")}
         className={cn(
-          "flex-1 py-2 px-4 font-['Space_Mono',Helvetica] text-sm transition-colors flex items-center justify-center",
-          value === 'idea'
+          "flex items-center justify-center flex-1 py-2.5 px-4 min-w-[160px] text-center font-medium transition-colors whitespace-nowrap",
+          value === "idea"
             ? "bg-startsnap-corn text-startsnap-ebony-clay"
-            : "bg-startsnap-white text-startsnap-oxford-blue hover:bg-startsnap-athens-gray"
+            : "bg-white text-startsnap-ebony-clay hover:bg-gray-100"
         )}
       >
-        {value === 'idea' && (
+        {value === "idea" && (
           <span className="material-icons text-sm mr-1">check</span>
         )}
         Idea / Concept
       </button>
       <button
         type="button"
-        onClick={() => onChange('live')}
+        onClick={() => onChange("live")}
         className={cn(
-          "flex-1 py-2 px-4 font-['Space_Mono',Helvetica] text-sm transition-colors flex items-center justify-center",
-          value === 'live'
+          "flex items-center justify-center flex-1 py-2.5 px-4 min-w-[160px] text-center font-medium transition-colors whitespace-nowrap",
+          value === "live"
             ? "bg-startsnap-mountain-meadow text-white"
-            : "bg-startsnap-white text-startsnap-oxford-blue hover:bg-startsnap-athens-gray"
+            : "bg-white text-startsnap-ebony-clay hover:bg-gray-100"
         )}
       >
-        {value === 'live' && (
+        {value === "live" && (
           <span className="material-icons text-sm mr-1">check</span>
         )}
         Live Project
