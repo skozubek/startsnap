@@ -20,7 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../../../components/ui/dropdown-menu";
-import { LogOut, User, RefreshCw } from "lucide-react";
+import { LogOut, User } from "lucide-react";
 import { useAuth } from "../../../../context/AuthContext";
 import { UserAvatar, getAvatarName } from "../../../../components/ui/user-avatar";
 
@@ -32,8 +32,7 @@ export const HeaderSection = (): JSX.Element => {
   const [authMode, setAuthMode] = useState<'signup' | 'login'>('login');
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const [userProfile, setUserProfile] = useState<{ username?: string } | null>(null);
-  const { user, signOut, refreshSession } = useAuth();
-  const [refreshing, setRefreshing] = useState(false);
+  const { user } = useAuth();
 
   // Fetch user profile when user changes to get consistent username
   useEffect(() => {
@@ -89,25 +88,10 @@ export const HeaderSection = (): JSX.Element => {
    */
   const handleSignOut = async () => {
     try {
-      await signOut();
+      await supabase.auth.signOut();
+      console.log('Successfully signed out');
     } catch (error) {
       console.error('Error signing out:', error);
-    }
-  };
-
-  /**
-   * @description Handles manual session refresh
-   * @async
-   * @sideEffects Refreshes the authentication session
-   */
-  const handleRefreshSession = async () => {
-    try {
-      setRefreshing(true);
-      await refreshSession();
-    } catch (error) {
-      console.error('Error refreshing session:', error);
-    } finally {
-      setRefreshing(false);
     }
   };
 
@@ -166,14 +150,6 @@ export const HeaderSection = (): JSX.Element => {
                     <User size={16} />
                     <span>Profile</span>
                   </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={handleRefreshSession}
-                  disabled={refreshing}
-                  className="cursor-pointer hover:bg-startsnap-mischka/50 flex items-center gap-2"
-                >
-                  <RefreshCw size={16} className={refreshing ? "animate-spin" : ""} />
-                  <span>{refreshing ? "Refreshing..." : "Refresh Session"}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={handleSignOut}
