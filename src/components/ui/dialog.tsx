@@ -16,11 +16,8 @@ const DialogTrigger = DialogPrimitive.Trigger
 /**
  * @description Portal component for rendering dialog content outside the DOM hierarchy
  */
-const DialogPortal = ({
-  className,
-  ...props
-}: DialogPrimitive.DialogPortalProps) => (
-  <DialogPrimitive.Portal className={cn(className)} {...props} />
+const DialogPortal = (props: DialogPrimitive.DialogPortalProps) => (
+  <DialogPrimitive.Portal {...props} />
 )
 DialogPortal.displayName = DialogPrimitive.Portal.displayName
 

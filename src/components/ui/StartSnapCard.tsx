@@ -27,7 +27,6 @@ interface StartSnapType {
   is_hackathon_entry?: boolean;
   tags?: string[];
   tools_used?: string[];
-  feedback_tags?: string[];
   created_at: string;
   user_id: string;
 }
@@ -182,28 +181,6 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
                     {startsnap.tools_used.length > 3 && (
                       <Badge variant="outline" className="bg-startsnap-french-pass text-startsnap-persian-blue font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-blue-700 px-3 py-1">
                         +{startsnap.tools_used.length - 3} more
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-              )}
-              {/* Looking For Feedback Section */}
-              {startsnap.feedback_tags && startsnap.feedback_tags.length > 0 && (
-                <div className="flex items-start gap-3">
-                  <span className={`material-icons text-startsnap-jewel ${variant === 'main-page' ? 'text-sm' : 'text-xs'} mt-1 shrink-0`}>forum</span>
-                  <div className="flex flex-wrap gap-2 flex-1">
-                    {startsnap.feedback_tags.slice(0, 3).map((feedback, idx) => (
-                      <Badge
-                        key={`feedback-${idx}`}
-                        variant="outline"
-                        className="bg-startsnap-ice-cold text-startsnap-jewel font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-green-700 px-3 py-1"
-                      >
-                        {feedback}
-                      </Badge>
-                    ))}
-                    {startsnap.feedback_tags.length > 3 && (
-                      <Badge variant="outline" className="bg-startsnap-ice-cold text-startsnap-jewel font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-green-700 px-3 py-1">
-                        +{startsnap.feedback_tags.length - 3} more
                       </Badge>
                     )}
                   </div>

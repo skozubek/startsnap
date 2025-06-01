@@ -101,7 +101,6 @@ export const EditStartSnap = (): JSX.Element => {
         live_demo_url: formData.liveUrl,
         demo_video_url: formData.videoUrl,
         tools_used: formData.toolsUsed,
-        feedback_tags: formData.feedbackAreas,
         is_hackathon_entry: formData.isHackathon,
         tags: formData.tags,
         updated_at: new Date()

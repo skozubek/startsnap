@@ -3,7 +3,7 @@
  * @description Authentication dialog component for user login and signup
  */
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "./button";
 import { Input } from "./input";
 import { Label } from "./label";
@@ -30,6 +30,17 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode }: AuthDialogPro
   const [error, setError] = useState<string | null>(null);
   const [emailError, setEmailError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
+
+  // Effect to update mode when initialMode prop changes
+  useEffect(() => {
+    if (isOpen) { // Only update mode if the dialog is intended to be open
+      setMode(initialMode);
+      // Reset errors when mode changes to prevent showing old errors
+      setError(null);
+      setEmailError(null);
+      setPasswordError(null);
+    }
+  }, [initialMode, isOpen]);
 
   /**
    * @description Toggles between login and signup modes
@@ -64,14 +75,14 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode }: AuthDialogPro
       setEmailError('Email is required');
       return false;
     }
-    
+
     // More comprehensive email validation
     const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (!emailRegex.test(email)) {
       setEmailError('Please enter a valid email address');
       return false;
     }
-    
+
     setEmailError(null);
     return true;
   };
@@ -105,7 +116,7 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode }: AuthDialogPro
     // Validate inputs first
     const isEmailValid = validateEmail(email);
     const isPasswordValid = validatePassword(password);
-    
+
     if (!isEmailValid || !isPasswordValid) {
       return;
     }
@@ -120,7 +131,7 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode }: AuthDialogPro
       });
 
       if (error) throw error;
-      
+
       handleClose();
     } catch (error: any) {
       console.error('Error logging in:', error);
@@ -139,7 +150,7 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode }: AuthDialogPro
     // Validate inputs first
     const isEmailValid = validateEmail(email);
     const isPasswordValid = validatePassword(password);
-    
+
     if (!isEmailValid || !isPasswordValid) {
       return;
     }

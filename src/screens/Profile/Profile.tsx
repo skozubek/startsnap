@@ -240,10 +240,10 @@ export const Profile = (): JSX.Element => {
           <CardContent className="p-8">
             <div className="flex flex-col md:flex-row gap-8">
               <div className="flex flex-col items-center min-w-[250px]">
-                <div className="w-32 h-32">
+                <div className="w-24 h-24">
                   <UserAvatar
                     name={getAvatarName(user, profile.username)}
-                    size={128}
+                    size={96}
                     className="w-full h-full"
                   />
                 </div>
@@ -251,12 +251,16 @@ export const Profile = (): JSX.Element => {
                 {/* Popover status selector */}
                 <Popover open={statusPopoverOpen} onOpenChange={setStatusPopoverOpen}>
                   <PopoverTrigger asChild>
-                    <div className="mt-4 text-center cursor-pointer hover:scale-105 transition-transform">
-                      <Badge variant="outline" className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-gray-800 px-3 py-1.5">
-                        <span className="material-icons text-sm mr-1">{getStatusIcon(profile.status)}</span>
-                        {getUserStatusOptions().find(opt => opt.value === profile.status)?.label}
-                      </Badge>
-                    </div>
+                    <Button
+                      variant="outline"
+                      className="rounded-full w-full max-w-xs sm:w-56 flex justify-between items-center px-3 py-2 text-sm font-['Roboto',Helvetica] bg-startsnap-athens-gray text-startsnap-ebony-clay hover:bg-gray-300 border-gray-800 border-2 shadow-[2px_2px_0px_#1f2937] mt-4"
+                    >
+                      <div className="flex items-center">
+                        <span className="material-icons text-sm mr-2">{getStatusIcon(profile.status)}</span>
+                        <span>{getUserStatusOptions().find(opt => opt.value === profile.status)?.label}</span>
+                      </div>
+                      <span className="material-icons text-startsnap-ebony-clay">keyboard_arrow_down</span>
+                    </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-56 p-0 bg-white border-2 border-gray-800 rounded-lg shadow-[3px_3px_0px_#1f2937]">
                     <div className="p-2">
@@ -266,15 +270,18 @@ export const Profile = (): JSX.Element => {
                       {getUserStatusOptions().map((option) => (
                         <div
                           key={option.value}
-                          className={`flex items-center p-2 rounded-md cursor-pointer transition-colors ${
-                            profile.status === option.value
-                              ? 'bg-startsnap-french-pass text-startsnap-persian-blue'
-                              : 'hover:bg-startsnap-athens-gray'
+                          className={`flex items-center justify-between p-2 rounded-md cursor-pointer transition-colors hover:bg-startsnap-athens-gray ${
+                            profile.status === option.value ? "font-semibold" : ""
                           }`}
                           onClick={() => handleStatusChange(option.value)}
                         >
-                          <span className="material-icons text-sm mr-2">{option.icon}</span>
-                          <span className="font-['Roboto',Helvetica]">{option.label}</span>
+                          <div className="flex items-center">
+                            <span className="material-icons text-sm mr-2">{option.icon}</span>
+                            <span className="font-['Roboto',Helvetica]">{option.label}</span>
+                          </div>
+                          {profile.status === option.value && (
+                            <span className="material-icons text-sm text-startsnap-persian-blue">check</span>
+                          )}
                         </div>
                       ))}
                     </div>

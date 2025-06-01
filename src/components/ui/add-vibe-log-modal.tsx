@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "./select";
 import { getVibeLogOptions } from "../../config/categories";
+import { VibeLogEntry } from "./vibe-log-entry";
 
 interface AddVibeLogModalProps {
   isOpen: boolean;
@@ -67,62 +68,23 @@ export const AddVibeLogModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-startsnap-white sm:max-w-[425px] border-2 border-gray-800 shadow-[5px_5px_0px_#1f2937] rounded-xl gap-0">
-        <DialogHeader className="border-b-2 border-gray-800 p-6">
-          <DialogTitle className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-2xl text-center">
+      <DialogContent className="bg-white sm:max-w-md rounded-lg border-3 border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] gap-0">
+        <DialogHeader className="px-8 pt-8">
+          <DialogTitle className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-4xl text-center leading-tight mb-8">
             Add Vibe Log Entry
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6 p-6">
-          <div className="space-y-2">
-            <Label className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-base">
-              Entry Type
-            </Label>
-            <Select value={logType} onValueChange={setLogType}>
-              <SelectTrigger className="w-full border-2 border-gray-800 rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky bg-white">
-                <SelectValue placeholder="Select entry type" />
-              </SelectTrigger>
-              <SelectContent className="border-2 border-gray-800 rounded-lg shadow-[3px_3px_0px_#1f2937]">
-                {getVibeLogOptions().map((option) => (
-                  <SelectItem
-                    key={option.value}
-                    value={option.value}
-                    className="font-['Roboto',Helvetica] cursor-pointer"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="material-icons text-lg">{option.icon}</span>
-                      {option.label}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-base">
-              Title
-            </Label>
-            <Input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enter a title for your update"
-              className="border-2 border-gray-800 rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-base">
-              Content
-            </Label>
-            <Textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Share your progress, updates, or thoughts..."
-              className="min-h-[120px] border-2 border-gray-800 rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky"
-            />
-          </div>
+        <form onSubmit={handleSubmit} className="space-y-6 px-8 pb-8">
+          <VibeLogEntry
+            title={title}
+            content={content}
+            type={logType}
+            onTitleChange={setTitle}
+            onContentChange={setContent}
+            onTypeChange={setLogType}
+            showAllTypes={true}
+          />
 
           {error && (
             <p className="text-red-500 text-sm font-['Roboto',Helvetica] mt-2">
@@ -130,20 +92,20 @@ export const AddVibeLogModal = ({
             </p>
           )}
 
-          <div className="flex flex-col gap-4 pt-2">
-            <Button
-              type="submit"
-              className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] w-full"
-            >
-              Submit Entry
-            </Button>
+          <div className="flex gap-4 pt-2">
             <Button
               type="button"
               onClick={onClose}
               variant="outline"
-              className="startsnap-button bg-gray-200 text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] w-full"
+              className="startsnap-button bg-gray-200 text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex-1"
             >
               Cancel
+            </Button>
+            <Button
+              type="submit"
+              className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex-1"
+            >
+              Submit Entry
             </Button>
           </div>
         </form>

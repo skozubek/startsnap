@@ -233,95 +233,96 @@ export const ProjectDetail = (): JSX.Element => {
           </div>
 
           {/* Main Content Section - Clean and spacious */}
-          <div className="p-8 space-y-8">
+          <div className="px-8 pt-6 pb-8">
+            {/* Project Links - updated for inline display */}
+            {(startsnap.live_demo_url || startsnap.demo_video_url) && (
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4">
+                <p className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg">
+                  Project Links:
+                </p>
+
+                {startsnap.live_demo_url && (
+                  <div className="flex items-center">
+                    <span className="material-icons text-startsnap-oxford-blue mr-1.5">public</span>
+                    <a href={startsnap.live_demo_url} target="_blank" rel="noopener noreferrer"
+                      className="text-startsnap-persian-blue font-['Roboto',Helvetica] flex items-center hover:text-startsnap-french-rose transition-colors">
+                      Live Demo
+                      <span className="material-icons text-sm ml-1">open_in_new</span>
+                    </a>
+                  </div>
+                )}
+                {startsnap.demo_video_url && (
+                  <div className="flex items-center">
+                    <span className="material-icons text-startsnap-oxford-blue mr-1.5">videocam</span>
+                    <a href={startsnap.demo_video_url} target="_blank" rel="noopener noreferrer"
+                      className="text-startsnap-persian-blue font-['Roboto',Helvetica] flex items-center hover:text-startsnap-french-rose transition-colors">
+                      Demo Video
+                      <span className="material-icons text-sm ml-1">open_in_new</span>
+                    </a>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Project Description - Hero treatment */}
-            <p className="font-['Roboto',Helvetica] font-normal text-startsnap-river-bed leading-relaxed text-lg">
+            <p className="font-['Roboto',Helvetica] font-normal text-startsnap-river-bed leading-relaxed text-lg mb-6">
               {startsnap.description}
             </p>
 
-            {/* Creator info - consistent with cards */}
-            <div className="flex items-center pt-6 mt-2 border-t border-gray-200/80">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12">
-                  <UserAvatar
-                    name={creator?.username || 'Anonymous'}
-                    size={48}
-                    className="w-full h-full"
-                  />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-base leading-tight tracking-wide">
-                    {creatorName}
-                  </p>
-                  <p className="font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-sm leading-relaxed mt-0.5">
-                    Launched: {new Date(startsnap.created_at).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Separated tag sections - improved spacing like cards */}
-            <div className="space-y-6">
-              {/* General Tags Section */}
-              {startsnap.tags && startsnap.tags.length > 0 && (
-                <div className="flex items-start gap-3">
-                  <span className="material-icons text-startsnap-oxford-blue text-lg mt-1 shrink-0">tag</span>
-                  <div className="flex flex-wrap gap-2 flex-1">
-                    {startsnap.tags.map((tag: string, idx: number) => (
-                      <Badge
-                        key={`tag-${idx}`}
-                        variant="outline"
-                        className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-gray-800 px-3 py-1"
-                      >
+            {/* Tags, Tools, Feedback  */}
+            {(startsnap.tags?.length > 0 || startsnap.tools_used?.length > 0) && (
+              <div className="space-y-6 py-6 mb-6">
+                {startsnap.tags?.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="material-icons text-startsnap-shuttle-gray text-xl">sell</span>
+                    {startsnap.tags.map((tag: string, index: number) => (
+                      <Badge key={`tag-${index}`} variant="outline" className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-gray-800 px-3 py-1">
                         #{tag}
                       </Badge>
                     ))}
                   </div>
-                </div>
-              )}
-
-              {/* Tools Used Section */}
-              {startsnap.tools_used && startsnap.tools_used.length > 0 && (
-                <div className="flex items-start gap-3">
-                  <span className="material-icons text-startsnap-persian-blue text-lg mt-1 shrink-0">build</span>
-                  <div className="flex flex-wrap gap-2 flex-1">
-                    {startsnap.tools_used.map((tool: string, idx: number) => (
-                      <Badge
-                        key={`tool-${idx}`}
-                        variant="outline"
-                        className="bg-startsnap-french-pass text-startsnap-persian-blue font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-blue-700 px-3 py-1"
-                      >
+                )}
+                {startsnap.tools_used?.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="material-icons text-startsnap-shuttle-gray text-xl">construction</span>
+                    {startsnap.tools_used.map((tool: string, index: number) => (
+                      <Badge key={`tool-${index}`} variant="outline" className="bg-startsnap-french-pass text-startsnap-persian-blue font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-blue-700 px-3 py-1">
                         {tool}
                       </Badge>
                     ))}
                   </div>
-                </div>
-              )}
+                )}
+              </div>
+            )}
 
-              {/* Looking For Feedback Section */}
-              {startsnap.feedback_tags && startsnap.feedback_tags.length > 0 && (
-                <div className="flex items-start gap-3">
-                  <span className="material-icons text-startsnap-jewel text-lg mt-1 shrink-0">forum</span>
-                  <div className="flex flex-wrap gap-2 flex-1">
-                    {startsnap.feedback_tags.map((feedback: string, idx: number) => (
-                      <Badge
-                        key={`feedback-${idx}`}
-                        variant="outline"
-                        className="bg-startsnap-ice-cold text-startsnap-jewel font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-green-700 px-3 py-1"
-                      >
-                        {feedback}
-                      </Badge>
-                    ))}
+            {/* Creator info - MOVED HERE, before action buttons */}
+            {creator && (
+              <div className="flex items-center pt-6 border-t border-gray-200/80 mb-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12">
+                    <UserAvatar
+                      name={creator?.username || 'Anonymous'}
+                      size={48}
+                      className="w-full h-full"
+                    />
+                  </div>
+                  <div>
+                    <p className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay leading-tight">
+                      {creator?.username || 'Anonymous'}
+                    </p>
+                    <p className="font-['Roboto',Helvetica] text-startsnap-shuttle-gray text-sm">
+                      Launched: {formatDetailedDate(startsnap.created_at)}
+                    </p>
                   </div>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* Action buttons */}
             <div className="flex flex-wrap gap-4 pt-4">
               {isOwner ? (
                 <>
-                  <Button 
+                  <Button
                     onClick={() => setIsVibeLogModalOpen(true)}
                     className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-2"
                   >
@@ -348,35 +349,6 @@ export const ProjectDetail = (): JSX.Element => {
                 </>
               )}
             </div>
-
-            {/* Links section */}
-            {(startsnap.live_demo_url || startsnap.demo_video_url) && (
-              <div className="space-y-3 pt-4 border-t border-gray-200/80">
-                <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg">
-                  Project Links
-                </h3>
-                <div className="space-y-2">
-                  {startsnap.live_demo_url && (
-                    <div className="flex items-center">
-                      <span className="material-icons text-startsnap-oxford-blue mr-3">public</span>
-                      <a href={startsnap.live_demo_url} target="_blank" rel="noopener noreferrer"
-                        className="text-startsnap-persian-blue hover:underline font-['Roboto',Helvetica]">
-                        Live Demo: {startsnap.live_demo_url}
-                      </a>
-                    </div>
-                  )}
-                  {startsnap.demo_video_url && (
-                    <div className="flex items-center">
-                      <span className="material-icons text-startsnap-oxford-blue mr-3">videocam</span>
-                      <a href={startsnap.demo_video_url} target="_blank" rel="noopener noreferrer"
-                        className="text-startsnap-persian-blue hover:underline font-['Roboto',Helvetica]">
-                        Demo Video: {startsnap.demo_video_url}
-                      </a>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Vibe Log Section */}

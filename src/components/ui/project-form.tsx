@@ -14,6 +14,7 @@ import { Checkbox } from "./checkbox";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "./select";
 import { getFormOptions, getVibeLogOptions } from "../../config/categories";
 import { SegmentedControl } from "./segmented-control";
+import { VibeLogEntry } from "./vibe-log-entry";
 
 interface ProjectFormProps {
   mode: "create" | "edit";
@@ -38,8 +39,6 @@ interface FormState {
   isHackathon: boolean;
   toolsInput: string;
   toolsUsed: string[];
-  feedbackInput: string;
-  feedbackAreas: string[];
   vibeLogType: string;
   vibeLogTitle: string;
   vibeLogContent: string;
@@ -69,11 +68,9 @@ export function ProjectForm({
     isHackathon: false,
     toolsInput: "",
     toolsUsed: [] as string[],
-    feedbackInput: "",
-    feedbackAreas: [] as string[],
-    vibeLogType: "launch",
-    vibeLogTitle: "",
-    vibeLogContent: ""
+    vibeLogType: "idea",
+    vibeLogTitle: "My New Idea!",
+    vibeLogContent: "Excited to explore this concept..."
   });
 
   const [errors, setErrors] = useState({
@@ -90,14 +87,8 @@ export function ProjectForm({
   useEffect(() => {
     if (mode === "edit" && initialData) {
       setFormState(initialData);
-    } else if (mode === "create") {
-      // For create mode, set default vibe log title based on project type
-      setFormState(prev => ({
-        ...prev,
-        vibeLogTitle: "Initial Launch",
-        vibeLogContent: "Just getting started with my project! More updates coming soon."
-      }));
     }
+    // Create mode defaults are handled by useState and handleProjectTypeChange
   }, [mode, initialData]);
 
   // Form validation
@@ -132,7 +123,7 @@ export function ProjectForm({
 
     // URL validation
     const urlRegex = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
-    
+
     if (formState.liveUrl && !urlRegex.test(formState.liveUrl)) {
       newErrors.liveUrl = "Please enter a valid URL";
       isValid = false;
@@ -149,7 +140,7 @@ export function ProjectForm({
         newErrors.vibeLogTitle = "Title must be at least 3 characters";
         isValid = false;
       }
-      
+
       if (formState.vibeLogContent.length < 10) {
         newErrors.vibeLogContent = "Content must be at least 10 characters";
         isValid = false;
@@ -164,7 +155,7 @@ export function ProjectForm({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormState(prev => ({ ...prev, [name]: value }));
-    
+
     // Clear error for the field being edited
     if (name in errors && errors[name as keyof typeof errors]) {
       setErrors(prev => ({ ...prev, [name]: "" }));
@@ -178,24 +169,40 @@ export function ProjectForm({
 
   // Handle project type changes
   const handleProjectTypeChange = (value: "idea" | "live") => {
-    setFormState(prev => ({ ...prev, projectType: value }));
+    if (value === "idea") {
+      setFormState(prev => ({
+        ...prev,
+        projectType: "idea",
+        vibeLogType: "idea",
+        vibeLogTitle: "My New Idea!",
+        vibeLogContent: "Excited to explore this concept..."
+      }));
+    } else { // live
+      setFormState(prev => ({
+        ...prev,
+        projectType: "live",
+        vibeLogType: "launch",
+        vibeLogTitle: "Initial Launch!",
+        vibeLogContent: "Just getting started with my project! More updates coming soon."
+      }));
+    }
   };
 
   // Handle select changes
   const handleSelectChange = (name: string, value: string) => {
     setFormState(prev => ({ ...prev, [name]: value }));
-    
+
     // Clear error for the field being edited
     if (name in errors && errors[name as keyof typeof errors]) {
       setErrors(prev => ({ ...prev, [name]: "" }));
     }
   };
 
-  // Handle tag-like inputs (tags, tools, feedback areas)
-  const handleTagInput = (type: "tags" | "toolsUsed" | "feedbackAreas", inputName: "tags" | "tools" | "feedback") => {
+  // Handle tag-like inputs (tags, tools)
+  const handleTagInput = (type: "tags" | "toolsUsed", inputName: "tags" | "tools") => {
     const inputKey = `${inputName}Input` as keyof FormState;
     const inputValue = (formState[inputKey] as string).trim();
-    
+
     if (inputValue && !formState[type].includes(inputValue)) {
       setFormState(prev => ({
         ...prev,
@@ -206,7 +213,7 @@ export function ProjectForm({
   };
 
   // Handle tag-like input key press (Enter)
-  const handleTagInputKeyPress = (e: React.KeyboardEvent, type: "tags" | "toolsUsed" | "feedbackAreas", inputName: "tags" | "tools" | "feedback") => {
+  const handleTagInputKeyPress = (e: React.KeyboardEvent, type: "tags" | "toolsUsed", inputName: "tags" | "tools") => {
     if (e.key === "Enter") {
       e.preventDefault();
       handleTagInput(type, inputName);
@@ -214,17 +221,32 @@ export function ProjectForm({
   };
 
   // Remove tag-like item
-  const removeItem = (type: "tags" | "toolsUsed" | "feedbackAreas", index: number) => {
+  const removeItem = (type: "tags" | "toolsUsed", index: number) => {
     setFormState(prev => ({
       ...prev,
       [type]: prev[type].filter((_, i) => i !== index)
     }));
   };
 
+  // Specific handlers for VibeLogEntry title and content with error clearing
+  const handleVibeLogTitleChange = (value: string) => {
+    setFormState(prev => ({ ...prev, vibeLogTitle: value }));
+    if (errors.vibeLogTitle) {
+      setErrors(prev => ({ ...prev, vibeLogTitle: "" }));
+    }
+  };
+
+  const handleVibeLogContentChange = (value: string) => {
+    setFormState(prev => ({ ...prev, vibeLogContent: value }));
+    if (errors.vibeLogContent) {
+      setErrors(prev => ({ ...prev, vibeLogContent: "" }));
+    }
+  };
+
   // Form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (validateForm()) {
       onSubmit(formState);
     }
@@ -239,7 +261,7 @@ export function ProjectForm({
             <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
               StartSnap Type
             </label>
-            
+
             <SegmentedControl
               value={formState.projectType}
               onChange={handleProjectTypeChange}
@@ -429,38 +451,6 @@ export function ProjectForm({
                 ))}
               </div>
             </div>
-
-            <div className="space-y-2">
-              <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
-                Looking For Feedback On (press Enter to add)
-              </label>
-              <Input
-                name="feedbackInput"
-                value={formState.feedbackInput}
-                onChange={handleChange}
-                onKeyPress={(e) => handleTagInputKeyPress(e, "feedbackAreas", "feedback")}
-                placeholder="e.g., UI/UX, Performance, Features"
-                className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
-              />
-              <div className="flex flex-wrap gap-2 mt-2">
-                {formState.feedbackAreas.map((feedback, index) => (
-                  <Badge
-                    key={`feedback-${index}`}
-                    variant="outline"
-                    className="bg-startsnap-ice-cold text-startsnap-jewel font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-green-700 px-3 py-1 flex items-center gap-2"
-                  >
-                    {feedback}
-                    <button
-                      type="button"
-                      onClick={() => removeItem("feedbackAreas", index)}
-                      className="text-startsnap-jewel hover:text-startsnap-french-rose"
-                    >
-                      <span className="material-icons text-sm">close</span>
-                    </button>
-                  </Badge>
-                ))}
-              </div>
-            </div>
           </div>
 
           {/* Vibe Log Section - Only for create mode */}
@@ -472,61 +462,22 @@ export function ProjectForm({
                   Initial Vibe Log Entry
                 </h3>
 
-                <div className="space-y-2">
-                  <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">
-                    Log Type
-                  </label>
-                  <Select
-                    value={formState.vibeLogType}
-                    onValueChange={(value) => handleSelectChange("vibeLogType", value)}
-                  >
-                    <SelectTrigger className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky">
-                      <SelectValue placeholder="Select log type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {getVibeLogOptions().map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          <div className="flex items-center gap-2">
-                            <span className="material-icons text-sm">{option.icon}</span>
-                            <span>{option.label}</span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">
-                    Title
-                  </label>
-                  <Input
-                    name="vibeLogTitle"
-                    value={formState.vibeLogTitle}
-                    onChange={handleChange}
-                    placeholder="e.g., Just Started Working on This!"
-                    className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
-                  />
-                  {errors.vibeLogTitle && (
-                    <p className="text-red-500 text-sm mt-1">{errors.vibeLogTitle}</p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">
-                    Content
-                  </label>
-                  <Textarea
-                    name="vibeLogContent"
-                    value={formState.vibeLogContent}
-                    onChange={handleChange}
-                    placeholder="Share your thoughts about starting this project..."
-                    className="border-2 border-solid border-gray-800 rounded-lg p-3.5 min-h-[120px] font-['Roboto',Helvetica] text-startsnap-pale-sky"
-                  />
-                  {errors.vibeLogContent && (
-                    <p className="text-red-500 text-sm mt-1">{errors.vibeLogContent}</p>
-                  )}
-                </div>
+                <VibeLogEntry
+                  title={formState.vibeLogTitle}
+                  onTitleChange={handleVibeLogTitleChange}
+                  content={formState.vibeLogContent}
+                  onContentChange={handleVibeLogContentChange}
+                  type={formState.vibeLogType}
+                  onTypeChange={() => {}} // Type is controlled by projectType
+                  showAllTypes={false}
+                  singleOptionType={formState.projectType === "idea" ? "idea" : "launch"}
+                />
+                {errors.vibeLogTitle && (
+                  <p className="text-red-500 text-sm mt-1">{errors.vibeLogTitle}</p>
+                )}
+                {errors.vibeLogContent && (
+                  <p className="text-red-500 text-sm mt-1">{errors.vibeLogContent}</p>
+                )}
               </div>
             </>
           )}

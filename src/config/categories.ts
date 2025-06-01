@@ -102,48 +102,28 @@ export const CATEGORY_CONFIG = {
  * Adding a new vibe log type? Just add it here and it works everywhere! 🚀
  */
 export const VIBE_LOG_CONFIG = {
-  launch: {
-    value: 'launch',
-    label: 'Launch',
-    icon: 'rocket_launch',
-    description: 'Initial project launch or major release',
-    display: {
-      iconBg: 'bg-startsnap-wisp-pink',
-      iconColor: 'text-startsnap-french-rose',
-      iconBorder: 'border-pink-500'
-    }
-  },
   update: {
     value: 'update',
     label: 'General Update',
     icon: 'campaign',
     description: 'Progress updates and general improvements',
+    contentPlaceholder: "What\'s new? Share your progress, milestones, or general announcements about your project.",
     display: {
-      iconBg: 'bg-startsnap-blue-chalk',
-      iconColor: 'text-startsnap-heliotrope',
-      iconBorder: 'border-purple-500'
+      iconBg: 'bg-cyan-100',
+      iconColor: 'text-cyan-700',
+      iconBorder: 'border-cyan-600'
     }
   },
   feature: {
     value: 'feature',
     label: 'Fix / New Feature',
-    icon: 'auto_awesome',
+    icon: 'construction',
     description: 'New features, fixes, or enhancements',
+    contentPlaceholder: "Describe the new feature or fix. What problem does it solve? How does it improve the project?",
     display: {
-      iconBg: 'bg-startsnap-blue-chalk',
-      iconColor: 'text-startsnap-heliotrope',
-      iconBorder: 'border-purple-500'
-    }
-  },
-  idea: {
-    value: 'idea',
-    label: 'Idea',
-    icon: 'lightbulb',
-    description: 'Initial concept or brainstorming',
-    display: {
-      iconBg: 'bg-yellow-100',
-      iconColor: 'text-yellow-600',
-      iconBorder: 'border-yellow-500'
+      iconBg: 'bg-orange-100',
+      iconColor: 'text-orange-700',
+      iconBorder: 'border-orange-600'
     }
   },
   feedback: {
@@ -151,10 +131,47 @@ export const VIBE_LOG_CONFIG = {
     label: 'Seeking Feedback',
     icon: 'forum',
     description: 'Looking for community input and suggestions',
+    contentPlaceholder: "What specific aspects of your project are you seeking feedback on? Guide the community on how they can help.",
     display: {
-      iconBg: 'bg-startsnap-french-pass',
-      iconColor: 'text-startsnap-persian-blue',
-      iconBorder: 'border-blue-500'
+      iconBg: 'bg-green-100',
+      iconColor: 'text-green-700',
+      iconBorder: 'border-green-600'
+    }
+  },
+  aimagic: {
+    value: 'aimagic',
+    label: 'AI magic',
+    icon: 'auto_awesome',
+    description: 'Showcasing AI-driven features or breakthroughs.',
+    contentPlaceholder: "Showcase your AI breakthrough! What did you build, what prompt did you use, or what was the amazing LLM output?",
+    display: {
+      iconBg: 'bg-purple-100',
+      iconColor: 'text-purple-600',
+      iconBorder: 'border-purple-500'
+    }
+  },
+  launch: {
+    value: 'launch',
+    label: 'Launch',
+    icon: 'rocket_launch',
+    description: 'Initial project launch or major release',
+    contentPlaceholder: "It\'s launch day! Share the excitement, key features, and what makes your project special.",
+    display: {
+      iconBg: 'bg-startsnap-wisp-pink',
+      iconColor: 'text-startsnap-french-rose',
+      iconBorder: 'border-pink-500'
+    }
+  },
+  idea: {
+    value: 'idea',
+    label: 'Idea',
+    icon: 'lightbulb',
+    description: 'Initial concept or brainstorming',
+    contentPlaceholder: "Describe your new idea. What problem does it solve? What\'s your vision for it?",
+    display: {
+      iconBg: 'bg-yellow-100',
+      iconColor: 'text-yellow-600',
+      iconBorder: 'border-yellow-500'
     }
   }
 } as const;
@@ -222,7 +239,8 @@ export const getVibeLogOptions = () => {
     value: config.value,
     label: config.label,
     icon: config.icon,
-    description: config.description
+    description: config.description,
+    contentPlaceholder: config.contentPlaceholder
   }));
 };
 
@@ -254,6 +272,7 @@ export const getVibeLogDisplayMap = () => {
         icon: config.icon,
         label: config.label,
         description: config.description,
+        contentPlaceholder: config.contentPlaceholder,
         ...config.display
       }
     ])

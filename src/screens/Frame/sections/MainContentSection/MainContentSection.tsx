@@ -24,7 +24,6 @@ interface StartSnapType {
   is_hackathon_entry?: boolean;
   tags?: string[];
   tools_used?: string[];
-  feedback_tags?: string[];
   created_at: string;
   user_id: string;
 }

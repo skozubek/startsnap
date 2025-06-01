@@ -34,6 +34,15 @@ export const VibeLogEntry = ({
   showAllTypes = false,
   singleOptionType = 'launch',
 }: VibeLogEntryProps): JSX.Element => {
+  const vibeLogOptions = getVibeLogOptions();
+  const currentTypeConfig = vibeLogOptions.find(option => option.value === type);
+
+  const placeholderText = showAllTypes
+    ? currentTypeConfig?.contentPlaceholder || "Share your progress, thoughts, or what you\'re working on..."
+    : singleOptionType === 'launch'
+    ? vibeLogOptions.find(o => o.value === 'launch')?.contentPlaceholder || "Share details about your project, key features, what problems it solves, and what makes it special..."
+    : vibeLogOptions.find(o => o.value === 'idea')?.contentPlaceholder || "Share your idea, what inspired it, the problem you want to solve, and your vision for the solution...";
+
   return (
     <div className="space-y-6">
       <div className="space-y-2">
@@ -42,20 +51,22 @@ export const VibeLogEntry = ({
         </Label>
         {showAllTypes ? (
           <Select value={type} onValueChange={onTypeChange}>
-            <SelectTrigger className="border-2 border-solid border-gray-800 rounded-lg h-[52px] font-['Roboto',Helvetica]">
+            <SelectTrigger className="w-full border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica]">
               <SelectValue placeholder="Select entry type" />
             </SelectTrigger>
             <SelectContent>
               {getVibeLogOptions().map((option) => (
-                <SelectItem key={option.value} value={option.value} className="flex items-center">
-                  <span className="material-icons text-base mr-2 leading-none">{option.icon}</span>
-                  <span>{option.label}</span>
+                <SelectItem key={option.value} value={option.value}>
+                  <div className="flex items-center gap-2">
+                    <span className="material-icons text-base leading-none">{option.icon}</span>
+                    <span>{option.label}</span>
+                  </div>
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         ) : (
-          <div className="border-2 border-solid border-gray-800 rounded-lg h-[52px] font-['Roboto',Helvetica] bg-startsnap-athens-gray flex items-center px-4">
+          <div className="w-full border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] bg-startsnap-athens-gray flex items-center">
             <div className="flex items-center text-startsnap-ebony-clay">
               {(() => {
                 const displayData = getVibeLogDisplay(singleOptionType);
@@ -90,13 +101,7 @@ export const VibeLogEntry = ({
         <Textarea
           value={content}
           onChange={(e) => onContentChange(e.target.value)}
-          placeholder={
-            showAllTypes
-              ? "Share your progress, thoughts, or what you're working on..."
-              : singleOptionType === 'launch'
-              ? "Share details about your project, key features, what problems it solves, and what makes it special..."
-              : "Share your idea, what inspired it, the problem you want to solve, and your vision for the solution..."
-          }
+          placeholder={placeholderText}
           className="border-2 border-solid border-gray-800 rounded-lg p-3.5 min-h-[120px] font-['Roboto',Helvetica] text-startsnap-pale-sky"
         />
       </div>
