@@ -1,59 +1,64 @@
 /**
  * src/components/ui/segmented-control.tsx
- * @description A segmented control component for selection between multiple options
+ * @description A segmented control component for switching between project types
  */
 
 import React from "react";
 import { cn } from "../../lib/utils";
 
-export interface SegmentOption {
-  value: string;
-  label: string;
-}
-
 interface SegmentedControlProps {
-  options: SegmentOption[];
-  value: string;
-  onChange: (value: string) => void;
+  value: 'idea' | 'live';
+  onChange: (value: 'idea' | 'live') => void;
   className?: string;
 }
 
 /**
- * @description A segmented control component that allows selection between multiple options
+ * @description A segmented control component for switching between project types
  * @param {SegmentedControlProps} props - Component props
- * @returns {JSX.Element} Segmented control UI component
+ * @returns {JSX.Element} Segmented control component
  */
-export function SegmentedControl({
-  options,
+export const SegmentedControl = ({
   value,
   onChange,
-  className,
-}: SegmentedControlProps): JSX.Element {
+  className
+}: SegmentedControlProps): JSX.Element => {
   return (
-    <div
+    <div 
       className={cn(
-        "flex w-full border-2 border-gray-800 rounded-lg overflow-hidden",
+        "flex overflow-hidden rounded-lg border-2 border-solid border-gray-800 w-full max-w-xs", 
         className
       )}
     >
-      {options.map((option) => {
-        const isSelected = option.value === value;
-        return (
-          <button
-            key={option.value}
-            type="button"
-            onClick={() => onChange(option.value)}
-            className={cn(
-              "flex-1 py-3 px-4 text-center transition-colors font-['Roboto',Helvetica] font-bold text-base",
-              isSelected 
-                ? "bg-startsnap-french-rose text-startsnap-white" 
-                : "bg-startsnap-athens-gray text-startsnap-ebony-clay hover:bg-gray-300"
-            )}
-          >
-            {option.label}
-          </button>
-        );
-      })}
+      <button
+        type="button"
+        onClick={() => onChange('idea')}
+        className={cn(
+          "flex-1 py-2 px-4 font-['Space_Mono',Helvetica] text-sm transition-colors flex items-center justify-center",
+          value === 'idea'
+            ? "bg-startsnap-corn text-startsnap-ebony-clay"
+            : "bg-startsnap-white text-startsnap-oxford-blue hover:bg-startsnap-athens-gray"
+        )}
+      >
+        {value === 'idea' && (
+          <span className="material-icons text-sm mr-1">check</span>
+        )}
+        Idea / Concept
+      </button>
+      <button
+        type="button"
+        onClick={() => onChange('live')}
+        className={cn(
+          "flex-1 py-2 px-4 font-['Space_Mono',Helvetica] text-sm transition-colors flex items-center justify-center",
+          value === 'live'
+            ? "bg-startsnap-mountain-meadow text-white"
+            : "bg-startsnap-white text-startsnap-oxford-blue hover:bg-startsnap-athens-gray"
+        )}
+      >
+        {value === 'live' && (
+          <span className="material-icons text-sm mr-1">check</span>
+        )}
+        Live Project
+      </button>
     </div>
   );
-}
+};
