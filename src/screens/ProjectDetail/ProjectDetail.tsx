@@ -280,22 +280,31 @@ export const ProjectDetail = (): JSX.Element => {
             </div>
 
             {/* Action buttons */}
-            <div className="flex gap-4 pt-4">
-              <Button className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-2">
-                <span className="material-icons text-xl">thumb_up</span>
-                Support Project
-              </Button>
-              <Button className="startsnap-button bg-startsnap-mountain-meadow text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-2">
-                <span className="material-icons text-xl">forum</span>
-                Give Feedback
-              </Button>
-              {isOwner && (
-                <Button className="startsnap-button bg-startsnap-mischka text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-2" asChild>
-                  <Link to={`/edit/${startsnap.id}`}>
-                    <span className="material-icons text-xl">edit</span>
-                    Edit Project
-                  </Link>
+            <div className="flex flex-wrap gap-4 pt-4">
+              {isOwner ? (
+                <>
+                  <Button className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-2">
+                    <span className="material-icons text-xl">add_circle</span>
+                    Add Vibe Log Entry
+                  </Button>
+                  <Button className="startsnap-button bg-startsnap-mischka text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-2" asChild>
+                    <Link to={`/edit/${startsnap.id}`}>
+                      <span className="material-icons text-xl">edit</span>
+                      Edit Project
+                    </Link>
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-2">
+                    <span className="material-icons text-xl">thumb_up</span>
+                    Support Project
+                  </Button>
+                  <Button className="startsnap-button bg-startsnap-mountain-meadow text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-2">
+                    <span className="material-icons text-xl">forum</span>
+                    Give Feedback
                 </Button>
+                </>
               )}
             </div>
 
