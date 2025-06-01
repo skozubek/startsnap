@@ -1,52 +1,54 @@
 /**
  * src/components/ui/segmented-control.tsx
- * @description A segmented control component for toggle selection between multiple options
+ * @description A segmented control component for selection between multiple options
  */
 
 import React from "react";
 import { cn } from "../../lib/utils";
 
-interface SegmentedControlOption {
+export interface SegmentOption {
   value: string;
   label: string;
 }
 
 interface SegmentedControlProps {
-  options: SegmentedControlOption[];
+  options: SegmentOption[];
   value: string;
   onChange: (value: string) => void;
-  name?: string;
   className?: string;
 }
 
 /**
- * @description Segmented control component for binary or multiple choice selection
+ * @description A segmented control component that allows selection between multiple options
  * @param {SegmentedControlProps} props - Component props
- * @returns {JSX.Element} Segmented control component
+ * @returns {JSX.Element} Segmented control UI component
  */
-export const SegmentedControl: React.FC<SegmentedControlProps> = ({
+export function SegmentedControl({
   options,
   value,
   onChange,
-  name,
   className,
-}) => {
+}: SegmentedControlProps): JSX.Element {
   return (
-    <div className={cn("p-1 bg-startsnap-athens-gray border-2 border-solid border-gray-800 rounded-lg flex", className)}>
+    <div
+      className={cn(
+        "flex w-full border-2 border-gray-800 rounded-lg overflow-hidden",
+        className
+      )}
+    >
       {options.map((option) => {
-        const isActive = value === option.value;
+        const isSelected = option.value === value;
         return (
           <button
             key={option.value}
             type="button"
-            className={cn(
-              "flex-1 px-4 py-2 text-center rounded-md transition-all duration-200 font-medium",
-              isActive
-                ? "bg-startsnap-french-pass text-startsnap-persian-blue"
-                : "bg-gray-200 text-startsnap-oxford-blue hover:bg-gray-300"
-            )}
             onClick={() => onChange(option.value)}
-            aria-pressed={isActive}
+            className={cn(
+              "flex-1 py-3 px-4 text-center transition-colors font-['Roboto',Helvetica] font-bold text-base",
+              isSelected 
+                ? "bg-startsnap-french-rose text-startsnap-white" 
+                : "bg-startsnap-athens-gray text-startsnap-ebony-clay hover:bg-gray-300"
+            )}
           >
             {option.label}
           </button>
@@ -54,4 +56,4 @@ export const SegmentedControl: React.FC<SegmentedControlProps> = ({
       })}
     </div>
   );
-};
+}
