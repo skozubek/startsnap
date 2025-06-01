@@ -117,20 +117,20 @@ export const MainContentSection = (): JSX.Element => {
     <section className="flex flex-col w-full items-center bg-startsnap-candlelight">
       {/* Hero Section */}
       <div className="w-full bg-[--startsnap-beige]">
-        <div className="max-w-screen-2xl mx-auto px-8 py-24 flex items-center">
-          <div className="w-[60%] pr-16">
-            <h1 className="text-6xl font-bold text-startsnap-ebony-clay mb-6 font-['Space_Grotesk',Helvetica] leading-tight">
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 lg:py-24 flex flex-col md:flex-row items-center">
+          <div className="w-full md:w-[60%] md:pr-8 lg:pr-16 mb-8 md:mb-0 text-center md:text-left">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-startsnap-ebony-clay mb-4 sm:mb-6 font-['Space_Grotesk',Helvetica] leading-tight">
               We're Vibe Coding,<br />
               We Build <span ref={typedRef}></span>
             </h1>
-            <p className="text-xl text-startsnap-river-bed mb-8 font-['Roboto',Helvetica] leading-relaxed">
+            <p className="text-base sm:text-lg lg:text-xl text-startsnap-river-bed mb-6 sm:mb-8 font-['Roboto',Helvetica] leading-relaxed">
               Vibe Coders! Showcase your journey, build in public, get real feedback, and find your creative tribe here
             </p>
-            <Button className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-lg px-8 py-6 rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]">
+            <Button className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]">
               Start Building Today
             </Button>
           </div>
-          <div className="w-[40%]">
+          <div className="w-[80%] sm:w-[60%] md:w-[40%] mx-auto md:mx-0">
             <img
               src="https://ik.imagekit.io/craftsnap/startsnap/vibe-coder.png"
               alt="Collaborative team working together"
