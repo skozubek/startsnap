@@ -284,7 +284,7 @@ export const ProjectDetail = (): JSX.Element => {
               {isOwner ? (
                 <>
                   <Button className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-2">
-                    <span className="material-icons text-xl">add_circle</span>
+                    <span className="material-icons text-xl">post_add</span>
                     Add Vibe Log Entry
                   </Button>
                   <Button className="startsnap-button bg-startsnap-mischka text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-2" asChild>
