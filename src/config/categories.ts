@@ -116,7 +116,7 @@ export const VIBE_LOG_CONFIG = {
   update: {
     value: 'update',
     label: 'General Update',
-    icon: 'construction',
+    icon: 'campaign',
     description: 'Progress updates and general improvements',
     display: {
       iconBg: 'bg-startsnap-blue-chalk',
