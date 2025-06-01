@@ -14,6 +14,7 @@ import { getCategoryDisplay, getVibeLogDisplay } from "../../config/categories";
 import { formatDetailedDate } from "../../lib/utils";
 import { useAuth } from "../../context/AuthContext";
 import { UserAvatar, getAvatarName } from "../../components/ui/user-avatar";
+import { AddVibeLogModal } from "../../components/ui/add-vibe-log-modal";
 
 /**
  * @description Page component that displays detailed project information
@@ -28,6 +29,7 @@ export const ProjectDetail = (): JSX.Element => {
   const [feedbackEntries, setFeedbackEntries] = useState<any[]>([]);
   const [feedbackContent, setFeedbackContent] = useState("");
   const { user: currentUser } = useAuth();
+  const [isVibeLogModalOpen, setIsVibeLogModalOpen] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -127,6 +129,42 @@ export const ProjectDetail = (): JSX.Element => {
     setFeedbackContent('');
   };
 
+  /**
+   * @description Handles submission of new Vibe Log entries
+   * @async
+   * @param {Object} data - Form data containing log_type, title, and content
+   * @sideEffects Inserts new Vibe Log entry into Supabase and updates UI
+   */
+  const handleVibeLogSubmit = async (data: { log_type: string; title: string; content: string }) => {
+    try {
+      const { error } = await supabase
+        .from('vibelogs')
+        .insert({
+          startsnap_id: id,
+          log_type: data.log_type,
+          title: data.title,
+          content: data.content
+        });
+
+      if (error) throw error;
+
+      // Refresh vibe log entries
+      const { data: newVibeLogsData, error: vibeLogsError } = await supabase
+        .from('vibelogs')
+        .select('*')
+        .eq('startsnap_id', id)
+        .order('created_at', { ascending: false });
+
+      if (vibeLogsError) throw vibeLogsError;
+
+      setVibeLogEntries(newVibeLogsData || []);
+      setIsVibeLogModalOpen(false);
+    } catch (error) {
+      console.error('Error adding vibe log entry:', error);
+      alert('Failed to add vibe log entry. Please try again.');
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-startsnap-candlelight">
@@ -173,7 +211,7 @@ export const ProjectDetail = (): JSX.Element => {
             <div className="flex gap-3 flex-wrap">
               {/* Project type badge */}
               {startsnap.type === "live" ? (
-                <Badge variant="outline" className="bg-startsnap-mountain-meadow text-white font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-green-700 px-3 py-1 flex items-center gap-1">
+                <Badge variant="outline\" className="bg-startsnap-mountain-meadow text-white font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-green-700 px-3 py-1 flex items-center gap-1">
                   <span className="material-icons text-sm">rocket_launch</span>
                   Live Project
                 </Badge>
@@ -283,7 +321,10 @@ export const ProjectDetail = (): JSX.Element => {
             <div className="flex flex-wrap gap-4 pt-4">
               {isOwner ? (
                 <>
-                  <Button className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-2">
+                  <Button 
+                    onClick={() => setIsVibeLogModalOpen(true)}
+                    className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-2"
+                  >
                     <span className="material-icons text-xl">post_add</span>
                     Add Vibe Log Entry
                   </Button>
@@ -448,6 +489,11 @@ export const ProjectDetail = (): JSX.Element => {
           </div>
         </CardContent>
       </Card>
+      <AddVibeLogModal
+        isOpen={isVibeLogModalOpen}
+        onClose={() => setIsVibeLogModalOpen(false)}
+        onSubmit={handleVibeLogSubmit}
+      />
     </div>
   );
 };
