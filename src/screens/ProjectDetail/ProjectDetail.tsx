@@ -15,13 +15,6 @@ import { formatDetailedDate } from "../../lib/utils";
 import { useAuth } from "../../context/AuthContext";
 import { UserAvatar, getAvatarName } from "../../components/ui/user-avatar";
 import { AddVibeLogModal } from "../../components/ui/add-vibe-log-modal";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
-} from "../../components/ui/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
 
 /**
  * @description Page component that displays detailed project information
@@ -37,7 +30,6 @@ export const ProjectDetail = (): JSX.Element => {
   const [feedbackContent, setFeedbackContent] = useState("");
   const { user: currentUser } = useAuth();
   const [isVibeLogModalOpen, setIsVibeLogModalOpen] = useState(false);
-  const [editingVibeLog, setEditingVibeLog] = useState<any>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -157,88 +149,20 @@ export const ProjectDetail = (): JSX.Element => {
       if (error) throw error;
 
       // Refresh vibe log entries
-      fetchProjectData();
+      const { data: newVibeLogsData, error: vibeLogsError } = await supabase
+        .from('vibelogs')
+        .select('*')
+        .eq('startsnap_id', id)
+        .order('created_at', { ascending: false });
+
+      if (vibeLogsError) throw vibeLogsError;
+
+      setVibeLogEntries(newVibeLogsData || []);
       setIsVibeLogModalOpen(false);
     } catch (error) {
       console.error('Error adding vibe log entry:', error);
       alert('Failed to add vibe log entry. Please try again.');
     }
-  };
-
-  /**
-   * @description Handles editing of an existing Vibe Log entry
-   * @async
-   * @param {Object} data - Form data containing updated log_type, title, and content
-   * @sideEffects Updates Vibe Log entry in Supabase and refreshes the UI
-   */
-  const handleUpdateVibeLog = async (data: { log_type: string; title: string; content: string }) => {
-    if (!editingVibeLog) return;
-    
-    try {
-      const { error } = await supabase
-        .from('vibelogs')
-        .update({
-          log_type: data.log_type,
-          title: data.title,
-          content: data.content,
-          updated_at: new Date()
-        })
-        .eq('id', editingVibeLog.id);
-
-      if (error) throw error;
-
-      // Refresh vibe log entries
-      fetchProjectData();
-      setEditingVibeLog(null);
-    } catch (error) {
-      console.error('Error updating vibe log entry:', error);
-      alert('Failed to update vibe log entry. Please try again.');
-    }
-  };
-
-  /**
-   * @description Sets up editing mode for a vibe log entry
-   * @param {Object} entry - The vibe log entry to edit
-   * @sideEffects Sets the editing state and opens the modal
-   */
-  const handleEditVibeLog = (entry: any) => {
-    setEditingVibeLog(entry);
-  };
-
-  /**
-   * @description Handles deletion of a vibe log entry
-   * @async
-   * @param {string} entryId - The ID of the vibe log entry to delete
-   * @sideEffects Deletes the entry from Supabase and refreshes the UI
-   */
-  const handleDeleteVibeLog = async (entryId: string) => {
-    if (!confirm('Are you sure you want to delete this vibe log entry? This action cannot be undone.')) {
-      return;
-    }
-
-    try {
-      const { error } = await supabase
-        .from('vibelogs')
-        .delete()
-        .eq('id', entryId);
-
-      if (error) throw error;
-
-      // Refresh vibe log entries
-      fetchProjectData();
-    } catch (error) {
-      console.error('Error deleting vibe log entry:', error);
-      alert('Failed to delete vibe log entry. Please try again.');
-    }
-  };
-
-  /**
-   * @description Handles closing the vibe log modal
-   * @sideEffects Resets modal state and editing state
-   */
-  const handleCloseVibeLogModal = () => {
-    setIsVibeLogModalOpen(false);
-    setEditingVibeLog(null);
   };
 
   if (loading) {
@@ -439,48 +363,22 @@ export const ProjectDetail = (): JSX.Element => {
             </div>
 
             {vibeLogEntries.length > 0 ? (
-              vibeLogEntries.map((entry: any) => {
+              vibeLogEntries.map((entry: any, index: number) => {
                 const logType = entry.log_type || 'update';
                 const iconData = getVibeLogDisplay(logType);
 
                 return (
-                  <div key={entry.id} className="mb-8 last:mb-0">
+                  <div key={index} className="mb-8 last:mb-0">
                     <div className="flex items-start">
                       <div
                         className={`p-2.5 ${iconData.iconBg} rounded-full border-2 border-solid ${iconData.iconBorder} ${iconData.iconColor} text-3xl flex items-center justify-center`}
                       >
                         <span className="material-icons text-3xl">{iconData.icon}</span>
                       </div>
-                      <div className="ml-4 flex-1">
-                        <div className="flex items-center justify-between">
-                          <p className="font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4">
-                            {formatDetailedDate(entry.created_at)}
-                          </p>
-                          
-                          {isOwner && (
-                            <DropdownMenu>
-                              <DropdownMenuTrigger className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-gray-100">
-                                <MoreHorizontal className="h-4 w-4 text-startsnap-oxford-blue" />
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="min-w-[160px]">
-                                <DropdownMenuItem 
-                                  onClick={() => handleEditVibeLog(entry)}
-                                  className="cursor-pointer flex items-center gap-2"
-                                >
-                                  <span className="material-icons text-sm">edit</span>
-                                  Edit
-                                </DropdownMenuItem>
-                                <DropdownMenuItem 
-                                  onClick={() => handleDeleteVibeLog(entry.id)}
-                                  className="cursor-pointer text-red-600 flex items-center gap-2"
-                                >
-                                  <span className="material-icons text-sm">delete</span>
-                                  Delete
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          )}
-                        </div>
+                      <div className="ml-4">
+                        <p className="font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4">
+                          {formatDetailedDate(entry.created_at)}
+                        </p>
                         <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7 mt-1">
                           {entry.title}
                         </h3>
@@ -564,10 +462,9 @@ export const ProjectDetail = (): JSX.Element => {
         </CardContent>
       </Card>
       <AddVibeLogModal
-        isOpen={isVibeLogModalOpen || !!editingVibeLog}
-        onClose={handleCloseVibeLogModal}
-        onSubmit={editingVibeLog ? handleUpdateVibeLog : handleVibeLogSubmit}
-        initialData={editingVibeLog}
+        isOpen={isVibeLogModalOpen}
+        onClose={() => setIsVibeLogModalOpen(false)}
+        onSubmit={handleVibeLogSubmit}
       />
     </div>
   );
