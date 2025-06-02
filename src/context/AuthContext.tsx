@@ -34,13 +34,14 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event: AuthChangeEvent, session) => {
-        // If initial session check returns no session, clear any stale tokens
+        // Simply update the state when no session exists
         if (event === 'INITIAL_SESSION' && !session) {
-          await supabase.auth.signOut();
+          setUser(null);
+          setSession(null);
+        } else {
+          setUser(session?.user || null);
+          setSession(session);
         }
-        
-        setUser(session?.user || null);
-        setSession(session);
         setLoading(false);
       }
     );
