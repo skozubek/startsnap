@@ -84,23 +84,15 @@ export const ProjectDetail = (): JSX.Element => {
 
       setVibeLogs(vibeLogsData || []);
 
-      // Fetch feedbacks with replies - Updated relationship path
+      // Fetch feedbacks with replies
       const { data: feedbacksData, error: feedbacksError } = await supabase
         .from('feedbacks')
         .select(`
           *,
-          users:user_id (
-            profiles (
-              username
-            )
-          ),
-          replies:feedback_replies (
+          profiles!feedbacks_user_id_fkey(username),
+          replies:feedback_replies(
             *,
-            users:user_id (
-              profiles (
-                username
-              )
-            )
+            profiles!feedback_replies_user_id_fkey(username)
           )
         `)
         .eq('startsnap_id', id)
@@ -476,13 +468,13 @@ export const ProjectDetail = (): JSX.Element => {
                       <div className="flex items-start justify-between">
                         <div className="flex items-start gap-4">
                           <UserAvatar
-                            name={getAvatarName({ id: feedback.user_id }, feedback.users?.profiles?.[0]?.username)}
+                            name={getAvatarName({ id: feedback.user_id }, feedback.profiles?.username)}
                             size={40}
                           />
                           <div>
                             <div className="flex items-center gap-2">
                               <span className="font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica]">
-                                {feedback.users?.profiles?.[0]?.username}
+                                {feedback.profiles?.username}
                               </span>
                               <span className="text-sm text-startsnap-pale-sky font-['Roboto',Helvetica]">
                                 {formatDetailedDate(feedback.created_at)}
@@ -604,13 +596,13 @@ export const ProjectDetail = (): JSX.Element => {
                           {feedback.replies.map((reply: any) => (
                             <div key={reply.id} className="flex items-start gap-4">
                               <UserAvatar
-                                name={getAvatarName({ id: reply.user_id }, reply.users?.profiles?.[0]?.username)}
+                                name={getAvatarName({ id: reply.user_id }, reply.profiles?.username)}
                                 size={32}
                               />
                               <div className="flex-1">
                                 <div className="flex items-center gap-2">
                                   <span className="font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica]">
-                                    {reply.users?.profiles?.[0]?.username}
+                                    {reply.profiles?.username}
                                   </span>
                                   <span className="text-sm text-startsnap-pale-sky font-['Roboto',Helvetica]">
                                     {formatDetailedDate(reply.created_at)}
