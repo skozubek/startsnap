@@ -54,6 +54,10 @@
   .startsnap-button.bg-startsnap-mischka:hover {
     background-color: rgba(209, 213, 219, 0.9); /* More subtle mischka */
   }
+
+  .startsnap-button.bg-startsnap-persian-blue:hover {
+    background-color: var(--startsnap-persian-blue-dark);
+  }
 }
 
 @layer base {
@@ -185,6 +189,7 @@
     --startsnap-oxford-blue: rgba(55, 65, 81, 1);
     --startsnap-pale-sky: rgba(107, 114, 128, 1);
     --startsnap-persian-blue: rgba(29, 78, 216, 1);
+    --startsnap-persian-blue-dark: rgba(23, 62, 173, 1); /* Darker shade for hover */
     --startsnap-purple-heart: rgba(126, 34, 206, 1);
     --startsnap-river-bed: rgba(75, 85, 99, 1);
     --startsnap-white: rgba(255, 255, 255, 1);

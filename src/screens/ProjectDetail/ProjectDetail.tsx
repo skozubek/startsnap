@@ -23,6 +23,7 @@ import {
   DropdownMenuTrigger
 } from "../../components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
+import { Separator } from "../../components/ui/separator";
 
 /**
  * @description Interface for feedback reply data
@@ -75,7 +76,7 @@ export const ProjectDetail = (): JSX.Element => {
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [editingFeedback, setEditingFeedback] = useState<FeedbackEntry | null>(null);
   const [feedbackContentForModal, setFeedbackContentForModal] = useState("");
-  
+
   // New state for reply functionality
   const [replyingToFeedbackId, setReplyingToFeedbackId] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState("");
@@ -205,7 +206,7 @@ export const ProjectDetail = (): JSX.Element => {
               .from('feedback_replies')
               .select('*')
               .eq('parent_feedback_id', feedback.id)
-              .order('created_at', { ascending: true });
+              .order('created_at', { ascending: false });
 
             if (repliesError) {
               console.error('Error fetching replies:', repliesError);
@@ -657,7 +658,7 @@ export const ProjectDetail = (): JSX.Element => {
             <div className="flex gap-3 flex-wrap">
               {/* Project type badge */}
               {startsnap.type === "live" ? (
-                <Badge variant="outline\" className="bg-startsnap-mountain-meadow text-white font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-green-700 px-3 py-1 flex items-center gap-1">
+                <Badge variant="outline" className="bg-startsnap-mountain-meadow text-white font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-green-700 px-3 py-1 flex items-center gap-1">
                   <span className="material-icons text-sm">rocket_launch</span>
                   Live Project
                 </Badge>
@@ -877,14 +878,14 @@ export const ProjectDetail = (): JSX.Element => {
             </div>
 
             {feedbackEntries.length > 0 ? (
-              feedbackEntries.map((feedback) => (
-                <div key={feedback.id} className="mb-6">
+              feedbackEntries.map((feedback, feedbackIndex) => (
+                <React.Fragment key={feedback.id}>
                   <Card
                     className="shadow-[0px_2px_4px_-2px_#0000001a,0px_4px_6px_-1px_#0000001a] bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800"
                   >
                     <CardContent className="p-5">
                       <div className="flex items-start">
-                        <div className="w-10 h-10">
+                        <div className="w-10 h-10 flex-shrink-0">
                           <UserAvatar
                             name={getAvatarName(null, feedback.profile?.username || 'Anonymous')}
                             size={40}
@@ -929,8 +930,8 @@ export const ProjectDetail = (): JSX.Element => {
                           <p className="font-['Roboto',Helvetica] font-normal text-startsnap-river-bed text-base leading-6 mt-1">
                             {feedback.content}
                           </p>
-                          
-                          {/* Reply button */}
+
+                          {/* Reply button - stays with parent feedback */}
                           {currentUser && (
                             <div className="mt-2">
                               <button
@@ -951,17 +952,72 @@ export const ProjectDetail = (): JSX.Element => {
                     </CardContent>
                   </Card>
 
-                  {/* Replies section */}
-                  {feedback.replies && feedback.replies.length > 0 && (
-                    <div className="ml-12 mt-2 space-y-3">
-                      {feedback.replies.map((reply) => (
-                        <Card
-                          key={reply.id}
-                          className="shadow-[0px_1px_2px_-1px_#0000001a,0px_2px_3px_-1px_#0000001a] bg-startsnap-white rounded-lg overflow-hidden border-[2px] border-solid border-gray-800"
-                        >
-                          <CardContent className="p-4">
+                  {/* Replies and Reply Form Container - Indented */}
+                  <div className="ml-8 lg:ml-12 mt-4 relative">
+                    {/* Optional Connecting Line - adjust if reply form is always on top */}
+                    {(replyingToFeedbackId === feedback.id || (feedback.replies && feedback.replies.length > 0)) && (
+                         <div className="absolute left-[-20px] top-0 bottom-0 w-0.5 bg-gray-300 lg:left-[-28px]"></div>
+                    )}
+
+                    {/* Inline Reply form - MOVED TO TOP & Indented and Lightweight */}
+                    {replyingToFeedbackId === feedback.id && currentUser && (
+                      <div className={`pb-3 mb-3 ${feedback.replies && feedback.replies.length > 0 ? 'border-b border-gray-200' : ''}`}>
+                        {/* Subtle background and border */}
+                        <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                          <div className="w-8 h-8 flex-shrink-0">
+                            <UserAvatar
+                              name={getAvatarName(currentUser, currentUserProfile?.username)}
+                              size={32}
+                              className="w-full h-full"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <Textarea
+                              placeholder={editingReply ? "Edit your reply..." : "Write your reply..."}
+                              className="border-2 border-solid border-gray-300 rounded-lg p-2 min-h-[80px] font-['Roboto',Helvetica] text-startsnap-pale-sky text-sm mb-2 focus:border-startsnap-persian-blue bg-white"
+                              value={replyContent}
+                              onChange={(e) => {
+                                setReplyContent(e.target.value);
+                                setReplyError(null);
+                              }}
+                              disabled={replySubmitting}
+                            />
+                            {replyError && (
+                              <p className="text-red-500 text-xs mb-2">{replyError}</p>
+                            )}
+                            <div className="flex gap-2 justify-end">
+                              <Button
+                                variant="outline"
+                                onClick={handleCancelReply}
+                                className="startsnap-button bg-gray-200 text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold text-sm rounded-lg border-2 border-solid border-gray-800 shadow-[2px_2px_0px_#1f2937] py-1 px-3 h-auto"
+                                disabled={replySubmitting}
+                              >
+                                Cancel
+                              </Button>
+                              <Button
+                                onClick={editingReply ? handleUpdateReply : handleReplySubmit}
+                                className="startsnap-button bg-startsnap-persian-blue text-startsnap-white font-['Roboto',Helvetica] font-bold text-sm rounded-lg border-2 border-solid border-gray-800 shadow-[2px_2px_0px_#1f2937] py-1 px-3 h-auto"
+                                disabled={replySubmitting || !replyContent.trim()}
+                              >
+                                {replySubmitting ? (editingReply ? 'Updating...' : 'Replying...') : (editingReply ? 'Update Reply' : 'Reply')}
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Replies section - Lightweight */}
+                    {feedback.replies && feedback.replies.length > 0 && (
+                      <div className="space-y-3">
+                        {feedback.replies.map((reply, replyIndex) => (
+                          <div
+                            key={reply.id}
+                            // Removed top border from here as it's handled by space-y or the reply form separator
+                            className={`pt-3 ${replyIndex > 0 ? 'mt-3 border-t border-gray-200' : '' }`}
+                          >
                             <div className="flex items-start">
-                              <div className="w-8 h-8">
+                              <div className="w-8 h-8 flex-shrink-0">
                                 <UserAvatar
                                   name={getAvatarName(null, reply.profile?.username || 'Anonymous')}
                                   size={32}
@@ -981,22 +1037,22 @@ export const ProjectDetail = (): JSX.Element => {
 
                                   {currentUser && currentUser.id === reply.user_id && (
                                     <DropdownMenu>
-                                      <DropdownMenuTrigger className="h-6 w-6 flex items-center justify-center rounded-full hover:bg-gray-100">
+                                      <DropdownMenuTrigger className="h-6 w-6 flex items-center justify-center rounded-full hover:bg-gray-100 data-[state=open]:bg-gray-100">
                                         <MoreHorizontal className="h-3 w-3 text-startsnap-oxford-blue" />
                                       </DropdownMenuTrigger>
-                                      <DropdownMenuContent align="end" className="min-w-[160px]">
+                                      <DropdownMenuContent align="end" className="min-w-[140px]">
                                         <DropdownMenuItem
                                           onClick={() => handleEditReply(reply)}
-                                          className="cursor-pointer flex items-center gap-2"
+                                          className="cursor-pointer flex items-center gap-2 text-sm"
                                         >
-                                          <span className="material-icons text-sm">edit</span>
+                                          <span className="material-icons text-xs">edit</span>
                                           Edit
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
                                           onClick={() => handleDeleteReply(reply.id)}
-                                          className="cursor-pointer text-red-600 flex items-center gap-2"
+                                          className="cursor-pointer text-red-600 flex items-center gap-2 text-sm"
                                         >
-                                          <span className="material-icons text-sm">delete</span>
+                                          <span className="material-icons text-xs">delete</span>
                                           Delete
                                         </DropdownMenuItem>
                                       </DropdownMenuContent>
@@ -1008,61 +1064,12 @@ export const ProjectDetail = (): JSX.Element => {
                                 </p>
                               </div>
                             </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Reply form */}
-                  {replyingToFeedbackId === feedback.id && currentUser && (
-                    <div className="ml-12 mt-3">
-                      <Card className="bg-startsnap-white rounded-lg overflow-hidden border-[2px] border-dashed border-gray-300 p-4">
-                        <div className="flex items-start gap-3">
-                          <div className="w-8 h-8 flex-shrink-0">
-                            <UserAvatar
-                              name={getAvatarName(currentUser, currentUserProfile?.username)}
-                              size={32}
-                              className="w-full h-full"
-                            />
                           </div>
-                          <div className="flex-1">
-                            <Textarea
-                              placeholder="Write your reply..."
-                              className="border-2 border-solid border-gray-300 rounded-lg p-2 min-h-[80px] font-['Roboto',Helvetica] text-startsnap-pale-sky text-sm mb-2 focus:border-startsnap-persian-blue"
-                              value={replyContent}
-                              onChange={(e) => {
-                                setReplyContent(e.target.value);
-                                setReplyError(null);
-                              }}
-                              disabled={replySubmitting}
-                            />
-                            {replyError && (
-                              <p className="text-red-500 text-xs mb-2">{replyError}</p>
-                            )}
-                            <div className="flex gap-2 justify-end">
-                              <Button
-                                variant="outline"
-                                onClick={handleCancelReply}
-                                className="text-sm py-1 px-3 h-auto"
-                                disabled={replySubmitting}
-                              >
-                                Cancel
-                              </Button>
-                              <Button
-                                onClick={editingReply ? handleUpdateReply : handleReplySubmit}
-                                className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-sm rounded-lg border-2 border-solid border-gray-800 shadow-[2px_2px_0px_#1f2937] py-1 px-3 h-auto"
-                                disabled={replySubmitting || !replyContent.trim()}
-                              >
-                                {replySubmitting ? 'Submitting...' : (editingReply ? 'Update Reply' : 'Reply')}
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      </Card>
-                    </div>
-                  )}
-                </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </React.Fragment>
               ))
             ) : (
               // Sample feedback entries
