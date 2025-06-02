@@ -89,6 +89,7 @@ export const HeaderSection = (): JSX.Element => {
   const handleSignOut = async () => {
     try {
       await supabase.auth.signOut();
+      console.log('Successfully signed out');
     } catch (error) {
       console.error('Error signing out:', error);
     }
