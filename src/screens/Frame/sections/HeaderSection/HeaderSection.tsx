@@ -84,17 +84,11 @@ export const HeaderSection = (): JSX.Element => {
   /**
    * @description Handles user sign out process
    * @async
-   * @sideEffects Signs out the current user via Supabase auth if a session exists
+   * @sideEffects Signs out the current user via Supabase auth
    */
   const handleSignOut = async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        await supabase.auth.signOut();
-        console.log('Successfully signed out');
-      } else {
-        console.log('No active session to sign out');
-      }
+      await supabase.auth.signOut();
     } catch (error) {
       console.error('Error signing out:', error);
     }
