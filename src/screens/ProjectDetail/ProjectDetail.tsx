@@ -657,7 +657,7 @@ export const ProjectDetail = (): JSX.Element => {
             <div className="flex gap-3 flex-wrap">
               {/* Project type badge */}
               {startsnap.type === "live" ? (
-                <Badge variant="outline" className="bg-startsnap-mountain-meadow text-white font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-green-700 px-3 py-1 flex items-center gap-1">
+                <Badge variant="outline\" className="bg-startsnap-mountain-meadow text-white font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-green-700 px-3 py-1 flex items-center gap-1">
                   <span className="material-icons text-sm">rocket_launch</span>
                   Live Project
                 </Badge>
