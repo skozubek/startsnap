@@ -255,16 +255,22 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
    * @param {FeedbackReply} reply - The reply to edit.
    */
   const handleEditReply = (reply: FeedbackReply) => {
+    setEditingFeedback(null); // Ensure main feedback edit is closed
     setEditingReply(reply);
-    setReplyingToFeedbackId(reply.parent_feedback_id); // Ensure reply box is open for this parent
+    setReplyingToFeedbackId(reply.parent_feedback_id); // Keep reply area open
     setReplyContent(reply.content);
+    setReplyError(null); // Clear any previous errors
   };
 
   /**
-   * @description Handles updating an existing feedback reply.
-   * @async
-   * @sideEffects Makes a Supabase update call, then calls onFeedbackChange.
+   * @description Cancels the current inline reply edit action.
    */
+  const handleCancelEditReply = () => {
+    setEditingReply(null);
+    setReplyContent(''); // Clear content for safety, new reply form will re-init if opened
+    setReplyError(null);
+  };
+
   const handleUpdateReply = async () => {
     if (!currentUser || !editingReply) return;
     if (!replyContent.trim()) {
@@ -282,11 +288,10 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
         })
         .eq('id', editingReply.id);
       if (error) throw error;
-      await onFeedbackChange();
-      setReplyContent('');
-      setEditingReply(null);
-      // Keep replyingToFeedbackId to show replies, or set to null to close form
-      // For now, let's keep it open.
+      await onFeedbackChange(); // This should re-fetch and re-render
+      // No need to setReplyContent('') here as onFeedbackChange will trigger re-render with fresh data
+      // No need to setReplyingToFeedbackId(null) to keep the section open
+      setEditingReply(null); // Crucial: exit inline edit mode
     } catch (error) {
       console.error('Error updating reply:', error);
       setReplyError('Failed to update reply. Please try again.');
@@ -365,7 +370,7 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                   </div>
                   <Textarea
                     placeholder="Edit your feedback..."
-                    className="border-2 border-solid border-gray-800 rounded-lg p-3.5 min-h-[100px] font-['Roboto',Helvetica] text-startsnap-pale-sky mb-3 w-full text-base"
+                    className="border-2 border-solid border-gray-800 rounded-lg p-3.5 min-h-[100px] font-['Roboto',Helvetica] text-startsnap-river-bed mb-3 w-full text-base"
                     value={inlineEditFeedbackContent}
                     onChange={(e) => setInlineEditFeedbackContent(e.target.value)}
                   />
@@ -382,7 +387,7 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                     </Button>
                     <Button
                       onClick={handleUpdateFeedback}
-                      className="startsnap-button bg-startsnap-persian-blue text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[2px_2px_0px_#1f2937] py-2 px-5 text-base"
+                      className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] py-2 px-5 text-base"
                       disabled={!inlineEditFeedbackContent.trim() || isSubmitting}
                     >
                       {isSubmitting ? 'Saving...' : 'Save Changes'}
@@ -470,7 +475,9 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
             {replyingToFeedbackId === feedback.id && !editingFeedback && (
               <div className="ml-8 lg:ml-12 my-4 relative">
                 <div className="absolute left-[-20px] top-0 bottom-0 w-0.5 bg-gray-300 lg:left-[-28px]"></div>
-                {currentUser && (
+
+                {/* Form for ADDING a NEW reply - only show if not editing an existing reply inline */}
+                {currentUser && !editingReply && (
                   <div className={`pb-3 mb-3 ${feedback.replies && feedback.replies.length > 0 ? 'border-b border-gray-200' : ''}`}>
                     <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
                       <div className="w-8 h-8 flex-shrink-0">
@@ -482,9 +489,9 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                       </div>
                       <div className="flex-1">
                         <Textarea
-                          placeholder={editingReply ? 'Edit your reply...' : 'Write your reply...'}
-                          className="border-2 border-solid border-gray-800 rounded-lg p-2 min-h-[80px] font-['Roboto',Helvetica] text-startsnap-pale-sky text-sm mb-2"
-                          value={replyContent}
+                          placeholder={'Write your reply...'} // Placeholder for new reply
+                          className="border-2 border-solid border-gray-800 rounded-lg p-2 min-h-[80px] font-['Roboto',Helvetica] text-startsnap-river-bed text-sm mb-2"
+                          value={replyContent} // This replyContent is for the NEW reply
                           onChange={(e) => {
                             setReplyContent(e.target.value);
                             setReplyError(null);
@@ -497,79 +504,129 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                         <div className="flex gap-2 justify-end">
                           <Button
                             variant="outline"
-                            onClick={handleCancelReply}
+                            onClick={handleCancelReply} // This closes the entire reply section
                             className="startsnap-button bg-gray-200 text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold text-sm rounded-lg border-2 border-solid border-gray-800 shadow-[2px_2px_0px_#1f2937] py-1 px-3 h-auto"
                             disabled={replySubmitting}
                           >
                             Cancel
                           </Button>
                           <Button
-                            onClick={editingReply ? handleUpdateReply : handleReplySubmit}
+                            onClick={handleReplySubmit} // Submits a NEW reply
                             className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-sm rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] py-1 px-3 h-auto"
                             disabled={replySubmitting || !replyContent.trim()}
                           >
-                            {replySubmitting ? (editingReply ? 'Updating...' : 'Replying...') : (editingReply ? 'Update Reply' : 'Reply')}
+                            {replySubmitting ? 'Replying...' : 'Reply'}
                           </Button>
                         </div>
                       </div>
                     </div>
                   </div>
                 )}
+
+                {/* List of existing replies */}
                 {feedback.replies && feedback.replies.length > 0 && (
-                  <div className="space-y-3">
+                  <div className={`space-y-3 ${currentUser && !editingReply ? '' : 'pt-3'}`}> {/* Add padding-top if new reply form is hidden */}
                     {feedback.replies.map((reply, replyIndex) => (
-                      <div
-                        key={reply.id}
-                        className={`pt-3 ${replyIndex > 0 ? 'mt-3 border-t border-gray-200' : ''}`}
-                      >
-                        <div className="flex items-start">
-                          <div className="w-8 h-8 flex-shrink-0">
-                            <UserAvatar
-                              name={getAvatarName(null, reply.profile?.username || 'Anonymous')}
-                              size={32}
-                              className="w-full h-full"
-                            />
-                          </div>
-                          <div className="ml-3 flex-1">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center">
-                                <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-sm leading-5">
-                                  {reply.profile?.username || 'Anonymous'}
-                                </p>
-                                <p className="ml-2 font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4">
-                                  {formatDetailedDate(reply.created_at)}
-                                </p>
-                              </div>
-                              {currentUser && currentUser.id === reply.user_id && (
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger className="h-6 w-6 flex items-center justify-center rounded-full hover:bg-gray-100 data-[state=open]:bg-gray-100">
-                                    <MoreHorizontal className="h-3 w-3 text-startsnap-oxford-blue" />
-                                  </DropdownMenuTrigger>
-                                  <DropdownMenuContent align="end" className="min-w-[140px]">
-                                    <DropdownMenuItem
-                                      onClick={() => handleEditReply(reply)}
-                                      className="cursor-pointer flex items-center gap-2 text-sm"
-                                    >
-                                      <span className="material-icons text-xs">edit</span>
-                                      Edit
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                      onClick={() => handleDeleteReply(reply.id)}
-                                      className="cursor-pointer text-red-600 flex items-center gap-2 text-sm"
-                                    >
-                                      <span className="material-icons text-xs">delete</span>
-                                      Delete
-                                    </DropdownMenuItem>
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
-                              )}
+                      // Check if THIS reply is being edited inline
+                      editingReply && editingReply.id === reply.id ? (
+                        <div key={reply.id} className={` ${replyIndex > 0 ? 'mt-3 border-t border-gray-200' : ''} pt-3`}>
+                          <div className="flex items-start gap-3 p-3 bg-gray-100 rounded-lg border-2 border-gray-800"> {/* Edit form styling */}
+                            <div className="w-8 h-8 flex-shrink-0">
+                              <UserAvatar
+                                name={getAvatarName(null, reply.profile?.username || 'Anonymous')}
+                                size={32}
+                                className="w-full h-full"
+                              />
                             </div>
-                            <p className="font-['Roboto',Helvetica] font-normal text-startsnap-river-bed text-sm leading-5 mt-1">
-                              {reply.content}
-                            </p>
+                            <div className="ml-3 flex-1"> {/* Ensure ml-3 if avatar is present */}
+                              <Textarea
+                                placeholder="Edit your reply..."
+                                className="border-2 border-solid border-gray-800 rounded-lg p-2 min-h-[80px] font-['Roboto',Helvetica] text-startsnap-river-bed text-sm mb-2"
+                                value={replyContent} // Bound to the content of the reply being edited
+                                onChange={(e) => {
+                                  setReplyContent(e.target.value);
+                                  setReplyError(null); // Clear error specific to this form
+                                }}
+                                disabled={replySubmitting}
+                              />
+                              {replyError && ( // Show specific reply error if any
+                                <p className="text-red-500 text-xs mb-2">{replyError}</p>
+                              )}
+                              <div className="flex gap-2 justify-end mt-2">
+                                <Button
+                                  variant="outline"
+                                  onClick={handleCancelEditReply} // Cancel for INLINE EDIT
+                                  className="startsnap-button bg-gray-200 text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold text-sm rounded-lg border-2 border-solid border-gray-800 shadow-[2px_2px_0px_#1f2937] py-1 px-3 h-auto"
+                                  disabled={replySubmitting}
+                                >
+                                  Cancel
+                                </Button>
+                                <Button
+                                  onClick={handleUpdateReply} // Update for INLINE EDIT
+                                  className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-sm rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] py-1 px-3 h-auto"
+                                  disabled={replySubmitting || !replyContent.trim()}
+                                >
+                                  {replySubmitting ? 'Updating...' : 'Update Reply'}
+                                </Button>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      ) : (
+                        // Normal display of the reply
+                        <div
+                          key={reply.id}
+                          className={`pt-3 ${replyIndex > 0 ? 'mt-3 border-t border-gray-200' : '' }`}
+                        >
+                          <div className="flex items-start">
+                            <div className="w-8 h-8 flex-shrink-0">
+                              <UserAvatar
+                                name={getAvatarName(null, reply.profile?.username || 'Anonymous')}
+                                size={32}
+                                className="w-full h-full"
+                              />
+                            </div>
+                            <div className="ml-3 flex-1">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center">
+                                  <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-sm leading-5">
+                                    {reply.profile?.username || 'Anonymous'}
+                                  </p>
+                                  <p className="ml-2 font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4">
+                                    {formatDetailedDate(reply.created_at)}
+                                  </p>
+                                </div>
+                                {currentUser && currentUser.id === reply.user_id && (
+                                  <DropdownMenu>
+                                    <DropdownMenuTrigger className="h-6 w-6 flex items-center justify-center rounded-full hover:bg-gray-100 data-[state=open]:bg-gray-100">
+                                      <MoreHorizontal className="h-3 w-3 text-startsnap-oxford-blue" />
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end" className="min-w-[140px]">
+                                      <DropdownMenuItem
+                                        onClick={() => handleEditReply(reply)} // THIS CALLS THE MODIFIED HANDLER
+                                        className="cursor-pointer flex items-center gap-2 text-sm"
+                                      >
+                                        <span className="material-icons text-xs">edit</span>
+                                        Edit
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem
+                                        onClick={() => handleDeleteReply(reply.id)}
+                                        className="cursor-pointer text-red-600 flex items-center gap-2 text-sm"
+                                      >
+                                        <span className="material-icons text-xs">delete</span>
+                                        Delete
+                                      </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
+                                )}
+                              </div>
+                              <p className="font-['Roboto',Helvetica] font-normal text-startsnap-river-bed text-sm leading-5 mt-1">
+                                {reply.content}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )
                     ))}
                   </div>
                 )}
@@ -600,7 +657,7 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
           <div className="flex-1">
             <Textarea
               placeholder={currentUser ? 'Share your thoughts, suggestions, or bug reports...' : 'Please log in to leave feedback'}
-              className="border-2 border-solid border-gray-800 rounded-lg p-3.5 min-h-[120px] font-['Roboto',Helvetica] text-startsnap-pale-sky mb-2 text-base"
+              className="border-2 border-solid border-gray-800 rounded-lg p-3.5 min-h-[120px] font-['Roboto',Helvetica] text-startsnap-river-bed mb-2 text-base"
               value={feedbackContent}
               onChange={(e) => {
                 setFeedbackContent(e.target.value);
