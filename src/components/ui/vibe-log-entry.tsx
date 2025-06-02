@@ -51,7 +51,7 @@ export const VibeLogEntry = ({
         </Label>
         {showAllTypes ? (
           <Select value={type} onValueChange={onTypeChange}>
-            <SelectTrigger className="w-full border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica]">
+            <SelectTrigger className="w-full border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-base">
               <SelectValue placeholder="Select entry type" />
             </SelectTrigger>
             <SelectContent>
@@ -90,7 +90,7 @@ export const VibeLogEntry = ({
           value={title}
           onChange={(e) => onTitleChange(e.target.value)}
           placeholder="Give your entry a title"
-          className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
+          className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky text-base"
         />
       </div>
 
@@ -102,7 +102,7 @@ export const VibeLogEntry = ({
           value={content}
           onChange={(e) => onContentChange(e.target.value)}
           placeholder={placeholderText}
-          className="border-2 border-solid border-gray-800 rounded-lg p-3.5 min-h-[120px] font-['Roboto',Helvetica] text-startsnap-pale-sky"
+          className="border-2 border-solid border-gray-800 rounded-lg p-3.5 min-h-[120px] font-['Roboto',Helvetica] text-startsnap-pale-sky text-base"
         />
       </div>
     </div>
