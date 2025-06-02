@@ -15,6 +15,7 @@ import { formatDetailedDate } from "../../lib/utils";
 import { useAuth } from "../../context/AuthContext";
 import { UserAvatar, getAvatarName } from "../../components/ui/user-avatar";
 import { AddVibeLogModal } from "../../components/ui/add-vibe-log-modal";
+import { FeedbackModal } from "../../components/ui/FeedbackModal";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +23,20 @@ import {
   DropdownMenuTrigger
 } from "../../components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
+
+/**
+ * @description Interface for feedback entry data
+ */
+interface FeedbackEntry {
+  id: string;
+  user_id: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
+  profile?: {
+    username: string;
+  };
+}
 
 /**
  * @description Page component that displays detailed project information
@@ -33,11 +48,14 @@ export const ProjectDetail = (): JSX.Element => {
   const [startsnap, setStartsnap] = useState<any>(null);
   const [creator, setCreator] = useState<any>(null);
   const [vibeLogEntries, setVibeLogEntries] = useState<any[]>([]);
-  const [feedbackEntries, setFeedbackEntries] = useState<any[]>([]);
+  const [feedbackEntries, setFeedbackEntries] = useState<FeedbackEntry[]>([]);
   const [feedbackContent, setFeedbackContent] = useState("");
   const { user: currentUser } = useAuth();
   const [isVibeLogModalOpen, setIsVibeLogModalOpen] = useState(false);
   const [editingVibeLog, setEditingVibeLog] = useState<any>(null);
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
+  const [editingFeedback, setEditingFeedback] = useState<FeedbackEntry | null>(null);
+  const [feedbackContentForModal, setFeedbackContentForModal] = useState("");
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -48,7 +66,7 @@ export const ProjectDetail = (): JSX.Element => {
   }, [id]);
 
   /**
-   * @description Fetches project data, creator profile, and vibe logs from Supabase
+   * @description Fetches project data, creator profile, vibe logs, and feedback from Supabase
    * @async
    * @sideEffects Updates state with fetched project data and related information
    */
@@ -91,24 +109,8 @@ export const ProjectDetail = (): JSX.Element => {
 
       setVibeLogEntries(vibeLogsData || []);
 
-      // For now, use mock feedback entries
-      // In a real implementation, you would fetch feedback from a separate table
-      setFeedbackEntries([
-        {
-          username: "AudioGeek_77",
-          avatarSrc: "/user-avatar.png",
-          date: "July 22, 2024 - 11:15 AM",
-          content:
-            "Love the concept! The main oscillator section is a bit crowded. Maybe group the waveform selectors differently? The filter sounds amazing though!",
-        },
-        {
-          username: "UX_Wizard",
-          avatarSrc: "/user-avatar-1.png",
-          date: "July 22, 2024 - 1:05 PM",
-          content:
-            "Great start! Consider adding tooltips for less common parameters. The color scheme is cool and retro. One minor bug: the LFO rate knob sometimes jumps values.",
-        },
-      ]);
+      // Fetch feedback with profiles for usernames
+      fetchFeedbacks();
 
     } catch (error) {
       console.error('Error fetching project data:', error);
@@ -118,27 +120,144 @@ export const ProjectDetail = (): JSX.Element => {
   };
 
   /**
-   * @description Handles feedback submission
-   * @sideEffects Shows alert for now (placeholder for actual submission)
+   * @description Fetches feedback entries for the current startsnap with profile usernames
+   * @async
+   * @sideEffects Updates state with fetched feedback entries
    */
-  const handleSubmitFeedback = () => {
-    if (!feedbackContent.trim()) {
-      alert('Please enter some feedback');
-      return;
-    }
+  const fetchFeedbacks = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('feedbacks')
+        .select(`
+          *,
+          profile:profiles(username)
+        `)
+        .eq('startsnap_id', id)
+        .order('created_at', { ascending: true });
 
-    if (!currentUser) {
-      alert('You need to be logged in to submit feedback');
-      return;
-    }
+      if (error) throw error;
 
-    // In a real implementation, you would save the feedback to the database
-    alert('Feedback submission functionality will be implemented soon!');
-    setFeedbackContent('');
+      setFeedbackEntries(data || []);
+    } catch (error) {
+      console.error('Error fetching feedback:', error);
+    }
   };
 
   /**
-   * @description Handles submission of new Vibe Log entries
+   * @description Opens the feedback modal for adding a new feedback
+   * @sideEffects Sets state to open feedback modal in add mode
+   */
+  const handleOpenFeedbackModal = () => {
+    setEditingFeedback(null);
+    setFeedbackContentForModal("");
+    setIsFeedbackModalOpen(true);
+  };
+
+  /**
+   * @description Opens the feedback modal for editing an existing feedback
+   * @param {FeedbackEntry} feedback - The feedback entry to edit
+   * @sideEffects Sets state to open feedback modal in edit mode with existing content
+   */
+  const handleEditFeedback = (feedback: FeedbackEntry) => {
+    setEditingFeedback(feedback);
+    setFeedbackContentForModal(feedback.content);
+    setIsFeedbackModalOpen(true);
+  };
+
+  /**
+   * @description Handles submission of a new feedback
+   * @async
+   * @param {Object} data - Form data containing feedback content
+   * @param {string} data.content - The feedback content
+   * @sideEffects Inserts new feedback entry into Supabase and refreshes the list
+   */
+  const handleFeedbackSubmit = async (data: { content: string }) => {
+    if (!currentUser) {
+      alert('You need to be logged in to submit feedback.');
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('feedbacks')
+        .insert({
+          startsnap_id: id,
+          user_id: currentUser.id,
+          content: data.content
+        });
+
+      if (error) throw error;
+
+      // Refresh feedbacks list
+      await fetchFeedbacks();
+      setIsFeedbackModalOpen(false);
+      setFeedbackContent("");
+    } catch (error) {
+      console.error('Error submitting feedback:', error);
+      alert('Failed to submit feedback. Please try again.');
+    }
+  };
+
+  /**
+   * @description Handles updating an existing feedback
+   * @async
+   * @param {Object} data - Form data containing updated feedback content
+   * @param {string} data.content - The updated feedback content
+   * @sideEffects Updates feedback entry in Supabase and refreshes the list
+   */
+  const handleUpdateFeedback = async (data: { content: string }) => {
+    if (!editingFeedback || !currentUser) return;
+
+    try {
+      const { error } = await supabase
+        .from('feedbacks')
+        .update({
+          content: data.content,
+          updated_at: new Date()
+        })
+        .eq('id', editingFeedback.id);
+
+      if (error) throw error;
+
+      // Refresh feedbacks
+      await fetchFeedbacks();
+      setIsFeedbackModalOpen(false);
+      setEditingFeedback(null);
+    } catch (error) {
+      console.error('Error updating feedback:', error);
+      alert('Failed to update feedback. Please try again.');
+    }
+  };
+
+  /**
+   * @description Handles deletion of a feedback entry
+   * @async
+   * @param {string} feedbackId - ID of the feedback entry to delete
+   * @sideEffects Deletes feedback entry from Supabase and refreshes the list
+   */
+  const handleDeleteFeedback = async (feedbackId: string) => {
+    if (!window.confirm('Are you sure you want to delete this feedback? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('feedbacks')
+        .delete()
+        .eq('id', feedbackId);
+
+      if (error) throw error;
+
+      // Refresh feedbacks
+      await fetchFeedbacks();
+    } catch (error) {
+      console.error('Error deleting feedback:', error);
+      alert('Failed to delete feedback. Please try again.');
+    }
+  };
+
+  /**
+   * @description Handles submission of a new Vibe Log entry
    * @async
    * @param {Object} data - Form data containing log_type, title, and content
    * @sideEffects Inserts new Vibe Log entry into Supabase and updates UI
@@ -241,6 +360,15 @@ export const ProjectDetail = (): JSX.Element => {
   const handleCloseVibeLogModal = () => {
     setIsVibeLogModalOpen(false);
     setEditingVibeLog(null);
+  };
+
+  /**
+   * @description Handles closing the feedback modal
+   * @sideEffects Resets feedback modal state and editing state
+   */
+  const handleCloseFeedbackModal = () => {
+    setIsFeedbackModalOpen(false);
+    setEditingFeedback(null);
   };
 
   if (loading) {
@@ -420,10 +548,14 @@ export const ProjectDetail = (): JSX.Element => {
                     <span className="material-icons text-xl">thumb_up</span>
                     Support Project
                   </Button>
-                  <Button className="startsnap-button bg-startsnap-mountain-meadow text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-2">
+                  <Button 
+                    className="startsnap-button bg-startsnap-mountain-meadow text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-2"
+                    onClick={handleOpenFeedbackModal}
+                    disabled={!currentUser}
+                  >
                     <span className="material-icons text-xl">forum</span>
                     Give Feedback
-                </Button>
+                  </Button>
                 </>
               )}
             </div>
@@ -512,37 +644,125 @@ export const ProjectDetail = (): JSX.Element => {
               </span>
             </div>
 
-            {feedbackEntries.map((feedback: any, index: number) => (
-              <Card
-                key={index}
-                className="mb-6 shadow-[0px_2px_4px_-2px_#0000001a,0px_4px_6px_-1px_#0000001a] bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800"
-              >
-                <CardContent className="p-5">
-                  <div className="flex items-start">
-                    <div className="w-10 h-10">
-                      <UserAvatar
-                        name={feedback.username}
-                        size={40}
-                        className="w-full h-full"
-                      />
-                    </div>
-                    <div className="ml-4">
-                      <div className="flex items-center">
-                        <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-base leading-6">
-                          {feedback.username}
-                        </p>
-                        <p className="ml-3 font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4">
-                          {feedback.date}
+            {feedbackEntries.length > 0 ? (
+              feedbackEntries.map((feedback) => (
+                <Card
+                  key={feedback.id}
+                  className="mb-6 shadow-[0px_2px_4px_-2px_#0000001a,0px_4px_6px_-1px_#0000001a] bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800"
+                >
+                  <CardContent className="p-5">
+                    <div className="flex items-start">
+                      <div className="w-10 h-10">
+                        <UserAvatar
+                          name={getAvatarName(null, feedback.profile?.username || 'Anonymous')}
+                          size={40}
+                          className="w-full h-full"
+                        />
+                      </div>
+                      <div className="ml-4 flex-1">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center">
+                            <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-base leading-6">
+                              {feedback.profile?.username || 'Anonymous'}
+                            </p>
+                            <p className="ml-3 font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4">
+                              {formatDetailedDate(feedback.created_at)}
+                            </p>
+                          </div>
+                          
+                          {currentUser && currentUser.id === feedback.user_id && (
+                            <DropdownMenu>
+                              <DropdownMenuTrigger className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-gray-100">
+                                <MoreHorizontal className="h-4 w-4 text-startsnap-oxford-blue" />
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="min-w-[160px]">
+                                <DropdownMenuItem
+                                  onClick={() => handleEditFeedback(feedback)}
+                                  className="cursor-pointer flex items-center gap-2"
+                                >
+                                  <span className="material-icons text-sm">edit</span>
+                                  Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => handleDeleteFeedback(feedback.id)}
+                                  className="cursor-pointer text-red-600 flex items-center gap-2"
+                                >
+                                  <span className="material-icons text-sm">delete</span>
+                                  Delete
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          )}
+                        </div>
+                        <p className="font-['Roboto',Helvetica] font-normal text-startsnap-river-bed text-base leading-6 mt-1">
+                          {feedback.content}
                         </p>
                       </div>
-                      <p className="font-['Roboto',Helvetica] font-normal text-startsnap-river-bed text-base leading-6 mt-1">
-                        {feedback.content}
-                      </p>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              // Keep the sample feedback entries for reference and add real entries above
+              <>
+                <Card
+                  className="mb-6 shadow-[0px_2px_4px_-2px_#0000001a,0px_4px_6px_-1px_#0000001a] bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800"
+                >
+                  <CardContent className="p-5">
+                    <div className="flex items-start">
+                      <div className="w-10 h-10">
+                        <UserAvatar
+                          name="AudioGeek_77"
+                          size={40}
+                          className="w-full h-full"
+                        />
+                      </div>
+                      <div className="ml-4">
+                        <div className="flex items-center">
+                          <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-base leading-6">
+                            AudioGeek_77
+                          </p>
+                          <p className="ml-3 font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4">
+                            July 22, 2024 - 11:15 AM
+                          </p>
+                        </div>
+                        <p className="font-['Roboto',Helvetica] font-normal text-startsnap-river-bed text-base leading-6 mt-1">
+                          Love the concept! The main oscillator section is a bit crowded. Maybe group the waveform selectors differently? The filter sounds amazing though!
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card
+                  className="mb-6 shadow-[0px_2px_4px_-2px_#0000001a,0px_4px_6px_-1px_#0000001a] bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800"
+                >
+                  <CardContent className="p-5">
+                    <div className="flex items-start">
+                      <div className="w-10 h-10">
+                        <UserAvatar
+                          name="UX_Wizard"
+                          size={40}
+                          className="w-full h-full"
+                        />
+                      </div>
+                      <div className="ml-4">
+                        <div className="flex items-center">
+                          <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-base leading-6">
+                            UX_Wizard
+                          </p>
+                          <p className="ml-3 font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4">
+                            July 22, 2024 - 1:05 PM
+                          </p>
+                        </div>
+                        <p className="font-['Roboto',Helvetica] font-normal text-startsnap-river-bed text-base leading-6 mt-1">
+                          Great start! Consider adding tooltips for less common parameters. The color scheme is cool and retro. One minor bug: the LFO rate knob sometimes jumps values.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </>
+            )}
 
             <div className="mt-8">
               <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7 mb-4">
@@ -556,7 +776,19 @@ export const ProjectDetail = (): JSX.Element => {
               />
               <Button
                 className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
-                onClick={handleSubmitFeedback}
+                onClick={() => {
+                  if (!currentUser) {
+                    alert('You need to be logged in to submit feedback');
+                    return;
+                  }
+                  
+                  if (!feedbackContent.trim()) {
+                    alert('Please enter some feedback');
+                    return;
+                  }
+                  
+                  handleFeedbackSubmit({ content: feedbackContent });
+                }}
                 disabled={!currentUser}
               >
                 {currentUser ? 'Submit Feedback' : 'Login to Submit Feedback'}
@@ -565,12 +797,22 @@ export const ProjectDetail = (): JSX.Element => {
           </div>
         </CardContent>
       </Card>
+      
+      {/* Modals */}
       <AddVibeLogModal
-        isOpen={isVibeLogModalOpen || !!editingVibeLog}
+        isOpen={isVibeLogModalOpen}
         onClose={handleCloseVibeLogModal}
         onSubmit={editingVibeLog ? handleUpdateVibeLog : handleVibeLogSubmit}
         isEditMode={!!editingVibeLog}
         initialData={editingVibeLog}
+      />
+
+      <FeedbackModal
+        isOpen={isFeedbackModalOpen}
+        onClose={handleCloseFeedbackModal}
+        onSubmit={editingFeedback ? handleUpdateFeedback : handleFeedbackSubmit}
+        isEditMode={!!editingFeedback}
+        initialContent={feedbackContentForModal}
       />
     </div>
   );
