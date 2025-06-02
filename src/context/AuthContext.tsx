@@ -35,29 +35,27 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event: AuthChangeEvent, session) => {
         try {
-          // Clear auth state for session errors, sign out, or no initial session
-          if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED' || (event === 'INITIAL_SESSION' && !session)) {
+          if (event === 'SIGNED_OUT') {
             setUser(null);
             setSession(null);
-            if (event !== 'SIGNED_OUT') {
-              await supabase.auth.signOut(); // Clear any stale tokens
-            }
-          } else {
+          } else if (event === 'INITIAL_SESSION') {
             setUser(session?.user || null);
             setSession(session);
+          } else if (session) {
+            setUser(session.user);
+            setSession(session);
+          } else {
+            setUser(null);
+            setSession(null);
           }
         } catch (error) {
           console.error('Auth state change error:', error);
-          // On any auth error, clear state and force re-login
+          // Just clear the local state on error
           setUser(null);
           setSession(null);
-          try {
-            await supabase.auth.signOut();
-          } catch (signOutError) {
-            console.error('Error during forced sign out:', signOutError);
-          }
+        } finally {
+          setLoading(false);
         }
-        setLoading(false);
       }
     );
 
