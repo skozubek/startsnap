@@ -33,14 +33,23 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   useEffect(() => {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event: AuthChangeEvent, session) => {
-        // Simply update the state when no session exists
-        if (event === 'INITIAL_SESSION' && !session) {
+      async (event: AuthChangeEvent, currentSession) => {
+        try {
+          // If session error occurs, force clear auth state
+          if (event === 'SIGNED_OUT' || (event === 'INITIAL_SESSION' && !currentSession)) {
+            setUser(null);
+            setSession(null);
+            await supabase.auth.signOut(); // Clear any stale tokens
+          } else {
+            setUser(currentSession?.user || null);
+            setSession(currentSession);
+          }
+        } catch (error) {
+          console.error('Auth state change error:', error);
+          // On any auth error, clear state and force re-login
           setUser(null);
           setSession(null);
-        } else {
-          setUser(session?.user || null);
-          setSession(session);
+          await supabase.auth.signOut();
         }
         setLoading(false);
       }
