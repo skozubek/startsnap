@@ -25,6 +25,21 @@ import {
 import { MoreHorizontal } from "lucide-react";
 
 /**
+ * @description Interface for feedback reply data
+ */
+interface FeedbackReply {
+  id: string;
+  parent_feedback_id: string;
+  user_id: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
+  profile?: {
+    username: string;
+  };
+}
+
+/**
  * @description Interface for feedback entry data
  */
 interface FeedbackEntry {
@@ -36,6 +51,7 @@ interface FeedbackEntry {
   profile?: {
     username: string;
   };
+  replies?: FeedbackReply[];
 }
 
 /**
@@ -59,6 +75,13 @@ export const ProjectDetail = (): JSX.Element => {
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [editingFeedback, setEditingFeedback] = useState<FeedbackEntry | null>(null);
   const [feedbackContentForModal, setFeedbackContentForModal] = useState("");
+  
+  // New state for reply functionality
+  const [replyingToFeedbackId, setReplyingToFeedbackId] = useState<string | null>(null);
+  const [replyContent, setReplyContent] = useState("");
+  const [editingReply, setEditingReply] = useState<FeedbackReply | null>(null);
+  const [replySubmitting, setReplySubmitting] = useState(false);
+  const [replyError, setReplyError] = useState<string | null>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -151,9 +174,9 @@ export const ProjectDetail = (): JSX.Element => {
   };
 
   /**
-   * @description Fetches feedback entries for the current startsnap with profile usernames
+   * @description Fetches feedback entries for the current startsnap with profile usernames and replies
    * @async
-   * @sideEffects Updates state with fetched feedback entries
+   * @sideEffects Updates state with fetched feedback entries and their replies
    */
   const fetchFeedbacks = async () => {
     try {
@@ -166,24 +189,58 @@ export const ProjectDetail = (): JSX.Element => {
 
       if (feedbackError) throw feedbackError;
 
-      // For each feedback, get the username from profiles
+      // For each feedback, get the username from profiles and its replies
       if (feedbackData && feedbackData.length > 0) {
-        const feedbacksWithProfiles = await Promise.all(
+        const feedbacksWithProfilesAndReplies = await Promise.all(
           feedbackData.map(async (feedback) => {
+            // Get profile for the feedback author
             const { data: profileData } = await supabase
               .from('profiles')
               .select('username')
               .eq('user_id', feedback.user_id)
               .single();
 
+            // Get replies for this feedback
+            const { data: repliesData, error: repliesError } = await supabase
+              .from('feedback_replies')
+              .select('*')
+              .eq('parent_feedback_id', feedback.id)
+              .order('created_at', { ascending: true });
+
+            if (repliesError) {
+              console.error('Error fetching replies:', repliesError);
+              return {
+                ...feedback,
+                profile: profileData || { username: 'Anonymous' },
+                replies: []
+              };
+            }
+
+            // For each reply, get the username from profiles
+            const repliesWithProfiles = await Promise.all(
+              (repliesData || []).map(async (reply) => {
+                const { data: replyProfileData } = await supabase
+                  .from('profiles')
+                  .select('username')
+                  .eq('user_id', reply.user_id)
+                  .single();
+
+                return {
+                  ...reply,
+                  profile: replyProfileData || { username: 'Anonymous' }
+                };
+              })
+            );
+
             return {
               ...feedback,
-              profile: profileData || { username: 'Anonymous' }
+              profile: profileData || { username: 'Anonymous' },
+              replies: repliesWithProfiles || []
             };
           })
         );
 
-        setFeedbackEntries(feedbacksWithProfiles);
+        setFeedbackEntries(feedbacksWithProfilesAndReplies);
       } else {
         setFeedbackEntries([]);
       }
@@ -303,6 +360,140 @@ export const ProjectDetail = (): JSX.Element => {
       console.error('Error deleting feedback:', error);
       alert('Failed to delete feedback. Please try again.');
     }
+  };
+
+  /**
+   * @description Handles submission of a reply to a feedback
+   * @async
+   * @param {string} parentFeedbackId - ID of the parent feedback being replied to
+   * @sideEffects Inserts new reply into Supabase and refreshes the feedback list
+   */
+  const handleReplySubmit = async () => {
+    if (!currentUser || !replyingToFeedbackId) {
+      setReplyError('You need to be logged in to reply.');
+      return;
+    }
+
+    if (!replyContent.trim()) {
+      setReplyError('Please enter a reply.');
+      return;
+    }
+
+    setReplySubmitting(true);
+    setReplyError(null);
+
+    try {
+      const { error } = await supabase
+        .from('feedback_replies')
+        .insert({
+          parent_feedback_id: replyingToFeedbackId,
+          user_id: currentUser.id,
+          content: replyContent
+        });
+
+      if (error) throw error;
+
+      // Refresh feedbacks to include the new reply
+      await fetchFeedbacks();
+      setReplyContent('');
+      setReplyingToFeedbackId(null);
+    } catch (error) {
+      console.error('Error submitting reply:', error);
+      setReplyError('Failed to submit reply. Please try again.');
+    } finally {
+      setReplySubmitting(false);
+    }
+  };
+
+  /**
+   * @description Sets up editing for a reply
+   * @param {FeedbackReply} reply - The reply to edit
+   * @sideEffects Updates state to edit the selected reply
+   */
+  const handleEditReply = (reply: FeedbackReply) => {
+    setEditingReply(reply);
+    setReplyingToFeedbackId(reply.parent_feedback_id);
+    setReplyContent(reply.content);
+  };
+
+  /**
+   * @description Updates an existing reply
+   * @async
+   * @sideEffects Updates the reply in Supabase and refreshes the feedback list
+   */
+  const handleUpdateReply = async () => {
+    if (!currentUser || !editingReply) {
+      return;
+    }
+
+    if (!replyContent.trim()) {
+      setReplyError('Please enter a reply.');
+      return;
+    }
+
+    setReplySubmitting(true);
+    setReplyError(null);
+
+    try {
+      const { error } = await supabase
+        .from('feedback_replies')
+        .update({
+          content: replyContent,
+          updated_at: new Date()
+        })
+        .eq('id', editingReply.id);
+
+      if (error) throw error;
+
+      // Refresh feedbacks
+      await fetchFeedbacks();
+      setReplyContent('');
+      setReplyingToFeedbackId(null);
+      setEditingReply(null);
+    } catch (error) {
+      console.error('Error updating reply:', error);
+      setReplyError('Failed to update reply. Please try again.');
+    } finally {
+      setReplySubmitting(false);
+    }
+  };
+
+  /**
+   * @description Handles deletion of a reply
+   * @async
+   * @param {string} replyId - ID of the reply to delete
+   * @sideEffects Deletes the reply from Supabase and refreshes the feedback list
+   */
+  const handleDeleteReply = async (replyId: string) => {
+    if (!window.confirm('Are you sure you want to delete this reply? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('feedback_replies')
+        .delete()
+        .eq('id', replyId);
+
+      if (error) throw error;
+
+      // Refresh feedbacks
+      await fetchFeedbacks();
+    } catch (error) {
+      console.error('Error deleting reply:', error);
+      alert('Failed to delete reply. Please try again.');
+    }
+  };
+
+  /**
+   * @description Cancels the current reply action
+   * @sideEffects Resets reply state variables
+   */
+  const handleCancelReply = () => {
+    setReplyingToFeedbackId(null);
+    setReplyContent('');
+    setEditingReply(null);
+    setReplyError(null);
   };
 
   /**
@@ -687,64 +878,194 @@ export const ProjectDetail = (): JSX.Element => {
 
             {feedbackEntries.length > 0 ? (
               feedbackEntries.map((feedback) => (
-                <Card
-                  key={feedback.id}
-                  className="mb-6 shadow-[0px_2px_4px_-2px_#0000001a,0px_4px_6px_-1px_#0000001a] bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800"
-                >
-                  <CardContent className="p-5">
-                    <div className="flex items-start">
-                      <div className="w-10 h-10">
-                        <UserAvatar
-                          name={getAvatarName(null, feedback.profile?.username || 'Anonymous')}
-                          size={40}
-                          className="w-full h-full"
-                        />
-                      </div>
-                      <div className="ml-4 flex-1">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center">
-                            <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-base leading-6">
-                              {feedback.profile?.username || 'Anonymous'}
-                            </p>
-                            <p className="ml-3 font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4">
-                              {formatDetailedDate(feedback.created_at)}
-                            </p>
-                          </div>
+                <div key={feedback.id} className="mb-6">
+                  <Card
+                    className="shadow-[0px_2px_4px_-2px_#0000001a,0px_4px_6px_-1px_#0000001a] bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800"
+                  >
+                    <CardContent className="p-5">
+                      <div className="flex items-start">
+                        <div className="w-10 h-10">
+                          <UserAvatar
+                            name={getAvatarName(null, feedback.profile?.username || 'Anonymous')}
+                            size={40}
+                            className="w-full h-full"
+                          />
+                        </div>
+                        <div className="ml-4 flex-1">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center">
+                              <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-base leading-6">
+                                {feedback.profile?.username || 'Anonymous'}
+                              </p>
+                              <p className="ml-3 font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4">
+                                {formatDetailedDate(feedback.created_at)}
+                              </p>
+                            </div>
 
-                          {currentUser && currentUser.id === feedback.user_id && (
-                            <DropdownMenu>
-                              <DropdownMenuTrigger className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-gray-100">
-                                <MoreHorizontal className="h-4 w-4 text-startsnap-oxford-blue" />
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="min-w-[160px]">
-                                <DropdownMenuItem
-                                  onClick={() => handleEditFeedback(feedback)}
-                                  className="cursor-pointer flex items-center gap-2"
-                                >
-                                  <span className="material-icons text-sm">edit</span>
-                                  Edit
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={() => handleDeleteFeedback(feedback.id)}
-                                  className="cursor-pointer text-red-600 flex items-center gap-2"
-                                >
-                                  <span className="material-icons text-sm">delete</span>
-                                  Delete
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
+                            {currentUser && currentUser.id === feedback.user_id && (
+                              <DropdownMenu>
+                                <DropdownMenuTrigger className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-gray-100">
+                                  <MoreHorizontal className="h-4 w-4 text-startsnap-oxford-blue" />
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="min-w-[160px]">
+                                  <DropdownMenuItem
+                                    onClick={() => handleEditFeedback(feedback)}
+                                    className="cursor-pointer flex items-center gap-2"
+                                  >
+                                    <span className="material-icons text-sm">edit</span>
+                                    Edit
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={() => handleDeleteFeedback(feedback.id)}
+                                    className="cursor-pointer text-red-600 flex items-center gap-2"
+                                  >
+                                    <span className="material-icons text-sm">delete</span>
+                                    Delete
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            )}
+                          </div>
+                          <p className="font-['Roboto',Helvetica] font-normal text-startsnap-river-bed text-base leading-6 mt-1">
+                            {feedback.content}
+                          </p>
+                          
+                          {/* Reply button */}
+                          {currentUser && (
+                            <div className="mt-2">
+                              <button
+                                onClick={() => {
+                                  setReplyingToFeedbackId(feedback.id);
+                                  setReplyContent('');
+                                  setEditingReply(null);
+                                }}
+                                className="text-startsnap-persian-blue text-sm font-['Roboto',Helvetica] flex items-center hover:text-startsnap-french-rose transition-colors"
+                              >
+                                <span className="material-icons text-sm mr-1">reply</span>
+                                Reply
+                              </button>
+                            </div>
                           )}
                         </div>
-                        <p className="font-['Roboto',Helvetica] font-normal text-startsnap-river-bed text-base leading-6 mt-1">
-                          {feedback.content}
-                        </p>
                       </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Replies section */}
+                  {feedback.replies && feedback.replies.length > 0 && (
+                    <div className="ml-12 mt-2 space-y-3">
+                      {feedback.replies.map((reply) => (
+                        <Card
+                          key={reply.id}
+                          className="shadow-[0px_1px_2px_-1px_#0000001a,0px_2px_3px_-1px_#0000001a] bg-startsnap-white rounded-lg overflow-hidden border-[2px] border-solid border-gray-800"
+                        >
+                          <CardContent className="p-4">
+                            <div className="flex items-start">
+                              <div className="w-8 h-8">
+                                <UserAvatar
+                                  name={getAvatarName(null, reply.profile?.username || 'Anonymous')}
+                                  size={32}
+                                  className="w-full h-full"
+                                />
+                              </div>
+                              <div className="ml-3 flex-1">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center">
+                                    <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-sm leading-5">
+                                      {reply.profile?.username || 'Anonymous'}
+                                    </p>
+                                    <p className="ml-2 font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4">
+                                      {formatDetailedDate(reply.created_at)}
+                                    </p>
+                                  </div>
+
+                                  {currentUser && currentUser.id === reply.user_id && (
+                                    <DropdownMenu>
+                                      <DropdownMenuTrigger className="h-6 w-6 flex items-center justify-center rounded-full hover:bg-gray-100">
+                                        <MoreHorizontal className="h-3 w-3 text-startsnap-oxford-blue" />
+                                      </DropdownMenuTrigger>
+                                      <DropdownMenuContent align="end" className="min-w-[160px]">
+                                        <DropdownMenuItem
+                                          onClick={() => handleEditReply(reply)}
+                                          className="cursor-pointer flex items-center gap-2"
+                                        >
+                                          <span className="material-icons text-sm">edit</span>
+                                          Edit
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                          onClick={() => handleDeleteReply(reply.id)}
+                                          className="cursor-pointer text-red-600 flex items-center gap-2"
+                                        >
+                                          <span className="material-icons text-sm">delete</span>
+                                          Delete
+                                        </DropdownMenuItem>
+                                      </DropdownMenuContent>
+                                    </DropdownMenu>
+                                  )}
+                                </div>
+                                <p className="font-['Roboto',Helvetica] font-normal text-startsnap-river-bed text-sm leading-5 mt-1">
+                                  {reply.content}
+                                </p>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
                     </div>
-                  </CardContent>
-                </Card>
+                  )}
+
+                  {/* Reply form */}
+                  {replyingToFeedbackId === feedback.id && currentUser && (
+                    <div className="ml-12 mt-3">
+                      <Card className="bg-startsnap-white rounded-lg overflow-hidden border-[2px] border-dashed border-gray-300 p-4">
+                        <div className="flex items-start gap-3">
+                          <div className="w-8 h-8 flex-shrink-0">
+                            <UserAvatar
+                              name={getAvatarName(currentUser, currentUserProfile?.username)}
+                              size={32}
+                              className="w-full h-full"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <Textarea
+                              placeholder="Write your reply..."
+                              className="border-2 border-solid border-gray-300 rounded-lg p-2 min-h-[80px] font-['Roboto',Helvetica] text-startsnap-pale-sky text-sm mb-2 focus:border-startsnap-persian-blue"
+                              value={replyContent}
+                              onChange={(e) => {
+                                setReplyContent(e.target.value);
+                                setReplyError(null);
+                              }}
+                              disabled={replySubmitting}
+                            />
+                            {replyError && (
+                              <p className="text-red-500 text-xs mb-2">{replyError}</p>
+                            )}
+                            <div className="flex gap-2 justify-end">
+                              <Button
+                                variant="outline"
+                                onClick={handleCancelReply}
+                                className="text-sm py-1 px-3 h-auto"
+                                disabled={replySubmitting}
+                              >
+                                Cancel
+                              </Button>
+                              <Button
+                                onClick={editingReply ? handleUpdateReply : handleReplySubmit}
+                                className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-sm rounded-lg border-2 border-solid border-gray-800 shadow-[2px_2px_0px_#1f2937] py-1 px-3 h-auto"
+                                disabled={replySubmitting || !replyContent.trim()}
+                              >
+                                {replySubmitting ? 'Submitting...' : (editingReply ? 'Update Reply' : 'Reply')}
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </Card>
+                    </div>
+                  )}
+                </div>
               ))
             ) : (
-              // Keep the sample feedback entries for reference and add real entries above
+              // Sample feedback entries
               <>
                 <Card
                   className="mb-6 shadow-[0px_2px_4px_-2px_#0000001a,0px_4px_6px_-1px_#0000001a] bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800"
