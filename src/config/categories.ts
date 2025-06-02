@@ -189,7 +189,7 @@ export const USER_STATUS_CONFIG = {
   },
   brainstorming: {
     value: 'brainstorming',
-    label: 'Brainstorming New Ideas',
+    label: 'Brainstorming Ideas',
     icon: 'lightbulb',
     description: 'Exploring new concepts and generating ideas'
   },

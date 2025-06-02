@@ -3,7 +3,7 @@
  * @description Modal dialog for adding new Vibe Log entries, styled to match auth dialog
  */
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -28,22 +28,42 @@ interface AddVibeLogModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: { log_type: string; title: string; content: string }) => void;
+  isEditMode?: boolean;
+  initialData?: { log_type: string; title: string; content: string };
 }
 
 /**
- * @description Modal component for adding new Vibe Log entries
+ * @description Modal component for adding or editing Vibe Log entries.
  * @param {AddVibeLogModalProps} props - Component props
- * @returns {JSX.Element} Modal dialog with form for adding Vibe Log entries
+ * @returns {JSX.Element} Modal dialog with form for adding or editing Vibe Log entries
  */
 export const AddVibeLogModal = ({
   isOpen,
   onClose,
   onSubmit,
+  isEditMode = false,
+  initialData,
 }: AddVibeLogModalProps): JSX.Element => {
-  const [logType, setLogType] = useState("update");
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [logType, setLogType] = useState(initialData?.log_type || "update");
+  const [title, setTitle] = useState(initialData?.title || "");
+  const [content, setContent] = useState(initialData?.content || "");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (isOpen) {
+      if (isEditMode && initialData) {
+        setLogType(initialData.log_type);
+        setTitle(initialData.title);
+        setContent(initialData.content);
+        setError("");
+      } else {
+        setLogType("update");
+        setTitle("");
+        setContent("");
+        setError("");
+      }
+    }
+  }, [isOpen, isEditMode, initialData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,10 +80,13 @@ export const AddVibeLogModal = ({
       content: content.trim(),
     });
 
-    // Reset form
-    setLogType("update");
-    setTitle("");
-    setContent("");
+    // Reset form only if not in edit mode
+    if (!isEditMode) {
+      setLogType("update");
+      setTitle("");
+      setContent("");
+    }
+    // onClose(); // Typically handled by the parent after successful submission
   };
 
   return (
@@ -71,7 +94,7 @@ export const AddVibeLogModal = ({
       <DialogContent className="bg-white sm:max-w-md rounded-lg border-3 border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] gap-0">
         <DialogHeader className="px-8 pt-8">
           <DialogTitle className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-4xl text-center leading-tight mb-8">
-            Add Vibe Log Entry
+            {isEditMode ? "Edit Vibe Log Entry" : "Add Vibe Log Entry"}
           </DialogTitle>
         </DialogHeader>
 
