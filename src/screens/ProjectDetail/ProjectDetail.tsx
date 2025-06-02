@@ -15,11 +15,11 @@ import { formatDetailedDate } from "../../lib/utils";
 import { useAuth } from "../../context/AuthContext";
 import { UserAvatar, getAvatarName } from "../../components/ui/user-avatar";
 import { AddVibeLogModal } from "../../components/ui/add-vibe-log-modal";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
 } from "../../components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
 
@@ -173,7 +173,7 @@ export const ProjectDetail = (): JSX.Element => {
    */
   const handleUpdateVibeLog = async (data: { log_type: string; title: string; content: string }) => {
     if (!editingVibeLog) return;
-    
+
     try {
       const { error } = await supabase
         .from('vibelogs')
@@ -289,7 +289,7 @@ export const ProjectDetail = (): JSX.Element => {
             <div className="flex gap-3 flex-wrap">
               {/* Project type badge */}
               {startsnap.type === "live" ? (
-                <Badge variant="outline\" className="bg-startsnap-mountain-meadow text-white font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-green-700 px-3 py-1 flex items-center gap-1">
+                <Badge variant="outline" className="bg-startsnap-mountain-meadow text-white font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-green-700 px-3 py-1 flex items-center gap-1">
                   <span className="material-icons text-sm">rocket_launch</span>
                   Live Project
                 </Badge>
@@ -458,21 +458,21 @@ export const ProjectDetail = (): JSX.Element => {
                           <p className="font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4">
                             {formatDetailedDate(entry.created_at)}
                           </p>
-                          
+
                           {isOwner && (
                             <DropdownMenu>
                               <DropdownMenuTrigger className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-gray-100">
                                 <MoreHorizontal className="h-4 w-4 text-startsnap-oxford-blue" />
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end" className="min-w-[160px]">
-                                <DropdownMenuItem 
+                                <DropdownMenuItem
                                   onClick={() => handleEditVibeLog(entry)}
                                   className="cursor-pointer flex items-center gap-2"
                                 >
                                   <span className="material-icons text-sm">edit</span>
                                   Edit
                                 </DropdownMenuItem>
-                                <DropdownMenuItem 
+                                <DropdownMenuItem
                                   onClick={() => handleDeleteVibeLog(entry.id)}
                                   className="cursor-pointer text-red-600 flex items-center gap-2"
                                 >
@@ -569,6 +569,7 @@ export const ProjectDetail = (): JSX.Element => {
         isOpen={isVibeLogModalOpen || !!editingVibeLog}
         onClose={handleCloseVibeLogModal}
         onSubmit={editingVibeLog ? handleUpdateVibeLog : handleVibeLogSubmit}
+        isEditMode={!!editingVibeLog}
         initialData={editingVibeLog}
       />
     </div>
