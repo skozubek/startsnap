@@ -483,7 +483,7 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                       <div className="flex-1">
                         <Textarea
                           placeholder={editingReply ? 'Edit your reply...' : 'Write your reply...'}
-                          className="border-2 border-solid border-gray-300 rounded-lg p-2 min-h-[80px] font-['Roboto',Helvetica] text-startsnap-pale-sky text-sm mb-2 focus:border-startsnap-persian-blue bg-white"
+                          className="border-2 border-solid border-gray-800 rounded-lg p-2 min-h-[80px] font-['Roboto',Helvetica] text-startsnap-pale-sky text-sm mb-2"
                           value={replyContent}
                           onChange={(e) => {
                             setReplyContent(e.target.value);
@@ -505,7 +505,7 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                           </Button>
                           <Button
                             onClick={editingReply ? handleUpdateReply : handleReplySubmit}
-                            className="startsnap-button bg-startsnap-persian-blue text-startsnap-white font-['Roboto',Helvetica] font-bold text-sm rounded-lg border-2 border-solid border-gray-800 shadow-[2px_2px_0px_#1f2937] py-1 px-3 h-auto"
+                            className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-sm rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] py-1 px-3 h-auto"
                             disabled={replySubmitting || !replyContent.trim()}
                           >
                             {replySubmitting ? (editingReply ? 'Updating...' : 'Replying...') : (editingReply ? 'Update Reply' : 'Reply')}

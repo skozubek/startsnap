@@ -236,7 +236,7 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
               </Button>
               <Button
                 onClick={handleVibeLogSubmit}
-                className="startsnap-button bg-startsnap-persian-blue text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[2px_2px_0px_#1f2937] py-2 px-5 text-base"
+                className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] py-2 px-5 text-base"
                 disabled={!newVibeLogData.title.trim() || !newVibeLogData.content.trim()}
               >
                 Submit Entry
@@ -279,7 +279,7 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
                     </Button>
                     <Button
                       onClick={handleUpdateVibeLog}
-                      className="startsnap-button bg-startsnap-persian-blue text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[2px_2px_0px_#1f2937] py-2 px-5 text-base"
+                      className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] py-2 px-5 text-base"
                       disabled={!currentEditVibeLogData.title.trim() || !currentEditVibeLogData.content.trim()}
                     >
                       Save Changes

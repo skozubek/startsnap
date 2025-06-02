@@ -57,23 +57,42 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
   startsnap,
   creator,
   isOwner,
-  // currentUser // Retained for potential future use like disabling support for own project
+  currentUser // Now using currentUser to decide if Support button should be shown (e.g. if user is logged in)
 }) => {
   const categoryDisplay = getCategoryDisplay(startsnap.category);
 
   return (
     <>
       <div className={`${categoryDisplay.bgColor} px-8 py-6 border-b-2 border-gray-800`}>
-        <div className="flex justify-between items-start gap-6 mb-4">
+        <div className="flex justify-between items-center gap-4 mb-4">
           <h1 className={`${categoryDisplay.textColor} font-[var(--startsnap-semantic-heading-3-font-family)] font-black tracking-tight leading-tight flex-1 text-4xl lg:text-5xl`}>
             {startsnap.name}
           </h1>
-          <Badge
-            variant="outline"
-            className={`${categoryDisplay.bgColor} ${categoryDisplay.textColor} border ${categoryDisplay.borderColor} rounded-full px-4 py-2 font-['Space_Mono',Helvetica] font-normal shrink-0 text-sm`}
-          >
-            {categoryDisplay.name}
-          </Badge>
+          <div className="flex items-center gap-3 shrink-0">
+            <Badge
+              variant="outline"
+              className={`${categoryDisplay.bgColor} ${categoryDisplay.textColor} border ${categoryDisplay.borderColor} rounded-full px-4 py-2 font-['Space_Mono',Helvetica] font-normal text-sm`}
+            >
+              {categoryDisplay.name}
+            </Badge>
+            {isOwner ? (
+              <Button
+                asChild
+                className="startsnap-button bg-startsnap-mischka text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-1.5 px-3 py-1.5 text-sm hover:bg-startsnap-mischka/90"
+              >
+                <Link to={`/edit/${startsnap.id}`}>
+                  <span className="material-icons text-lg">edit</span>
+                  Edit
+                </Link>
+              </Button>
+            ) : currentUser && (
+              // Show Support button only if the user is logged in and not the owner
+              <Button className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-1.5 px-3 py-1.5 text-sm hover:bg-startsnap-french-rose/90">
+                <span className="material-icons text-lg">thumb_up</span>
+                Support
+              </Button>
+            )}
+          </div>
         </div>
         <div className="flex gap-3 flex-wrap">
           {startsnap.type === "live" ? (
@@ -96,7 +115,7 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
         </div>
       </div>
 
-      <div className="px-8 pt-6 pb-8">
+      <div className="px-8 pt-6 pb-8 border-b-2 border-gray-800">
         {(startsnap.live_demo_url || startsnap.demo_video_url) && (
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4">
             <p className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg">
@@ -128,7 +147,7 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
           {startsnap.description}
         </p>
         {(startsnap.tags && startsnap.tags.length > 0 || startsnap.tools_used && startsnap.tools_used.length > 0) && (
-          <div className="space-y-6 py-6 mb-6">
+          <div className="flex flex-wrap items-start gap-x-4 gap-y-3 py-6 mb-6">
             {startsnap.tags && startsnap.tags.length > 0 && (
               <div className="flex flex-wrap items-center gap-3">
                 <span className="material-icons text-startsnap-shuttle-gray text-xl">sell</span>
@@ -172,21 +191,6 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
             </div>
           </div>
         )}
-        <div className="flex flex-wrap gap-4 pt-4">
-          {isOwner ? (
-            <Button className="startsnap-button bg-startsnap-mischka text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-2" asChild>
-              <Link to={`/edit/${startsnap.id}`}>
-                <span className="material-icons text-xl">edit</span>
-                Edit Project
-              </Link>
-            </Button>
-          ) : (
-            <Button className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-2">
-              <span className="material-icons text-xl">thumb_up</span>
-              Support Project
-            </Button>
-          )}
-        </div>
       </div>
     </>
   );
