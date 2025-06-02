@@ -126,18 +126,36 @@ export const ProjectDetail = (): JSX.Element => {
    */
   const fetchFeedbacks = async () => {
     try {
-      const { data, error } = await supabase
+      // Get all feedbacks for this startsnap
+      const { data: feedbackData, error: feedbackError } = await supabase
         .from('feedbacks')
-        .select(`
-          *,
-          profile:profiles(username)
-        `)
+        .select('*')
         .eq('startsnap_id', id)
         .order('created_at', { ascending: true });
-
-      if (error) throw error;
-
-      setFeedbackEntries(data || []);
+        
+      if (feedbackError) throw feedbackError;
+      
+      // For each feedback, get the username from profiles
+      if (feedbackData && feedbackData.length > 0) {
+        const feedbacksWithProfiles = await Promise.all(
+          feedbackData.map(async (feedback) => {
+            const { data: profileData } = await supabase
+              .from('profiles')
+              .select('username')
+              .eq('user_id', feedback.user_id)
+              .single();
+              
+            return {
+              ...feedback,
+              profile: profileData || { username: 'Anonymous' }
+            };
+          })
+        );
+        
+        setFeedbackEntries(feedbacksWithProfiles);
+      } else {
+        setFeedbackEntries([]);
+      }
     } catch (error) {
       console.error('Error fetching feedback:', error);
     }
