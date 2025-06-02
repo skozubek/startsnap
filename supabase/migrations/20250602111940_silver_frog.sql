@@ -8,6 +8,11 @@ CREATE TABLE IF NOT EXISTS public.feedbacks (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
 
+-- Remove the incorrect foreign key constraint and add the correct one
+-- This links the feedbacks table to the profiles table through the user_id column
+ALTER TABLE public.feedbacks ADD CONSTRAINT feedbacks_user_id_fkey_profiles
+  FOREIGN KEY (user_id) REFERENCES public.profiles(user_id) ON DELETE CASCADE;
+
 -- Enable Row Level Security
 ALTER TABLE public.feedbacks ENABLE ROW LEVEL SECURITY;
 
