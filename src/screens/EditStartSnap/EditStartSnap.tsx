@@ -133,7 +133,7 @@ export const EditStartSnap = (): JSX.Element => {
         projectId={id}
         initialData={initialData}
         onSubmit={handleSubmit}
-        onCancel={() => navigate('/profile')}
+        onCancel={() => navigate(`/project/${id}`)}
       />
     </div>
   );
