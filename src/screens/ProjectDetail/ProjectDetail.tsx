@@ -50,6 +50,8 @@ export const ProjectDetail = (): JSX.Element => {
   const [vibeLogEntries, setVibeLogEntries] = useState<any[]>([]);
   const [feedbackEntries, setFeedbackEntries] = useState<FeedbackEntry[]>([]);
   const [feedbackContent, setFeedbackContent] = useState("");
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { user: currentUser } = useAuth();
   const [isVibeLogModalOpen, setIsVibeLogModalOpen] = useState(false);
   const [editingVibeLog, setEditingVibeLog] = useState<any>(null);
@@ -566,14 +568,6 @@ export const ProjectDetail = (): JSX.Element => {
                     <span className="material-icons text-xl">thumb_up</span>
                     Support Project
                   </Button>
-                  <Button 
-                    className="startsnap-button bg-startsnap-mountain-meadow text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-2"
-                    onClick={handleOpenFeedbackModal}
-                    disabled={!currentUser}
-                  >
-                    <span className="material-icons text-xl">forum</span>
-                    Give Feedback
-                  </Button>
                 </>
               )}
             </div>
@@ -786,31 +780,58 @@ export const ProjectDetail = (): JSX.Element => {
               <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7 mb-4">
                 Leave Your Feedback
               </h3>
-              <Textarea
-                placeholder="Share your thoughts, suggestions, or bug reports..."
-                className="border-2 border-solid border-gray-800 rounded-lg p-3.5 min-h-[120px] font-['Roboto',Helvetica] text-startsnap-pale-sky mb-4"
-                value={feedbackContent}
-                onChange={(e) => setFeedbackContent(e.target.value)}
-              />
-              <Button
-                className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
-                onClick={() => {
-                  if (!currentUser) {
-                    alert('You need to be logged in to submit feedback');
-                    return;
-                  }
-                  
-                  if (!feedbackContent.trim()) {
-                    alert('Please enter some feedback');
-                    return;
-                  }
-                  
-                  handleFeedbackSubmit({ content: feedbackContent });
-                }}
-                disabled={!currentUser}
-              >
-                {currentUser ? 'Submit Feedback' : 'Login to Submit Feedback'}
-              </Button>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 flex-shrink-0">
+                  <UserAvatar
+                    name={currentUser ? getAvatarName(currentUser, undefined) : 'Anonymous'}
+                    size={40}
+                    className="w-full h-full opacity-50"
+                  />
+                </div>
+                <div className="flex-1">
+                  <Textarea
+                    placeholder={currentUser ? "Share your thoughts, suggestions, or bug reports..." : "Please log in to leave feedback"}
+                    className="border-2 border-solid border-gray-800 rounded-lg p-3.5 min-h-[120px] font-['Roboto',Helvetica] text-startsnap-pale-sky mb-2"
+                    value={feedbackContent}
+                    onChange={(e) => {
+                      setFeedbackContent(e.target.value);
+                      setSubmissionError(null);
+                    }}
+                    disabled={!currentUser || isSubmitting}
+                  />
+                  {submissionError && (
+                    <p className="text-red-500 text-sm mb-2">{submissionError}</p>
+                  )}
+                  <Button
+                    className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+                    onClick={async () => {
+                      if (!currentUser) {
+                        setSubmissionError('You need to be logged in to submit feedback');
+                        return;
+                      }
+                      
+                      if (!feedbackContent.trim()) {
+                        setSubmissionError('Please enter some feedback');
+                        return;
+                      }
+                      
+                      setIsSubmitting(true);
+                      try {
+                        await handleFeedbackSubmit({ content: feedbackContent });
+                        setFeedbackContent('');
+                        setSubmissionError(null);
+                      } catch (error) {
+                        setSubmissionError('Failed to submit feedback. Please try again.');
+                      } finally {
+                        setIsSubmitting(false);
+                      }
+                    }}
+                    disabled={!currentUser || !feedbackContent.trim() || isSubmitting}
+                  >
+                    {isSubmitting ? 'Submitting...' : (currentUser ? 'Submit Feedback' : 'Login to Submit Feedback')}
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         </CardContent>
