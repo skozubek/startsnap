@@ -100,8 +100,7 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
           startsnap_id: startsnapId,
           log_type: newVibeLogData.log_type,
           title: newVibeLogData.title,
-          content: newVibeLogData.content,
-          user_id: currentUserId
+          content: newVibeLogData.content
         });
       if (error) throw error;
       await onVibeLogChange();

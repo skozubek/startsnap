@@ -69,12 +69,6 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
             {startsnap.name}
           </h1>
           <div className="flex items-center gap-3 shrink-0">
-            <Badge
-              variant="outline"
-              className={`${categoryDisplay.bgColor} ${categoryDisplay.textColor} border ${categoryDisplay.borderColor} rounded-full px-4 py-2 font-['Space_Mono',Helvetica] font-normal text-sm`}
-            >
-              {categoryDisplay.name}
-            </Badge>
             {isOwner ? (
               <Button
                 asChild
@@ -88,13 +82,19 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
             ) : currentUser && (
               // Show Support button only if the user is logged in and not the owner
               <Button className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-1.5 px-3 py-1.5 text-sm hover:bg-startsnap-french-rose/90">
-                <span className="material-icons text-lg">thumb_up</span>
+                <span className="material-icons text-lg">favorite</span>
                 Support
               </Button>
             )}
           </div>
         </div>
-        <div className="flex gap-3 flex-wrap">
+        <div className="flex gap-3 flex-wrap items-center mb-2">
+          <Badge
+            variant="outline"
+            className={`${categoryDisplay.bgColor} ${categoryDisplay.textColor} border ${categoryDisplay.borderColor} rounded-full px-4 py-2 font-['Space_Mono',Helvetica] font-normal text-sm`}
+          >
+            {categoryDisplay.name}
+          </Badge>
           {startsnap.type === "live" ? (
             <Badge variant="outline" className="bg-startsnap-mountain-meadow text-white font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-green-700 px-3 py-1 flex items-center gap-1">
               <span className="material-icons text-sm">rocket_launch</span>
@@ -108,7 +108,7 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
           )}
           {startsnap.is_hackathon_entry && (
             <Badge variant="outline" className="bg-startsnap-heliotrope text-white font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-purple-700 px-3 py-1 flex items-center gap-1">
-              <span className="material-icons text-xl">emoji_events</span>
+              <span className="material-icons text-sm">emoji_events</span>
               Hackathon Entry
             </Badge>
           )}

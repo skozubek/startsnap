@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Card, CardContent } from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import { ProjectInfoSection } from "./components/ProjectInfoSection";
@@ -109,6 +110,9 @@ export const ProjectDetail = (): JSX.Element => {
   const { user: currentUser } = useAuth();
   const [currentUserProfile, setCurrentUserProfile] = useState<UserProfile | null>(null);
 
+  const VIBE_LOG_PAGE_SIZE = 3; // Number of vibe logs to show per page
+  const [visibleVibeLogCount, setVisibleVibeLogCount] = useState(VIBE_LOG_PAGE_SIZE);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -181,6 +185,7 @@ export const ProjectDetail = (): JSX.Element => {
           .order('created_at', { ascending: false });
         if (vibeLogsError) throw vibeLogsError;
         setVibeLogEntries((vibeLogsData as VibeLog[]) || []);
+        setVisibleVibeLogCount(VIBE_LOG_PAGE_SIZE); // Reset visible count on new data fetch
       }
 
       await fetchFeedbacks(); // Fetch feedbacks separately or as part of this
@@ -268,6 +273,19 @@ export const ProjectDetail = (): JSX.Element => {
     }
   };
 
+  const handleLoadMoreVibeLogs = () => {
+    setVisibleVibeLogCount(prevCount => Math.min(prevCount + VIBE_LOG_PAGE_SIZE, vibeLogEntries.length));
+  };
+
+  const handleShowLessVibeLogs = () => {
+    setVisibleVibeLogCount(VIBE_LOG_PAGE_SIZE);
+    // Optional: Scroll to the top of the VibeLog section if desired
+    // const vibeLogSectionElement = document.getElementById('vibe-log-section'); // Assuming VibeLogSection has an id="vibe-log-section"
+    // if (vibeLogSectionElement) {
+    //   vibeLogSectionElement.scrollIntoView({ behavior: 'smooth' });
+    // }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-startsnap-candlelight">
@@ -298,11 +316,33 @@ export const ProjectDetail = (): JSX.Element => {
           />
           <VibeLogSection
             startsnapId={startsnap.id}
-            initialVibeLogEntries={vibeLogEntries}
+            initialVibeLogEntries={vibeLogEntries.slice(0, visibleVibeLogCount)}
             isOwner={isOwner}
             currentUserId={currentUser?.id}
             onVibeLogChange={fetchProjectData}
           />
+          {(visibleVibeLogCount < vibeLogEntries.length || visibleVibeLogCount > VIBE_LOG_PAGE_SIZE) && (
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-6 p-8 pt-0 border-b-2 border-gray-800">
+              {visibleVibeLogCount > VIBE_LOG_PAGE_SIZE && (
+                <Button
+                  onClick={handleShowLessVibeLogs}
+                  variant="outline"
+                  className="startsnap-button bg-startsnap-mischka text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] py-2 px-5 text-base hover:bg-gray-300"
+                >
+                  Show Less Vibe Logs
+                </Button>
+              )}
+              {visibleVibeLogCount < vibeLogEntries.length && (
+                <Button
+                  onClick={handleLoadMoreVibeLogs}
+                  variant="outline"
+                  className="startsnap-button bg-startsnap-mischka text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] py-2 px-5 text-base hover:bg-gray-300"
+                >
+                  Load More Vibe Logs
+                </Button>
+              )}
+            </div>
+          )}
           <FeedbackSection
             startsnapId={startsnap.id}
             initialFeedbackEntries={feedbackEntries}
