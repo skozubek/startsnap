@@ -53,6 +53,7 @@ export const ProjectDetail = (): JSX.Element => {
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user: currentUser } = useAuth();
+  const [currentUserProfile, setCurrentUserProfile] = useState<{ username?: string } | null>(null);
   const [isVibeLogModalOpen, setIsVibeLogModalOpen] = useState(false);
   const [editingVibeLog, setEditingVibeLog] = useState<any>(null);
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
@@ -66,6 +67,34 @@ export const ProjectDetail = (): JSX.Element => {
   useEffect(() => {
     fetchProjectData();
   }, [id]);
+
+  // Fetch current user's profile for consistent avatar display in feedback input
+  useEffect(() => {
+    if (currentUser) {
+      const fetchCurrentUserProfile = async () => {
+        try {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('username')
+            .eq('user_id', currentUser.id)
+            .single();
+
+          if (error && error.code !== 'PGRST116') {
+            console.error('Error fetching current user profile for feedback section:', error);
+            setCurrentUserProfile(null);
+            return;
+          }
+          setCurrentUserProfile(data);
+        } catch (error) {
+          console.error('Error fetching current user profile:', error);
+          setCurrentUserProfile(null);
+        }
+      };
+      fetchCurrentUserProfile();
+    } else {
+      setCurrentUserProfile(null);
+    }
+  }, [currentUser]);
 
   /**
    * @description Fetches project data, creator profile, vibe logs, and feedback from Supabase
@@ -134,9 +163,9 @@ export const ProjectDetail = (): JSX.Element => {
         .select('*')
         .eq('startsnap_id', id)
         .order('created_at', { ascending: true });
-        
+
       if (feedbackError) throw feedbackError;
-      
+
       // For each feedback, get the username from profiles
       if (feedbackData && feedbackData.length > 0) {
         const feedbacksWithProfiles = await Promise.all(
@@ -146,14 +175,14 @@ export const ProjectDetail = (): JSX.Element => {
               .select('username')
               .eq('user_id', feedback.user_id)
               .single();
-              
+
             return {
               ...feedback,
               profile: profileData || { username: 'Anonymous' }
             };
           })
         );
-        
+
         setFeedbackEntries(feedbacksWithProfiles);
       } else {
         setFeedbackEntries([]);
@@ -681,7 +710,7 @@ export const ProjectDetail = (): JSX.Element => {
                               {formatDetailedDate(feedback.created_at)}
                             </p>
                           </div>
-                          
+
                           {currentUser && currentUser.id === feedback.user_id && (
                             <DropdownMenu>
                               <DropdownMenuTrigger className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-gray-100">
@@ -783,9 +812,9 @@ export const ProjectDetail = (): JSX.Element => {
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 flex-shrink-0">
                   <UserAvatar
-                    name={currentUser ? getAvatarName(currentUser, undefined) : 'Anonymous'}
+                    name={currentUser ? getAvatarName(currentUser, currentUserProfile?.username) : 'Anonymous'}
                     size={40}
-                    className="w-full h-full opacity-50"
+                    className="w-full h-full"
                   />
                 </div>
                 <div className="flex-1">
@@ -809,12 +838,12 @@ export const ProjectDetail = (): JSX.Element => {
                         setSubmissionError('You need to be logged in to submit feedback');
                         return;
                       }
-                      
+
                       if (!feedbackContent.trim()) {
                         setSubmissionError('Please enter some feedback');
                         return;
                       }
-                      
+
                       setIsSubmitting(true);
                       try {
                         await handleFeedbackSubmit({ content: feedbackContent });
@@ -836,7 +865,7 @@ export const ProjectDetail = (): JSX.Element => {
           </div>
         </CardContent>
       </Card>
-      
+
       {/* Modals */}
       <AddVibeLogModal
         isOpen={isVibeLogModalOpen}

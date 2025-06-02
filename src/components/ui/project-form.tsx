@@ -346,45 +346,48 @@ export function ProjectForm({
           <Separator className="bg-gray-200" />
 
           {/* Links Section */}
-          <div className="space-y-4">
-            <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
-              Project Links
-            </h3>
+          {formState.projectType === "live" && (
+            <>
+              <div className="space-y-4">
+                <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+                  Project Links
+                </h3>
 
-            <div className="space-y-2">
-              <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">
-                Live Demo URL
-              </label>
-              <Input
-                name="liveUrl"
-                value={formState.liveUrl}
-                onChange={handleChange}
-                placeholder="https://myproject.com"
-                className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
-              />
-              {errors.liveUrl && (
-                <p className="text-red-500 text-sm mt-1">{errors.liveUrl}</p>
-              )}
-            </div>
+                <div className="space-y-2">
+                  <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">
+                    Live Demo URL
+                  </label>
+                  <Input
+                    name="liveUrl"
+                    value={formState.liveUrl}
+                    onChange={handleChange}
+                    placeholder="https://myproject.com"
+                    className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
+                  />
+                  {errors.liveUrl && (
+                    <p className="text-red-500 text-sm mt-1">{errors.liveUrl}</p>
+                  )}
+                </div>
 
-            <div className="space-y-2">
-              <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">
-                Video Demo URL
-              </label>
-              <Input
-                name="videoUrl"
-                value={formState.videoUrl}
-                onChange={handleChange}
-                placeholder="https://youtube.com/watch?v=..."
-                className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
-              />
-              {errors.videoUrl && (
-                <p className="text-red-500 text-sm mt-1">{errors.videoUrl}</p>
-              )}
-            </div>
-          </div>
-
-          <Separator className="bg-gray-200" />
+                <div className="space-y-2">
+                  <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">
+                    Video Demo URL
+                  </label>
+                  <Input
+                    name="videoUrl"
+                    value={formState.videoUrl}
+                    onChange={handleChange}
+                    placeholder="https://youtube.com/watch?v=..."
+                    className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
+                  />
+                  {errors.videoUrl && (
+                    <p className="text-red-500 text-sm mt-1">{errors.videoUrl}</p>
+                  )}
+                </div>
+              </div>
+              <Separator className="bg-gray-200" />
+            </>
+          )}
 
           {/* Tags Section */}
           <div className="space-y-4">
@@ -393,12 +396,14 @@ export function ProjectForm({
                 Tags (press Enter to add)
               </label>
               <Input
+                type="text"
+                id="tagsInput"
                 name="tagsInput"
+                placeholder="e.g., AI, SaaS, Productivity"
                 value={formState.tagsInput}
                 onChange={handleChange}
-                onKeyPress={(e) => handleTagInputKeyPress(e, "tags", "tags")}
-                placeholder="e.g., React, Bolt.new, TypeScript, Supabase"
-                className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
+                onKeyDown={(e) => handleTagInputKeyPress(e, "tags", "tags")}
+                className="border-2 border-solid border-gray-800 rounded-lg p-3.5 font-['Roboto',Helvetica]"
               />
               <div className="flex flex-wrap gap-2 mt-2">
                 {formState.tags.map((tag, index) => (
@@ -428,8 +433,8 @@ export function ProjectForm({
                 name="toolsInput"
                 value={formState.toolsInput}
                 onChange={handleChange}
-                onKeyPress={(e) => handleTagInputKeyPress(e, "toolsUsed", "tools")}
-                placeholder="e.g., React, Bolt.new, TypeScript, Supabase"
+                onKeyDown={(e) => handleTagInputKeyPress(e, "toolsUsed", "tools")}
+                placeholder="e.g., Bolt.new, Cursor, Lovable"
                 className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
               />
               <div className="flex flex-wrap gap-2 mt-2">
