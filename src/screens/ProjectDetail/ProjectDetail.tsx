@@ -953,7 +953,7 @@ export const ProjectDetail = (): JSX.Element => {
                   </Card>
 
                   {/* Replies and Reply Form Container - Indented */}
-                  <div className="ml-8 lg:ml-12 mt-4 relative">
+                  <div className="ml-8 lg:ml-12 my-4 relative">
                     {/* Optional Connecting Line - adjust if reply form is always on top */}
                     {(replyingToFeedbackId === feedback.id || (feedback.replies && feedback.replies.length > 0)) && (
                          <div className="absolute left-[-20px] top-0 bottom-0 w-0.5 bg-gray-300 lg:left-[-28px]"></div>
