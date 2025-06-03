@@ -8,6 +8,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { FooterSection } from "./sections/FooterSection/FooterSection";
 import { HeaderSection } from "./sections/HeaderSection/HeaderSection";
 import { MainContentSection } from "./sections/MainContentSection/MainContentSection";
+import { Projects } from "../Projects";
 import { ProjectDetail } from "../ProjectDetail";
 import { CreateStartSnap } from "../CreateStartSnap";
 import { EditStartSnap } from "../EditStartSnap";
@@ -50,6 +51,7 @@ export const Frame = (): JSX.Element => {
         <div className="flex flex-col w-full min-h-screen overflow-y-auto">
           <Routes>
             <Route path="/" element={<MainContentSection />} />
+            <Route path="/projects" element={<Projects />} />
             <Route path="/project/:id" element={<ProjectDetail />} />
             <Route
               path="/create"

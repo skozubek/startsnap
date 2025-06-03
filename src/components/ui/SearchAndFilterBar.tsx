@@ -2,7 +2,7 @@
  * src/components/ui/SearchAndFilterBar.tsx
  * @description Component for searching, filtering, and sorting project listings.
  */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from './input'; // Assuming Input component exists
 import { Button } from './button'; // Assuming Button component exists
 import {
@@ -44,6 +44,36 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
   const [currentSort, setCurrentSort] = useState<SortOption>(initialSort);
   const [isFilterPopoverOpen, setIsFilterPopoverOpen] = useState<boolean>(false); // State for popover
 
+  // Sync internal state with prop changes
+  useEffect(() => {
+    setSearchTerm(initialSearchTerm);
+  }, [initialSearchTerm]);
+
+  useEffect(() => {
+    setTempFilters(initialFilters);
+  }, [initialFilters]);
+
+  useEffect(() => {
+    setCurrentSort(initialSort);
+  }, [initialSort]);
+
+  // Debounce search term
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      // Only apply if searchTerm is not initialSearchTerm to avoid an immediate call on load if they are different
+      // or if the component is meant to reflect an external change immediately
+      // For simplicity here, we assume any change to searchTerm should trigger a debounced search.
+      // If initialSearchTerm can change and should reflect immediately, this logic might need adjustment.
+      if (searchTerm !== initialSearchTerm) { // Basic check to avoid initial fire if searchTerm starts different
+          handleApplyChanges();
+      }
+    }, 300); // 300ms debounce delay
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm, initialSearchTerm]); // Rerun effect if searchTerm or initialSearchTerm changes
+
   // Handler to apply all changes
   const handleApplyChanges = (updatedFilters?: FilterOptions, updatedSort?: SortOption) => {
     const finalFilters = updatedFilters || tempFilters;
@@ -57,6 +87,7 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
 
   const handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
+    // No immediate call to handleApplyChanges here anymore for every keystroke
   };
 
   // Debounced search apply or apply on blur/enter
@@ -116,8 +147,7 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
           placeholder="Search by Name, Description, Tags, Tools..."
           value={searchTerm}
           onChange={handleSearchInputChange}
-          onBlur={handleSearchApply} // Apply search when input loses focus
-          onKeyPress={(e) => e.key === 'Enter' && handleSearchApply()} // Apply search on Enter key
+          onKeyDown={(e) => e.key === 'Enter' && handleSearchApply()} // Apply search on Enter key
           className={`${inputStyle} pl-10`}
         />
       </div>

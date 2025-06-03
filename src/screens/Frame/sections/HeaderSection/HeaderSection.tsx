@@ -65,12 +65,7 @@ export const HeaderSection = (): JSX.Element => {
 
   // Only "Feed" is visible to all users
   const navLinks = [
-    { title: "Feed", href: "#" },
-  ];
-
-  // "Create StartSnap" is only visible to authenticated users
-  const authenticatedNavLinks = [
-    { title: "Create StartSnap", href: "/create" },
+    { title: "Projects", href: "/projects" },
   ];
 
   /**
@@ -113,19 +108,7 @@ export const HeaderSection = (): JSX.Element => {
                 <NavigationMenuItem key={index}>
                   <NavigationMenuLink
                     href={link.href}
-                    className="font-['Space_Grotesk',Helvetica] text-startsnap-oxford-blue text-[length:var(--startsnap-semantic-link-font-size)] tracking-[var(--startsnap-semantic-link-letter-spacing)] leading-[var(--startsnap-semantic-link-line-height)] hover:text-startsnap-french-rose transition-colors"
-                  >
-                    {link.title}
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-              ))}
-
-              {/* Only show authenticated links if user is logged in */}
-              {user && authenticatedNavLinks.map((link, index) => (
-                <NavigationMenuItem key={`auth-${index}`}>
-                  <NavigationMenuLink
-                    href={link.href}
-                    className="font-['Space_Grotesk',Helvetica] text-startsnap-oxford-blue text-[length:var(--startsnap-semantic-link-font-size)] tracking-[var(--startsnap-semantic-link-letter-spacing)] leading-[var(--startsnap-semantic-link-line-height)] hover:text-startsnap-french-rose transition-colors"
+                    className="font-['Space_Grotesk',Helvetica] text-startsnap-oxford-blue text-lg md:text-xl font-medium tracking-[var(--startsnap-semantic-link-letter-spacing)] leading-[var(--startsnap-semantic-link-line-height)] hover:text-startsnap-french-rose transition-colors"
                   >
                     {link.title}
                   </NavigationMenuLink>
@@ -133,6 +116,19 @@ export const HeaderSection = (): JSX.Element => {
               ))}
             </NavigationMenuList>
           </NavigationMenu>
+
+          {/* Create StartSnap Button for authenticated users */}
+          {user && (
+            <Button
+              asChild
+              className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-2"
+            >
+              <Link to="/create">
+                <span className="material-icons text-xl">add</span>
+                <span>StartSnap</span>
+              </Link>
+            </Button>
+          )}
 
           {user ? (
             <DropdownMenu>

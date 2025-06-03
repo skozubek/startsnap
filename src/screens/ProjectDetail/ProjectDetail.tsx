@@ -22,22 +22,6 @@ import type { VibeLog } from "../../types/vibeLog"; // Import VibeLog type
 // These might be moved to a dedicated types.ts file if they grow further or are used elsewhere
 
 /**
- * @description Interface for Creator profile data (subset)
- */
-interface CreatorData { // More specific type than 'any'
-  user_id: string;
-  username: string;
-  // Include other fields as necessary
-}
-
-/**
- * @description Interface for current user profile data (subset)
- */
-interface UserProfile {
-  username?: string;
-}
-
-/**
  * @description Page component that displays detailed project information
  * @returns {JSX.Element} Project detail page with project info, vibe log, and feedback
  */

@@ -61,7 +61,7 @@ export const FooterSection = (): JSX.Element => {
 
         {/* Copyright */}
         <div className="font-['Roboto',Helvetica] font-normal text-startsnap-ebony-clay text-base text-center leading-6">
-          © 2024 startsnap.fun - Fueling Creative Journeys.
+          © {new Date().getFullYear()} startsnap.fun - Fueling Creative Journeys.
         </div>
       </div>
     </footer>

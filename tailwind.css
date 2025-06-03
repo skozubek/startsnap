@@ -24,7 +24,7 @@
   }
 
   .startsnap-button {
-    transition: all 0.2s ease-in-out;
+    transition: all 0.3s ease-in-out;
     transform: translate(0px, 0px);
   }
 
