@@ -3,14 +3,17 @@
  * @description Main content section of the home page with hero section and StartSnap cards
  */
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "../../../../components/ui/button";
 import { Link } from "react-router-dom";
 import { supabase } from "../../../../lib/supabase";
 import { StartSnapCard } from "../../../../components/ui/StartSnapCard";
+import { SearchAndFilterBar } from "../../../../components/ui/SearchAndFilterBar";
+import { CATEGORY_CONFIG } from "../../../../config/categories";
 import { getCategoryDisplay } from "../../../../config/categories";
 import { formatDate } from "../../../../lib/utils";
 import Typed from 'typed.js';
+import type { ProjectDiscoveryState, FilterOptions, SortOption } from "../../../../types/projectDiscovery";
 
 /**
  * @description Type definition for StartSnap project data
@@ -26,6 +29,7 @@ interface StartSnapType {
   tools_used?: string[];
   created_at: string;
   user_id: string;
+  support_count?: number;
 }
 
 /**
@@ -34,6 +38,14 @@ interface StartSnapType {
 interface CreatorsMap {
   [userId: string]: string;
 }
+
+const DEFAULT_DISCOVERY_STATE: ProjectDiscoveryState = {
+  searchTerm: '',
+  filters: { type: 'all' },
+  sort: { field: 'created_at', direction: 'desc' },
+};
+
+const categoryOptions = Object.values(CATEGORY_CONFIG).map(config => config.label);
 
 /**
  * @description Renders the main content of the home page including hero section and StartSnap cards
@@ -44,7 +56,7 @@ export const MainContentSection = (): JSX.Element => {
   const [loading, setLoading] = useState(true);
   const [creators, setCreators] = useState<CreatorsMap>({});
   const typedRef = useRef(null);
-  const [sortBy, setSortBy] = useState<'newest' | 'supported'>('newest');
+  const [discoveryState, setDiscoveryState] = useState<ProjectDiscoveryState>(DEFAULT_DISCOVERY_STATE);
 
   useEffect(() => {
     // Initialize Typed.js
@@ -65,26 +77,53 @@ export const MainContentSection = (): JSX.Element => {
     };
   }, []);
 
-  useEffect(() => {
-    fetchStartSnaps();
-  }, []);
-
   /**
    * @description Fetches StartSnap projects and their creator information from Supabase
+   * based on current discovery state (search, filter, sort).
    * @async
+   * @param {ProjectDiscoveryState} currentDiscoveryState - The current parameters for discovery.
    * @sideEffects Updates state with fetched data
    */
-  const fetchStartSnaps = async () => {
+  const fetchStartSnaps = useCallback(async (currentDiscoveryState: ProjectDiscoveryState) => {
     try {
       setLoading(true);
-
-      // Fetch startsnaps
-      const { data, error } = await supabase
+      let query = supabase
         .from('startsnaps')
-        .select('*, support_count')
-        .order(sortBy === 'supported' ? 'support_count' : 'created_at', { ascending: false })
-        .order('created_at', { ascending: false }) // Secondary sort
-        .limit(6);
+        .select('*, support_count');
+
+      // Apply search term
+      if (currentDiscoveryState.searchTerm) {
+        const searchTerm = `%${currentDiscoveryState.searchTerm}%`;
+        query = query.or(
+          `name.ilike.${searchTerm},description.ilike.${searchTerm},tags.cs.{${currentDiscoveryState.searchTerm}},tools_used.cs.{${currentDiscoveryState.searchTerm}}`
+        );
+      }
+
+      // Apply filters
+      if (currentDiscoveryState.filters.category) {
+        const categoryKey = Object.keys(CATEGORY_CONFIG).find(
+          key => CATEGORY_CONFIG[key as keyof typeof CATEGORY_CONFIG].label === currentDiscoveryState.filters.category
+        );
+        if (categoryKey) {
+          query = query.eq('category', categoryKey);
+        }
+      }
+      if (currentDiscoveryState.filters.type && currentDiscoveryState.filters.type !== 'all') {
+        query = query.eq('type', currentDiscoveryState.filters.type);
+      }
+      if (currentDiscoveryState.filters.isHackathonEntry) {
+        query = query.eq('is_hackathon_entry', true);
+      }
+
+      // Apply sorting
+      query = query.order(currentDiscoveryState.sort.field, { ascending: currentDiscoveryState.sort.direction === 'asc' });
+      if (currentDiscoveryState.sort.field !== 'created_at') {
+          query = query.order('created_at', { ascending: false });
+      }
+
+      query = query.limit(12);
+
+      const { data, error } = await query;
 
       if (error) throw error;
 
@@ -106,12 +145,24 @@ export const MainContentSection = (): JSX.Element => {
         });
 
         setCreators(creatorsMap);
+      } else {
+        setCreators({});
       }
     } catch (error) {
       console.error('Error fetching startsnaps:', error);
+      setStartSnaps([]);
+      setCreators({});
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  useEffect(() => {
+    fetchStartSnaps(discoveryState);
+  }, [discoveryState, fetchStartSnaps]);
+
+  const handleDiscoveryChange = (newDiscoveryState: ProjectDiscoveryState) => {
+    setDiscoveryState(newDiscoveryState);
   };
 
   return (
@@ -143,54 +194,26 @@ export const MainContentSection = (): JSX.Element => {
 
       {/* StartSnaps Cards Section */}
       <div className="w-full max-w-screen-2xl px-8 py-16">
-        <h2 className="text-5xl font-bold text-startsnap-ebony-clay text-center mb-20 font-['Space_Grotesk',Helvetica]">
-          StartSnaps
+        <h2 className="text-5xl font-bold text-startsnap-ebony-clay text-center mb-12 font-['Space_Grotesk',Helvetica]">
+          Explore StartSnaps
         </h2>
-        
-        <div className="flex justify-end mb-6">
-          <div className="flex gap-4">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setSortBy('newest');
-                fetchStartSnaps();
-              }}
-              className={`startsnap-button font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[2px_2px_0px_#1f2937] py-2 px-4 text-sm ${
-                sortBy === 'newest'
-                  ? 'bg-startsnap-french-rose text-startsnap-white'
-                  : 'bg-gray-200 text-startsnap-ebony-clay'
-              }`}
-            >
-              <span className="material-icons text-sm mr-1">schedule</span>
-              Newest
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setSortBy('supported');
-                fetchStartSnaps();
-              }}
-              className={`startsnap-button font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[2px_2px_0px_#1f2937] py-2 px-4 text-sm ${
-                sortBy === 'supported'
-                  ? 'bg-startsnap-french-rose text-startsnap-white'
-                  : 'bg-gray-200 text-startsnap-ebony-clay'
-              }`}
-            >
-              <span className="material-icons text-sm mr-1">favorite</span>
-              Most Supported
-            </Button>
-          </div>
-        </div>
+
+        <SearchAndFilterBar
+          initialSearchTerm={discoveryState.searchTerm}
+          initialFilters={discoveryState.filters}
+          initialSort={discoveryState.sort}
+          categories={categoryOptions}
+          onDiscoveryChange={handleDiscoveryChange}
+        />
 
         {loading ? (
           <div className="text-center py-20">
             <p className="text-xl text-startsnap-pale-sky">Loading projects...</p>
           </div>
         ) : startSnaps.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
             {startSnaps.map((startsnap) => {
               const creatorName = creators[startsnap.user_id] || 'Anonymous';
-              const creatorInitials = creatorName.substring(0, 2).toUpperCase();
 
               return (
                 <StartSnapCard
@@ -198,19 +221,16 @@ export const MainContentSection = (): JSX.Element => {
                   startsnap={startsnap}
                   showCreator={true}
                   creatorName={creatorName}
-                  creatorInitials={creatorInitials}
                   variant="main-page"
-                  isOwner={false}
                   formatDate={formatDate}
                   getCategoryDisplay={getCategoryDisplay}
-                  thumbnailStyle="minimalist"
                 />
               );
             })}
           </div>
         ) : (
           <div className="text-center py-20">
-            <p className="text-xl text-startsnap-pale-sky">No projects found. Be the first to share your idea!</p>
+            <p className="text-xl text-startsnap-pale-sky">No projects match your criteria. Try adjusting your search or filters!</p>
             <Button className="startsnap-button mt-4 bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]" asChild>
               <Link to="/create">Create StartSnap</Link>
             </Button>
