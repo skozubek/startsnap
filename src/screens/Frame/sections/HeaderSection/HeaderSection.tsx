@@ -124,8 +124,7 @@ export const HeaderSection = (): JSX.Element => {
               className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-2"
             >
               <Link to="/create">
-                <span className="material-icons text-xl">add</span>
-                <span>StartSnap</span>
+                <span>Add StartSnap</span>
               </Link>
             </Button>
           )}
