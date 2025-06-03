@@ -190,7 +190,7 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode }: AuthDialogPro
       if (error) throw error;
 
       handleClose();
-      alert('Check your email for the confirmation link!');
+      alert('Account created, enjoy the ride!');
     } catch (error: any) {
       console.error('Error signing up:', error);
       setError(error.message || 'An error occurred during sign up');
