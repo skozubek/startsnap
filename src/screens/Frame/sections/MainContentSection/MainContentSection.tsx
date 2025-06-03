@@ -80,7 +80,7 @@ export const MainContentSection = (): JSX.Element => {
 
       const { data, error } = await supabase
         .from('startsnaps')
-        .select('*, profiles!startsnaps_user_id_fkey(username)')
+        .select('*, profiles(username)')
         .order(sortBy === 'supported' ? 'support_count' : 'created_at', { ascending: sortBy === 'supported' ? false : false })
         .limit(6);
 
