@@ -45,7 +45,11 @@ interface ProjectInfoSectionProps {
   startsnap: StartsnapData;
   creator: CreatorData | null;
   isOwner: boolean;
-  currentUser: User | null; // Used to determine if "Support Project" button should be shown, etc.
+  currentUser: User | null;
+  isSupportedByCurrentUser: boolean;
+  currentSupportCount: number;
+  isSupportActionLoading: boolean;
+  onSupportToggle: () => Promise<void>;
 }
 
 /**
@@ -57,7 +61,11 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
   startsnap,
   creator,
   isOwner,
-  currentUser // Now using currentUser to decide if Support button should be shown (e.g. if user is logged in)
+  currentUser,
+  isSupportedByCurrentUser,
+  currentSupportCount,
+  isSupportActionLoading,
+  onSupportToggle
 }) => {
   const categoryDisplay = getCategoryDisplay(startsnap.category);
 
@@ -80,12 +88,29 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
                 </Link>
               </Button>
             ) : currentUser && (
-              // Show Support button only if the user is logged in and not the owner
-              <Button className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-1.5 px-3 py-1.5 text-sm hover:bg-startsnap-french-rose/90">
-                <span className="material-icons text-lg">favorite</span>
-                Support
+              <Button
+                onClick={onSupportToggle}
+                disabled={isSupportActionLoading}
+                className={`startsnap-button font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-1.5 px-3 py-1.5 text-sm ${
+                  isSupportedByCurrentUser
+                    ? 'bg-startsnap-french-rose/80 text-startsnap-white hover:bg-startsnap-french-rose/70'
+                    : 'bg-startsnap-french-rose text-startsnap-white hover:bg-startsnap-french-rose/90'
+                }`}
+              >
+                <span className="material-icons text-lg">
+                  {isSupportedByCurrentUser ? 'favorite' : 'favorite_border'}
+                </span>
+                {isSupportActionLoading
+                  ? 'Processing...'
+                  : isSupportedByCurrentUser
+                  ? 'Supported ✔'
+                  : 'Support Project'}
               </Button>
             )}
+            <div className="flex items-center gap-2 text-sm text-startsnap-oxford-blue">
+              <span className="material-icons text-lg">favorite</span>
+              {currentSupportCount} Supports
+            </div>
           </div>
         </div>
         <div className="flex gap-3 flex-wrap items-center mb-2">

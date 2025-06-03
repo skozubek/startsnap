@@ -44,6 +44,7 @@ export const MainContentSection = (): JSX.Element => {
   const [loading, setLoading] = useState(true);
   const [creators, setCreators] = useState<CreatorsMap>({});
   const typedRef = useRef(null);
+  const [sortBy, setSortBy] = useState<'newest' | 'supported'>('newest');
 
   useEffect(() => {
     // Initialize Typed.js
@@ -80,8 +81,9 @@ export const MainContentSection = (): JSX.Element => {
       // Fetch startsnaps
       const { data, error } = await supabase
         .from('startsnaps')
-        .select('*')
-        .order('created_at', { ascending: false })
+        .select('*, support_count')
+        .order(sortBy === 'supported' ? 'support_count' : 'created_at', { ascending: false })
+        .order('created_at', { ascending: false }) // Secondary sort
         .limit(6);
 
       if (error) throw error;
@@ -144,6 +146,41 @@ export const MainContentSection = (): JSX.Element => {
         <h2 className="text-5xl font-bold text-startsnap-ebony-clay text-center mb-20 font-['Space_Grotesk',Helvetica]">
           StartSnaps
         </h2>
+        
+        <div className="flex justify-end mb-6">
+          <div className="flex gap-4">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setSortBy('newest');
+                fetchStartSnaps();
+              }}
+              className={`startsnap-button font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[2px_2px_0px_#1f2937] py-2 px-4 text-sm ${
+                sortBy === 'newest'
+                  ? 'bg-startsnap-french-rose text-startsnap-white'
+                  : 'bg-gray-200 text-startsnap-ebony-clay'
+              }`}
+            >
+              <span className="material-icons text-sm mr-1">schedule</span>
+              Newest
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setSortBy('supported');
+                fetchStartSnaps();
+              }}
+              className={`startsnap-button font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[2px_2px_0px_#1f2937] py-2 px-4 text-sm ${
+                sortBy === 'supported'
+                  ? 'bg-startsnap-french-rose text-startsnap-white'
+                  : 'bg-gray-200 text-startsnap-ebony-clay'
+              }`}
+            >
+              <span className="material-icons text-sm mr-1">favorite</span>
+              Most Supported
+            </Button>
+          </div>
+        </div>
 
         {loading ? (
           <div className="text-center py-20">

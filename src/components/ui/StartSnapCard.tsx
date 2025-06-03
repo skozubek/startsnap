@@ -105,7 +105,7 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
             <div className="flex gap-2 flex-wrap">
               {/* Project type badge */}
               {startsnap.type === "live" ? (
-                <Badge variant="outline" className="bg-startsnap-mountain-meadow text-white font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-green-700 px-2 py-0.5 flex items-center gap-1">
+                <Badge variant="outline\" className="bg-startsnap-mountain-meadow text-white font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-green-700 px-2 py-0.5 flex items-center gap-1">
                   <span className="material-icons text-xs">rocket_launch</span>
                   Live Project
                 </Badge>
@@ -215,3 +215,5 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
     </Card>
   );
 };
+
+export { StartSnapCard }
