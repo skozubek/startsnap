@@ -109,6 +109,9 @@ export const ProjectDetail = (): JSX.Element => {
   const [feedbackEntries, setFeedbackEntries] = useState<FeedbackEntry[]>([]);
   const { user: currentUser } = useAuth();
   const [currentUserProfile, setCurrentUserProfile] = useState<UserProfile | null>(null);
+  const [isSupportedByCurrentUser, setIsSupportedByCurrentUser] = useState(false);
+  const [currentSupportCount, setCurrentSupportCount] = useState(0);
+  const [isSupportActionLoading, setIsSupportActionLoading] = useState(false);
 
   const VIBE_LOG_PAGE_SIZE = 3; // Number of vibe logs to show per page
   const [visibleVibeLogCount, setVisibleVibeLogCount] = useState(VIBE_LOG_PAGE_SIZE);
@@ -165,6 +168,21 @@ export const ProjectDetail = (): JSX.Element => {
         .single();
       if (projectError) throw projectError;
       setStartsnap(projectData as StartsnapData);
+
+      // Initialize support count
+      setCurrentSupportCount(projectData.support_count || 0);
+
+      // Check if current user has supported this project
+      if (currentUser) {
+        const { data: supportData } = await supabase
+          .from('project_supporters')
+          .select('*')
+          .eq('startsnap_id', projectData.id)
+          .eq('user_id', currentUser.id)
+          .single();
+        
+        setIsSupportedByCurrentUser(!!supportData);
+      }
 
       if (projectData) {
         const { data: creatorData, error: creatorError } = await supabase
@@ -273,6 +291,57 @@ export const ProjectDetail = (): JSX.Element => {
     }
   };
 
+  /**
+   * @description Handles toggling project support status
+   * @async
+   * @sideEffects Updates project_supporters table and support_count via RPC
+   */
+  const handleSupportToggle = async () => {
+    if (!currentUser || !startsnap) return;
+    
+    setIsSupportActionLoading(true);
+    try {
+      if (!isSupportedByCurrentUser) {
+        // Add support
+        const { error: supportError } = await supabase
+          .from('project_supporters')
+          .insert({ startsnap_id: startsnap.id, user_id: currentUser.id });
+        
+        if (supportError) throw supportError;
+
+        const { data: newCount, error: rpcError } = await supabase
+          .rpc('increment_support_count', { p_startsnap_id: startsnap.id });
+        
+        if (rpcError) throw rpcError;
+
+        setIsSupportedByCurrentUser(true);
+        setCurrentSupportCount(newCount || currentSupportCount + 1);
+      } else {
+        // Remove support
+        const { error: supportError } = await supabase
+          .from('project_supporters')
+          .delete()
+          .eq('startsnap_id', startsnap.id)
+          .eq('user_id', currentUser.id);
+        
+        if (supportError) throw supportError;
+
+        const { data: newCount, error: rpcError } = await supabase
+          .rpc('decrement_support_count', { p_startsnap_id: startsnap.id });
+        
+        if (rpcError) throw rpcError;
+
+        setIsSupportedByCurrentUser(false);
+        setCurrentSupportCount(newCount || Math.max(0, currentSupportCount - 1));
+      }
+    } catch (error) {
+      console.error('Error toggling project support:', error);
+      alert('Failed to update project support. Please try again.');
+    } finally {
+      setIsSupportActionLoading(false);
+    }
+  };
+
   const handleLoadMoreVibeLogs = () => {
     setVisibleVibeLogCount(prevCount => Math.min(prevCount + VIBE_LOG_PAGE_SIZE, vibeLogEntries.length));
   };
@@ -313,6 +382,10 @@ export const ProjectDetail = (): JSX.Element => {
             creator={creator}
             isOwner={isOwner}
             currentUser={currentUser as User | null}
+            isSupportedByCurrentUser={isSupportedByCurrentUser}
+            currentSupportCount={currentSupportCount}
+            isSupportActionLoading={isSupportActionLoading}
+            onSupportToggle={handleSupportToggle}
           />
           <VibeLogSection
             startsnapId={startsnap.id}
