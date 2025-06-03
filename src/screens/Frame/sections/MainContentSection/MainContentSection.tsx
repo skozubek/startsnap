@@ -170,6 +170,44 @@ export const MainContentSection = (): JSX.Element => {
         </div>
       </div>
 
+      {/* StartSnaps Cards Section */}
+      <div className="w-full max-w-screen-2xl px-8 py-16">
+        <h2 className="text-5xl font-bold text-startsnap-ebony-clay text-center mb-12 font-['Space_Grotesk',Helvetica]">
+          Featured StartSnaps
+        </h2>
+
+        {loading ? (
+          <div className="text-center py-20">
+            <p className="text-xl text-startsnap-pale-sky">Loading projects...</p>
+          </div>
+        ) : startSnaps.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {startSnaps.slice(0, 3).map((startsnap) => {
+              const creatorName = creators[startsnap.user_id] || 'Anonymous';
+
+              return (
+                <StartSnapCard
+                  key={startsnap.id}
+                  startsnap={startsnap}
+                  showCreator={true}
+                  creatorName={creatorName}
+                  variant="main-page"
+                  formatDate={formatDate}
+                  getCategoryDisplay={getCategoryDisplay}
+                />
+              );
+            })}
+          </div>
+        ) : (
+          <div className="text-center py-20">
+            <p className="text-xl text-startsnap-pale-sky">No projects match your criteria. Try adjusting your search or filters!</p>
+            <Button className="startsnap-button mt-4 bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]" asChild>
+              <Link to="/create">Create StartSnap</Link>
+            </Button>
+          </div>
+        )}
+      </div>
+
       {/* Build in Public Manifesto Section */}
       <div className="w-full bg-startsnap-white border-t-2 border-b-2 border-gray-800">
         <div className="max-w-screen-2xl mx-auto px-8 py-16 lg:py-24">
@@ -254,44 +292,6 @@ export const MainContentSection = (): JSX.Element => {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* StartSnaps Cards Section */}
-      <div className="w-full max-w-screen-2xl px-8 py-16">
-        <h2 className="text-5xl font-bold text-startsnap-ebony-clay text-center mb-12 font-['Space_Grotesk',Helvetica]">
-          Featured StartSnaps
-        </h2>
-
-        {loading ? (
-          <div className="text-center py-20">
-            <p className="text-xl text-startsnap-pale-sky">Loading projects...</p>
-          </div>
-        ) : startSnaps.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {startSnaps.slice(0, 3).map((startsnap) => {
-              const creatorName = creators[startsnap.user_id] || 'Anonymous';
-
-              return (
-                <StartSnapCard
-                  key={startsnap.id}
-                  startsnap={startsnap}
-                  showCreator={true}
-                  creatorName={creatorName}
-                  variant="main-page"
-                  formatDate={formatDate}
-                  getCategoryDisplay={getCategoryDisplay}
-                />
-              );
-            })}
-          </div>
-        ) : (
-          <div className="text-center py-20">
-            <p className="text-xl text-startsnap-pale-sky">No projects match your criteria. Try adjusting your search or filters!</p>
-            <Button className="startsnap-button mt-4 bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]" asChild>
-              <Link to="/create">Create StartSnap</Link>
-            </Button>
-          </div>
-        )}
       </div>
     </section>
   );
