@@ -176,12 +176,11 @@ export const ProjectDetail = (): JSX.Element => {
       if (currentUser) {
         const { data: supportData } = await supabase
           .from('project_supporters')
-          .select('*')
+          .select()
           .eq('startsnap_id', projectData.id)
-          .eq('user_id', currentUser.id)
-          .single();
+          .eq('user_id', currentUser.id);
         
-        setIsSupportedByCurrentUser(!!supportData);
+        setIsSupportedByCurrentUser(!!supportData && supportData.length > 0);
       }
 
       if (projectData) {
