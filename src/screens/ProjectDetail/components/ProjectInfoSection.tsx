@@ -10,42 +10,27 @@ import { UserAvatar } from '../../../components/ui/user-avatar';
 import { getCategoryDisplay } from '../../../config/categories';
 import { formatDetailedDate } from '../../../lib/utils';
 import type { User } from '@supabase/supabase-js';
+import type { StartSnapProject } from '../../../types/startsnap'; // Import centralized type
+import type { UserProfileData } from '../../../types/user'; // Import UserProfileData
 
-// It's good practice to define specific types for complex prop objects
-// For simplicity here, using `any` for startsnap and creator, but ideally, these would be typed.
-interface StartsnapData {
-  id: string;
-  name: string;
-  category: string;
-  type: 'live' | 'idea';
-  is_hackathon_entry: boolean;
-  live_demo_url?: string;
-  demo_video_url?: string;
-  description: string;
-  tags?: string[];
-  tools_used?: string[];
-  created_at: string;
-  user_id: string;
-  // Add other fields from your startsnap object as needed
-}
-
-interface CreatorData {
-  username: string;
-  // Add other fields from your creator object as needed
-}
+// Removed local StartsnapData interface
 
 /**
  * @description Props for the ProjectInfoSection component.
- * @param {StartsnapData} startsnap - The main data object for the StartSnap project.
- * @param {CreatorData | null} creator - The profile data of the project creator.
+ * @param {StartSnapProject} startsnap - The main data object for the StartSnap project.
+ * @param {UserProfileData | null} creator - The profile data of the project creator.
  * @param {boolean} isOwner - Boolean indicating if the current user owns the project.
  * @param {User | null} currentUser - The currently authenticated Supabase user object.
  */
 interface ProjectInfoSectionProps {
-  startsnap: StartsnapData;
-  creator: CreatorData | null;
+  startsnap: StartSnapProject; // Use StartSnapProject
+  creator: UserProfileData | null; // Use UserProfileData
   isOwner: boolean;
-  currentUser: User | null; // Used to determine if "Support Project" button should be shown, etc.
+  currentUser: User | null;
+  isSupportedByCurrentUser: boolean;
+  currentSupportCount: number;
+  isSupportActionLoading: boolean;
+  onSupportToggle: () => Promise<void>;
 }
 
 /**
@@ -57,7 +42,11 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
   startsnap,
   creator,
   isOwner,
-  currentUser // Now using currentUser to decide if Support button should be shown (e.g. if user is logged in)
+  currentUser,
+  isSupportedByCurrentUser,
+  currentSupportCount,
+  isSupportActionLoading,
+  onSupportToggle
 }) => {
   const categoryDisplay = getCategoryDisplay(startsnap.category);
 
@@ -80,12 +69,26 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
                 </Link>
               </Button>
             ) : currentUser && (
-              // Show Support button only if the user is logged in and not the owner
-              <Button className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-1.5 px-3 py-1.5 text-sm hover:bg-startsnap-french-rose/90">
-                <span className="material-icons text-lg">favorite</span>
-                Support
+              <Button
+                onClick={onSupportToggle}
+                disabled={isSupportActionLoading}
+                className={`startsnap-button font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-1.5 px-3 py-1.5 text-sm bg-startsnap-french-rose text-startsnap-white hover:bg-startsnap-french-rose/90`}
+              >
+                <span className="material-icons text-lg">
+                  {isSupportedByCurrentUser ? 'favorite' : 'favorite_border'}
+                </span>
+                {isSupportActionLoading
+                  ? 'Processing...'
+                  : isSupportedByCurrentUser
+                  ? 'Supported ✔'
+                  : 'Support Project'}
               </Button>
             )}
+            {/* Always display support count with heart icon and rose color */}
+            <div className="flex items-center gap-1 text-sm text-startsnap-french-rose">
+              <span className="material-icons text-lg">favorite</span>
+              {currentSupportCount}
+            </div>
           </div>
         </div>
         <div className="flex gap-3 flex-wrap items-center mb-2">
@@ -160,7 +163,7 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
             )}
             {startsnap.tools_used && startsnap.tools_used.length > 0 && (
               <div className="flex flex-wrap items-center gap-3">
-                <span className="material-icons text-startsnap-shuttle-gray text-xl">construction</span>
+                <span className="material-icons text-startsnap-persian-blue text-xl">build</span>
                 {startsnap.tools_used.map((tool: string, index: number) => (
                   <Badge key={`tool-${index}`} variant="outline" className="bg-startsnap-french-pass text-startsnap-persian-blue font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-blue-700 px-3 py-1">
                     {tool}

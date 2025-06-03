@@ -9,6 +9,7 @@ import { Badge } from "./badge";
 import { Button } from "./button";
 import { Card, CardContent, CardFooter } from "./card";
 import { UserAvatar } from "./user-avatar";
+import type { StartSnapProject } from "../../types/startsnap"; // Import centralized type
 
 /**
  * @description Available thumbnail style options for project cards
@@ -16,26 +17,10 @@ import { UserAvatar } from "./user-avatar";
 export type ThumbnailStyle = 'minimalist' | 'grid' | 'chevron' | 'polkaDot';
 
 /**
- * @description Type definition for StartSnap project data
- */
-interface StartSnapType {
-  id: string;
-  name: string;
-  description: string;
-  category: string;
-  type: "live" | "idea";
-  is_hackathon_entry?: boolean;
-  tags?: string[];
-  tools_used?: string[];
-  created_at: string;
-  user_id: string;
-}
-
-/**
  * @description Props for the StartSnapCard component
  */
 interface StartSnapCardProps {
-  startsnap: StartSnapType;
+  startsnap: StartSnapProject;
   showCreator?: boolean;
   creatorName?: string;
   creatorInitials?: string;
@@ -91,7 +76,17 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
               }`}>
                 {startsnap.name}
               </h3>
-              {/* Category Badge */}
+              {/* Support Count Display appears here */}
+              {typeof startsnap.support_count === 'number' && startsnap.support_count >= 0 && (
+                <div className="flex items-center gap-0.5 text-startsnap-french-rose font-['Space_Mono',Helvetica] text-sm shrink-0">
+                  <span className="material-icons text-sm">favorite</span>
+                  {startsnap.support_count}
+                </div>
+              )}
+            </div>
+            {/* Status badges - now in header */}
+            <div className="flex gap-2 flex-wrap items-center">
+              {/* Category Badge appears here */}
               <Badge
                 variant="outline"
                 className={`${categoryDisplay.bgColor} ${categoryDisplay.textColor} border ${categoryDisplay.borderColor} rounded-full px-[13px] py-[5px] font-['Space_Mono',Helvetica] font-normal shrink-0 ${
@@ -100,9 +95,6 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
               >
                 {categoryDisplay.name}
               </Badge>
-            </div>
-            {/* Status badges - now in header */}
-            <div className="flex gap-2 flex-wrap">
               {/* Project type badge */}
               {startsnap.type === "live" ? (
                 <Badge variant="outline" className="bg-startsnap-mountain-meadow text-white font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-green-700 px-2 py-0.5 flex items-center gap-1">
@@ -145,7 +137,7 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
               {/* General Tags Section */}
               {startsnap.tags && startsnap.tags.length > 0 && (
                 <div className="flex items-start gap-3">
-                  <span className={`material-icons text-startsnap-oxford-blue ${variant === 'main-page' ? 'text-sm' : 'text-xs'} mt-1 shrink-0`}>tag</span>
+                  <span className={`material-icons text-startsnap-oxford-blue ${variant === 'main-page' ? 'text-sm' : 'text-xs'} mt-1 shrink-0`}>sell</span>
                   <div className="flex flex-wrap gap-2 flex-1">
                     {startsnap.tags.slice(0, 3).map((tag, idx) => (
                       <Badge

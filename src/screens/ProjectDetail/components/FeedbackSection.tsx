@@ -17,43 +17,8 @@ import {
 } from '../../../components/ui/dropdown-menu';
 import { MoreHorizontal, MessageSquare } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
-
-/**
- * @description Interface for user profile data (subset needed for feedback).
- */
-interface UserProfile {
-  username?: string;
-}
-
-/**
- * @description Interface for feedback reply data.
- */
-interface FeedbackReply {
-  id: string;
-  parent_feedback_id: string;
-  user_id: string;
-  content: string;
-  created_at: string;
-  updated_at: string;
-  profile?: {
-    username: string;
-  };
-}
-
-/**
- * @description Interface for feedback entry data.
- */
-interface FeedbackEntry {
-  id: string;
-  user_id: string;
-  content: string;
-  created_at: string;
-  updated_at: string;
-  profile?: {
-    username: string;
-  };
-  replies?: FeedbackReply[];
-}
+import type { UserProfileData } from '../../../types/user';
+import type { FeedbackEntry, FeedbackReply } from '../../../types/feedback'; // Import feedback types
 
 /**
  * @description Props for the FeedbackSection component.
@@ -67,7 +32,7 @@ interface FeedbackSectionProps {
   startsnapId: string;
   initialFeedbackEntries: FeedbackEntry[];
   currentUser: User | null;
-  currentUserProfile: UserProfile | null;
+  currentUserProfile: Pick<UserProfileData, 'username'> | null; // Use Pick<UserProfileData, 'username'>
   onFeedbackChange: () => Promise<void>;
 }
 
