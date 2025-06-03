@@ -233,19 +233,19 @@ export const MainContentSection = (): JSX.Element => {
               <ul className="space-y-4 text-startsnap-river-bed">
                 <li className="flex items-start gap-2">
                   <span className="material-icons text-startsnap-french-rose mt-1">rocket_launch</span>
-                  <span><strong>Share Fearlessly; Mess and All.</strong> Your process? Pure gold. Every stumble, every detour—it's a lesson for the next Vibe Coder.</span>
+                  <span><strong>Share Fearlessly. No Shame.</strong> Your process? Pure gold. Every stumble, every detour - it's a lesson for the next Vibe Coder.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="material-icons text-startsnap-french-rose mt-1">forum</span>
-                  <span><strong>Feedback is Fuel; The Real Kind.</strong> No sugar-coating here. Get the honest takes that actually help you build better, faster.</span>
+                  <span><strong>Feedback is Fuel. The Real Kind.</strong> No sugar-coating here. Get the honest takes that actually help you build better, faster.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="material-icons text-startsnap-french-rose mt-1">diversity_3</span>
-                  <span><strong>Connect & Grow; Your Tribe Awaits.</strong> Ditch the echo chamber. Find your collaborators, your mentors, your future co-founders. They're here.</span>
+                  <span><strong>Connect & Grow. Your Tribe Awaits.</strong> Ditch the echo chamber. Find your collaborators, your mentors, your future co-founders. They're here.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="material-icons text-startsnap-french-rose mt-1">auto_awesome</span>
-                  <span><strong>Inspire Others; Be the Spark.</strong> Your journey—the grind, the wins, the "what ifs"—it's the kickstart someone else needs. Pass it on.</span>
+                  <span><strong>Inspire Others. Be the Spark.</strong> Your journey - the grind, the wins, the "what ifs" - it's the kickstart someone else needs. Pass it on.</span>
                 </li>
               </ul>
             </div>
@@ -257,7 +257,7 @@ export const MainContentSection = (): JSX.Element => {
               <ul className="space-y-4 text-startsnap-river-bed">
                 <li className="flex items-start gap-2">
                   <span className="material-icons text-startsnap-persian-blue mt-1">insights</span>
-                  <span><strong>Vibe Log: Your Uncut Journey.</strong> Document it all—the genius prompt, the "why won't this work?!" moment, the late-night breakthroughs. One raw update at a time.</span>
+                  <span><strong>Vibe Log: Your Uncut Journey.</strong> Document it all - the genius prompt, the "why won't this work?!" moment, the late-night breakthroughs. One raw update at a time.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="material-icons text-startsnap-persian-blue mt-1">groups</span>
