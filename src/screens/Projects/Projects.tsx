@@ -117,6 +117,11 @@ export const Projects = (): JSX.Element => {
   return (
     <div className="flex flex-col w-full items-center bg-startsnap-candlelight">
       <div className="w-full max-w-screen-2xl px-8 py-16">
+        <div className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-3xl leading-9 mb-12">
+          <Link to="/" className="hover:text-startsnap-french-rose transition-colors">
+            startsnap.fun
+          </Link>
+        </div>
         <h1 className="text-5xl font-bold text-startsnap-ebony-clay text-center mb-12 font-['Space_Grotesk',Helvetica]">
           Explore StartSnaps Gallery
         </h1>
