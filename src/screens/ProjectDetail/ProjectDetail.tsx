@@ -13,72 +13,13 @@ import { ProjectInfoSection } from "./components/ProjectInfoSection";
 import { VibeLogSection } from "./components/VibeLogSection";
 import { FeedbackSection } from "./components/FeedbackSection";
 import type { User } from '@supabase/supabase-js';
+import type { StartSnapProject } from "../../types/startsnap"; // Import centralized type
+import type { UserProfileData } from "../../types/user"; // Import UserProfileData
+import type { FeedbackEntry, FeedbackReply } from "../../types/feedback"; // Import feedback types
+import type { VibeLog } from "../../types/vibeLog"; // Import VibeLog type
 
 // Define types that were previously inline or implicitly defined
 // These might be moved to a dedicated types.ts file if they grow further or are used elsewhere
-
-/**
- * @description Interface for feedback reply data
- */
-interface FeedbackReply {
-  id: string;
-  parent_feedback_id: string;
-  user_id: string;
-  content: string;
-  created_at: string;
-  updated_at: string;
-  profile?: {
-    username: string;
-  };
-}
-
-/**
- * @description Interface for feedback entry data
- */
-interface FeedbackEntry {
-  id: string;
-  user_id: string;
-  content: string;
-  created_at: string;
-  updated_at: string;
-  profile?: {
-    username: string;
-  };
-  replies?: FeedbackReply[];
-}
-
-/**
- * @description Interface for VibeLog entry data from DB
- */
-interface VibeLog {
-  id: string;
-  startsnap_id: string;
-  log_type: string;
-  title: string;
-  content: string;
-  created_at: string;
-  updated_at: string;
-  user_id?: string;
-}
-
-/**
- * @description Interface for Startsnap project data (subset)
- */
-interface StartsnapData { // More specific type than 'any'
-  id: string;
-  name: string;
-  category: string;
-  type: 'live' | 'idea';
-  is_hackathon_entry: boolean;
-  live_demo_url?: string;
-  demo_video_url?: string;
-  description: string;
-  tags?: string[];
-  tools_used?: string[];
-  created_at: string;
-  user_id: string;
-  // Include other fields as necessary
-}
 
 /**
  * @description Interface for Creator profile data (subset)
@@ -103,12 +44,12 @@ interface UserProfile {
 export const ProjectDetail = (): JSX.Element => {
   const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(true);
-  const [startsnap, setStartsnap] = useState<StartsnapData | null>(null);
-  const [creator, setCreator] = useState<CreatorData | null>(null);
+  const [startsnap, setStartsnap] = useState<StartSnapProject | null>(null);
+  const [creator, setCreator] = useState<UserProfileData | null>(null);
   const [vibeLogEntries, setVibeLogEntries] = useState<VibeLog[]>([]);
   const [feedbackEntries, setFeedbackEntries] = useState<FeedbackEntry[]>([]);
   const { user: currentUser } = useAuth();
-  const [currentUserProfile, setCurrentUserProfile] = useState<UserProfile | null>(null);
+  const [currentUserProfile, setCurrentUserProfile] = useState<Pick<UserProfileData, 'username'> | null>(null);
   const [isSupportedByCurrentUser, setIsSupportedByCurrentUser] = useState(false);
   const [currentSupportCount, setCurrentSupportCount] = useState(0);
   const [isSupportActionLoading, setIsSupportActionLoading] = useState(false);
@@ -170,7 +111,7 @@ export const ProjectDetail = (): JSX.Element => {
       if (!projectData) {
         throw new Error('Project not found');
       }
-      setStartsnap(projectData as StartsnapData);
+      setStartsnap(projectData as StartSnapProject);
 
       // Initialize support count
       setCurrentSupportCount(projectData.support_count || 0);
@@ -183,7 +124,7 @@ export const ProjectDetail = (): JSX.Element => {
           .eq('startsnap_id', projectData.id)
           .eq('user_id', currentUser.id)
           .maybeSingle();
-        
+
         setIsSupportedByCurrentUser(!!supportData);
       }
 
@@ -195,7 +136,7 @@ export const ProjectDetail = (): JSX.Element => {
         if (creatorError && creatorError.code !== 'PGRST116') {
           console.error('Error fetching creator:', creatorError);
         } else {
-          setCreator(creatorData?.[0] as CreatorData || null);
+          setCreator(creatorData?.[0] as UserProfileData || null);
         }
 
         const { data: vibeLogsData, error: vibeLogsError } = await supabase
@@ -300,7 +241,7 @@ export const ProjectDetail = (): JSX.Element => {
    */
   const handleSupportToggle = async () => {
     if (!currentUser || !startsnap) return;
-    
+
     setIsSupportActionLoading(true);
     try {
       if (!isSupportedByCurrentUser) {
@@ -308,12 +249,12 @@ export const ProjectDetail = (): JSX.Element => {
         const { error: supportError } = await supabase
           .from('project_supporters')
           .insert({ startsnap_id: startsnap.id, user_id: currentUser.id });
-        
+
         if (supportError) throw supportError;
 
         const { data: newCount, error: rpcError } = await supabase
           .rpc('increment_support_count', { p_startsnap_id: startsnap.id });
-        
+
         if (rpcError) throw rpcError;
 
         setIsSupportedByCurrentUser(true);
@@ -325,12 +266,12 @@ export const ProjectDetail = (): JSX.Element => {
           .delete()
           .eq('startsnap_id', startsnap.id)
           .eq('user_id', currentUser.id);
-        
+
         if (supportError) throw supportError;
 
         const { data: newCount, error: rpcError } = await supabase
           .rpc('decrement_support_count', { p_startsnap_id: startsnap.id });
-        
+
         if (rpcError) throw rpcError;
 
         setIsSupportedByCurrentUser(false);

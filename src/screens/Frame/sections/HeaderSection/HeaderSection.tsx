@@ -23,6 +23,7 @@ import {
 import { LogOut, User } from "lucide-react";
 import { useAuth } from "../../../../context/AuthContext";
 import { UserAvatar, getAvatarName } from "../../../../components/ui/user-avatar";
+import type { UserProfileData } from "../../../../types/user";
 
 /**
  * @description Header component with navigation and authentication UI
@@ -31,7 +32,7 @@ import { UserAvatar, getAvatarName } from "../../../../components/ui/user-avatar
 export const HeaderSection = (): JSX.Element => {
   const [authMode, setAuthMode] = useState<'signup' | 'login'>('login');
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
-  const [userProfile, setUserProfile] = useState<{ username?: string } | null>(null);
+  const [userProfile, setUserProfile] = useState<Pick<UserProfileData, 'username'> | null>(null);
   const { user } = useAuth();
 
   // Fetch user profile when user changes to get consistent username

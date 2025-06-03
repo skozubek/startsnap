@@ -16,29 +16,7 @@ import {
   DropdownMenuTrigger
 } from "../../../components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
-
-/**
- * @description Interface for VibeLog entry data from DB.
- */
-interface VibeLog {
-  id: string;
-  startsnap_id: string;
-  log_type: string;
-  title: string;
-  content: string;
-  created_at: string;
-  updated_at: string;
-  user_id?: string;
-}
-
-/**
- * @description Interface for VibeLog form data (for add/edit).
- */
-interface VibeLogFormData {
-  log_type: string;
-  title: string;
-  content: string;
-}
+import type { VibeLog, VibeLogFormData } from "../../../types/vibeLog";
 
 /**
  * @description Props for the VibeLogSection component.

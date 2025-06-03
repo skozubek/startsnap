@@ -10,40 +10,21 @@ import { UserAvatar } from '../../../components/ui/user-avatar';
 import { getCategoryDisplay } from '../../../config/categories';
 import { formatDetailedDate } from '../../../lib/utils';
 import type { User } from '@supabase/supabase-js';
+import type { StartSnapProject } from '../../../types/startsnap'; // Import centralized type
+import type { UserProfileData } from '../../../types/user'; // Import UserProfileData
 
-// It's good practice to define specific types for complex prop objects
-// For simplicity here, using `any` for startsnap and creator, but ideally, these would be typed.
-interface StartsnapData {
-  id: string;
-  name: string;
-  category: string;
-  type: 'live' | 'idea';
-  is_hackathon_entry: boolean;
-  live_demo_url?: string;
-  demo_video_url?: string;
-  description: string;
-  tags?: string[];
-  tools_used?: string[];
-  created_at: string;
-  user_id: string;
-  // Add other fields from your startsnap object as needed
-}
-
-interface CreatorData {
-  username: string;
-  // Add other fields from your creator object as needed
-}
+// Removed local StartsnapData interface
 
 /**
  * @description Props for the ProjectInfoSection component.
- * @param {StartsnapData} startsnap - The main data object for the StartSnap project.
- * @param {CreatorData | null} creator - The profile data of the project creator.
+ * @param {StartSnapProject} startsnap - The main data object for the StartSnap project.
+ * @param {UserProfileData | null} creator - The profile data of the project creator.
  * @param {boolean} isOwner - Boolean indicating if the current user owns the project.
  * @param {User | null} currentUser - The currently authenticated Supabase user object.
  */
 interface ProjectInfoSectionProps {
-  startsnap: StartsnapData;
-  creator: CreatorData | null;
+  startsnap: StartSnapProject; // Use StartSnapProject
+  creator: UserProfileData | null; // Use UserProfileData
   isOwner: boolean;
   currentUser: User | null;
   isSupportedByCurrentUser: boolean;

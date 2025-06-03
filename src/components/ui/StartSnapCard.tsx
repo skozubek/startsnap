@@ -9,6 +9,7 @@ import { Badge } from "./badge";
 import { Button } from "./button";
 import { Card, CardContent, CardFooter } from "./card";
 import { UserAvatar } from "./user-avatar";
+import type { StartSnapProject } from "../../types/startsnap"; // Import centralized type
 
 /**
  * @description Available thumbnail style options for project cards
@@ -16,27 +17,10 @@ import { UserAvatar } from "./user-avatar";
 export type ThumbnailStyle = 'minimalist' | 'grid' | 'chevron' | 'polkaDot';
 
 /**
- * @description Type definition for StartSnap project data
- */
-interface StartSnapType {
-  id: string;
-  name: string;
-  description: string;
-  category: string;
-  type: "live" | "idea";
-  is_hackathon_entry?: boolean;
-  tags?: string[];
-  tools_used?: string[];
-  created_at: string;
-  user_id: string;
-  support_count?: number;
-}
-
-/**
  * @description Props for the StartSnapCard component
  */
 interface StartSnapCardProps {
-  startsnap: StartSnapType;
+  startsnap: StartSnapProject;
   showCreator?: boolean;
   creatorName?: string;
   creatorInitials?: string;

@@ -14,23 +14,7 @@ import { getCategoryDisplay } from "../../../../config/categories";
 import { formatDate } from "../../../../lib/utils";
 import Typed from 'typed.js';
 import type { ProjectDiscoveryState, FilterOptions, SortOption } from "../../../../types/projectDiscovery";
-
-/**
- * @description Type definition for StartSnap project data
- */
-interface StartSnapType {
-  id: string;
-  name: string;
-  description: string;
-  category: string;
-  type: "live" | "idea";
-  is_hackathon_entry?: boolean;
-  tags?: string[];
-  tools_used?: string[];
-  created_at: string;
-  user_id: string;
-  support_count?: number;
-}
+import type { StartSnapProject } from "../../../../types/startsnap";
 
 /**
  * @description Type definition for creators mapping object
@@ -52,7 +36,7 @@ const categoryOptions = Object.values(CATEGORY_CONFIG).map(config => config.labe
  * @returns {JSX.Element} Main content section with hero and StartSnap cards
  */
 export const MainContentSection = (): JSX.Element => {
-  const [startSnaps, setStartSnaps] = useState<StartSnapType[]>([]);
+  const [startSnaps, setStartSnaps] = useState<StartSnapProject[]>([]);
   const [loading, setLoading] = useState(true);
   const [creators, setCreators] = useState<CreatorsMap>({});
   const typedRef = useRef(null);
