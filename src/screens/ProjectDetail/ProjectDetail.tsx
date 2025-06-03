@@ -165,8 +165,11 @@ export const ProjectDetail = (): JSX.Element => {
         .from('startsnaps')
         .select('*, support_count')
         .eq('id', id)
-        .single();
+        .maybeSingle();
       if (projectError) throw projectError;
+      if (!projectData) {
+        throw new Error('Project not found');
+      }
       setStartsnap(projectData as StartsnapData);
 
       // Initialize support count
@@ -176,23 +179,23 @@ export const ProjectDetail = (): JSX.Element => {
       if (currentUser) {
         const { data: supportData } = await supabase
           .from('project_supporters')
-          .select()
+          .select('*')
           .eq('startsnap_id', projectData.id)
-          .eq('user_id', currentUser.id);
+          .eq('user_id', currentUser.id)
+          .maybeSingle();
         
-        setIsSupportedByCurrentUser(!!supportData && supportData.length > 0);
+        setIsSupportedByCurrentUser(!!supportData);
       }
 
       if (projectData) {
         const { data: creatorData, error: creatorError } = await supabase
           .from('profiles')
           .select('*')
-          .eq('user_id', projectData.user_id)
-          .single();
+          .eq('user_id', projectData.user_id);
         if (creatorError && creatorError.code !== 'PGRST116') {
           console.error('Error fetching creator:', creatorError);
         } else {
-          setCreator(creatorData as CreatorData);
+          setCreator(creatorData?.[0] as CreatorData || null);
         }
 
         const { data: vibeLogsData, error: vibeLogsError } = await supabase
