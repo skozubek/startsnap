@@ -218,7 +218,7 @@ export const MainContentSection = (): JSX.Element => {
               <img
                 src="https://ik.imagekit.io/craftsnap/startsnap/vibe-coder-aha.png?updatedAt=1748985333023"
                 alt="Developer having an aha moment"
-                className="w-full h-auto shadow-[5px_5px_0px_#1f2937] animate-[fade-in_0.5s_ease-in]"
+                className="w-full h-auto animate-[fade-in_0.5s_ease-in]"
                 loading="lazy"
               />
             </div>
@@ -277,19 +277,8 @@ export const MainContentSection = (): JSX.Element => {
 
           <div className="text-center">
             <Button asChild className="startsnap-button bg-startsnap-persian-blue text-startsnap-white font-['Roboto',Helvetica] font-bold text-lg rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] px-8 py-4">
-              <Link to="/create">Start Your Build Journey</Link>
+              <Link to="/create">Start Your Journey</Link>
             </Button>
-
-            <p className="text-sm text-startsnap-pale-sky mt-8 font-['Roboto',Helvetica]">
-              Inspired by the global #buildinpublic movement. Join vibrant communities like{' '}
-              <a href="https://twitter.com/buildinpublic" target="_blank" rel="noopener noreferrer" className="text-startsnap-french-rose hover:underline">
-                #buildinpublic on X
-              </a>
-              {' '}and the{' '}
-              <a href="https://bolt.new" target="_blank" rel="noopener noreferrer" className="text-startsnap-french-rose hover:underline">
-                Bolt.new community
-              </a>.
-            </p>
           </div>
         </div>
       </div>
