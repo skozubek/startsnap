@@ -65,7 +65,7 @@ export const HeaderSection = (): JSX.Element => {
 
   // Only "Feed" is visible to all users
   const navLinks = [
-    { title: "Feed", href: "#" },
+    { title: "Projects", href: "/projects" },
   ];
 
   // "Create StartSnap" is only visible to authenticated users

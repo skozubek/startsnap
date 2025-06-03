@@ -10,6 +10,7 @@ import { HeaderSection } from "./sections/HeaderSection/HeaderSection";
 import { MainContentSection } from "./sections/MainContentSection/MainContentSection";
 import { ProjectDetail } from "../ProjectDetail";
 import { CreateStartSnap } from "../CreateStartSnap";
+import { Projects } from "../Projects";
 import { EditStartSnap } from "../EditStartSnap";
 import { Profile } from "../Profile";
 import { AuthProvider, useAuth } from "../../context/AuthContext";
@@ -50,6 +51,7 @@ export const Frame = (): JSX.Element => {
         <div className="flex flex-col w-full min-h-screen overflow-y-auto">
           <Routes>
             <Route path="/" element={<MainContentSection />} />
+            <Route path="/projects" element={<Projects />} />
             <Route path="/project/:id" element={<ProjectDetail />} />
             <Route
               path="/create"

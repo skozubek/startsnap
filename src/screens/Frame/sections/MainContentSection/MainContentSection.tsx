@@ -179,24 +179,16 @@ export const MainContentSection = (): JSX.Element => {
       {/* StartSnaps Cards Section */}
       <div className="w-full max-w-screen-2xl px-8 py-16">
         <h2 className="text-5xl font-bold text-startsnap-ebony-clay text-center mb-12 font-['Space_Grotesk',Helvetica]">
-          Explore StartSnaps
+          Featured StartSnaps
         </h2>
-
-        <SearchAndFilterBar
-          initialSearchTerm={discoveryState.searchTerm}
-          initialFilters={discoveryState.filters}
-          initialSort={discoveryState.sort}
-          categories={categoryOptions}
-          onDiscoveryChange={handleDiscoveryChange}
-        />
 
         {loading ? (
           <div className="text-center py-20">
             <p className="text-xl text-startsnap-pale-sky">Loading projects...</p>
           </div>
         ) : startSnaps.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
-            {startSnaps.map((startsnap) => {
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {startSnaps.slice(0, 3).map((startsnap) => {
               const creatorName = creators[startsnap.user_id] || 'Anonymous';
 
               return (
@@ -214,7 +206,7 @@ export const MainContentSection = (): JSX.Element => {
           </div>
         ) : (
           <div className="text-center py-20">
-            <p className="text-xl text-startsnap-pale-sky">No projects match your criteria. Try adjusting your search or filters!</p>
+            <p className="text-xl text-startsnap-pale-sky">No projects found. Be the first to share your idea!</p>
             <Button className="startsnap-button mt-4 bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]" asChild>
               <Link to="/create">Create StartSnap</Link>
             </Button>
