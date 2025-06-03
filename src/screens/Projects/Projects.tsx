@@ -12,20 +12,32 @@ import { supabase } from "../../lib/supabase";
 import { CATEGORY_CONFIG, getCategoryDisplay } from "../../config/categories";
 import { formatDate } from "../../lib/utils";
 import { useState, useEffect, useCallback } from "react";
-import type { ProjectDiscoveryState } from "../../types/projectDiscovery";
+import type { ProjectDiscoveryState, FilterOptions } from "../../types/projectDiscovery";
 import type { StartSnapProject } from "../../types/startsnap";
-
-interface CreatorsMap {
-  [userId: string]: string;
-}
+import type { UserProfileData } from "../../types/user";
 
 const DEFAULT_DISCOVERY_STATE: ProjectDiscoveryState = {
   searchTerm: '',
-  filters: { type: 'all' },
+  filters: { type: 'all', category: undefined, isHackathonEntry: false },
   sort: { field: 'created_at', direction: 'desc' },
 };
 
 const categoryOptions = Object.values(CATEGORY_CONFIG).map(config => config.label);
+
+/**
+ * @description Helper function to check if any search term or filters are active.
+ * @param {ProjectDiscoveryState} currentState - The current discovery state.
+ * @returns {boolean} True if search term or filters are active, false otherwise.
+ */
+const areFiltersOrSearchActive = (currentState: ProjectDiscoveryState): boolean => {
+  const { searchTerm, filters } = currentState;
+  return (
+    searchTerm !== '' ||
+    filters.category !== undefined ||
+    filters.type !== 'all' ||
+    filters.isHackathonEntry === true
+  );
+};
 
 /**
  * @description Page component that displays the projects gallery
@@ -34,7 +46,7 @@ const categoryOptions = Object.values(CATEGORY_CONFIG).map(config => config.labe
 export const Projects = (): JSX.Element => {
   const [startSnaps, setStartSnaps] = useState<StartSnapProject[]>([]);
   const [loading, setLoading] = useState(true);
-  const [creators, setCreators] = useState<CreatorsMap>({});
+  const [creators, setCreators] = useState<Record<UserProfileData['user_id'], UserProfileData['username']>>({});
   const [discoveryState, setDiscoveryState] = useState<ProjectDiscoveryState>(DEFAULT_DISCOVERY_STATE);
 
   const fetchStartSnaps = useCallback(async (currentDiscoveryState: ProjectDiscoveryState) => {
@@ -88,7 +100,7 @@ export const Projects = (): JSX.Element => {
 
         if (profilesError) throw profilesError;
 
-        const creatorsMap: CreatorsMap = {};
+        const creatorsMap: Record<UserProfileData['user_id'], UserProfileData['username']> = {};
         profilesData?.forEach(profile => {
           creatorsMap[profile.user_id] = profile.username;
         });
@@ -151,9 +163,19 @@ export const Projects = (): JSX.Element => {
               );
             })}
           </div>
-        ) : (
+        ) : areFiltersOrSearchActive(discoveryState) ? (
           <div className="text-center py-20">
             <p className="text-xl text-startsnap-pale-sky">No projects match your criteria. Try adjusting your search or filters!</p>
+            <Button
+              onClick={() => setDiscoveryState(DEFAULT_DISCOVERY_STATE)}
+              className="startsnap-button mt-4 bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+            >
+              Clear Search & Filters
+            </Button>
+          </div>
+        ) : (
+          <div className="text-center py-20">
+            <p className="text-xl text-startsnap-pale-sky">No projects found yet. Why not be the first to add one?</p>
             <Button className="startsnap-button mt-4 bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]" asChild>
               <Link to="/create">Create StartSnap</Link>
             </Button>

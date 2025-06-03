@@ -15,13 +15,7 @@ import { formatDate } from "../../../../lib/utils";
 import Typed from 'typed.js';
 import type { ProjectDiscoveryState, FilterOptions, SortOption } from "../../../../types/projectDiscovery";
 import type { StartSnapProject } from "../../../../types/startsnap";
-
-/**
- * @description Type definition for creators mapping object
- */
-interface CreatorsMap {
-  [userId: string]: string;
-}
+import type { UserProfileData } from "../../../../types/user";
 
 const DEFAULT_DISCOVERY_STATE: ProjectDiscoveryState = {
   searchTerm: '',
@@ -38,7 +32,7 @@ const categoryOptions = Object.values(CATEGORY_CONFIG).map(config => config.labe
 export const MainContentSection = (): JSX.Element => {
   const [startSnaps, setStartSnaps] = useState<StartSnapProject[]>([]);
   const [loading, setLoading] = useState(true);
-  const [creators, setCreators] = useState<CreatorsMap>({});
+  const [creators, setCreators] = useState<Record<UserProfileData['user_id'], UserProfileData['username']>>({});
   const typedRef = useRef(null);
   const [discoveryState, setDiscoveryState] = useState<ProjectDiscoveryState>(DEFAULT_DISCOVERY_STATE);
 
@@ -123,7 +117,7 @@ export const MainContentSection = (): JSX.Element => {
 
         if (profilesError) throw profilesError;
 
-        const creatorsMap: CreatorsMap = {};
+        const creatorsMap: Record<UserProfileData['user_id'], UserProfileData['username']> = {};
         profilesData?.forEach(profile => {
           creatorsMap[profile.user_id] = profile.username;
         });
@@ -162,8 +156,8 @@ export const MainContentSection = (): JSX.Element => {
             <p className="text-base sm:text-lg lg:text-xl text-startsnap-river-bed mb-6 sm:mb-8 font-['Roboto',Helvetica] leading-relaxed">
               Showcase your journey, build in public, get real feedback, and connect with opportunities
             </p>
-            <Button className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]">
-              Start Building Today
+            <Button asChild className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]">
+              <Link to="/projects">Browse Projects</Link>
             </Button>
           </div>
           <div className="w-[80%] sm:w-[60%] md:w-[40%] mx-auto md:mx-0">
