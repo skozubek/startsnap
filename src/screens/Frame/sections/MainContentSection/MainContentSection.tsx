@@ -77,13 +77,10 @@ export const MainContentSection = (): JSX.Element => {
   const fetchStartSnaps = async () => {
     try {
       setLoading(true);
-
-      // Fetch startsnaps
       const { data, error } = await supabase
         .from('startsnaps')
-        .select('*, support_count')
-        .order(sortBy === 'supported' ? 'support_count' : 'created_at', { ascending: false })
-        .order('created_at', { ascending: false }) // Secondary sort
+        .select('*, support_count, profiles!inner(username)')
+        .order(sortBy === 'supported' ? 'support_count' : 'created_at', { ascending: sortBy === 'supported' ? false : false })
         .limit(6);
 
       if (error) throw error;
@@ -150,7 +147,6 @@ export const MainContentSection = (): JSX.Element => {
         <div className="flex justify-end mb-6">
           <div className="flex gap-4">
             <Button
-              variant="outline"
               onClick={() => {
                 setSortBy('newest');
                 fetchStartSnaps();
@@ -165,7 +161,6 @@ export const MainContentSection = (): JSX.Element => {
               Newest
             </Button>
             <Button
-              variant="outline"
               onClick={() => {
                 setSortBy('supported');
                 fetchStartSnaps();

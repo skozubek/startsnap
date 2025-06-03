@@ -1,1 +1,11 @@
-**Do not make unsolicited changes**: Never add anything by yourself without a clear instruction to do so. Avoid altering workflows, layouts, designs or adding/removing components. Always focus on the task at hand.
+CRITICAL INSTRUCTION: Adhere STRICTLY to the existing UI layout and neobrutalist design system. You are ONLY authorized to ADD the UI elements I explicitly ask you to add. DO NOT rearrange, restyle, or remove any existing UI elements unless explicitly told to replace an old version. Any deviation from this will require a rollback.
+
+Critical Checklist after providing code update:
+
+Did you only ADD UI elements you were asked to add?
+Is the existing layout otherwise unchanged?
+Are all new elements styled using existing Tailwind classes and neobrutalist conventions established in the app design?
+Are there any new, unexplained gaps or misalignments in the UI? If so, revert and simplify the addition.
+
+
+Thoughts
