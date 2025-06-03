@@ -170,6 +170,92 @@ export const MainContentSection = (): JSX.Element => {
         </div>
       </div>
 
+      {/* Build in Public Manifesto Section */}
+      <div className="w-full bg-startsnap-white border-t-2 border-b-2 border-gray-800">
+        <div className="max-w-screen-2xl mx-auto px-8 py-16 lg:py-24">
+          <h2 className="text-4xl lg:text-5xl font-bold text-startsnap-ebony-clay text-center mb-12 font-['Space_Grotesk',Helvetica] leading-tight">
+            The Vibe Coder's Way:<br />Build, Share, Learn - In Public.
+          </h2>
+          
+          <div className="max-w-4xl mx-auto">
+            <p className="text-lg lg:text-xl text-startsnap-river-bed mb-6 leading-relaxed font-['Roboto',Helvetica]">
+              At startsnap.fun, we believe in the power of transparency and shared learning. Building in public isn't just a trend; it's a mindset. It's about showcasing your process, warts and all, inviting feedback early, and growing with your community.
+            </p>
+            
+            <p className="text-lg lg:text-xl text-startsnap-river-bed mb-12 leading-relaxed font-['Roboto',Helvetica]">
+              Your Vibe Log is your space to do just that. Document your breakthroughs, your roadblocks, your 'aha!' moments. Let others learn from your journey, and find collaborators and supporters who resonate with your vision.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+              <div className="bg-startsnap-athens-gray p-6 rounded-lg border-2 border-gray-800 shadow-[3px_3px_0px_#1f2937]">
+                <h3 className="text-xl font-bold text-startsnap-ebony-clay mb-4 font-['Space_Grotesk',Helvetica]">
+                  Why Build in Public?
+                </h3>
+                <ul className="space-y-3 text-startsnap-river-bed">
+                  <li className="flex items-start gap-2">
+                    <span className="material-icons text-startsnap-french-rose mt-1">rocket_launch</span>
+                    <span><strong>Share Fearlessly:</strong> Your process has value, even the messy parts.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="material-icons text-startsnap-french-rose mt-1">forum</span>
+                    <span><strong>Feedback is Fuel:</strong> Iterate faster with community insights.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="material-icons text-startsnap-french-rose mt-1">diversity_3</span>
+                    <span><strong>Connect & Grow:</strong> Find your tribe and collaborators.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="material-icons text-startsnap-french-rose mt-1">auto_awesome</span>
+                    <span><strong>Inspire Others:</strong> Your journey can spark the next big idea.</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="bg-startsnap-french-pass p-6 rounded-lg border-2 border-gray-800 shadow-[3px_3px_0px_#1f2937]">
+                <h3 className="text-xl font-bold text-startsnap-ebony-clay mb-4 font-['Space_Grotesk',Helvetica]">
+                  How We Support You
+                </h3>
+                <ul className="space-y-3 text-startsnap-river-bed">
+                  <li className="flex items-start gap-2">
+                    <span className="material-icons text-startsnap-persian-blue mt-1">insights</span>
+                    <span><strong>Vibe Log:</strong> Document your journey, one update at a time.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="material-icons text-startsnap-persian-blue mt-1">groups</span>
+                    <span><strong>Community Feedback:</strong> Get constructive input from fellow builders.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="material-icons text-startsnap-persian-blue mt-1">favorite</span>
+                    <span><strong>Project Support:</strong> Gain supporters who believe in your vision.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="material-icons text-startsnap-persian-blue mt-1">work</span>
+                    <span><strong>Opportunities:</strong> Connect with potential collaborators and employers.</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <Button asChild className="startsnap-button bg-startsnap-persian-blue text-startsnap-white font-['Roboto',Helvetica] font-bold text-lg rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] px-8 py-4">
+                <Link to="/create">Start Your Build Journey</Link>
+              </Button>
+
+              <p className="text-sm text-startsnap-pale-sky mt-8 font-['Roboto',Helvetica]">
+                Inspired by the global #buildinpublic movement. Join vibrant communities like{' '}
+                <a href="https://twitter.com/buildinpublic" target="_blank" rel="noopener noreferrer" className="text-startsnap-french-rose hover:underline">
+                  #buildinpublic on X
+                </a>
+                {' '}and the{' '}
+                <a href="https://bolt.new" target="_blank" rel="noopener noreferrer" className="text-startsnap-french-rose hover:underline">
+                  Bolt.new community
+                </a>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* StartSnaps Cards Section */}
       <div className="w-full max-w-screen-2xl px-8 py-16">
         <h2 className="text-5xl font-bold text-startsnap-ebony-clay text-center mb-12 font-['Space_Grotesk',Helvetica]">
