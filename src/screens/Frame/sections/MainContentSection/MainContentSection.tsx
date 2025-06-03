@@ -77,33 +77,30 @@ export const MainContentSection = (): JSX.Element => {
   const fetchStartSnaps = async () => {
     try {
       setLoading(true);
+
       const { data, error } = await supabase
         .from('startsnaps')
-        .select('*, support_count, profiles!inner(username)')
+        .select('*, profiles!startsnaps_user_id_fkey(username)')
         .order(sortBy === 'supported' ? 'support_count' : 'created_at', { ascending: sortBy === 'supported' ? false : false })
         .limit(6);
 
       if (error) throw error;
-
-      setStartSnaps(data || []);
-
-      // Fetch creators information
-      if (data && data.length > 0) {
-        const userIds = [...new Set(data.map(snap => snap.user_id))];
-        const { data: profilesData, error: profilesError } = await supabase
-          .from('profiles')
-          .select('user_id, username')
-          .in('user_id', userIds);
-
-        if (profilesError) throw profilesError;
-
-        const creatorsMap: CreatorsMap = {};
-        profilesData?.forEach(profile => {
-          creatorsMap[profile.user_id] = profile.username;
-        });
-
-        setCreators(creatorsMap);
-      }
+      
+      // Transform the data to match the expected format
+      const transformedData = data?.map(snap => ({
+        ...snap,
+        username: snap.profiles?.username
+      })) || [];
+      
+      setStartSnaps(transformedData);
+      
+      // Create creators map from the joined data
+      const creatorsMap = data?.reduce((acc, snap) => ({
+        ...acc,
+        [snap.user_id]: snap.profiles?.username || 'Anonymous'
+      }), {});
+      
+      setCreators(creatorsMap || {});
     } catch (error) {
       console.error('Error fetching startsnaps:', error);
     } finally {
