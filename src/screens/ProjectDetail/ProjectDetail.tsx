@@ -163,7 +163,7 @@ export const ProjectDetail = (): JSX.Element => {
       setLoading(true);
       const { data: projectData, error: projectError } = await supabase
         .from('startsnaps')
-        .select('*')
+        .select('*, support_count')
         .eq('id', id)
         .single();
       if (projectError) throw projectError;
