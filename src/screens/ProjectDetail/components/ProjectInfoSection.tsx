@@ -91,11 +91,7 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
               <Button
                 onClick={onSupportToggle}
                 disabled={isSupportActionLoading}
-                className={`startsnap-button font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-1.5 px-3 py-1.5 text-sm ${
-                  isSupportedByCurrentUser
-                    ? 'bg-startsnap-french-rose/80 text-startsnap-white hover:bg-startsnap-french-rose/70'
-                    : 'bg-startsnap-french-rose text-startsnap-white hover:bg-startsnap-french-rose/90'
-                }`}
+                className={`startsnap-button font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-1.5 px-3 py-1.5 text-sm bg-startsnap-french-rose text-startsnap-white hover:bg-startsnap-french-rose/90`}
               >
                 <span className="material-icons text-lg">
                   {isSupportedByCurrentUser ? 'favorite' : 'favorite_border'}
@@ -107,9 +103,10 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
                   : 'Support Project'}
               </Button>
             )}
-            <div className="flex items-center gap-2 text-sm text-startsnap-oxford-blue">
+            {/* Always display support count with heart icon and rose color */}
+            <div className="flex items-center gap-1 text-sm text-startsnap-french-rose">
               <span className="material-icons text-lg">favorite</span>
-              {currentSupportCount} Supports
+              {currentSupportCount}
             </div>
           </div>
         </div>

@@ -29,6 +29,7 @@ interface StartSnapType {
   tools_used?: string[];
   created_at: string;
   user_id: string;
+  support_count?: number;
 }
 
 /**
@@ -91,7 +92,17 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
               }`}>
                 {startsnap.name}
               </h3>
-              {/* Category Badge */}
+              {/* Support Count Display appears here */}
+              {typeof startsnap.support_count === 'number' && startsnap.support_count >= 0 && (
+                <div className="flex items-center gap-0.5 text-startsnap-french-rose font-['Space_Mono',Helvetica] text-sm shrink-0">
+                  <span className="material-icons text-sm">favorite</span>
+                  {startsnap.support_count}
+                </div>
+              )}
+            </div>
+            {/* Status badges - now in header */}
+            <div className="flex gap-2 flex-wrap items-center">
+              {/* Category Badge appears here */}
               <Badge
                 variant="outline"
                 className={`${categoryDisplay.bgColor} ${categoryDisplay.textColor} border ${categoryDisplay.borderColor} rounded-full px-[13px] py-[5px] font-['Space_Mono',Helvetica] font-normal shrink-0 ${
@@ -100,12 +111,9 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
               >
                 {categoryDisplay.name}
               </Badge>
-            </div>
-            {/* Status badges - now in header */}
-            <div className="flex gap-2 flex-wrap">
               {/* Project type badge */}
               {startsnap.type === "live" ? (
-                <Badge variant="outline\" className="bg-startsnap-mountain-meadow text-white font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-green-700 px-2 py-0.5 flex items-center gap-1">
+                <Badge variant="outline" className="bg-startsnap-mountain-meadow text-white font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-green-700 px-2 py-0.5 flex items-center gap-1">
                   <span className="material-icons text-xs">rocket_launch</span>
                   Live Project
                 </Badge>
