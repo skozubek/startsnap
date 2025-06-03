@@ -182,7 +182,7 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
             )}
             {startsnap.tools_used && startsnap.tools_used.length > 0 && (
               <div className="flex flex-wrap items-center gap-3">
-                <span className="material-icons text-startsnap-shuttle-gray text-xl">construction</span>
+                <span className="material-icons text-startsnap-persian-blue text-xl">build</span>
                 {startsnap.tools_used.map((tool: string, index: number) => (
                   <Badge key={`tool-${index}`} variant="outline" className="bg-startsnap-french-pass text-startsnap-persian-blue font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-blue-700 px-3 py-1">
                     {tool}

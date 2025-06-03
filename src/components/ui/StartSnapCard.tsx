@@ -153,7 +153,7 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
               {/* General Tags Section */}
               {startsnap.tags && startsnap.tags.length > 0 && (
                 <div className="flex items-start gap-3">
-                  <span className={`material-icons text-startsnap-oxford-blue ${variant === 'main-page' ? 'text-sm' : 'text-xs'} mt-1 shrink-0`}>tag</span>
+                  <span className={`material-icons text-startsnap-oxford-blue ${variant === 'main-page' ? 'text-sm' : 'text-xs'} mt-1 shrink-0`}>sell</span>
                   <div className="flex flex-wrap gap-2 flex-1">
                     {startsnap.tags.slice(0, 3).map((tag, idx) => (
                       <Badge
