@@ -37,7 +37,6 @@ export const MainContentSection = (): JSX.Element => {
   const [discoveryState, setDiscoveryState] = useState<ProjectDiscoveryState>(DEFAULT_DISCOVERY_STATE);
 
   useEffect(() => {
-    // Initialize Typed.js
     const typed = new Typed(typedRef.current, {
       strings: ['Startups^1000', 'Start<del class="text-gray-400 text-[0.9em] font-normal">ups</del>snaps'],
       typeSpeed: 50,
@@ -49,7 +48,6 @@ export const MainContentSection = (): JSX.Element => {
       loop: false
     });
 
-    // Cleanup
     return () => {
       typed.destroy();
     };
@@ -220,7 +218,7 @@ export const MainContentSection = (): JSX.Element => {
               <img
                 src="https://ik.imagekit.io/craftsnap/startsnap/vibe-coder-aha.png?updatedAt=1748985333023"
                 alt="Developer having an aha moment"
-                className="w-full h-auto rounded-lg border-2 border-gray-800 shadow-[5px_5px_0px_#1f2937] animate-[fade-in_0.5s_ease-in]"
+                className="w-full h-auto shadow-[5px_5px_0px_#1f2937] animate-[fade-in_0.5s_ease-in]"
                 loading="lazy"
               />
             </div>
