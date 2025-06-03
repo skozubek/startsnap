@@ -3,7 +3,7 @@
  * @description Authentication dialog component for user login and signup
  */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "./button";
 import { Input } from "./input";
 import { Label } from "./label";
@@ -31,14 +31,20 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode }: AuthDialogPro
   const [emailError, setEmailError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
 
-  // Effect to update mode when initialMode prop changes
+  const emailInputRef = useRef<HTMLInputElement>(null);
+  const passwordInputRef = useRef<HTMLInputElement>(null);
+
+  // Effect to update mode and set initial focus
   useEffect(() => {
-    if (isOpen) { // Only update mode if the dialog is intended to be open
+    if (isOpen) {
       setMode(initialMode);
-      // Reset errors when mode changes to prevent showing old errors
       setError(null);
       setEmailError(null);
       setPasswordError(null);
+      // Delay focus slightly to ensure input is ready after potential re-renders
+      requestAnimationFrame(() => {
+        emailInputRef.current?.focus();
+      });
     }
   }, [initialMode, isOpen]);
 
@@ -50,6 +56,9 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode }: AuthDialogPro
     setError(null);
     setEmailError(null);
     setPasswordError(null);
+    requestAnimationFrame(() => { // Ensure DOM is updated before focusing
+      emailInputRef.current?.focus();
+    });
   };
 
   /**
@@ -105,6 +114,20 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode }: AuthDialogPro
 
     setPasswordError(null);
     return true;
+  };
+
+  /**
+   * @description Handles form submission (login or signup)
+   * @param {React.FormEvent<HTMLFormElement>} e - The form event
+   * @async
+   */
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (mode === 'login') {
+      await handleLogin();
+    } else {
+      await handleSignUp();
+    }
   };
 
   /**
@@ -178,12 +201,14 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode }: AuthDialogPro
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md bg-white p-8 rounded-lg border-3 border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]">
+      <DialogContent
+        className="sm:max-w-md bg-white p-8 rounded-lg border-3 border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]"
+      >
         <DialogTitle className="text-4xl font-bold text-startsnap-ebony-clay text-center font-['Space_Grotesk',Helvetica] leading-tight mb-8">
           {mode === 'login' ? 'Welcome Back' : 'Create Your Account'}
         </DialogTitle>
 
-        <div className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <Label
               htmlFor="email"
@@ -192,9 +217,11 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode }: AuthDialogPro
               Email
             </Label>
             <Input
+              ref={emailInputRef}
               id="email"
               type="email"
               value={email}
+              onClick={(e) => e.currentTarget.focus()}
               onChange={(e) => {
                 setEmail(e.target.value);
                 setEmailError(null);
@@ -202,6 +229,7 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode }: AuthDialogPro
               }}
               className={`w-full border-2 border-solid ${emailError ? 'border-red-500' : 'border-gray-800'} rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
               placeholder="your.email@example.com"
+              tabIndex={0}
             />
             {emailError && (
               <p className="text-red-500 text-sm mt-1">{emailError}</p>
@@ -216,15 +244,18 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode }: AuthDialogPro
               Password
             </Label>
             <Input
+              ref={passwordInputRef}
               id="password"
               type="password"
               value={password}
+              onClick={(e) => e.currentTarget.focus()}
               onChange={(e) => {
                 setPassword(e.target.value);
                 setPasswordError(null);
                 setError(null);
               }}
               className={`w-full border-2 border-solid ${passwordError ? 'border-red-500' : 'border-gray-800'} rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
+              tabIndex={0}
             />
             {passwordError && (
               <p className="text-red-500 text-sm mt-1">{passwordError}</p>
@@ -243,25 +274,26 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode }: AuthDialogPro
               variant="outline"
               onClick={handleClose}
               className="flex-1 startsnap-button bg-gray-200 text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+              tabIndex={0}
             >
               Cancel
             </Button>
             <Button
-              type="button"
-              onClick={mode === 'login' ? handleLogin : handleSignUp}
+              type="submit"
               disabled={loading}
               className="flex-1 startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+              tabIndex={0}
             >
               {loading ? (mode === 'login' ? 'Logging In...' : 'Signing Up...') : (mode === 'login' ? 'Log In' : 'Sign Up')}
             </Button>
           </div>
 
-          <div className="text-center text-startsnap-french-rose hover:underline cursor-pointer">
+          <div className="text-center text-startsnap-french-rose hover:underline cursor-pointer mt-6">
             <span onClick={toggleMode}>
               {mode === 'login' ? "Don't have an account? Sign up" : "Already have an account? Log in"}
             </span>
           </div>
-        </div>
+        </form>
       </DialogContent>
     </Dialog>
   );

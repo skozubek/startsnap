@@ -25,6 +25,7 @@ module.exports = {
         "startsnap-oxford-blue": "var(--startsnap-oxford-blue)",
         "startsnap-pale-sky": "var(--startsnap-pale-sky)",
         "startsnap-persian-blue": "var(--startsnap-persian-blue)",
+        "startsnap-persian-blue-dark": "var(--startsnap-persian-blue-dark)",
         "startsnap-purple-heart": "var(--startsnap-purple-heart)",
         "startsnap-river-bed": "var(--startsnap-river-bed)",
         "startsnap-white": "var(--startsnap-white)",

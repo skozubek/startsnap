@@ -109,8 +109,8 @@ export const EditStartSnap = (): JSX.Element => {
 
     if (startsnapError) throw startsnapError;
 
-    // Redirect to the profile page
-    navigate('/profile');
+    // Redirect back to the project details page
+    navigate(`/project/${id}`);
     alert('StartSnap updated successfully!');
   };
 
@@ -133,7 +133,7 @@ export const EditStartSnap = (): JSX.Element => {
         projectId={id}
         initialData={initialData}
         onSubmit={handleSubmit}
-        onCancel={() => navigate('/profile')}
+        onCancel={() => navigate(`/project/${id}`)}
       />
     </div>
   );
