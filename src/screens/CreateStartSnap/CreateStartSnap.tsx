@@ -3,7 +3,7 @@
  * @description Component for creating a new StartSnap project
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ProjectForm } from "../../components/ui/project-form";
 import { supabase } from "../../lib/supabase";
@@ -16,6 +16,11 @@ import { useAuth } from "../../context/AuthContext";
 export const CreateStartSnap = (): JSX.Element => {
   const navigate = useNavigate();
   const { user } = useAuth();
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   /**
    * @description Handles form submission to create a new StartSnap
