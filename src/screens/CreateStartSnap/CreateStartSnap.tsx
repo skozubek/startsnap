@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { ProjectForm } from "../../components/ui/project-form";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
+import { generateSlug } from "../../lib/utils";
 
 /**
  * @description Page component for creating a new StartSnap project
@@ -34,12 +35,45 @@ export const CreateStartSnap = (): JSX.Element => {
       return;
     }
 
-    // Insert the startsnap
+    // 1. Generate the slug from the project name
+    const newPotentialSlug = generateSlug(formData.projectName);
+
+    if (!newPotentialSlug) {
+      alert('Project name cannot be empty or invalid.');
+      return;
+    }
+
+    // 2. Check for slug uniqueness
+    try {
+      const { data: existingProject, error: checkError } = await supabase
+        .from('startsnaps')
+        .select('slug')
+        .eq('slug', newPotentialSlug)
+        .maybeSingle();
+
+      if (checkError) {
+        console.error("Error checking slug uniqueness:", checkError);
+        alert("Error checking project name uniqueness. Please try again.");
+        return;
+      }
+
+      if (existingProject) {
+        alert("A project with a similar name already exists, resulting in a conflicting URL. Please try a different project name.");
+        return;
+      }
+    } catch (error) {
+      console.error("Error during slug uniqueness check:", error);
+      alert("An unexpected error occurred while ensuring project name is unique. Please try again.");
+      return;
+    }
+
+    // 3. Insert the startsnap with the slug
     const { data: startsnap, error: startsnapError } = await supabase
       .from('startsnaps')
       .insert({
         user_id: user.id,
         name: formData.projectName,
+        slug: newPotentialSlug,
         description: formData.description,
         category: formData.category,
         type: formData.projectType,
@@ -68,9 +102,16 @@ export const CreateStartSnap = (): JSX.Element => {
       if (vibeLogError) throw vibeLogError;
     }
 
-    // Redirect to the project detail page
-    navigate('/');
-    alert('StartSnap created successfully!');
+    // 4. Redirect to the project detail page using the new slug
+    if (startsnap && startsnap.length > 0 && startsnap[0].slug) {
+      navigate(`/project/${startsnap[0].slug}`);
+      alert('StartSnap created successfully!');
+    } else {
+      // Fallback, though ideally startsnap[0].slug should always exist
+      console.error("Failed to get slug from created startsnap:", startsnap);
+      navigate('/');
+      alert('StartSnap created, but there was an issue with the redirect.');
+    }
   };
 
   return (

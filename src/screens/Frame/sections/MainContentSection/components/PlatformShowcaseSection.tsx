@@ -54,7 +54,6 @@ export const PlatformShowcaseSection = ({
                 <p className="text-startsnap-pale-sky">Loading platform data...</p>
               </div>
             ) : platformStartSnap ? (
-              <Link to={`/project/09d44a11-959b-43a2-b57f-8b2c5e591e5f`} className="block">
                 <StartSnapCard
                   startsnap={platformStartSnap}
                   showCreator={true}
@@ -63,7 +62,6 @@ export const PlatformShowcaseSection = ({
                   formatDate={formatDate}
                   getCategoryDisplay={getCategoryDisplay}
                 />
-              </Link>
             ) : (
               <div className="p-12 border-2 border-dashed border-gray-300 bg-white rounded-xl flex items-center justify-center">
                 <p className="text-startsnap-pale-sky">Platform project unavailable</p>
@@ -88,7 +86,7 @@ export const PlatformShowcaseSection = ({
                   asChild
                   className="startsnap-button bg-startsnap-mountain-meadow text-startsnap-white font-['Roboto',Helvetica] font-bold text-lg px-8 py-4 rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
                 >
-                  <Link to="/project/09d44a11-959b-43a2-b57f-8b2c5e591e5f">Follow Our Journey</Link>
+                  <Link to="/project/startsnap-fun">Follow Our Journey</Link>
                 </Button>
               </div>
             </div>
