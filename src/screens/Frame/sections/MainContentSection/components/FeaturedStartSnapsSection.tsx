@@ -50,23 +50,33 @@ export const FeaturedStartSnapsSection = ({
           <p className="text-xl text-startsnap-pale-sky">Loading projects...</p>
         </div>
       ) : startSnaps.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {startSnaps.slice(0, 3).map((startsnap) => {
-            const creatorName = creators[startsnap.user_id] || 'Anonymous';
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {startSnaps.slice(0, 3).map((startsnap) => {
+              const creatorName = creators[startsnap.user_id] || 'Anonymous';
 
-            return (
-              <StartSnapCard
-                key={startsnap.id}
-                startsnap={startsnap}
-                showCreator={true}
-                creatorName={creatorName}
-                variant="main-page"
-                formatDate={formatDate}
-                getCategoryDisplay={getCategoryDisplay}
-              />
-            );
-          })}
-        </div>
+              return (
+                <StartSnapCard
+                  key={startsnap.id}
+                  startsnap={startsnap}
+                  showCreator={true}
+                  creatorName={creatorName}
+                  variant="main-page"
+                  formatDate={formatDate}
+                  getCategoryDisplay={getCategoryDisplay}
+                />
+              );
+            })}
+          </div>
+          <div className="mt-12 text-center">
+            <Button
+              asChild
+              className="startsnap-button bg-startsnap-persian-blue text-startsnap-white font-['Roboto',Helvetica] font-bold text-lg px-8 py-4 rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+            >
+              <Link to="/projects">See All</Link>
+            </Button>
+          </div>
+        </>
       ) : (
         <div className="text-center py-20">
           <p className="text-xl text-startsnap-pale-sky">No projects match your criteria. Try adjusting your search or filters!</p>
