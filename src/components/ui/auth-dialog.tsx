@@ -7,13 +7,14 @@ import React, { useState, useEffect, useRef } from "react";
 import { Button } from "./button";
 import { Input } from "./input";
 import { Label } from "./label";
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from "./dialog";
+import { Dialog, DialogContent, DialogTitle } from "./dialog";
 import { supabase } from "../../lib/supabase";
 
 interface AuthDialogProps {
   isOpen: boolean;
   onClose: () => void;
   mode: 'signup' | 'login';
+  onSuccess?: () => void;
 }
 
 /**
@@ -22,7 +23,7 @@ interface AuthDialogProps {
  * @returns {JSX.Element} Authentication dialog with form fields
  * @sideEffects Interacts with Supabase auth API for user authentication
  */
-export const AuthDialog = ({ isOpen, onClose, mode: initialMode }: AuthDialogProps): JSX.Element => {
+export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: AuthDialogProps): JSX.Element => {
   const [mode, setMode] = useState<'signup' | 'login'>(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -155,6 +156,9 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode }: AuthDialogPro
 
       if (error) throw error;
 
+      if (onSuccess) {
+        onSuccess();
+      }
       handleClose();
     } catch (error: any) {
       console.error('Error logging in:', error);
@@ -189,6 +193,9 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode }: AuthDialogPro
 
       if (error) throw error;
 
+      if (onSuccess) {
+        onSuccess();
+      }
       handleClose();
       alert('Account created, enjoy the ride!');
     } catch (error: any) {
@@ -289,7 +296,7 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode }: AuthDialogPro
           </div>
 
           <div className="text-center text-startsnap-french-rose hover:underline cursor-pointer mt-6">
-            <span onClick={toggleMode}>
+            <span onClick={toggleMode} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && toggleMode()}>
               {mode === 'login' ? "Don't have an account? Sign up" : "Already have an account? Log in"}
             </span>
           </div>

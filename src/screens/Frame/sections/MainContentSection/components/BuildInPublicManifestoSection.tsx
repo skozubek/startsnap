@@ -28,6 +28,11 @@ export const BuildInPublicManifestoSection = (): JSX.Element => {
     }
   };
 
+  const handleLoginSuccess = () => {
+    navigate('/create');
+    setIsAuthDialogOpen(false);
+  };
+
   return (
     <>
       <div className="w-full bg-startsnap-white border-t-2 border-b-2 border-gray-800">
@@ -123,6 +128,7 @@ export const BuildInPublicManifestoSection = (): JSX.Element => {
         isOpen={isAuthDialogOpen}
         onClose={() => setIsAuthDialogOpen(false)}
         mode={authMode}
+        onSuccess={handleLoginSuccess}
       />
     </>
   );
