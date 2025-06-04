@@ -9,7 +9,13 @@ import { Badge } from '../../../components/ui/badge';
 import { UserAvatar } from '../../../components/ui/user-avatar';
 import { getCategoryDisplay } from '../../../config/categories';
 import { formatDetailedDate } from '../../../lib/utils';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2, MoreHorizontal } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../../components/ui/dropdown-menu";
 import type { User } from '@supabase/supabase-js';
 import type { StartSnapProject } from '../../../types/startsnap'; // Import centralized type
 import type { UserProfileData } from '../../../types/user'; // Import UserProfileData
@@ -72,28 +78,39 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
           </h1>
           <div className="flex items-center gap-3 shrink-0">
             {isOwner ? (
-              <div className="flex items-center gap-2">
-                <Button
+              <DropdownMenu>
+                <DropdownMenuTrigger
                   asChild
-                  variant="outline"
-                  size="icon"
-                  className="startsnap-button border-2 border-gray-800 hover:bg-startsnap-mischka/70 data-[state=open]:bg-startsnap-mischka/70"
-                  aria-label="Edit project"
                 >
-                  <Link to={`/edit/${startsnap.id}`}>
-                    <Pencil size={18} className="text-startsnap-ebony-clay" />
-                  </Link>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="startsnap-button border-2 border-gray-800 text-startsnap-french-rose hover:bg-red-100 hover:text-red-700 hover:border-red-700 data-[state=open]:bg-red-100"
-                  onClick={handleDeleteClick}
-                  aria-label="Delete project"
+                  <button
+                    type="button"
+                    className="h-8 w-8 flex items-center justify-center rounded-full text-gray-600 hover:bg-gray-100 data-[state=open]:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    aria-label="Project actions"
+                  >
+                    <MoreHorizontal size={20} />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  className="min-w-[180px] bg-white rounded-md shadow-lg border border-gray-200"
                 >
-                  <Trash2 size={18} />
-                </Button>
-              </div>
+                  <DropdownMenuItem
+                    asChild
+                    className="flex items-center gap-2 cursor-pointer hover:bg-startsnap-athens-gray focus:bg-startsnap-athens-gray p-2 text-startsnap-ebony-clay"
+                  >
+                    <Link to={`/edit/${startsnap.id}`} className="w-full">
+                      <Pencil size={16} className="mr-2 text-current" /> Edit Project
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={handleDeleteClick}
+                    className="flex items-center gap-2 cursor-pointer hover:!bg-red-50 focus:!bg-red-50 p-2 text-startsnap-french-rose hover:!text-startsnap-french-rose focus:!text-startsnap-french-rose"
+                    aria-label="Delete project"
+                  >
+                    <Trash2 size={16} className="mr-2 text-current" /> Delete Project
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : currentUser && (
               <Button
                 onClick={onSupportToggle}
