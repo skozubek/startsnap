@@ -82,8 +82,6 @@ export const Projects = (): JSX.Element => {
           query = query.order('created_at', { ascending: false });
       }
 
-      query = query.limit(12);
-
       const { data, error } = await query;
 
       if (error) throw error;
