@@ -324,7 +324,7 @@ export const MainContentSection = (): JSX.Element => {
       </div>
 
       {/* startsnap.fun Platform Showcase Section */}
-      <div className="w-full bg-startsnap-athens-gray border-b-2 border-gray-800">
+      <div className="w-full bg-startsnap-wisp-pink border-b-2 border-gray-800">
         <div className="max-w-screen-2xl mx-auto px-8 py-16 lg:py-24">
           <h2 className="text-4xl lg:text-5xl font-bold text-startsnap-ebony-clay text-center mb-12 font-['Space_Grotesk',Helvetica] leading-tight">
             startsnap.fun is... well, a StartSnap!
