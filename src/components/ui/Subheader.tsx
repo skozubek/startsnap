@@ -75,35 +75,34 @@ export const Subheader = (): JSX.Element | null => {
 
   const breadcrumbs = generateBreadcrumbs(location.pathname);
 
-  // Avoid rendering if breadcrumbs only lead to Home (e.g. if generateBreadcrumbs was simplified)
-  // or if there's only one breadcrumb (Home) and we are not on Home (defensive check).
   if (breadcrumbs.length <= 1 && location.pathname !== '/') return null;
-
 
   return (
     <nav
       aria-label="breadcrumb"
-      className="w-full bg-startsnap-beige py-3 px-4 md:px-8 border-b-2 border-gray-800 shadow-[0px_3px_0px_#1f2937]" // Neo-brutalistic style
+      className="w-full bg-startsnap-beige py-3 border-b-2 border-gray-800 shadow-[0px_3px_0px_#1f2937]"
     >
-      <ol className="flex items-center space-x-1 text-sm text-startsnap-ebony-clay font-['Roboto',Helvetica]">
-        {breadcrumbs.map((crumb, index) => (
-          <li key={crumb.path} className="flex items-center">
-            {index === breadcrumbs.length - 1 ? (
-              <span className="font-semibold text-startsnap-ebony-clay px-2 py-1">{crumb.name}</span>
-            ) : (
-              <Link
-                to={crumb.path}
-                className="hover:bg-startsnap-mischka px-2 py-1 rounded-md transition-colors duration-150 hover:text-startsnap-persian-blue"
-              >
-                {crumb.name}
-              </Link>
-            )}
-            {index < breadcrumbs.length - 1 && (
-              <span className="mx-1 text-startsnap-gray-chateau select-none">/</span>
-            )}
-          </li>
-        ))}
-      </ol>
+      <div className="max-w-screen-2xl mx-auto px-4 md:px-8">
+        <ol className="flex items-center space-x-1 text-base text-startsnap-ebony-clay font-['Roboto',Helvetica]">
+          {breadcrumbs.map((crumb, index) => (
+            <li key={crumb.path} className="flex items-center">
+              {index === breadcrumbs.length - 1 ? (
+                <span className="font-semibold text-startsnap-ebony-clay px-2 py-1">{crumb.name}</span>
+              ) : (
+                <Link
+                  to={crumb.path}
+                  className="px-2 py-1 hover:text-startsnap-french-rose transition-colors duration-150"
+                >
+                  {crumb.name}
+                </Link>
+              )}
+              {index < breadcrumbs.length - 1 && (
+                <span className="mx-1 text-startsnap-gray-chateau select-none">/</span>
+              )}
+            </li>
+          ))}
+        </ol>
+      </div>
     </nav>
   );
 };
