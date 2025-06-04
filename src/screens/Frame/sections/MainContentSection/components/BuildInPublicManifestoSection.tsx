@@ -94,7 +94,7 @@ export const BuildInPublicManifestoSection = (): JSX.Element => {
 
         <div className="text-center">
           <Button asChild className="startsnap-button bg-startsnap-persian-blue text-startsnap-white font-['Roboto',Helvetica] font-bold text-lg rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] px-8 py-4">
-            <Link to="/create">Start Your Journey</Link>
+            <Link to="/create" className="startsnap-button bg-startsnap-candlelight text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold text-lg rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] px-8 py-4">Start Your Journey</Link>
           </Button>
         </div>
       </div>
