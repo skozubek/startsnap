@@ -104,6 +104,7 @@ export const VibeLogEntry = ({
           placeholder={placeholderText}
           className="border-2 border-solid border-gray-800 rounded-lg p-3.5 min-h-[120px] font-['Roboto',Helvetica] text-startsnap-pale-sky text-base"
         />
+        <p className="text-xs text-gray-500 mt-1">Markdown formatting is supported.</p>
       </div>
     </div>
   );
