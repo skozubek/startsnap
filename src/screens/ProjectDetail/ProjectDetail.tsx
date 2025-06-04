@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { supabase } from "../../lib/supabase";
@@ -12,6 +12,7 @@ import { useAuth } from "../../context/AuthContext";
 import { ProjectInfoSection } from "./components/ProjectInfoSection";
 import { VibeLogSection } from "./components/VibeLogSection";
 import { FeedbackSection } from "./components/FeedbackSection";
+import { ConfirmationDialog } from "../../components/ui/ConfirmationDialog";
 import type { User } from '@supabase/supabase-js';
 import type { StartSnapProject } from "../../types/startsnap"; // Import centralized type
 import type { UserProfileData } from "../../types/user"; // Import UserProfileData
@@ -27,6 +28,7 @@ import type { VibeLog } from "../../types/vibeLog"; // Import VibeLog type
  */
 export const ProjectDetail = (): JSX.Element => {
   const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [startsnap, setStartsnap] = useState<StartSnapProject | null>(null);
   const [creator, setCreator] = useState<UserProfileData | null>(null);
@@ -37,6 +39,8 @@ export const ProjectDetail = (): JSX.Element => {
   const [isSupportedByCurrentUser, setIsSupportedByCurrentUser] = useState(false);
   const [currentSupportCount, setCurrentSupportCount] = useState(0);
   const [isSupportActionLoading, setIsSupportActionLoading] = useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [projectToDeleteName, setProjectToDeleteName] = useState('');
 
   const VIBE_LOG_PAGE_SIZE = 3; // Number of vibe logs to show per page
   const [visibleVibeLogCount, setVisibleVibeLogCount] = useState(VIBE_LOG_PAGE_SIZE);
@@ -295,6 +299,43 @@ export const ProjectDetail = (): JSX.Element => {
     // }
   };
 
+  const openDeleteConfirmation = (name: string) => {
+    setProjectToDeleteName(name);
+    setIsDeleteConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!startsnap || !startsnap.id) {
+      console.error("Project data or ID is missing, cannot delete.");
+      alert("Could not delete project. Essential data missing.");
+      setIsDeleteConfirmOpen(false);
+      return;
+    }
+
+    try {
+      // With ON DELETE CASCADE set up in the database,
+      // only need to delete the main project record.
+      const { error: projectDeleteError } = await supabase
+        .from('startsnaps')
+        .delete()
+        .eq('id', startsnap.id);
+
+      if (projectDeleteError) {
+        // It's good to provide more specific error info if available
+        console.error('Error deleting project:', projectDeleteError);
+        throw new Error(`Error deleting project: ${projectDeleteError.message} (Code: ${projectDeleteError.code})`);
+      }
+
+      alert(`Project "${projectToDeleteName}" deleted successfully!`);
+      setIsDeleteConfirmOpen(false);
+      navigate('/'); // Navigate to profile page after deletion
+    } catch (error: any) {
+      console.error("Error during project deletion process:", error);
+      alert(`Failed to delete project: ${error.message}`);
+      setIsDeleteConfirmOpen(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-startsnap-candlelight">
@@ -314,57 +355,69 @@ export const ProjectDetail = (): JSX.Element => {
   const isOwner = !!(currentUser && currentUser.id === startsnap.user_id);
 
   return (
-    <div className="flex flex-col w-full items-center gap-16 pt-8 pb-24 px-8 bg-startsnap-candlelight">
-      <Card className="max-w-4xl w-full bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]">
-        <CardContent className="p-0">
-          <ProjectInfoSection
-            startsnap={startsnap}
-            creator={creator}
-            isOwner={isOwner}
-            currentUser={currentUser as User | null}
-            isSupportedByCurrentUser={isSupportedByCurrentUser}
-            currentSupportCount={currentSupportCount}
-            isSupportActionLoading={isSupportActionLoading}
-            onSupportToggle={handleSupportToggle}
-          />
-          <VibeLogSection
-            startsnapId={startsnap.id}
-            initialVibeLogEntries={vibeLogEntries.slice(0, visibleVibeLogCount)}
-            isOwner={isOwner}
-            currentUserId={currentUser?.id}
-            onVibeLogChange={fetchProjectData}
-          />
-          {(visibleVibeLogCount < vibeLogEntries.length || visibleVibeLogCount > VIBE_LOG_PAGE_SIZE) && (
-            <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-6 p-8 pt-0 border-b-2 border-gray-800">
-              {visibleVibeLogCount > VIBE_LOG_PAGE_SIZE && (
-                <Button
-                  onClick={handleShowLessVibeLogs}
-                  variant="outline"
-                  className="startsnap-button bg-startsnap-mischka text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] py-2 px-5 text-base hover:bg-gray-300"
-                >
-                  Show Less Vibe Logs
-                </Button>
-              )}
-              {visibleVibeLogCount < vibeLogEntries.length && (
-                <Button
-                  onClick={handleLoadMoreVibeLogs}
-                  variant="outline"
-                  className="startsnap-button bg-startsnap-mischka text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] py-2 px-5 text-base hover:bg-gray-300"
-                >
-                  Load More Vibe Logs
-                </Button>
-              )}
-            </div>
-          )}
-          <FeedbackSection
-            startsnapId={startsnap.id}
-            initialFeedbackEntries={feedbackEntries}
-            currentUser={currentUser as User | null}
-            currentUserProfile={currentUserProfile}
-            onFeedbackChange={fetchFeedbacks}
-          />
-        </CardContent>
-      </Card>
-    </div>
+    <>
+      <div className="flex flex-col w-full items-center gap-16 pt-8 pb-24 px-8 bg-startsnap-candlelight">
+        <Card className="max-w-4xl w-full bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]">
+          <CardContent className="p-0">
+            <ProjectInfoSection
+              startsnap={startsnap}
+              creator={creator}
+              isOwner={isOwner}
+              currentUser={currentUser as User | null}
+              isSupportedByCurrentUser={isSupportedByCurrentUser}
+              currentSupportCount={currentSupportCount}
+              isSupportActionLoading={isSupportActionLoading}
+              onSupportToggle={handleSupportToggle}
+              onDeleteProjectRequest={openDeleteConfirmation}
+            />
+            <VibeLogSection
+              startsnapId={startsnap.id}
+              initialVibeLogEntries={vibeLogEntries.slice(0, visibleVibeLogCount)}
+              isOwner={isOwner}
+              currentUserId={currentUser?.id}
+              onVibeLogChange={fetchProjectData}
+            />
+            {(visibleVibeLogCount < vibeLogEntries.length || visibleVibeLogCount > VIBE_LOG_PAGE_SIZE) && (
+              <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-6 p-8 pt-0 border-b-2 border-gray-800">
+                {visibleVibeLogCount > VIBE_LOG_PAGE_SIZE && (
+                  <Button
+                    onClick={handleShowLessVibeLogs}
+                    variant="outline"
+                    className="startsnap-button bg-startsnap-mischka text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] py-2 px-5 text-base hover:bg-gray-300"
+                  >
+                    Show Less Vibe Logs
+                  </Button>
+                )}
+                {visibleVibeLogCount < vibeLogEntries.length && (
+                  <Button
+                    onClick={handleLoadMoreVibeLogs}
+                    variant="outline"
+                    className="startsnap-button bg-startsnap-mischka text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] py-2 px-5 text-base hover:bg-gray-300"
+                  >
+                    Load More Vibe Logs
+                  </Button>
+                )}
+              </div>
+            )}
+            <FeedbackSection
+              startsnapId={startsnap.id}
+              initialFeedbackEntries={feedbackEntries}
+              currentUser={currentUser as User | null}
+              currentUserProfile={currentUserProfile}
+              onFeedbackChange={fetchFeedbacks}
+            />
+          </CardContent>
+        </Card>
+      </div>
+      <ConfirmationDialog
+        isOpen={isDeleteConfirmOpen}
+        onClose={() => setIsDeleteConfirmOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title="Confirm Deletion"
+        description={`Are you sure you want to delete the project "${projectToDeleteName}"? This action cannot be undone, and all associated data (vibe logs, feedback, etc.) will be permanently removed.`}
+        confirmButtonText="Yes, Delete Project"
+        confirmButtonVariant="destructive"
+      />
+    </>
   );
 };

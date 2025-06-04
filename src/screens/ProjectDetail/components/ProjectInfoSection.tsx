@@ -9,6 +9,7 @@ import { Badge } from '../../../components/ui/badge';
 import { UserAvatar } from '../../../components/ui/user-avatar';
 import { getCategoryDisplay } from '../../../config/categories';
 import { formatDetailedDate } from '../../../lib/utils';
+import { Pencil, Trash2 } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 import type { StartSnapProject } from '../../../types/startsnap'; // Import centralized type
 import type { UserProfileData } from '../../../types/user'; // Import UserProfileData
@@ -21,6 +22,11 @@ import type { UserProfileData } from '../../../types/user'; // Import UserProfil
  * @param {UserProfileData | null} creator - The profile data of the project creator.
  * @param {boolean} isOwner - Boolean indicating if the current user owns the project.
  * @param {User | null} currentUser - The currently authenticated Supabase user object.
+ * @param {boolean} isSupportedByCurrentUser - Boolean indicating if the current user supports the project.
+ * @param {number} currentSupportCount - The current count of supports for the project.
+ * @param {boolean} isSupportActionLoading - Boolean indicating if the support action is in progress.
+ * @param {() => Promise<void>} onSupportToggle - The function to toggle support for the project.
+ * @param {(name: string) => void} onDeleteProjectRequest - The function to handle project deletion.
  */
 interface ProjectInfoSectionProps {
   startsnap: StartSnapProject; // Use StartSnapProject
@@ -31,6 +37,7 @@ interface ProjectInfoSectionProps {
   currentSupportCount: number;
   isSupportActionLoading: boolean;
   onSupportToggle: () => Promise<void>;
+  onDeleteProjectRequest: (name: string) => void; // Added onDeleteProjectRequest prop
 }
 
 /**
@@ -46,9 +53,15 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
   isSupportedByCurrentUser,
   currentSupportCount,
   isSupportActionLoading,
-  onSupportToggle
+  onSupportToggle,
+  onDeleteProjectRequest, // Destructure the new prop
 }) => {
   const categoryDisplay = getCategoryDisplay(startsnap.category);
+
+  const handleDeleteClick = () => {
+    // Call the handler passed from the parent (ProjectDetail.tsx)
+    onDeleteProjectRequest(startsnap.name);
+  };
 
   return (
     <>
@@ -59,15 +72,28 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
           </h1>
           <div className="flex items-center gap-3 shrink-0">
             {isOwner ? (
-              <Button
-                asChild
-                className="startsnap-button bg-startsnap-mischka text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-1.5 px-3 py-1.5 text-sm hover:bg-startsnap-mischka/90"
-              >
-                <Link to={`/edit/${startsnap.id}`}>
-                  <span className="material-icons text-lg">edit</span>
-                  Edit
-                </Link>
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  asChild
+                  variant="outline"
+                  size="icon"
+                  className="startsnap-button border-2 border-gray-800 hover:bg-startsnap-mischka/70 data-[state=open]:bg-startsnap-mischka/70"
+                  aria-label="Edit project"
+                >
+                  <Link to={`/edit/${startsnap.id}`}>
+                    <Pencil size={18} className="text-startsnap-ebony-clay" />
+                  </Link>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="startsnap-button border-2 border-gray-800 text-startsnap-french-rose hover:bg-red-100 hover:text-red-700 hover:border-red-700 data-[state=open]:bg-red-100"
+                  onClick={handleDeleteClick}
+                  aria-label="Delete project"
+                >
+                  <Trash2 size={18} />
+                </Button>
+              </div>
             ) : currentUser && (
               <Button
                 onClick={onSupportToggle}
