@@ -5,7 +5,7 @@
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, Session, AuthChangeEvent } from '@supabase/supabase-js';
-import { supabase } from '../lib/supabase';
+import { supabase, registerAuthErrorHandler } from '../lib/supabase';
 
 interface AuthContextType {
   user: User | null;
@@ -40,8 +40,29 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
 
+  /**
+   * @description Signs the user out. Intended to be called when an API error indicates an invalid session.
+   * This will trigger the `onAuthStateChange` listener, which will then update the user and session state.
+   * @async
+   * @returns {Promise<void>}
+   * @sideEffects Calls `supabase.auth.signOut()`.
+   */
+  const handleAuthErrorAndSignOut = async (): Promise<void> => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      // Log the error, but onAuthStateChange should still have been triggered
+      // by the signOut call to clear the local session state.
+      console.error('Error during signOut in handleAuthErrorAndSignOut:', error);
+    }
+    // The onAuthStateChange listener handles setting user and session to null.
+  };
+
   useEffect(() => {
     setLoading(true);
+    
+    // Register auth error handler for global session error handling
+    registerAuthErrorHandler(handleAuthErrorAndSignOut);
+    
     // Check current session on mount
     supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
       setUser(initialSession?.user ?? null);
@@ -72,23 +93,6 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
       subscription?.unsubscribe();
     };
   }, []); // Empty dependency array: runs once on mount, cleans up on unmount.
-
-  /**
-   * @description Signs the user out. Intended to be called when an API error indicates an invalid session.
-   * This will trigger the `onAuthStateChange` listener, which will then update the user and session state.
-   * @async
-   * @returns {Promise<void>}
-   * @sideEffects Calls `supabase.auth.signOut()`.
-   */
-  const handleAuthErrorAndSignOut = async (): Promise<void> => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      // Log the error, but onAuthStateChange should still have been triggered
-      // by the signOut call to clear the local session state.
-      console.error('Error during signOut in handleAuthErrorAndSignOut:', error);
-    }
-    // The onAuthStateChange listener handles setting user and session to null.
-  };
 
   const value = {
     user,
