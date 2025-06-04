@@ -107,10 +107,10 @@ export const HeaderSection = (): JSX.Element => {
               {navLinks.map((link, index) => (
                 <NavigationMenuItem key={index}>
                   <NavigationMenuLink
-                    href={link.href}
+                    asChild
                     className="font-['Space_Grotesk',Helvetica] text-startsnap-oxford-blue text-lg md:text-xl font-medium tracking-[var(--startsnap-semantic-link-letter-spacing)] leading-[var(--startsnap-semantic-link-line-height)] hover:text-startsnap-french-rose transition-colors"
                   >
-                    {link.title}
+                    <Link to={link.href}>{link.title}</Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
               ))}

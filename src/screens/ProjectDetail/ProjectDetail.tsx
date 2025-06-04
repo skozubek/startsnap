@@ -26,7 +26,7 @@ import type { VibeLog } from "../../types/vibeLog"; // Import VibeLog type
  * @returns {JSX.Element} Project detail page with project info, vibe log, and feedback
  */
 export const ProjectDetail = (): JSX.Element => {
-  const { id } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const [loading, setLoading] = useState(true);
   const [startsnap, setStartsnap] = useState<StartSnapProject | null>(null);
   const [creator, setCreator] = useState<UserProfileData | null>(null);
@@ -46,10 +46,10 @@ export const ProjectDetail = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    if (id) {
+    if (slug) {
       fetchProjectData();
     }
-  }, [id]);
+  }, [slug]);
 
   useEffect(() => {
     if (currentUser) {
@@ -83,13 +83,13 @@ export const ProjectDetail = (): JSX.Element => {
    * @async
    */
   const fetchProjectData = async () => {
-    if (!id) return;
+    if (!slug) return;
     try {
       setLoading(true);
       const { data: projectData, error: projectError } = await supabase
         .from('startsnaps')
         .select('*, support_count')
-        .eq('id', id)
+        .eq('slug', slug)
         .maybeSingle();
       if (projectError) throw projectError;
       if (!projectData) {
@@ -100,40 +100,43 @@ export const ProjectDetail = (): JSX.Element => {
       // Initialize support count
       setCurrentSupportCount(projectData.support_count || 0);
 
+      // Crucial: Now use projectData.id for subsequent fetches
+      const projectId = projectData.id;
+
       // Check if current user has supported this project
       if (currentUser) {
         const { data: supportData } = await supabase
           .from('project_supporters')
           .select('*')
-          .eq('startsnap_id', projectData.id)
+          .eq('startsnap_id', projectId)
           .eq('user_id', currentUser.id)
           .maybeSingle();
 
         setIsSupportedByCurrentUser(!!supportData);
       }
 
-      if (projectData) {
-        const { data: creatorData, error: creatorError } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('user_id', projectData.user_id);
-        if (creatorError && creatorError.code !== 'PGRST116') {
-          console.error('Error fetching creator:', creatorError);
-        } else {
-          setCreator(creatorData?.[0] as UserProfileData || null);
-        }
-
-        const { data: vibeLogsData, error: vibeLogsError } = await supabase
-          .from('vibelogs')
-          .select('*')
-          .eq('startsnap_id', id)
-          .order('created_at', { ascending: false });
-        if (vibeLogsError) throw vibeLogsError;
-        setVibeLogEntries((vibeLogsData as VibeLog[]) || []);
-        setVisibleVibeLogCount(VIBE_LOG_PAGE_SIZE); // Reset visible count on new data fetch
+      // Fetch creator (already uses projectData.user_id, which is fine)
+      const { data: creatorData, error: creatorError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', projectData.user_id);
+      if (creatorError && creatorError.code !== 'PGRST116') {
+        console.error('Error fetching creator:', creatorError);
+      } else {
+        setCreator(creatorData?.[0] as UserProfileData || null);
       }
 
-      await fetchFeedbacks(); // Fetch feedbacks separately or as part of this
+      // Fetch vibe logs
+      const { data: vibeLogsData, error: vibeLogsError } = await supabase
+        .from('vibelogs')
+        .select('*')
+        .eq('startsnap_id', projectId)
+        .order('created_at', { ascending: false });
+      if (vibeLogsError) throw vibeLogsError;
+      setVibeLogEntries((vibeLogsData as VibeLog[]) || []);
+      setVisibleVibeLogCount(VIBE_LOG_PAGE_SIZE); // Reset visible count on new data fetch
+
+      await fetchFeedbacks(); // Call without projectId, it will use state
     } catch (error) {
       console.error('Error fetching project data:', error);
     } finally {
@@ -145,13 +148,18 @@ export const ProjectDetail = (): JSX.Element => {
    * @description Fetches feedback entries and their associated user profiles and replies.
    * @async
    */
-  const fetchFeedbacks = async () => {
-    if (!id) return;
+  const fetchFeedbacks = async () => { // No projectId argument
+    if (!startsnap || !startsnap.id) { // Check if startsnap and its id are available
+      console.warn('Cannot fetch feedbacks: startsnap data or ID is not available yet.');
+      return;
+    }
+    const projectId = startsnap.id; // Get id from state
+
     try {
       const { data: feedbackData, error: feedbackError } = await supabase
         .from('feedbacks')
         .select('*')
-        .eq('startsnap_id', id)
+        .eq('startsnap_id', projectId) // Use projectId from state
         .order('created_at', { ascending: true });
 
       if (feedbackError) throw feedbackError;
@@ -224,20 +232,22 @@ export const ProjectDetail = (): JSX.Element => {
    * @sideEffects Updates project_supporters table and support_count via RPC
    */
   const handleSupportToggle = async () => {
-    if (!currentUser || !startsnap) return;
+    if (!currentUser || !startsnap || !startsnap.id) return;
 
     setIsSupportActionLoading(true);
+    const currentProjectId = startsnap.id;
+
     try {
       if (!isSupportedByCurrentUser) {
         // Add support
         const { error: supportError } = await supabase
           .from('project_supporters')
-          .insert({ startsnap_id: startsnap.id, user_id: currentUser.id });
+          .insert({ startsnap_id: currentProjectId, user_id: currentUser.id });
 
         if (supportError) throw supportError;
 
         const { data: newCount, error: rpcError } = await supabase
-          .rpc('increment_support_count', { p_startsnap_id: startsnap.id });
+          .rpc('increment_support_count', { p_startsnap_id: currentProjectId });
 
         if (rpcError) throw rpcError;
 
@@ -248,13 +258,13 @@ export const ProjectDetail = (): JSX.Element => {
         const { error: supportError } = await supabase
           .from('project_supporters')
           .delete()
-          .eq('startsnap_id', startsnap.id)
+          .eq('startsnap_id', currentProjectId)
           .eq('user_id', currentUser.id);
 
         if (supportError) throw supportError;
 
         const { data: newCount, error: rpcError } = await supabase
-          .rpc('decrement_support_count', { p_startsnap_id: startsnap.id });
+          .rpc('decrement_support_count', { p_startsnap_id: currentProjectId });
 
         if (rpcError) throw rpcError;
 

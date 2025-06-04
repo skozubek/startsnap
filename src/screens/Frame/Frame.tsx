@@ -52,7 +52,7 @@ export const Frame = (): JSX.Element => {
           <Routes>
             <Route path="/" element={<MainContentSection />} />
             <Route path="/projects" element={<Projects />} />
-            <Route path="/project/:id" element={<ProjectDetail />} />
+            <Route path="/project/:slug" element={<ProjectDetail />} />
             <Route
               path="/create"
               element={

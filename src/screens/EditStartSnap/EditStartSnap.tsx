@@ -8,6 +8,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ProjectForm } from "../../components/ui/project-form";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
+import { generateSlug } from "../../lib/utils";
 
 /**
  * @description Page component for editing an existing StartSnap project
@@ -59,6 +60,7 @@ export const EditStartSnap = (): JSX.Element => {
         setInitialData({
           projectType: data.type || 'idea',
           projectName: data.name || '',
+          slug: data.slug || '',
           description: data.description || '',
           category: data.category || '',
           liveUrl: data.live_demo_url || '',
@@ -90,28 +92,78 @@ export const EditStartSnap = (): JSX.Element => {
    * @sideEffects Updates StartSnap in database and redirects on success
    */
   const handleSubmit = async (formData: any) => {
-    // Update the startsnap
-    const { error: startsnapError } = await supabase
-      .from('startsnaps')
-      .update({
-        name: formData.projectName,
-        description: formData.description,
-        category: formData.category,
-        type: formData.projectType,
-        live_demo_url: formData.liveUrl,
-        demo_video_url: formData.videoUrl,
-        tools_used: formData.toolsUsed,
-        is_hackathon_entry: formData.isHackathon,
-        tags: formData.tags,
-        updated_at: new Date()
-      })
-      .eq('id', id);
+    if (!id || !initialData) {
+      console.error("Project ID or initial data is missing for update.");
+      alert("Could not update project. Data missing.");
+      return;
+    }
 
-    if (startsnapError) throw startsnapError;
+    let slugToSave = initialData.slug;
+    let nameChanged = false;
 
-    // Redirect back to the project details page
-    navigate(`/project/${id}`);
-    alert('StartSnap updated successfully!');
+    if (formData.projectName !== initialData.projectName) {
+      nameChanged = true;
+      let newPotentialSlug = generateSlug(formData.projectName);
+
+      // Check for slug uniqueness only if the name (and thus potential slug) has changed
+      try {
+        const { data: existingProject, error: checkError } = await supabase
+          .from('startsnaps')
+          .select('id')
+          .eq('slug', newPotentialSlug)
+          .not('id', 'eq', id) // Exclude the current project from the check
+          .maybeSingle();
+
+        if (checkError) {
+          console.error("Error checking slug uniqueness:", checkError);
+          alert("Error checking project name uniqueness. Please try again.");
+          return;
+        }
+
+        if (existingProject) {
+          // Slug collision, make it unique by appending a short part of the ID
+          newPotentialSlug = `${newPotentialSlug}-${id.substring(0, 6)}`;
+        }
+        slugToSave = newPotentialSlug;
+      } catch (error) {
+        console.error("Error during slug uniqueness check:", error);
+        alert("An unexpected error occurred while ensuring project name is unique. Please try again.");
+        return;
+      }
+    }
+
+    const updatePayload: any = {
+      name: formData.projectName,
+      description: formData.description,
+      category: formData.category,
+      type: formData.projectType,
+      live_demo_url: formData.liveUrl,
+      demo_video_url: formData.videoUrl,
+      tools_used: formData.toolsUsed,
+      is_hackathon_entry: formData.isHackathon,
+      tags: formData.tags,
+      updated_at: new Date()
+    };
+
+    if (nameChanged || slugToSave !== initialData.slug) {
+      updatePayload.slug = slugToSave;
+    }
+
+    try {
+      const { error: startsnapError } = await supabase
+        .from('startsnaps')
+        .update(updatePayload)
+        .eq('id', id);
+
+      if (startsnapError) throw startsnapError;
+
+      navigate(`/project/${slugToSave}`);
+      alert('StartSnap updated successfully!');
+
+    } catch (error) {
+      console.error('Error updating StartSnap:', error);
+      alert('Failed to update StartSnap. Please try again.');
+    }
   };
 
   if (loading) {
@@ -133,7 +185,15 @@ export const EditStartSnap = (): JSX.Element => {
         projectId={id}
         initialData={initialData}
         onSubmit={handleSubmit}
-        onCancel={() => navigate(`/project/${id}`)}
+        onCancel={() => {
+          const projectSlug = initialData?.slug || '';
+          if (projectSlug) {
+            navigate(`/project/${projectSlug}`);
+          } else {
+            navigate('/profile');
+            console.warn('Could not determine project slug for cancel navigation.');
+          }
+        }}
       />
     </div>
   );

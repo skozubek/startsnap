@@ -158,3 +158,49 @@ export const validateSocialLinks = (profile: ProfileLinks): { isValid: boolean; 
 
   return { isValid, errors };
 };
+
+/**
+ * @description Generates a URL-friendly slug from a given string.
+ * Converts to lowercase, replaces spaces and special characters with hyphens,
+ * removes disallowed characters, collapses multiple hyphens, and trims leading/trailing hyphens.
+ * @param {string} inputString - The string to convert into a slug.
+ * @returns {string} The generated slug.
+ *
+ * @example
+ * generateSlug("My Awesome Project!"); // "my-awesome-project"
+ * generateSlug("  Leading/Trailing Spaces  "); // "leading-trailing-spaces"
+ * generateSlug("Project with !@#$%^&*()_+|}{[]?/><,."); // "project-with"
+ * generateSlug("Multiple --- hyphens -- together"); // "multiple-hyphens-together"
+ */
+export const generateSlug = (inputString: string): string => {
+  if (!inputString) {
+    return '';
+  }
+
+  const slug = inputString
+    .toString() // Ensure it's a string
+    .toLowerCase() // Convert to lowercase
+    .trim() // Remove leading/trailing whitespace
+
+    // Replace common accented characters with their non-accented counterparts
+    .replace(/[àáâãäåæ]/g, 'a')
+    .replace(/[èéêë]/g, 'e')
+    .replace(/[ìíîï]/g, 'i')
+    .replace(/[òóôõöø]/g, 'o')
+    .replace(/[ùúûü]/g, 'u')
+    .replace(/[ýÿ]/g, 'y')
+    .replace(/[ñ]/g, 'n')
+    .replace(/[ç]/g, 'c')
+    .replace(/[ð]/g, 'd')
+    .replace(/[ß]/g, 'ss') // German Eszett
+
+    // Replace spaces and common punctuation with a hyphen
+    .replace(/\s+/g, '-') // Replace spaces with -
+    .replace(/&/g, '-and-') // Replace & with 'and'
+    .replace(/[^\w-]+/g, '') // Remove all non-word chars except hyphens
+    .replace(/--+/g, '-') // Replace multiple - with single -
+    .replace(/^-+/, '') // Trim - from start of text
+    .replace(/-+$/, ''); // Trim - from end of text
+
+  return slug;
+};

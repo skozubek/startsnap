@@ -8,7 +8,9 @@
  */
 export interface StartSnapProject {
   id: string;
+  user_id: string;
   name: string;
+  slug: string;
   description: string;
   category: string; // Consider using an enum or literal union if categories are fixed and known
   type: "live" | "idea";
@@ -17,7 +19,6 @@ export interface StartSnapProject {
   tools_used?: string[];
   created_at: string; // ISO date string
   updated_at?: string; // ISO date string, often present from Supabase
-  user_id: string; // Foreign key to profiles table
   support_count?: number;
   live_demo_url?: string;
   demo_video_url?: string;
