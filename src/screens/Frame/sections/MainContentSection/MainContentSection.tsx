@@ -3,7 +3,7 @@
  * @description Main content section of the home page with hero section and StartSnap cards
  */
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Button } from "../../../../components/ui/button";
 import { Link } from "react-router-dom";
 import { supabase } from "../../../../lib/supabase";
@@ -12,10 +12,13 @@ import { SearchAndFilterBar } from "../../../../components/ui/SearchAndFilterBar
 import { CATEGORY_CONFIG } from "../../../../config/categories";
 import { getCategoryDisplay } from "../../../../config/categories";
 import { formatDate } from "../../../../lib/utils";
-import Typed from 'typed.js';
 import type { ProjectDiscoveryState, FilterOptions, SortOption } from "../../../../types/projectDiscovery";
 import type { StartSnapProject } from "../../../../types/startsnap";
 import type { UserProfileData } from "../../../../types/user";
+import { HeroSection } from "./components/HeroSection";
+import { FeaturedStartSnapsSection } from "./components/FeaturedStartSnapsSection";
+import { BuildInPublicManifestoSection } from "./components/BuildInPublicManifestoSection";
+import { PlatformShowcaseSection } from "./components/PlatformShowcaseSection";
 
 const DEFAULT_DISCOVERY_STATE: ProjectDiscoveryState = {
   searchTerm: '',
@@ -33,28 +36,10 @@ export const MainContentSection = (): JSX.Element => {
   const [startSnaps, setStartSnaps] = useState<StartSnapProject[]>([]);
   const [loading, setLoading] = useState(true);
   const [creators, setCreators] = useState<Record<UserProfileData['user_id'], UserProfileData['username']>>({});
-  const typedRef = useRef(null);
   const [discoveryState, setDiscoveryState] = useState<ProjectDiscoveryState>(DEFAULT_DISCOVERY_STATE);
   const [platformStartSnap, setPlatformStartSnap] = useState<StartSnapProject | null>(null);
   const [platformCreator, setPlatformCreator] = useState<string>('Vibe Coder Team');
   const [loadingPlatformData, setLoadingPlatformData] = useState(true);
-
-  useEffect(() => {
-    const typed = new Typed(typedRef.current, {
-      strings: ['Startups^1000', 'Start<del class="text-gray-400 text-[0.9em] font-normal">ups</del>snaps'],
-      typeSpeed: 50,
-      backSpeed: 50,
-      startDelay: 500,
-      showCursor: true,
-      cursorChar: '|',
-      autoInsertCss: true,
-      loop: false
-    });
-
-    return () => {
-      typed.destroy();
-    };
-  }, []);
 
   const fetchStartSnaps = useCallback(async (currentDiscoveryState: ProjectDiscoveryState) => {
     try {
@@ -129,7 +114,7 @@ export const MainContentSection = (): JSX.Element => {
     try {
       setLoadingPlatformData(true);
       const platformId = "09d44a11-959b-43a2-b57f-8b2c5e591e5f";
-      
+
       const { data, error } = await supabase
         .from('startsnaps')
         .select('*, support_count')
@@ -137,9 +122,9 @@ export const MainContentSection = (): JSX.Element => {
         .single();
 
       if (error) throw error;
-      
+
       setPlatformStartSnap(data);
-      
+
       // Fetch creator info if needed
       if (data) {
         const { data: creatorData, error: creatorError } = await supabase
@@ -147,7 +132,7 @@ export const MainContentSection = (): JSX.Element => {
           .select('username')
           .eq('user_id', data.user_id)
           .single();
-          
+
         if (creatorError && creatorError.code !== 'PGRST116') {
           console.error('Error fetching platform creator:', creatorError);
         } else if (creatorData) {
@@ -173,213 +158,28 @@ export const MainContentSection = (): JSX.Element => {
   return (
     <section className="flex flex-col w-full items-center bg-startsnap-candlelight">
       {/* Hero Section */}
-      <div className="w-full bg-[--startsnap-beige]">
-        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 lg:py-24 flex flex-col md:flex-row items-center">
-          <div className="w-full md:w-[60%] md:pr-8 lg:pr-16 mb-8 md:mb-0 text-center md:text-left">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-startsnap-ebony-clay mb-4 sm:mb-6 font-['Space_Grotesk',Helvetica] leading-tight">
-              We're Vibe Coders,<br />
-              We Build <span ref={typedRef}></span>
-            </h1>
-            <p className="text-base sm:text-lg lg:text-xl text-startsnap-river-bed mb-6 sm:mb-8 font-['Roboto',Helvetica] leading-relaxed">
-              Showcase your journey, build in public, get real feedback, and connect with opportunities
-            </p>
-            <Button asChild className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]">
-              <Link to="/projects">Browse Projects</Link>
-            </Button>
-          </div>
-          <div className="w-[80%] sm:w-[60%] md:w-[40%] mx-auto md:mx-0">
-            <img
-              src="https://ik.imagekit.io/craftsnap/startsnap/vibe-coder.png"
-              alt="Collaborative team working together"
-              className="w-full h-auto"
-            />
-          </div>
-        </div>
-      </div>
+      <HeroSection />
 
       {/* StartSnaps Cards Section */}
-      <div className="w-full max-w-screen-2xl px-8 py-16">
-        <h2 className="text-5xl font-bold text-startsnap-ebony-clay text-center mb-12 font-['Space_Grotesk',Helvetica]">
-          Featured StartSnaps
-        </h2>
-
-        {loading ? (
-          <div className="text-center py-20">
-            <p className="text-xl text-startsnap-pale-sky">Loading projects...</p>
-          </div>
-        ) : startSnaps.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {startSnaps.slice(0, 3).map((startsnap) => {
-              const creatorName = creators[startsnap.user_id] || 'Anonymous';
-
-              return (
-                <StartSnapCard
-                  key={startsnap.id}
-                  startsnap={startsnap}
-                  showCreator={true}
-                  creatorName={creatorName}
-                  variant="main-page"
-                  formatDate={formatDate}
-                  getCategoryDisplay={getCategoryDisplay}
-                />
-              );
-            })}
-          </div>
-        ) : (
-          <div className="text-center py-20">
-            <p className="text-xl text-startsnap-pale-sky">No projects match your criteria. Try adjusting your search or filters!</p>
-            <Button className="startsnap-button mt-4 bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]" asChild>
-              <Link to="/create">Create StartSnap</Link>
-            </Button>
-          </div>
-        )}
-      </div>
+      <FeaturedStartSnapsSection
+        loading={loading}
+        startSnaps={startSnaps}
+        creators={creators}
+        formatDate={formatDate}
+        getCategoryDisplay={getCategoryDisplay}
+      />
 
       {/* Build in Public Manifesto Section */}
-      <div className="w-full bg-startsnap-white border-t-2 border-b-2 border-gray-800">
-        <div className="max-w-screen-2xl mx-auto px-8 py-16 lg:py-24">
-          <h2 className="text-4xl lg:text-5xl font-bold text-startsnap-ebony-clay text-center mb-12 font-['Space_Grotesk',Helvetica] leading-tight">
-            This Is How We Vibe
-          </h2>
-
-          {/* Text and Image Row */}
-          <div className="flex flex-col-reverse md:flex-row gap-12 items-center max-w-6xl mx-auto mb-16">
-            <div className="w-full md:w-[60%]">
-              <p className="text-lg lg:text-xl text-startsnap-river-bed mb-6 leading-relaxed font-['Roboto',Helvetica]">
-                We're running on coffee, AI prompts, and the thrill of making cool stuff — out loud, in real time. Those rough edges? They just mean we're moving fast.
-              </p>
-              <p className="text-lg lg:text-xl text-startsnap-river-bed mb-6 leading-relaxed font-['Roboto',Helvetica]">Getting <strong>real feedback</strong> before it's "done" is just smart. That's the Vibe Log story: every wild swing, every small win.</p>
-              <p className="text-lg lg:text-xl text-startsnap-river-bed mb-6 leading-relaxed font-['Roboto',Helvetica]">
-                <strong>Startsnap.fun</strong> is where these stories live. Explore raw projects, find your crew, share your own StartSnap. Build <strong>your thing, your way</strong>, and show it off!
-              </p>
-            </div>
-
-            <div className="w-full md:w-[40%] flex-shrink-0">
-              <img
-                src="https://ik.imagekit.io/craftsnap/startsnap/vibe-coder-aha.png?updatedAt=1748985333023"
-                alt="Developer having an aha moment"
-                className="w-full h-auto animate-[fade-in_0.5s_ease-in]"
-                loading="lazy"
-              />
-            </div>
-          </div>
-
-          {/* Cards Row */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-6xl mx-auto mb-16">
-            <div className="bg-startsnap-athens-gray p-6 rounded-lg border-2 border-gray-800 shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_#1f2937] transition-all duration-200">
-              <h3 className="text-xl font-bold text-startsnap-ebony-clay mb-4 font-['Space_Grotesk',Helvetica]">
-                Why Build in Public?
-              </h3>
-              <ul className="space-y-4 text-startsnap-river-bed">
-                <li className="flex items-start gap-2">
-                  <span className="material-icons text-startsnap-french-rose mt-1">rocket_launch</span>
-                  <span><strong>Share Fearlessly. No Shame.</strong> Your process? Pure gold. Every stumble, every detour - it's a lesson for the next Vibe Coder.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="material-icons text-startsnap-french-rose mt-1">forum</span>
-                  <span><strong>Feedback is Fuel. The Real Kind.</strong> No sugar-coating here. Get the honest takes that actually help you build better, faster.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="material-icons text-startsnap-french-rose mt-1">diversity_3</span>
-                  <span><strong>Connect & Grow. Your Tribe Awaits.</strong> Ditch the echo chamber. Find your collaborators, your mentors, your future co-founders. They're here.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="material-icons text-startsnap-french-rose mt-1">auto_awesome</span>
-                  <span><strong>Inspire Others. Be the Spark.</strong> Your journey - the grind, the wins, the "what ifs" - it's the kickstart someone else needs. Pass it on.</span>
-                </li>
-              </ul>
-            </div>
-
-            <div className="bg-startsnap-french-pass p-6 rounded-lg border-2 border-gray-800 shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_#1f2937] transition-all duration-200">
-              <h3 className="text-xl font-bold text-startsnap-ebony-clay mb-4 font-['Space_Grotesk',Helvetica]">
-                How We Support You
-              </h3>
-              <ul className="space-y-4 text-startsnap-river-bed">
-                <li className="flex items-start gap-2">
-                  <span className="material-icons text-startsnap-persian-blue mt-1">insights</span>
-                  <span><strong>Vibe Log: Your Uncut Journey.</strong> Document it all - the genius prompt, the "why won't this work?!" moment, the late-night breakthroughs. One raw update at a time.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="material-icons text-startsnap-persian-blue mt-1">groups</span>
-                  <span><strong>Community Feedback: Straight Up, No Chaser.</strong> Get real insights from fellow builders. The kind that actually makes your StartSnap better, not just boosts your ego.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="material-icons text-startsnap-persian-blue mt-1">favorite</span>
-                  <span><strong>Project Support: Rally Your Believers.</strong> Let folks show some love for your vision. That support count? It's pure Vibe Coder fuel.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="material-icons text-startsnap-persian-blue mt-1">work</span>
-                  <span><strong>Opportunities: Connect & Conquer.</strong> Ready for what's next? Signal it. Let collaborators, employers, or your next adventure find you right here.</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="text-center">
-            <Button asChild className="startsnap-button bg-startsnap-persian-blue text-startsnap-white font-['Roboto',Helvetica] font-bold text-lg rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] px-8 py-4">
-              <Link to="/create">Start Your Journey</Link>
-            </Button>
-          </div>
-        </div>
-      </div>
+      <BuildInPublicManifestoSection />
 
       {/* startsnap.fun Platform Showcase Section */}
-      <div className="w-full bg-startsnap-wisp-pink border-b-2 border-gray-800">
-        <div className="max-w-screen-2xl mx-auto px-8 py-16 lg:py-24">
-          <h2 className="text-4xl lg:text-5xl font-bold text-startsnap-ebony-clay text-center mb-12 font-['Space_Grotesk',Helvetica] leading-tight">
-            startsnap.fun is... well, a StartSnap!
-          </h2>
-          
-          <div className="flex flex-col md:flex-row gap-8 lg:gap-12 items-center max-w-6xl mx-auto">
-            {/* Platform StartSnap Card */}
-            <div className="w-full md:w-[40%] lg:w-[45%]">
-              {loadingPlatformData ? (
-                <div className="p-12 border-2 border-dashed border-gray-300 bg-white rounded-xl flex items-center justify-center">
-                  <p className="text-startsnap-pale-sky">Loading platform data...</p>
-                </div>
-              ) : platformStartSnap ? (
-                <Link to={`/project/09d44a11-959b-43a2-b57f-8b2c5e591e5f`} className="block">
-                  <StartSnapCard
-                    startsnap={platformStartSnap}
-                    showCreator={true}
-                    creatorName={platformCreator}
-                    variant="main-page"
-                    formatDate={formatDate}
-                    getCategoryDisplay={getCategoryDisplay}
-                  />
-                </Link>
-              ) : (
-                <div className="p-12 border-2 border-dashed border-gray-300 bg-white rounded-xl flex items-center justify-center">
-                  <p className="text-startsnap-pale-sky">Platform project unavailable</p>
-                </div>
-              )}
-            </div>
-            
-            {/* Explanatory Text & CTA */}
-            <div className="w-full md:w-[60%] lg:w-[55%]">
-              <div className="space-y-6">
-                <h3 className="text-3xl lg:text-4xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] leading-tight">
-                  We're Building This With You.
-                </h3>
-                <p className="text-lg lg:text-xl text-startsnap-river-bed leading-relaxed">
-                  That's right, the platform you're on is our own living StartSnap. 
-                </p>
-                <p className="text-lg lg:text-xl text-startsnap-river-bed leading-relaxed">
-                  Our Vibe Log for startsnap.fun (check it out on its project page!) is where we'll post updates, share our roadmap thoughts, and most importantly, show how <strong>your feedback</strong> and feature requests are shaping the future of this space. This isn't just our project, it's our shared journey.
-                </p>
-                <div>
-                  <Button 
-                    asChild 
-                    className="startsnap-button bg-startsnap-mountain-meadow text-startsnap-white font-['Roboto',Helvetica] font-bold text-lg px-8 py-4 rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
-                  >
-                    <Link to="/project/09d44a11-959b-43a2-b57f-8b2c5e591e5f">Follow Our Journey</Link>
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <PlatformShowcaseSection
+        loadingPlatformData={loadingPlatformData}
+        platformStartSnap={platformStartSnap}
+        platformCreator={platformCreator}
+        formatDate={formatDate}
+        getCategoryDisplay={getCategoryDisplay}
+      />
     </section>
   );
 };
