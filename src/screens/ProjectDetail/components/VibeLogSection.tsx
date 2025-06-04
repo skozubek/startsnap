@@ -3,6 +3,8 @@
  * @description Component for displaying and managing Vibe Log entries for a StartSnap project.
  */
 import React, { useState, useEffect } from "react";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { supabase } from "../../../lib/supabase";
 import { getVibeLogDisplay } from "../../../config/categories";
 import { formatDetailedDate } from "../../../lib/utils";
@@ -306,9 +308,11 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
                   <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7 mt-1">
                     {entry.title}
                   </h3>
-                  <p className="font-['Roboto',Helvetica] font-normal text-startsnap-river-bed text-base leading-6">
-                    {entry.content}
-                  </p>
+                  <div className="prose prose-sm md:prose-base max-w-none text-startsnap-river-bed font-['Roboto',Helvetica] leading-relaxed">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {entry.content || ''}
+                    </ReactMarkdown>
+                  </div>
                 </div>
               </div>
             </div>
