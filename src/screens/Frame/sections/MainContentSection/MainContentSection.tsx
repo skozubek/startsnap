@@ -370,9 +370,9 @@ export const MainContentSection = (): JSX.Element => {
                 <div>
                   <Button 
                     asChild 
-                    className="startsnap-button bg-startsnap-persian-blue text-startsnap-white font-['Roboto',Helvetica] font-bold text-lg px-8 py-4 rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+                    className="startsnap-button bg-startsnap-mountain-meadow text-startsnap-white font-['Roboto',Helvetica] font-bold text-lg px-8 py-4 rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
                   >
-                    <Link to="/project/09d44a11-959b-43a2-b57f-8b2c5e591e5f">Follow Our Platform's Journey</Link>
+                    <Link to="/project/09d44a11-959b-43a2-b57f-8b2c5e591e5f">Follow Our Journey</Link>
                   </Button>
                 </div>
               </div>
