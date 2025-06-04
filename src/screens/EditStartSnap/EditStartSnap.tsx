@@ -22,10 +22,6 @@ export const EditStartSnap = (): JSX.Element => {
   const [initialData, setInitialData] = useState<any>(null);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
-  useEffect(() => {
     // If no user is authenticated, redirect to home
     if (!user) {
       navigate('/');
@@ -157,7 +153,7 @@ export const EditStartSnap = (): JSX.Element => {
 
       if (startsnapError) throw startsnapError;
 
-      navigate(`/project/${slugToSave}`);
+      navigate(`/projects/${slugToSave}`);
       alert('StartSnap updated successfully!');
 
     } catch (error) {
@@ -188,10 +184,10 @@ export const EditStartSnap = (): JSX.Element => {
         onCancel={() => {
           const projectSlug = initialData?.slug || '';
           if (projectSlug) {
-            navigate(`/project/${projectSlug}`);
+            navigate(`/projects/${projectSlug}`);
           } else {
             navigate('/profile');
-            console.warn('Could not determine project slug for cancel navigation.');
+            console.warn('Could not determine project slug for cancel navigation during edit.');
           }
         }}
       />

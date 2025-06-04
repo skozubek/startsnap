@@ -15,6 +15,7 @@ import { CreateStartSnap } from "../CreateStartSnap";
 import { EditStartSnap } from "../EditStartSnap";
 import { Profile } from "../Profile";
 import { AuthProvider, useAuth } from "../../context/AuthContext";
+import { ScrollToTop } from "../../components/utils/ScrollToTop";
 
 /**
  * @description Component that protects routes requiring authentication
@@ -48,6 +49,7 @@ export const Frame = (): JSX.Element => {
   return (
     <div className="flex flex-col min-h-screen w-full bg-startsnap-candlelight">
       <AuthProvider>
+        <ScrollToTop />
         <HeaderSection />
         <Subheader />
         <div className="flex flex-col w-full min-h-screen overflow-y-auto">

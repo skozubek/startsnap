@@ -42,10 +42,6 @@ export const ProjectDetail = (): JSX.Element => {
   const [visibleVibeLogCount, setVisibleVibeLogCount] = useState(VIBE_LOG_PAGE_SIZE);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
-  useEffect(() => {
     if (slug) {
       fetchProjectData();
     }

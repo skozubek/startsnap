@@ -18,11 +18,6 @@ export const CreateStartSnap = (): JSX.Element => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  // Scroll to top when component mounts
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
   /**
    * @description Handles form submission to create a new StartSnap
    * @async
@@ -104,7 +99,7 @@ export const CreateStartSnap = (): JSX.Element => {
 
     // 4. Redirect to the project detail page using the new slug
     if (startsnap && startsnap.length > 0 && startsnap[0].slug) {
-      navigate(`/project/${startsnap[0].slug}`);
+      navigate(`/projects/${startsnap[0].slug}`);
       alert('StartSnap created successfully!');
     } else {
       // Fallback, though ideally startsnap[0].slug should always exist
@@ -123,7 +118,7 @@ export const CreateStartSnap = (): JSX.Element => {
       <ProjectForm
         mode="create"
         onSubmit={handleSubmit}
-        onCancel={() => navigate('/')}
+        onCancel={() => navigate(-1)}
       />
     </div>
   );
