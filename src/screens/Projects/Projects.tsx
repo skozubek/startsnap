@@ -3,7 +3,7 @@
  * @description Projects gallery page showing all StartSnaps with search and filtering
  */
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { SearchAndFilterBar } from "../../components/ui/SearchAndFilterBar";
 import { StartSnapCard } from "../../components/ui/StartSnapCard";
 import { Button } from "../../components/ui/button";
@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { CATEGORY_CONFIG, getCategoryDisplay } from "../../config/categories";
 import { formatDate } from "../../lib/utils";
-import { useState, useEffect, useCallback } from "react";
+import { useCallback } from "react";
 import type { ProjectDiscoveryState, FilterOptions } from "../../types/projectDiscovery";
 import type { StartSnapProject } from "../../types/startsnap";
 import type { UserProfileData } from "../../types/user";
@@ -121,6 +121,11 @@ export const Projects = (): JSX.Element => {
   useEffect(() => {
     fetchStartSnaps(discoveryState);
   }, [discoveryState, fetchStartSnaps]);
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleDiscoveryChange = (newDiscoveryState: ProjectDiscoveryState) => {
     setDiscoveryState(newDiscoveryState);
