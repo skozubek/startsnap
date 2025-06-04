@@ -20,7 +20,7 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         filterTrigger:
-          "bg-startsnap-mischka text-startsnap-ebony-clay border border-solid border-gray-800 shadow-[2px_2px_0px_#1f2937] hover:bg-gray-300 font-bold",
+          "bg-startsnap-mischka text-startsnap-ebony-clay border border-solid border-gray-800 shadow-[2px_2px_0px_#1f2937] hover:bg-gray-300 font-bold transform transition-transform duration-150 ease-in-out hover:scale-[1.02]",
         filterOption:
           "bg-transparent text-startsnap-ebony-clay border border-gray-800 hover:bg-startsnap-athens-gray font-bold",
         filterOptionSelected:

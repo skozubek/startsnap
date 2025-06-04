@@ -20,7 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../../../components/ui/dropdown-menu";
-import { LogOut, User } from "lucide-react";
+import { LogOut, User, Menu, X } from "lucide-react";
 import { useAuth } from "../../../../context/AuthContext";
 import { UserAvatar, getAvatarName } from "../../../../components/ui/user-avatar";
 import type { UserProfileData } from "../../../../types/user";
@@ -34,6 +34,7 @@ export const HeaderSection = (): JSX.Element => {
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const [userProfile, setUserProfile] = useState<Pick<UserProfileData, 'username'> | null>(null);
   const { user } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Fetch user profile when user changes to get consistent username
   useEffect(() => {
@@ -69,6 +70,13 @@ export const HeaderSection = (): JSX.Element => {
   ];
 
   /**
+   * @description Toggles the mobile menu visibility.
+   */
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  /**
    * @description Opens the authentication dialog with the specified mode
    * @param {('signup'|'login')} mode - The authentication mode to open
    */
@@ -100,10 +108,10 @@ export const HeaderSection = (): JSX.Element => {
           </Link>
         </div>
 
-        <div className="flex items-center gap-6">
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center gap-6">
           <NavigationMenu>
             <NavigationMenuList className="flex gap-6">
-              {/* Always show public links */}
               {navLinks.map((link, index) => (
                 <NavigationMenuItem key={index}>
                   <NavigationMenuLink
@@ -117,7 +125,6 @@ export const HeaderSection = (): JSX.Element => {
             </NavigationMenuList>
           </NavigationMenu>
 
-          {/* Create StartSnap Button for authenticated users */}
           {user && (
             <Button
               asChild
@@ -165,7 +172,6 @@ export const HeaderSection = (): JSX.Element => {
               >
                 Login
               </Button>
-
               <Button
                 onClick={() => handleAuthClick('signup')}
                 className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
@@ -175,7 +181,95 @@ export const HeaderSection = (): JSX.Element => {
             </>
           )}
         </div>
+
+        {/* Mobile Menu Button */}
+        <div className="md:hidden flex items-center">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleMobileMenu}
+            className="text-startsnap-oxford-blue hover:text-startsnap-french-rose"
+            aria-label="Toggle mobile menu"
+          >
+            {isMobileMenuOpen ? <X size={32} /> : <Menu size={32} />}
+          </Button>
+        </div>
       </div>
+
+      {/* Mobile Navigation Menu */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden absolute top-full left-0 right-0 bg-[--startsnap-beige] shadow-lg p-6 animate-in slide-in-from-top-2 duration-300">
+          <nav className="flex flex-col gap-4">
+            {navLinks.map((link, index) => (
+              <Link
+                key={index}
+                to={link.href}
+                onClick={toggleMobileMenu}
+                className="font-['Space_Grotesk',Helvetica] text-startsnap-oxford-blue text-lg font-medium hover:text-startsnap-french-rose transition-colors py-2 text-center"
+              >
+                {link.title}
+              </Link>
+            ))}
+            <hr className="my-2 border-startsnap-mischka" />
+            {user && (
+              <Button
+                asChild
+                onClick={toggleMobileMenu}
+                className="w-full startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center justify-center gap-2"
+              >
+                <Link to="/create">
+                  <span>Add StartSnap</span>
+                </Link>
+              </Button>
+            )}
+            {user ? (
+              <>
+                <Link
+                  to="/profile"
+                  onClick={toggleMobileMenu}
+                  className="font-['Space_Grotesk',Helvetica] text-startsnap-oxford-blue text-lg font-medium hover:text-startsnap-french-rose transition-colors py-2 text-center flex items-center justify-center gap-2"
+                >
+                  <User size={20} />
+                  <span>Profile</span>
+                </Link>
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    handleSignOut();
+                    toggleMobileMenu();
+                  }}
+                  className="w-full font-['Space_Grotesk',Helvetica] text-startsnap-french-rose text-lg font-medium hover:text-startsnap-french-rose hover:bg-startsnap-mischka/10 transition-colors py-2 flex items-center justify-center gap-2"
+                >
+                  <LogOut size={20} />
+                  <span>Sign Out</span>
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    handleAuthClick('login');
+                    toggleMobileMenu();
+                  }}
+                  className="w-full startsnap-button bg-gray-200 text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+                >
+                  Login
+                </Button>
+                <Button
+                  onClick={() => {
+                    handleAuthClick('signup');
+                    toggleMobileMenu();
+                  }}
+                  className="w-full startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+                >
+                  Sign Up
+                </Button>
+              </>
+            )}
+          </nav>
+        </div>
+      )}
 
       <AuthDialog
         isOpen={isAuthDialogOpen}

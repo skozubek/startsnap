@@ -73,7 +73,7 @@ export const PlatformShowcaseSection = ({
           <div className="w-full md:w-[60%] lg:w-[55%] md:pl-6">
             <div className="space-y-6">
               <h3 className="text-3xl lg:text-4xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] leading-tight">
-                We're Building This With You.
+                We're Building This With You
               </h3>
               <p className="text-lg lg:text-xl text-startsnap-river-bed leading-relaxed">
                 That's right, the platform you're on is our own living StartSnap.

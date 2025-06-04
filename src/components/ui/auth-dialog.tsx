@@ -209,13 +209,13 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: Au
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent
-        className="sm:max-w-md bg-white p-8 rounded-lg border-3 border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]"
+        className="max-w-xs p-6 sm:max-w-md sm:p-8 bg-white rounded-lg border-3 border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]"
       >
-        <DialogTitle className="text-4xl font-bold text-startsnap-ebony-clay text-center font-['Space_Grotesk',Helvetica] leading-tight mb-8">
+        <DialogTitle className="text-3xl sm:text-4xl font-bold text-startsnap-ebony-clay text-center font-['Space_Grotesk',Helvetica] leading-tight mb-6 sm:mb-8">
           {mode === 'login' ? 'Welcome Back' : 'Create Your Account'}
         </DialogTitle>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           <div className="space-y-2">
             <Label
               htmlFor="email"
