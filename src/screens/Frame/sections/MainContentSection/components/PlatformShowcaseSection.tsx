@@ -86,7 +86,7 @@ export const PlatformShowcaseSection = ({
                   asChild
                   className="startsnap-button bg-startsnap-mountain-meadow text-startsnap-white font-['Roboto',Helvetica] font-bold text-lg px-8 py-4 rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
                 >
-                  <Link to="/project/startsnap-fun">Follow Our Journey</Link>
+                  <Link to="/project/startsnapfun">Follow Our Journey</Link>
                 </Button>
               </div>
             </div>

@@ -58,6 +58,10 @@
   .startsnap-button.bg-startsnap-persian-blue:hover {
     background-color: var(--startsnap-persian-blue-dark);
   }
+
+  .startsnap-button.bg-startsnap-candlelight:hover {
+    background-color: var(--startsnap-corn);
+  }
 }
 
 @layer base {
