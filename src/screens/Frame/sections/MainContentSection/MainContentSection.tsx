@@ -206,11 +206,11 @@ export const MainContentSection = (): JSX.Element => {
           <div className="flex flex-col-reverse md:flex-row gap-12 items-center max-w-6xl mx-auto mb-16">
             <div className="w-full md:w-[60%]">
               <p className="text-lg lg:text-xl text-startsnap-river-bed mb-6 leading-relaxed font-['Roboto',Helvetica]">
-                We're running on coffee, AI prompts, and the thrill of making cool stuff — out loud, in real time. Those rough edges? They just mean we're moving fast. Getting real feedback before it's "done" is just smart. That's the Vibe Log story: every wild swing, every small win.
+                We're running on coffee, AI prompts, and the thrill of making cool stuff — out loud, in real time. Those rough edges? They just mean we're moving fast.
               </p>
-              
+              <p className="text-lg lg:text-xl text-startsnap-river-bed mb-6 leading-relaxed font-['Roboto',Helvetica]">Getting <strong>real feedback</strong> before it's "done" is just smart. That's the Vibe Log story: every wild swing, every small win.</p>
               <p className="text-lg lg:text-xl text-startsnap-river-bed mb-6 leading-relaxed font-['Roboto',Helvetica]">
-                Startsnap.fun is where these stories live. Explore raw projects, find your crew, share your own StartSnap. Build your thing, your way, and show it off!
+                <strong>Startsnap.fun</strong> is where these stories live. Explore raw projects, find your crew, share your own StartSnap. Build <strong>your thing, your way</strong>, and show it off!
               </p>
             </div>
 
