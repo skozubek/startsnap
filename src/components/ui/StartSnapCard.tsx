@@ -59,7 +59,7 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
     <Card className="bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]">
       {/* Main clickable card content (excluding user info) */}
       <Link
-        to={`/project/${startsnap.slug}`}
+        to={`/projects/${startsnap.slug}`}
         className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-startsnap-french-rose"
         tabIndex={0}
         style={{ textDecoration: 'none', color: 'inherit' }}

@@ -7,6 +7,7 @@ import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { FooterSection } from "./sections/FooterSection/FooterSection";
 import { HeaderSection } from "./sections/HeaderSection/HeaderSection";
+import { Subheader } from "../../components/ui/Subheader";
 import { MainContentSection } from "./sections/MainContentSection/MainContentSection";
 import { Projects } from "../Projects";
 import { ProjectDetail } from "../ProjectDetail";
@@ -48,11 +49,12 @@ export const Frame = (): JSX.Element => {
     <div className="flex flex-col min-h-screen w-full bg-startsnap-candlelight">
       <AuthProvider>
         <HeaderSection />
+        <Subheader />
         <div className="flex flex-col w-full min-h-screen overflow-y-auto">
           <Routes>
             <Route path="/" element={<MainContentSection />} />
             <Route path="/projects" element={<Projects />} />
-            <Route path="/project/:slug" element={<ProjectDetail />} />
+            <Route path="/projects/:slug" element={<ProjectDetail />} />
             <Route
               path="/create"
               element={
