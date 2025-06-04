@@ -35,6 +35,9 @@ export const MainContentSection = (): JSX.Element => {
   const [creators, setCreators] = useState<Record<UserProfileData['user_id'], UserProfileData['username']>>({});
   const typedRef = useRef(null);
   const [discoveryState, setDiscoveryState] = useState<ProjectDiscoveryState>(DEFAULT_DISCOVERY_STATE);
+  const [platformStartSnap, setPlatformStartSnap] = useState<StartSnapProject | null>(null);
+  const [platformCreator, setPlatformCreator] = useState<string>('Vibe Coder Team');
+  const [loadingPlatformData, setLoadingPlatformData] = useState(true);
 
   useEffect(() => {
     const typed = new Typed(typedRef.current, {
@@ -122,9 +125,46 @@ export const MainContentSection = (): JSX.Element => {
     }
   }, []);
 
+  const fetchPlatformStartSnap = useCallback(async () => {
+    try {
+      setLoadingPlatformData(true);
+      const platformId = "09d44a11-959b-43a2-b57f-8b2c5e591e5f";
+      
+      const { data, error } = await supabase
+        .from('startsnaps')
+        .select('*, support_count')
+        .eq('id', platformId)
+        .single();
+
+      if (error) throw error;
+      
+      setPlatformStartSnap(data);
+      
+      // Fetch creator info if needed
+      if (data) {
+        const { data: creatorData, error: creatorError } = await supabase
+          .from('profiles')
+          .select('username')
+          .eq('user_id', data.user_id)
+          .single();
+          
+        if (creatorError && creatorError.code !== 'PGRST116') {
+          console.error('Error fetching platform creator:', creatorError);
+        } else if (creatorData) {
+          setPlatformCreator(creatorData.username);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching platform startsnap:', error);
+    } finally {
+      setLoadingPlatformData(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchStartSnaps(discoveryState);
-  }, [discoveryState, fetchStartSnaps]);
+    fetchPlatformStartSnap();
+  }, [discoveryState, fetchStartSnaps, fetchPlatformStartSnap]);
 
   const handleDiscoveryChange = (newDiscoveryState: ProjectDiscoveryState) => {
     setDiscoveryState(newDiscoveryState);
@@ -279,6 +319,64 @@ export const MainContentSection = (): JSX.Element => {
             <Button asChild className="startsnap-button bg-startsnap-persian-blue text-startsnap-white font-['Roboto',Helvetica] font-bold text-lg rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] px-8 py-4">
               <Link to="/create">Start Your Journey</Link>
             </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* startsnap.fun Platform Showcase Section */}
+      <div className="w-full bg-startsnap-athens-gray border-b-2 border-gray-800">
+        <div className="max-w-screen-2xl mx-auto px-8 py-16 lg:py-24">
+          <h2 className="text-4xl lg:text-5xl font-bold text-startsnap-ebony-clay text-center mb-12 font-['Space_Grotesk',Helvetica] leading-tight">
+            startsnap.fun is... well, a StartSnap!
+          </h2>
+          
+          <div className="flex flex-col md:flex-row gap-8 lg:gap-12 items-center max-w-6xl mx-auto">
+            {/* Platform StartSnap Card */}
+            <div className="w-full md:w-[40%] lg:w-[45%]">
+              {loadingPlatformData ? (
+                <div className="p-12 border-2 border-dashed border-gray-300 bg-white rounded-xl flex items-center justify-center">
+                  <p className="text-startsnap-pale-sky">Loading platform data...</p>
+                </div>
+              ) : platformStartSnap ? (
+                <Link to={`/project/09d44a11-959b-43a2-b57f-8b2c5e591e5f`} className="block">
+                  <StartSnapCard
+                    startsnap={platformStartSnap}
+                    showCreator={true}
+                    creatorName={platformCreator}
+                    variant="main-page"
+                    formatDate={formatDate}
+                    getCategoryDisplay={getCategoryDisplay}
+                  />
+                </Link>
+              ) : (
+                <div className="p-12 border-2 border-dashed border-gray-300 bg-white rounded-xl flex items-center justify-center">
+                  <p className="text-startsnap-pale-sky">Platform project unavailable</p>
+                </div>
+              )}
+            </div>
+            
+            {/* Explanatory Text & CTA */}
+            <div className="w-full md:w-[60%] lg:w-[55%]">
+              <div className="space-y-6">
+                <h3 className="text-3xl lg:text-4xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] leading-tight">
+                  We're Building This With You.
+                </h3>
+                <p className="text-lg lg:text-xl text-startsnap-river-bed leading-relaxed">
+                  That's right, the platform you're on is our own living StartSnap. 
+                </p>
+                <p className="text-lg lg:text-xl text-startsnap-river-bed leading-relaxed">
+                  Our Vibe Log for startsnap.fun (check it out on its project page!) is where we'll post updates, share our roadmap thoughts, and most importantly, show how <strong>your feedback</strong> and feature requests are shaping the future of this space. This isn't just our project, it's our shared journey.
+                </p>
+                <div>
+                  <Button 
+                    asChild 
+                    className="startsnap-button bg-startsnap-persian-blue text-startsnap-white font-['Roboto',Helvetica] font-bold text-lg px-8 py-4 rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+                  >
+                    <Link to="/project/09d44a11-959b-43a2-b57f-8b2c5e591e5f">Follow Our Platform's Journey</Link>
+                  </Button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
