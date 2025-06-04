@@ -78,6 +78,13 @@ export const ProjectDetail = (): JSX.Element => {
     }
   }, [currentUser]);
 
+  // New useEffect to fetch feedbacks when startsnap.id is available
+  useEffect(() => {
+    if (startsnap && startsnap.id) {
+      fetchFeedbacks();
+    }
+  }, [startsnap]); // Or more specifically startsnap?.id, but startsnap itself covers it
+
   /**
    * @description Fetches all project data including Startsnap details, creator, Vibe Logs, and Feedbacks.
    * @async
@@ -136,7 +143,7 @@ export const ProjectDetail = (): JSX.Element => {
       setVibeLogEntries((vibeLogsData as VibeLog[]) || []);
       setVisibleVibeLogCount(VIBE_LOG_PAGE_SIZE); // Reset visible count on new data fetch
 
-      await fetchFeedbacks(); // Call without projectId, it will use state
+      // REMOVED: await fetchFeedbacks(); // No longer called directly here
     } catch (error) {
       console.error('Error fetching project data:', error);
     } finally {
@@ -150,7 +157,7 @@ export const ProjectDetail = (): JSX.Element => {
    */
   const fetchFeedbacks = async () => { // No projectId argument
     if (!startsnap || !startsnap.id) { // Check if startsnap and its id are available
-      console.warn('Cannot fetch feedbacks: startsnap data or ID is not available yet.');
+      console.warn('Cannot fetch feedbacks: startsnap data or ID is not available yet. This might be normal on initial load.');
       return;
     }
     const projectId = startsnap.id; // Get id from state
