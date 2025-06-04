@@ -83,9 +83,7 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   const handleAuthErrorAndSignOut = async (): Promise<void> => {
     const { error } = await supabase.auth.signOut();
     if (error) {
-      // Log the error, but onAuthStateChange should still have been triggered
-      // by the signOut call to clear the local session state.
-      console.error('Error during signOut in handleAuthErrorAndSignOut:', error);
+      // onAuthStateChange will still be triggered to clear local session state
     }
     // The onAuthStateChange listener handles setting user and session to null.
   };
