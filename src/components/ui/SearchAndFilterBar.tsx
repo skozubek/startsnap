@@ -60,21 +60,16 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
   // Debounce search term
   useEffect(() => {
     const handler = setTimeout(() => {
-      // Only apply if searchTerm is not initialSearchTerm to avoid an immediate call on load if they are different
-      // or if the component is meant to reflect an external change immediately
-      // For simplicity here, we assume any change to searchTerm should trigger a debounced search.
-      // If initialSearchTerm can change and should reflect immediately, this logic might need adjustment.
-      if (searchTerm !== initialSearchTerm) { // Basic check to avoid initial fire if searchTerm starts different
+      if (searchTerm !== initialSearchTerm) {
           handleApplyChanges();
       }
-    }, 300); // 300ms debounce delay
+    }, 300);
 
     return () => {
       clearTimeout(handler);
     };
-  }, [searchTerm, initialSearchTerm]); // Rerun effect if searchTerm or initialSearchTerm changes
+  }, [searchTerm, initialSearchTerm]);
 
-  // Handler to apply all changes
   const handleApplyChanges = (updatedFilters?: FilterOptions, updatedSort?: SortOption) => {
     const finalFilters = updatedFilters || tempFilters;
     const finalSort = updatedSort || currentSort;
@@ -87,10 +82,8 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
 
   const handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
-    // No immediate call to handleApplyChanges here anymore for every keystroke
   };
 
-  // Debounced search apply or apply on blur/enter
   const handleSearchApply = () => {
     handleApplyChanges();
   };
@@ -100,9 +93,9 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
     if (field === 'name') {
       newDirection = direction || (currentSort.field === 'name' && currentSort.direction === 'asc' ? 'desc' : 'asc');
     } else if (field === 'created_at') {
-      newDirection = direction || (currentSort.field === 'created_at' && currentSort.direction === 'desc' ? 'asc' : 'desc'); // Default to Newest (desc), toggle to Oldest (asc)
+      newDirection = direction || (currentSort.field === 'created_at' && currentSort.direction === 'desc' ? 'asc' : 'desc');
     } else if (field === 'support_count') {
-      newDirection = 'desc'; // Always most supported first for this option
+      newDirection = 'desc';
     }
 
     const newSort: SortOption = { field, direction: newDirection };
@@ -112,14 +105,14 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
 
   const handleFilterApply = () => {
     handleApplyChanges(tempFilters, undefined);
-    setIsFilterPopoverOpen(false); // Close popover
+    setIsFilterPopoverOpen(false);
   };
 
   const handleFilterClear = () => {
     const clearedFilters: FilterOptions = { type: 'all', category: undefined, isHackathonEntry: undefined };
     setTempFilters(clearedFilters);
     handleApplyChanges(clearedFilters, undefined);
-    setIsFilterPopoverOpen(false); // Close popover
+    setIsFilterPopoverOpen(false);
   };
 
   const getSortLabel = (sort: SortOption): string => {
@@ -131,11 +124,10 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
     return 'Sort by';
   };
 
-  // Neo-brutalist styles (examples - to be refined with actual Tailwind classes from project)
   const barStyle = "flex flex-col md:flex-row items-center gap-4 p-4 bg-startsnap-white border-2 border-gray-800 shadow-[4px_4px_0px_#1f2937] rounded-lg mb-8";
-  const inputStyle = "flex-grow border-2 border-gray-800 rounded-md p-2 shadow-[2px_2px_0px_#1f2937] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring";
-  const buttonStyle = "startsnap-button bg-startsnap-mischka text-startsnap-ebony-clay font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] py-2 px-4 text-sm hover:bg-gray-300 flex items-center gap-2";
-  const popoverContentStyle = "p-5 bg-startsnap-white border-2 border-gray-800 rounded-lg shadow-[3px_3px_0px_#1f2937]";
+  const newPopoverContentStyle = "p-5 bg-startsnap-white border-2 border-gray-800 rounded-lg shadow-[2px_2px_0px_#1f2937]";
+  const newSelectTriggerStyle = "flex-grow border border-gray-800 rounded-md p-2 shadow-[1px_1px_0px_#1f2937] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring w-full";
+  const newSelectContentPanelStyle = "bg-startsnap-white border-2 border-gray-800 rounded-lg shadow-[2px_2px_0px_#1f2937]";
 
   return (
     <div className={barStyle}>
@@ -148,19 +140,20 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
           value={searchTerm}
           onChange={handleSearchInputChange}
           onKeyDown={(e) => e.key === 'Enter' && handleSearchApply()} // Apply search on Enter key
-          className={`${inputStyle} pl-10`}
+          // Use a generic input style, or define one if specific tweaks are needed
+          className={"flex-grow border border-gray-800 rounded-md p-2 shadow-[2px_2px_0px_#1f2937] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring pl-10"}
         />
       </div>
 
       {/* Filter Controls */}
       <Popover open={isFilterPopoverOpen} onOpenChange={setIsFilterPopoverOpen}>
         <PopoverTrigger asChild>
-          <Button variant="outline" className={buttonStyle}>
+          <Button variant="filterTrigger" size="sm"> {/* Adjusted size to sm as original py-2 px-4 is smaller than default */}
             <span className="material-icons text-base">filter_list</span>
             Filters
           </Button>
         </PopoverTrigger>
-        <PopoverContent className={popoverContentStyle} align="start">
+        <PopoverContent className={newPopoverContentStyle} align="start">
           <div className="grid gap-5">
             <h3 className="font-bold text-lg text-startsnap-ebony-clay mb-1">Filter By</h3>
 
@@ -171,10 +164,10 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
                 value={tempFilters.category || ''}
                 onValueChange={(value) => setTempFilters(prev => ({ ...prev, category: value === 'all' ? undefined : value }))}
               >
-                <SelectTrigger id="filter-category" className={`${inputStyle} w-full`}>
+                <SelectTrigger id="filter-category" className={newSelectTriggerStyle}>
                   <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
-                <SelectContent className={popoverContentStyle}> {/* Re-use style for consistency */}
+                <SelectContent className={newSelectContentPanelStyle}> {/* Panel style */}
                   <SelectItem value="all">All Categories</SelectItem>
                   {categories.map(cat => (
                     <SelectItem key={cat} value={cat}>{cat}</SelectItem>
@@ -191,9 +184,10 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
                 {(['all', 'live', 'idea'] as const).map(type => (
                   <Button
                     key={type}
-                    variant={tempFilters.type === type ? 'default' : 'outline'}
+                    variant={tempFilters.type === type ? 'filterOptionSelected' : 'filterOption'}
+                    size="sm" // Keep size consistent for these options
                     onClick={() => setTempFilters(prev => ({ ...prev, type }))}
-                    className={`${buttonStyle} ${tempFilters.type === type ? 'bg-startsnap-ebony-clay text-startsnap-white' : ''} capitalize flex-1`}
+                    className={"capitalize flex-1"} // flex-1 for equal width
                   >
                     {type}
                   </Button>
@@ -215,8 +209,8 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
             {/* Increased vertical margin for separator */}
             <div className="h-px my-3 bg-gray-300" />
             <div className="flex justify-end gap-2 mt-3">
-              <Button variant="outline" onClick={handleFilterClear} className={buttonStyle}>Clear</Button>
-              <Button onClick={handleFilterApply} className={`${buttonStyle} bg-startsnap-french-rose text-startsnap-white`}>Apply Filters</Button>
+              <Button variant="filterOption" size="sm" onClick={handleFilterClear}>Clear</Button>
+              <Button variant="primaryPopoverAction" size="sm" onClick={handleFilterApply}>Apply Filters</Button>
             </div>
           </div>
         </PopoverContent>
@@ -225,12 +219,12 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
       {/* Sort Controls */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className={buttonStyle}>
+          <Button variant="filterTrigger" size="sm"> {/* Adjusted size to sm */}
             <span className="material-icons text-base">sort</span>
             {getSortLabel(currentSort)}
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className={popoverContentStyle} align="end">
+        <DropdownMenuContent className={newPopoverContentStyle} align="end"> {/* Re-use style for consistency */}
           {/* Replaced DropdownMenuLabel with a styled div */}
           <div className="px-2 py-1.5 text-sm font-semibold text-startsnap-ebony-clay">Sort By</div>
           {/* Replaced DropdownMenuSeparator with a styled div */}

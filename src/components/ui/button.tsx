@@ -19,6 +19,14 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        filterTrigger:
+          "bg-startsnap-mischka text-startsnap-ebony-clay border border-solid border-gray-800 shadow-[2px_2px_0px_#1f2937] hover:bg-gray-300 font-bold",
+        filterOption:
+          "bg-transparent text-startsnap-ebony-clay border border-gray-800 hover:bg-startsnap-athens-gray font-bold",
+        filterOptionSelected:
+          "bg-startsnap-ebony-clay text-startsnap-white border border-startsnap-ebony-clay hover:bg-startsnap-ebony-clay/90 font-bold",
+        primaryPopoverAction:
+          "bg-startsnap-french-rose text-startsnap-white border-2 border-solid border-gray-800 shadow-[2px_2px_0px_#1f2937] hover:bg-startsnap-french-rose/90 font-bold",
       },
       size: {
         default: "h-10 px-4 py-3",
