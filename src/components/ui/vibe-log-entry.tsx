@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Checkbox } from "./checkbox";
 import { Label } from "./label";
 import { Input } from "./input";
 import { Textarea } from "./textarea";
@@ -13,7 +14,7 @@ import { getVibeLogOptions, getVibeLogDisplay } from "../../config/categories";
 import { formatDetailedDate } from "../../lib/utils";
 import Avatar from "boring-avatars";
 import { FaXTwitter } from "react-icons/fa6";
-import { useAuth } from "../../lib/auth";
+import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabase";
 
 interface VibeLogEntryProps {
@@ -21,9 +22,11 @@ interface VibeLogEntryProps {
   content: string;
   type: string;
   shareOnTwitter?: boolean;
+  shareOnTwitter?: boolean;
   onTypeChange: (type: string) => void;
   onTitleChange: (title: string) => void;
   onContentChange: (content: string) => void;
+  onShareOnTwitterChange?: (shareOnTwitter: boolean) => void;
   onShareOnTwitterChange?: (share: boolean) => void;
   showAllTypes?: boolean;
   singleOptionType?: 'launch' | 'idea';
@@ -34,9 +37,11 @@ export const VibeLogEntry = ({
   content,
   type,
   shareOnTwitter = false,
+  shareOnTwitter = false,
   onTypeChange,
   onTitleChange,
   onContentChange,
+  onShareOnTwitterChange,
   onShareOnTwitterChange,
   showAllTypes = false,
   singleOptionType = 'launch',
@@ -72,6 +77,28 @@ export const VibeLogEntry = ({
     : singleOptionType === 'launch'
     ? vibeLogOptions.find(o => o.value === 'launch')?.contentPlaceholder || "Share details about your project, key features, what problems it solves, and what makes it special..."
     : vibeLogOptions.find(o => o.value === 'idea')?.contentPlaceholder || "Share your idea, what inspired it, the problem you want to solve, and your vision for the solution...";
+  const [hasTwitterConnected, setHasTwitterConnected] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      const checkTwitterConnection = async () => {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('twitter_url')
+          .eq('user_id', user.id)
+          .single();
+
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error checking Twitter connection:', error);
+          return;
+        }
+
+        setHasTwitterConnected(!!data?.twitter_url);
+      };
+
+      checkTwitterConnection();
+    }
+  }, [user]);
 
   return (
     <div className="space-y-6">
@@ -154,6 +181,23 @@ export const VibeLogEntry = ({
           </div>
         )}
       </div>
+      {hasTwitterConnected && onShareOnTwitterChange && (
+        <div className="flex items-center gap-2">
+          <Checkbox
+            id="share-on-twitter"
+            checked={shareOnTwitter}
+            onCheckedChange={(checked) => onShareOnTwitterChange(checked as boolean)}
+            className="border-2 border-gray-800 data-[state=checked]:bg-startsnap-french-rose data-[state=checked]:border-startsnap-french-rose"
+          />
+          <Label
+            htmlFor="share-on-twitter"
+            className="flex items-center gap-2 cursor-pointer text-startsnap-river-bed"
+          >
+            <FaXTwitter className="text-black" />
+            Share on X
+          </Label>
+        </div>
+      )}
     </div>
   );
 };
