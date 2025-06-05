@@ -24,4 +24,5 @@ export interface VibeLogFormData {
   log_type: string;
   title: string;
   content: string;
+  shareOnTwitter?: boolean;
 }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Label } from "./label";
 import { Input } from "./input";
 import { Textarea } from "./textarea";
@@ -12,14 +12,19 @@ import {
 import { getVibeLogOptions, getVibeLogDisplay } from "../../config/categories";
 import { formatDetailedDate } from "../../lib/utils";
 import Avatar from "boring-avatars";
+import { FaXTwitter } from "react-icons/fa6";
+import { useAuth } from "../../lib/auth";
+import { supabase } from "../../lib/supabase";
 
 interface VibeLogEntryProps {
   title: string;
   content: string;
   type: string;
-  onTitleChange: (value: string) => void;
-  onContentChange: (value: string) => void;
-  onTypeChange: (value: string) => void;
+  shareOnTwitter?: boolean;
+  onTypeChange: (type: string) => void;
+  onTitleChange: (title: string) => void;
+  onContentChange: (content: string) => void;
+  onShareOnTwitterChange?: (share: boolean) => void;
   showAllTypes?: boolean;
   singleOptionType?: 'launch' | 'idea';
 }
@@ -28,12 +33,37 @@ export const VibeLogEntry = ({
   title,
   content,
   type,
+  shareOnTwitter = false,
+  onTypeChange,
   onTitleChange,
   onContentChange,
-  onTypeChange,
+  onShareOnTwitterChange,
   showAllTypes = false,
   singleOptionType = 'launch',
 }: VibeLogEntryProps): JSX.Element => {
+  const [selectedType, setSelectedType] = useState(type);
+  const { user } = useAuth();
+  const [userProfile, setUserProfile] = useState<any>(null);
+
+  useEffect(() => {
+    if (user) {
+      const fetchUserProfile = async () => {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('twitter_url')
+          .eq('user_id', user.id)
+          .single();
+
+        if (!error && data) {
+          setUserProfile(data);
+        }
+      };
+      fetchUserProfile();
+    }
+  }, [user]);
+
+  const hasTwitterConnected = userProfile?.twitter_url;
+
   const vibeLogOptions = getVibeLogOptions();
   const currentTypeConfig = vibeLogOptions.find(option => option.value === type);
 
@@ -105,6 +135,24 @@ export const VibeLogEntry = ({
           className="border-2 border-solid border-gray-800 rounded-lg p-3.5 min-h-[120px] font-['Roboto',Helvetica] text-startsnap-pale-sky text-base"
         />
         <p className="text-xs text-gray-500 mt-1">Markdown formatting is supported.</p>
+        {hasTwitterConnected && (
+          <div className="flex items-center gap-2 mt-4">
+            <input
+              type="checkbox"
+              id="shareOnTwitter"
+              checked={shareOnTwitter}
+              onChange={(e) => onShareOnTwitterChange?.(e.target.checked)}
+              className="w-4 h-4 rounded border-2 border-gray-800"
+            />
+            <label
+              htmlFor="shareOnTwitter"
+              className="text-sm text-startsnap-river-bed flex items-center gap-1 cursor-pointer"
+            >
+              Share on
+              <FaXTwitter className="text-black" />
+            </label>
+          </div>
+        )}
       </div>
     </div>
   );
