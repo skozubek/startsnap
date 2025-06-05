@@ -21,7 +21,7 @@ export const FooterSection = (): JSX.Element => {
 
   // Social media links
   const socialLinks: Array<{ icon: IconType; href: string; label: string }> = [
-    { icon: FaXTwitter, href: "#", label: "X (Twitter)" },
+    { icon: FaXTwitter, href: "https://x.com/startsnapfun", label: "X (Twitter)" },
     { icon: FaInstagram, href: "#", label: "Instagram" },
     { icon: FaYoutube, href: "#", label: "YouTube" },
   ];
