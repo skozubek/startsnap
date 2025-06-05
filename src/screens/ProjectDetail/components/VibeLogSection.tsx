@@ -11,7 +11,7 @@ import { formatDetailedDate } from "../../../lib/utils";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent } from "../../../components/ui/card";
 import { VibeLogEntry as VibeLogEntryComponent } from '../../../components/ui/vibe-log-entry';
-import { Share2 } from 'lucide-react';
+import { FaXTwitter } from "react-icons/fa6";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -325,8 +325,8 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
                             onClick={() => handleShareOnX(entry.title)}
                             className="cursor-pointer flex items-center gap-2"
                           >
-                            <Share2 size={16} />
-                            Share on X
+                            <FaXTwitter className="text-base" />
+                          Share on X
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => handleDeleteVibeLog(entry.id)}
