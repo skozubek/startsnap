@@ -314,6 +314,13 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
                           <MoreHorizontal className="h-4 w-4 text-startsnap-oxford-blue" />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="min-w-[160px]">
+                        <DropdownMenuItem
+                            onClick={() => handleShareOnX(entry.title)}
+                            className="cursor-pointer flex items-center gap-2"
+                          >
+                            <span><FaXTwitter className="text-base" /></span>
+                          Share on X
+                          </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => handleEditVibeLogInline(entry)}
                             className="cursor-pointer flex items-center gap-2"
@@ -321,13 +328,7 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
                             <span className="material-icons text-sm">edit</span>
                             Edit
                           </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => handleShareOnX(entry.title)}
-                            className="cursor-pointer flex items-center gap-2"
-                          >
-                            <FaXTwitter className="text-base" />
-                          Share on X
-                          </DropdownMenuItem>
+
                           <DropdownMenuItem
                             onClick={() => handleDeleteVibeLog(entry.id)}
                             className="cursor-pointer text-red-600 flex items-center gap-2"
