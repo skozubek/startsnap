@@ -11,6 +11,7 @@ import { formatDetailedDate } from "../../../lib/utils";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent } from "../../../components/ui/card";
 import { VibeLogEntry as VibeLogEntryComponent } from '../../../components/ui/vibe-log-entry';
+import { Share2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,6 +33,8 @@ interface VibeLogSectionProps {
   startsnapId: string;
   initialVibeLogEntries: VibeLog[];
   isOwner: boolean;
+  projectName: string;
+  isHackathonEntry: boolean;
   currentUserId?: string;
   onVibeLogChange: () => Promise<void>;
 }
@@ -45,6 +48,8 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
   startsnapId,
   initialVibeLogEntries,
   isOwner,
+  projectName,
+  isHackathonEntry,
   currentUserId,
   onVibeLogChange,
 }) => {
@@ -158,6 +163,28 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
       console.error('Error deleting vibe log entry:', error);
       alert('Failed to delete vibe log entry. Please try again.');
     }
+  };
+
+  /**
+   * @description Constructs and opens a Twitter share URL for a vibe log entry
+   * @param {string} title - The title of the vibe log entry
+   * @sideEffects Opens a new browser window/tab with Twitter share intent
+   */
+  const handleShareOnX = (title: string) => {
+    const baseUrl = window.location.origin;
+    const projectUrl = `${baseUrl}${window.location.pathname}`;
+    
+    let shareText = `${title}\n\n`;
+    shareText += `Checkout ${projectName} on\n\n ${projectUrl}`;
+    if (isHackathonEntry) {
+      shareText += "\n\n#buildinpublic #bolthackathon";
+    } else {
+      shareText += "\n\n#buildinpublic";
+    }
+    
+    
+    const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
+    window.open(shareUrl, '_blank');
   };
 
   return (
@@ -293,6 +320,13 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
                           >
                             <span className="material-icons text-sm">edit</span>
                             Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleShareOnX(entry.title)}
+                            className="cursor-pointer flex items-center gap-2"
+                          >
+                            <Share2 size={16} />
+                            Share on X
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => handleDeleteVibeLog(entry.id)}

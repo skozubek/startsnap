@@ -374,6 +374,8 @@ export const ProjectDetail = (): JSX.Element => {
               startsnapId={startsnap.id}
               initialVibeLogEntries={vibeLogEntries.slice(0, visibleVibeLogCount)}
               isOwner={isOwner}
+              projectName={startsnap.name}
+              isHackathonEntry={startsnap.is_hackathon_entry}
               currentUserId={currentUser?.id}
               onVibeLogChange={fetchProjectData}
             />
