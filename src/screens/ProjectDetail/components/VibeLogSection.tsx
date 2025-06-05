@@ -55,6 +55,7 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
     log_type: 'update',
     title: '',
     content: '',
+    shareOnTwitter: false
   });
   const [currentEditVibeLogData, setCurrentEditVibeLogData] = useState<VibeLogFormData | null>(null);
 
@@ -73,6 +74,7 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
       alert('Please provide a title and content for the Vibe Log entry.');
       return;
     }
+
     try {
       const { error } = await supabase
         .from('vibelogs')
@@ -83,6 +85,20 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
           content: newVibeLogData.content
         });
       if (error) throw error;
+      
+      // Handle Twitter sharing if enabled
+      if (newVibeLogData.shareOnTwitter) {
+        const tweetText = encodeURIComponent(newVibeLogData.title);
+        const hashtags = ['buildinpublic'];
+        
+        // Add hackathon hashtag if project is a hackathon entry
+        if (startsnap?.is_hackathon_entry) {
+          hashtags.push('bolthackathon');
+        }
+        
+        window.open(`https://twitter.com/intent/tweet?text=${tweetText}&hashtags=${hashtags.join(',')}`, '_blank');
+      }
+      
       await onVibeLogChange();
       setIsAddingVibeLog(false);
       setNewVibeLogData({ log_type: 'update', title: '', content: '' });
@@ -197,9 +213,11 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
               type={newVibeLogData.log_type}
               title={newVibeLogData.title}
               content={newVibeLogData.content}
+              shareOnTwitter={newVibeLogData.shareOnTwitter}
               onTypeChange={(log_type: string) => setNewVibeLogData(prev => ({ ...prev, log_type }))}
               onTitleChange={(title: string) => setNewVibeLogData(prev => ({ ...prev, title }))}
               onContentChange={(content: string) => setNewVibeLogData(prev => ({ ...prev, content }))}
+              onShareOnTwitterChange={(shareOnTwitter: boolean) => setNewVibeLogData(prev => ({ ...prev, shareOnTwitter }))}
               showAllTypes={true}
             />
             <div className="mt-4 flex gap-3 justify-end">
