@@ -76,6 +76,7 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
     }
 
     try {
+      // First insert the vibe log entry
       const { error } = await supabase
         .from('vibelogs')
         .insert({
@@ -84,24 +85,26 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
           title: newVibeLogData.title,
           content: newVibeLogData.content
         });
+
       if (error) throw error;
       
-      // Handle Twitter sharing if enabled
+      // After successful insert, handle Twitter sharing
       if (newVibeLogData.shareOnTwitter) {
-        const tweetText = encodeURIComponent(newVibeLogData.title);
-        const hashtags = ['buildinpublic'];
+        const tweetText = encodeURIComponent(`${newVibeLogData.title} - Building in public on @startsnapfun`);
+        const hashtags = ['buildinpublic', 'startsnapfun'];
         
         // Add hackathon hashtag if project is a hackathon entry
         if (startsnap?.is_hackathon_entry) {
           hashtags.push('bolthackathon');
         }
         
-        window.open(`https://twitter.com/intent/tweet?text=${tweetText}&hashtags=${hashtags.join(',')}`, '_blank');
+        const tweetUrl = `https://twitter.com/intent/tweet?text=${tweetText}&hashtags=${hashtags.join(',')}`;
+        window.open(tweetUrl, '_blank', 'noopener,noreferrer');
       }
       
       await onVibeLogChange();
       setIsAddingVibeLog(false);
-      setNewVibeLogData({ log_type: 'update', title: '', content: '' });
+      setNewVibeLogData({ log_type: 'update', title: '', content: '', shareOnTwitter: false });
     } catch (error) {
       console.error('Error adding vibe log entry:', error);
       alert('Failed to add vibe log entry. Please try again.');

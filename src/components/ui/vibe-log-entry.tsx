@@ -22,12 +22,10 @@ interface VibeLogEntryProps {
   content: string;
   type: string;
   shareOnTwitter?: boolean;
-  shareOnTwitter?: boolean;
   onTypeChange: (type: string) => void;
   onTitleChange: (title: string) => void;
   onContentChange: (content: string) => void;
   onShareOnTwitterChange?: (shareOnTwitter: boolean) => void;
-  onShareOnTwitterChange?: (share: boolean) => void;
   showAllTypes?: boolean;
   singleOptionType?: 'launch' | 'idea';
 }
@@ -37,11 +35,9 @@ export const VibeLogEntry = ({
   content,
   type,
   shareOnTwitter = false,
-  shareOnTwitter = false,
   onTypeChange,
   onTitleChange,
   onContentChange,
-  onShareOnTwitterChange,
   onShareOnTwitterChange,
   showAllTypes = false,
   singleOptionType = 'launch',
@@ -77,28 +73,6 @@ export const VibeLogEntry = ({
     : singleOptionType === 'launch'
     ? vibeLogOptions.find(o => o.value === 'launch')?.contentPlaceholder || "Share details about your project, key features, what problems it solves, and what makes it special..."
     : vibeLogOptions.find(o => o.value === 'idea')?.contentPlaceholder || "Share your idea, what inspired it, the problem you want to solve, and your vision for the solution...";
-  const [hasTwitterConnected, setHasTwitterConnected] = useState(false);
-
-  useEffect(() => {
-    if (user) {
-      const checkTwitterConnection = async () => {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('twitter_url')
-          .eq('user_id', user.id)
-          .single();
-
-        if (error && error.code !== 'PGRST116') {
-          console.error('Error checking Twitter connection:', error);
-          return;
-        }
-
-        setHasTwitterConnected(!!data?.twitter_url);
-      };
-
-      checkTwitterConnection();
-    }
-  }, [user]);
 
   return (
     <div className="space-y-6">
