@@ -1,10 +1,9 @@
 import React, { useEffect, useState, useContext } from 'react';
-import React, { useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { Button } from '../../components/ui/button';
 import { VibeRequestCard } from '../../components/ui/VibeRequestCard'; // Actual import
-import { AuthContext } from '../../contexts/AuthContext'; // Assuming AuthContext exists
+import { AuthContext } from '../../context/AuthContext'; // Assuming AuthContext exists
 import { VibeRequest } from '../../types/vibeRequest'; // Import from types
 
 
