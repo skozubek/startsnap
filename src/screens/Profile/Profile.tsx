@@ -14,6 +14,8 @@ import { Popover, PopoverTrigger, PopoverContent } from "../../components/ui/pop
 import { supabase } from "../../lib/supabase";
 import { FaGithub, FaXTwitter, FaLinkedinIn } from "react-icons/fa6";
 import { StartSnapCard } from "../../components/ui/StartSnapCard";
+import { VibeRequestCard } from "../../components/ui/VibeRequestCard"; // Import VibeRequestCard
+import { VibeRequest } from "../../types/vibeRequest"; // Import VibeRequest type
 import { getCategoryDisplay, getUserStatusOptions} from "../../config/categories";
 import { formatDate, validateSocialLinks, LinkValidationErrors, ProfileLinks } from "../../lib/utils";
 import { useAuth } from "../../context/AuthContext";
@@ -39,6 +41,8 @@ export const Profile = (): JSX.Element => {
   });
   const [userStartSnaps, setUserStartSnaps] = useState<any[]>([]);
   const [loadingStartSnaps, setLoadingStartSnaps] = useState(true);
+  const [userVibeRequests, setUserVibeRequests] = useState<VibeRequest[]>([]); // State for Vibe Requests
+  const [loadingVibeRequests, setLoadingVibeRequests] = useState(true); // Loading state for Vibe Requests
   const [linkErrors, setLinkErrors] = useState<LinkValidationErrors>({
     github: "",
     twitter: "",
@@ -89,6 +93,8 @@ export const Profile = (): JSX.Element => {
 
         // Fetch user's StartSnaps
         fetchUserStartSnaps(user.id);
+        // Fetch user's Vibe Requests
+        fetchUserVibeRequests(user.id);
       } catch (error) {
         console.error('Error:', error);
       } finally {
@@ -125,6 +131,32 @@ export const Profile = (): JSX.Element => {
       console.error('Error fetching user StartSnaps:', error);
     } finally {
       setLoadingStartSnaps(false);
+    }
+  };
+
+  /**
+   * @description Fetches Vibe Requests submitted by the current user
+   * @async
+   * @param {string} userId - User ID to fetch Vibe Requests for
+   * @sideEffects Updates state with user's Vibe Requests
+   */
+  const fetchUserVibeRequests = async (userId: string) => {
+    try {
+      setLoadingVibeRequests(true);
+      const { data, error } = await supabase
+        .from('vibe_requests')
+        .select('*') // Adjust as needed, if VibeRequestCard needs specific fields
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        throw error;
+      }
+      setUserVibeRequests(data || []);
+    } catch (error) {
+      console.error('Error fetching user Vibe Requests:', error);
+    } finally {
+      setLoadingVibeRequests(false);
     }
   };
 
@@ -444,6 +476,36 @@ export const Profile = (): JSX.Element => {
                 asChild
               >
                 <Link to="/create">Create Your First StartSnap</Link>
+              </Button>
+            </div>
+          </Card>
+        )}
+      </div>
+
+      {/* User's Vibe Requests Section */}
+      <div className="w-full max-w-4xl mt-12">
+        <h3 className="text-3xl font-bold text-startsnap-ebony-clay mb-6 font-['Space_Grotesk',Helvetica]">
+          Your Vibe Requests
+        </h3>
+        {loadingVibeRequests ? (
+          <div className="text-center py-8">
+            <p className="text-lg text-startsnap-pale-sky">Loading your Vibe Requests...</p>
+          </div>
+        ) : userVibeRequests.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {userVibeRequests.map((request) => (
+              <VibeRequestCard key={request.id} request={request} />
+            ))}
+          </div>
+        ) : (
+          <Card className="bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] p-8">
+            <div className="text-center">
+              <p className="text-lg text-startsnap-pale-sky mb-4">You haven't submitted any Vibe Requests yet!</p>
+              <Button
+                className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+                asChild
+              >
+                <Link to="/idea-board/new">Submit Your First Idea</Link>
               </Button>
             </div>
           </Card>

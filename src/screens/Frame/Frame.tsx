@@ -11,6 +11,9 @@ import { Subheader } from "../../components/ui/Subheader";
 import { MainContentSection } from "./sections/MainContentSection/MainContentSection";
 import { Projects } from "../Projects";
 import { ProjectDetail } from "../ProjectDetail";
+import { IdeaBoardPage } from "../IdeaBoardPage";
+import { VibeRequestDetailPage } from "../VibeRequestDetailPage";
+import { VibeRequestFormPage } from "../VibeRequestFormPage"; // Added import for VibeRequestFormPage
 import { CreateStartSnap } from "../CreateStartSnap";
 import { EditStartSnap } from "../EditStartSnap";
 import { Profile } from "../Profile";
@@ -57,6 +60,10 @@ export const Frame = (): JSX.Element => {
             <Route path="/" element={<MainContentSection />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/projects/:slug" element={<ProjectDetail />} />
+            <Route path="/idea-board" element={<IdeaBoardPage />} />
+            <Route path="/idea-board/new" element={<VibeRequestFormPage />} /> {/* Added route for new VibeRequest */}
+            <Route path="/idea-board/:id" element={<VibeRequestDetailPage />} />
+            <Route path="/idea-board/:id/edit" element={<VibeRequestFormPage />} /> {/* Added route for editing VibeRequest */}
             <Route
               path="/create"
               element={
