@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
-import { AuthContext } from '../../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import { VibeRequest } from '../../types/vibeRequest';
-import { UserProfile } from '../../types/user';
-import { StartSnap } from '../../types/startsnap'; // Assuming this type exists
+import { UserProfileData } from '../../types/user';
+import { StartSnapProject } from '../../types/startsnap'; // Assuming this type exists
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '../../components/ui/avatar';
@@ -12,16 +12,19 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { ConfirmationDialog } from '../../components/ui/ConfirmationDialog'; // Assuming this component exists
 // import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select'; // For status change
 import { StartSnapCard } from '../../components/ui/StartSnapCard'; // Assuming this component exists
+import { getCategoryDisplay } from '../../config/categories';
 import { format } from 'date-fns';
+
+const formatDate = (date: string) => date; // TODO: Replace with real formatting if needed
 
 const VibeRequestDetailPage: React.FC = () => {
   const { id: requestId } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user: currentUser, loading: authLoading } = useContext(AuthContext);
+  const { user: currentUser, loading: authLoading } = useAuth();
 
   const [vibeRequest, setVibeRequest] = useState<VibeRequest | null>(null);
-  const [requesterProfile, setRequesterProfile] = useState<Partial<UserProfile> | null>(null);
-  const [linkedStartSnap, setLinkedStartSnap] = useState<StartSnap | null>(null); // Use specific type
+  const [requesterProfile, setRequesterProfile] = useState<Partial<UserProfileData> | null>(null);
+  const [linkedStartSnap, setLinkedStartSnap] = useState<StartSnapProject | null>(null); // Use specific type
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isOwner, setIsOwner] = useState<boolean>(false);
@@ -154,9 +157,9 @@ const VibeRequestDetailPage: React.FC = () => {
           <CardDescription className="mt-2">
             <div className="flex items-center space-x-2 text-sm text-gray-500 mb-2">
               {requesterProfile ? (
-                <Link to={`/profile/${requesterProfile.id}`} className="flex items-center space-x-2 hover:underline">
+                <Link to={`/profile/${requesterProfile.user_id}`} className="flex items-center space-x-2 hover:underline">
                   <Avatar className="h-6 w-6">
-                    <AvatarImage src={requesterProfile.avatar_url || undefined} />
+                    <AvatarImage src={requesterProfile.username || undefined} />
                     <AvatarFallback>{requesterProfile.username ? requesterProfile.username.charAt(0).toUpperCase() : 'U'}</AvatarFallback>
                   </Avatar>
                   <span>{requesterProfile.username || 'Anonymous'}</span>
@@ -210,8 +213,11 @@ const VibeRequestDetailPage: React.FC = () => {
         {linkedStartSnap && (
           <CardFooter className="flex-col items-start">
             <h3 className="text-xl font-semibold mb-3">Linked StartSnap:</h3>
-            {/* Assuming StartSnapCard can take a 'snap' prop or similar */}
-            <StartSnapCard snap={linkedStartSnap} />
+            <StartSnapCard
+              startsnap={linkedStartSnap}
+              formatDate={formatDate}
+              getCategoryDisplay={getCategoryDisplay}
+            />
           </CardFooter>
         )}
       </Card>

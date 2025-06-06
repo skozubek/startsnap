@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { Button } from '../../components/ui/button';
 import { VibeRequestCard } from '../../components/ui/VibeRequestCard'; // Actual import
-import { AuthContext } from '../../context/AuthContext'; // Assuming AuthContext exists
+import { useAuth } from '../../context/AuthContext';
 import { VibeRequest } from '../../types/vibeRequest'; // Import from types
 
 
@@ -11,7 +11,7 @@ const IdeaBoardPage: React.FC = () => {
   const [vibeRequests, setVibeRequests] = useState<VibeRequest[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const auth = useContext(AuthContext); // Example of using AuthContext
+  const auth = useAuth(); // Example of using AuthContext
 
   useEffect(() => {
     const fetchVibeRequests = async () => {

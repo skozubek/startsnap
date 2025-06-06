@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from './avatar'; // Assuming this
 import { Badge } from './badge';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from './card';
 import { VibeRequest } from '../../types/vibeRequest'; // Import the VibeRequest interface
-import { UserProfile } from '../../types/user'; // Assuming UserProfile is in src/types/user.ts
+import { UserProfileData } from '../../types/user'; // Import UserProfileData interface
 import { formatDistanceToNow } from 'date-fns'; // For formatting created_at
 
 interface VibeRequestCardProps {
@@ -13,7 +13,7 @@ interface VibeRequestCardProps {
 }
 
 const VibeRequestCard: React.FC<VibeRequestCardProps> = ({ request }) => {
-  const [requesterProfile, setRequesterProfile] = useState<Partial<UserProfile> | null>(null);
+  const [requesterProfile, setRequesterProfile] = useState<Partial<UserProfileData> | null>(null);
   const [loadingProfile, setLoadingProfile] = useState<boolean>(true);
   const [profileError, setProfileError] = useState<string | null>(null);
 
@@ -83,9 +83,9 @@ const VibeRequestCard: React.FC<VibeRequestCardProps> = ({ request }) => {
             {loadingProfile && <p>Loading profile...</p>}
             {profileError && <p className="text-red-500">{profileError}</p>}
             {!loadingProfile && !profileError && requesterProfile && (
-              <Link to={`/profile/${requesterProfile.id}`} className="flex items-center space-x-2 hover:underline" onClick={(e) => e.stopPropagation()}>
+              <Link to={`/profile/${requesterProfile.user_id}`} className="flex items-center space-x-2 hover:underline" onClick={(e) => e.stopPropagation()}>
                 <Avatar className="h-6 w-6">
-                  <AvatarImage src={requesterProfile.avatar_url || undefined} alt={requesterProfile.username || 'User'} />
+                  <AvatarImage src={requesterProfile.username || undefined} alt={requesterProfile.username || 'User'} />
                   <AvatarFallback>{requesterProfile.username ? requesterProfile.username.charAt(0).toUpperCase() : 'U'}</AvatarFallback>
                 </Avatar>
                 <span>{requesterProfile.username || 'Anonymous User'}</span>

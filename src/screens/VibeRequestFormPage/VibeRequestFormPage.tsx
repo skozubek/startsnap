@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext, useCallback } from 'react';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
-import { AuthContext } from '../../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import { VibeRequest } from '../../types/vibeRequest';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -21,7 +21,7 @@ interface FormData {
 const VibeRequestFormPage: React.FC = () => {
   const { id: requestId } = useParams<{ id?: string }>();
   const navigate = useNavigate();
-  const { user: currentUser, loading: authLoading } = useContext(AuthContext);
+  const { user: currentUser, loading: authLoading } = useAuth();
 
   const [formData, setFormData] = useState<FormData>({
     title: '',
