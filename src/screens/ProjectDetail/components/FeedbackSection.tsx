@@ -315,28 +315,18 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
               <Card className="mb-6 p-4 border-2 border-gray-800 rounded-lg shadow-[3px_3px_0px_#1f2937] bg-startsnap-white">
                 <CardContent className="p-0">
                   <div className="flex items-start mb-3">
-                    <Link 
-                      to={`/profiles/${feedback.profile?.username}`} 
-                      className="group inline-block flex-shrink-0"
-                    >
-                      <div className="w-10 h-10">
-                        <UserAvatar
-                          name={getAvatarName(null, feedback.profile?.username || 'Anonymous')}
-                          size={40}
-                          className="w-full h-full"
-                        />
-                      </div>
-                    </Link>
+                    <div className="w-10 h-10 flex-shrink-0">
+                      <UserAvatar
+                        name={getAvatarName(null, feedback.profile?.username || 'Anonymous')}
+                        size={40}
+                        className="w-full h-full"
+                      />
+                    </div>
                     <div className="ml-4 flex-1">
                       <div className="flex items-center">
-                        <Link 
-                          to={`/profiles/${feedback.profile?.username}`} 
-                          className="group"
-                        >
-                          <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-base leading-6 group-hover:text-startsnap-french-rose transition-colors">
-                            {feedback.profile?.username || 'Anonymous'}
-                          </p>
-                        </Link>
+                        <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-base leading-6">
+                          {feedback.profile?.username || 'Anonymous'}
+                        </p>
                         <p className="ml-3 font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4">
                           {formatDetailedDate(feedback.created_at)} (Editing)
                         </p>
@@ -376,29 +366,19 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
               >
                 <CardContent className="p-5">
                   <div className="flex items-start">
-                    <Link 
-                      to={`/profiles/${feedback.profile?.username}`} 
-                      className="group inline-block flex-shrink-0"
-                    >
-                      <div className="w-10 h-10">
-                        <UserAvatar
-                          name={getAvatarName(null, feedback.profile?.username || 'Anonymous')}
-                          size={40}
-                          className="w-full h-full"
-                        />
-                      </div>
-                    </Link>
+                    <div className="w-10 h-10 flex-shrink-0">
+                      <UserAvatar
+                        name={getAvatarName(null, feedback.profile?.username || 'Anonymous')}
+                        size={40}
+                        className="w-full h-full"
+                      />
+                    </div>
                     <div className="ml-4 flex-1">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center">
-                          <Link 
-                            to={`/profiles/${feedback.profile?.username}`} 
-                            className="group"
-                          >
-                            <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-base leading-6 group-hover:text-startsnap-french-rose transition-colors">
-                              {feedback.profile?.username || 'Anonymous'}
-                            </p>
-                          </Link>
+                          <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-base leading-6">
+                            {feedback.profile?.username || 'Anonymous'}
+                          </p>
                           <p className="ml-3 font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4">
                             {formatDetailedDate(feedback.created_at)}
                           </p>
@@ -564,29 +544,19 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                           className={`pt-3 ${replyIndex > 0 ? 'mt-3 border-t border-gray-200' : '' }`}
                         >
                           <div className="flex items-start">
-                            <Link 
-                              to={`/profiles/${reply.profile?.username}`} 
-                              className="group inline-block flex-shrink-0"
-                            >
-                              <div className="w-8 h-8">
-                                <UserAvatar
-                                  name={getAvatarName(null, reply.profile?.username || 'Anonymous')}
-                                  size={32}
-                                  className="w-full h-full"
-                                />
-                              </div>
-                            </Link>
+                            <div className="w-8 h-8 flex-shrink-0">
+                              <UserAvatar
+                                name={getAvatarName(null, reply.profile?.username || 'Anonymous')}
+                                size={32}
+                                className="w-full h-full"
+                              />
+                            </div>
                             <div className="ml-3 flex-1">
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center">
-                                  <Link 
-                                    to={`/profiles/${reply.profile?.username}`} 
-                                    className="group"
-                                  >
-                                    <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-sm leading-5 group-hover:text-startsnap-french-rose transition-colors">
-                                      {reply.profile?.username || 'Anonymous'}
-                                    </p>
-                                  </Link>
+                                  <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-sm leading-5">
+                                    {reply.profile?.username || 'Anonymous'}
+                                  </p>
                                   <p className="ml-2 font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4">
                                     {formatDetailedDate(reply.created_at)}
                                   </p>
