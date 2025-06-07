@@ -13,6 +13,7 @@ import { StartSnapCard } from "../../components/ui/StartSnapCard";
 import { getCategoryDisplay, getUserStatusOptions } from "../../config/categories";
 import { formatDate } from "../../lib/utils";
 import { UserAvatar, getAvatarName } from "../../components/ui/user-avatar";
+import type { UserProfileData } from "../../types/user";
 
 /**
  * @description Public profile page component for viewing any user's profile and StartSnaps
@@ -21,7 +22,7 @@ import { UserAvatar, getAvatarName } from "../../components/ui/user-avatar";
 export const PublicProfile = (): JSX.Element => {
   const { username } = useParams<{ username: string }>();
   const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<UserProfileData | null>(null);
   const [userStartSnaps, setUserStartSnaps] = useState<any[]>([]);
 
   useEffect(() => {

@@ -18,6 +18,7 @@ import { getCategoryDisplay, getUserStatusOptions} from "../../config/categories
 import { formatDate, validateSocialLinks, LinkValidationErrors, ProfileLinks } from "../../lib/utils";
 import { useAuth } from "../../context/AuthContext";
 import { UserAvatar, getAvatarName } from "../../components/ui/user-avatar";
+import type { UserProfileData } from "../../types/user";
 
 /**
  * @description User profile page with settings and project management
@@ -58,7 +59,7 @@ export const Profile = (): JSX.Element => {
     const fetchProfile = async () => {
       try {
         // Fetch profile data
-        const { data, error } = await supabase
+        const { data, error }: { data: UserProfileData | null, error: any } = await supabase
           .from('profiles')
           .select('*')
           .eq('user_id', user.id)
