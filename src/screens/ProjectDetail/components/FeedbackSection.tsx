@@ -19,6 +19,7 @@ import { MoreHorizontal, MessageSquare } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 import type { UserProfileData } from '../../../types/user';
 import type { FeedbackEntry, FeedbackReply } from '../../../types/feedback'; // Import feedback types
+import { Link } from 'react-router-dom';
 
 /**
  * @description Props for the FeedbackSection component.
@@ -315,23 +316,48 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
               <Card className="mb-6 p-4 border-2 border-gray-800 rounded-lg shadow-[3px_3px_0px_#1f2937] bg-startsnap-white">
                 <CardContent className="p-0">
                   <div className="flex items-start mb-3">
-                    <div className="w-10 h-10 flex-shrink-0">
-                      <UserAvatar
-                        name={getAvatarName(null, feedback.profile?.username || 'Anonymous')}
-                        size={40}
-                        className="w-full h-full"
-                      />
-                    </div>
-                    <div className="ml-4 flex-1">
-                      <div className="flex items-center">
-                        <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-base leading-6">
-                          {feedback.profile?.username || 'Anonymous'}
-                        </p>
-                        <p className="ml-3 font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4">
-                          {formatDetailedDate(feedback.created_at)} (Editing)
-                        </p>
+                    {/* FEEDBACK AVATAR/NAME LINK */}
+                    {(feedback.profile?.username && feedback.profile.username !== 'Anonymous') ? (
+                      <Link to={`/profiles/${feedback.profile.username}`} className="flex items-start group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-startsnap-french-rose">
+                        <div className="w-10 h-10 flex-shrink-0">
+                          <UserAvatar
+                            name={getAvatarName(null, feedback.profile.username)}
+                            size={40}
+                            className="w-full h-full group-hover:opacity-80 transition-opacity"
+                          />
+                        </div>
+                        <div className="ml-4 flex-1">
+                          <div className="flex items-center">
+                            <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-base leading-6 group-hover:underline">
+                              {feedback.profile.username}
+                            </p>
+                            <p className="ml-3 font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4">
+                              {formatDetailedDate(feedback.created_at)} (Editing)
+                            </p>
+                          </div>
+                        </div>
+                      </Link>
+                    ) : (
+                      <div className="flex items-start">
+                        <div className="w-10 h-10 flex-shrink-0">
+                          <UserAvatar
+                            name={getAvatarName(null, feedback.profile?.username || 'Anonymous')}
+                            size={40}
+                            className="w-full h-full"
+                          />
+                        </div>
+                        <div className="ml-4 flex-1">
+                          <div className="flex items-center">
+                            <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-base leading-6">
+                              {feedback.profile?.username || 'Anonymous'}
+                            </p>
+                            <p className="ml-3 font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4">
+                              {formatDetailedDate(feedback.created_at)} (Editing)
+                            </p>
+                          </div>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                   <Textarea
                     placeholder="Edit your feedback..."
@@ -366,74 +392,97 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
               >
                 <CardContent className="p-5">
                   <div className="flex items-start">
-                    <div className="w-10 h-10 flex-shrink-0">
-                      <UserAvatar
-                        name={getAvatarName(null, feedback.profile?.username || 'Anonymous')}
-                        size={40}
-                        className="w-full h-full"
-                      />
-                    </div>
-                    <div className="ml-4 flex-1">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                          <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-base leading-6">
-                            {feedback.profile?.username || 'Anonymous'}
-                          </p>
-                          <p className="ml-3 font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4">
-                            {formatDetailedDate(feedback.created_at)}
-                          </p>
+                    {/* FEEDBACK AVATAR/NAME LINK */}
+                    {(feedback.profile?.username && feedback.profile.username !== 'Anonymous') ? (
+                      <Link to={`/profiles/${feedback.profile.username}`} className="flex items-start group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-startsnap-french-rose">
+                        <div className="w-10 h-10 flex-shrink-0">
+                          <UserAvatar
+                            name={getAvatarName(null, feedback.profile.username)}
+                            size={40}
+                            className="w-full h-full group-hover:opacity-80 transition-opacity"
+                          />
                         </div>
-                        {currentUser && currentUser.id === feedback.user_id && (
-                          <DropdownMenu>
-                            <DropdownMenuTrigger className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-gray-100">
-                              <MoreHorizontal className="h-4 w-4 text-startsnap-oxford-blue" />
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="min-w-[160px]">
-                              <DropdownMenuItem
-                                onClick={() => handleEditFeedback(feedback)}
-                                className="cursor-pointer flex items-center gap-2"
-                              >
-                                <span className="material-icons text-sm">edit</span>
-                                Edit
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() => handleDeleteFeedback(feedback.id)}
-                                className="cursor-pointer text-red-600 flex items-center gap-2"
-                              >
-                                <span className="material-icons text-sm">delete</span>
-                                Delete
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        )}
+                        <div className="ml-4 flex-1">
+                          <div className="flex items-center">
+                            <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-base leading-6 group-hover:underline">
+                              {feedback.profile.username}
+                            </p>
+                            <p className="ml-3 font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4">
+                              {formatDetailedDate(feedback.created_at)}
+                            </p>
+                          </div>
+                        </div>
+                      </Link>
+                    ) : (
+                      <div className="flex items-start">
+                        <div className="w-10 h-10 flex-shrink-0">
+                          <UserAvatar
+                            name={getAvatarName(null, feedback.profile?.username || 'Anonymous')}
+                            size={40}
+                            className="w-full h-full"
+                          />
+                        </div>
+                        <div className="ml-4 flex-1">
+                          <div className="flex items-center">
+                            <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-base leading-6">
+                              {feedback.profile?.username || 'Anonymous'}
+                            </p>
+                            <p className="ml-3 font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4">
+                              {formatDetailedDate(feedback.created_at)}
+                            </p>
+                          </div>
+                        </div>
                       </div>
-                      <p className="font-['Roboto',Helvetica] font-normal text-startsnap-river-bed text-base leading-6 mt-1">
-                        {feedback.content}
-                      </p>
-                      {currentUser && (
-                        <div className="mt-3 flex">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (editingFeedback && editingFeedback.id === feedback.id) return; // Don't allow reply if editing main feedback
-                              if (replyingToFeedbackId === feedback.id) {
-                                handleCancelReply();
-                              } else {
-                                setReplyingToFeedbackId(feedback.id);
-                                setReplyContent('');
-                                setEditingReply(null); // Ensure not in edit mode for a new reply
-                              }
-                            }}
-                            className="flex items-center gap-1 text-sm text-gray-600 hover:text-startsnap-french-rose cursor-pointer p-1 rounded-md hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-startsnap-french-rose"
-                            aria-label={`Reply to feedback from ${feedback.profile?.username || 'Anonymous'}`}
+                    )}
+                    {currentUser && currentUser.id === feedback.user_id && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-gray-100">
+                          <MoreHorizontal className="h-4 w-4 text-startsnap-oxford-blue" />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="min-w-[160px]">
+                          <DropdownMenuItem
+                            onClick={() => handleEditFeedback(feedback)}
+                            className="cursor-pointer flex items-center gap-2"
                           >
-                            <MessageSquare size={16} />
-                            <span>{feedback.replies?.length || 0}</span>
-                          </button>
-                        </div>
-                      )}
-                    </div>
+                            <span className="material-icons text-sm">edit</span>
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleDeleteFeedback(feedback.id)}
+                            className="cursor-pointer text-red-600 flex items-center gap-2"
+                          >
+                            <span className="material-icons text-sm">delete</span>
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
                   </div>
+                  <p className="font-['Roboto',Helvetica] font-normal text-startsnap-river-bed text-base leading-6 mt-1">
+                    {feedback.content}
+                  </p>
+                  {currentUser && (
+                    <div className="mt-3 flex">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (editingFeedback && editingFeedback.id === feedback.id) return; // Don't allow reply if editing main feedback
+                          if (replyingToFeedbackId === feedback.id) {
+                            handleCancelReply();
+                          } else {
+                            setReplyingToFeedbackId(feedback.id);
+                            setReplyContent('');
+                            setEditingReply(null); // Ensure not in edit mode for a new reply
+                          }
+                        }}
+                        className="flex items-center gap-1 text-sm text-gray-600 hover:text-startsnap-french-rose cursor-pointer p-1 rounded-md hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-startsnap-french-rose"
+                        aria-label={`Reply to feedback from ${feedback.profile?.username || 'Anonymous'}`}
+                      >
+                        <MessageSquare size={16} />
+                        <span>{feedback.replies?.length || 0}</span>
+                      </button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
@@ -496,13 +545,48 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                       editingReply && editingReply.id === reply.id ? (
                         <div key={reply.id} className={` ${replyIndex > 0 ? 'mt-3 border-t border-gray-200' : ''} pt-3`}>
                           <div className="flex items-start gap-3 p-3 bg-gray-100 rounded-lg border-2 border-gray-800"> {/* Edit form styling */}
-                            <div className="w-8 h-8 flex-shrink-0">
-                              <UserAvatar
-                                name={getAvatarName(null, reply.profile?.username || 'Anonymous')}
-                                size={32}
-                                className="w-full h-full"
-                              />
-                            </div>
+                            {/* REPLY AVATAR/NAME LINK */}
+                            {(reply.profile?.username && reply.profile.username !== 'Anonymous') ? (
+                              <Link to={`/profiles/${reply.profile.username}`} className="flex items-start group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-startsnap-french-rose">
+                                <div className="w-8 h-8 flex-shrink-0">
+                                  <UserAvatar
+                                    name={getAvatarName(null, reply.profile.username)}
+                                    size={32}
+                                    className="w-full h-full group-hover:opacity-80 transition-opacity"
+                                  />
+                                </div>
+                                <div className="ml-3 flex-1">
+                                  <div className="flex items-center">
+                                    <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-sm leading-5 group-hover:underline">
+                                      {reply.profile.username}
+                                    </p>
+                                    <p className="ml-2 font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4">
+                                      {formatDetailedDate(reply.created_at)}
+                                    </p>
+                                  </div>
+                                </div>
+                              </Link>
+                            ) : (
+                              <div className="flex items-start">
+                                <div className="w-8 h-8 flex-shrink-0">
+                                  <UserAvatar
+                                    name={getAvatarName(null, reply.profile?.username || 'Anonymous')}
+                                    size={32}
+                                    className="w-full h-full"
+                                  />
+                                </div>
+                                <div className="ml-3 flex-1">
+                                  <div className="flex items-center">
+                                    <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-sm leading-5">
+                                      {reply.profile?.username || 'Anonymous'}
+                                    </p>
+                                    <p className="ml-2 font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4">
+                                      {formatDetailedDate(reply.created_at)}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
                             <div className="ml-3 flex-1"> {/* Ensure ml-3 if avatar is present */}
                               <Textarea
                                 placeholder="Edit your reply..."
@@ -543,53 +627,90 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                           key={reply.id}
                           className={`pt-3 ${replyIndex > 0 ? 'mt-3 border-t border-gray-200' : '' }`}
                         >
-                          <div className="flex items-start">
-                            <div className="w-8 h-8 flex-shrink-0">
-                              <UserAvatar
-                                name={getAvatarName(null, reply.profile?.username || 'Anonymous')}
-                                size={32}
-                                className="w-full h-full"
-                              />
-                            </div>
-                            <div className="ml-3 flex-1">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center">
-                                  <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-sm leading-5">
-                                    {reply.profile?.username || 'Anonymous'}
-                                  </p>
-                                  <p className="ml-2 font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4">
-                                    {formatDetailedDate(reply.created_at)}
-                                  </p>
-                                </div>
-                                {currentUser && currentUser.id === reply.user_id && (
-                                  <DropdownMenu>
-                                    <DropdownMenuTrigger className="h-6 w-6 flex items-center justify-center rounded-full hover:bg-gray-100 data-[state=open]:bg-gray-100">
-                                      <MoreHorizontal className="h-3 w-3 text-startsnap-oxford-blue" />
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end" className="min-w-[140px]">
-                                      <DropdownMenuItem
-                                        onClick={() => handleEditReply(reply)} // THIS CALLS THE MODIFIED HANDLER
-                                        className="cursor-pointer flex items-center gap-2 text-sm"
-                                      >
-                                        <span className="material-icons text-xs">edit</span>
-                                        Edit
-                                      </DropdownMenuItem>
-                                      <DropdownMenuItem
-                                        onClick={() => handleDeleteReply(reply.id)}
-                                        className="cursor-pointer text-red-600 flex items-center gap-2 text-sm"
-                                      >
-                                        <span className="material-icons text-xs">delete</span>
-                                        Delete
-                                      </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                  </DropdownMenu>
-                                )}
+                          {/* REPLY AVATAR/NAME LINK */}
+                          {(reply.profile?.username && reply.profile.username !== 'Anonymous') ? (
+                            <Link to={`/profiles/${reply.profile.username}`} className="flex items-start group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-startsnap-french-rose">
+                              <div className="w-8 h-8 flex-shrink-0">
+                                <UserAvatar
+                                  name={getAvatarName(null, reply.profile.username)}
+                                  size={32}
+                                  className="w-full h-full group-hover:opacity-80 transition-opacity"
+                                />
                               </div>
-                              <p className="font-['Roboto',Helvetica] font-normal text-startsnap-river-bed text-sm leading-5 mt-1">
-                                {reply.content}
-                              </p>
+                              <div className="ml-3 flex-1">
+                                <div className="flex items-center justify-between">
+                                  {/* DropdownMenu and reply content always rendered after avatar/name block */}
+                                  {currentUser && currentUser.id === reply.user_id && (
+                                    <DropdownMenu>
+                                      <DropdownMenuTrigger className="h-6 w-6 flex items-center justify-center rounded-full hover:bg-gray-100 data-[state=open]:bg-gray-100">
+                                        <MoreHorizontal className="h-3 w-3 text-startsnap-oxford-blue" />
+                                      </DropdownMenuTrigger>
+                                      <DropdownMenuContent align="end" className="min-w-[140px]">
+                                        <DropdownMenuItem
+                                          onClick={() => handleEditReply(reply)}
+                                          className="cursor-pointer flex items-center gap-2 text-sm"
+                                        >
+                                          <span className="material-icons text-xs">edit</span>
+                                          Edit
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                          onClick={() => handleDeleteReply(reply.id)}
+                                          className="cursor-pointer text-red-600 flex items-center gap-2 text-sm"
+                                        >
+                                          <span className="material-icons text-xs">delete</span>
+                                          Delete
+                                        </DropdownMenuItem>
+                                      </DropdownMenuContent>
+                                    </DropdownMenu>
+                                  )}
+                                </div>
+                                <p className="font-['Roboto',Helvetica] font-normal text-startsnap-river-bed text-sm leading-5 mt-1">
+                                  {reply.content}
+                                </p>
+                              </div>
+                            </Link>
+                          ) : (
+                            <div className="flex items-start">
+                              <div className="w-8 h-8 flex-shrink-0">
+                                <UserAvatar
+                                  name={getAvatarName(null, reply.profile?.username || 'Anonymous')}
+                                  size={32}
+                                  className="w-full h-full"
+                                />
+                              </div>
+                              <div className="ml-3 flex-1">
+                                <div className="flex items-center justify-between">
+                                  {/* DropdownMenu and reply content always rendered after avatar/name block */}
+                                  {currentUser && currentUser.id === reply.user_id && (
+                                    <DropdownMenu>
+                                      <DropdownMenuTrigger className="h-6 w-6 flex items-center justify-center rounded-full hover:bg-gray-100 data-[state=open]:bg-gray-100">
+                                        <MoreHorizontal className="h-3 w-3 text-startsnap-oxford-blue" />
+                                      </DropdownMenuTrigger>
+                                      <DropdownMenuContent align="end" className="min-w-[140px]">
+                                        <DropdownMenuItem
+                                          onClick={() => handleEditReply(reply)}
+                                          className="cursor-pointer flex items-center gap-2 text-sm"
+                                        >
+                                          <span className="material-icons text-xs">edit</span>
+                                          Edit
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                          onClick={() => handleDeleteReply(reply.id)}
+                                          className="cursor-pointer text-red-600 flex items-center gap-2 text-sm"
+                                        >
+                                          <span className="material-icons text-xs">delete</span>
+                                          Delete
+                                        </DropdownMenuItem>
+                                      </DropdownMenuContent>
+                                    </DropdownMenu>
+                                  )}
+                                </div>
+                                <p className="font-['Roboto',Helvetica] font-normal text-startsnap-river-bed text-sm leading-5 mt-1">
+                                  {reply.content}
+                                </p>
+                              </div>
                             </div>
-                          </div>
+                          )}
                         </div>
                       )
                     ))}

@@ -185,23 +185,43 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
       {/* User info section below the main content, NOT clickable */}
       {showCreator && (
         <CardContent className="pt-5 mt-1 border-t border-gray-200/80">
-          <div className="flex items-center gap-4">
-            <div className="w-9 h-9">
-              <UserAvatar
-                name={creatorName}
-                size={36}
-                className="w-full h-full"
-              />
+          {creatorName && creatorName !== 'Anonymous' ? (
+            <Link to={`/profiles/${creatorName}`} className="flex items-center gap-4 group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-startsnap-french-rose">
+              <div className="w-9 h-9">
+                <UserAvatar
+                  name={creatorName}
+                  size={36}
+                  className="w-full h-full group-hover:opacity-80 transition-opacity"
+                />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-sm leading-tight tracking-wide group-hover:underline">
+                  {creatorName}
+                </p>
+                <p className="font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-relaxed mt-0.5">
+                  {formatDate(startsnap.created_at)}
+                </p>
+              </div>
+            </Link>
+          ) : (
+            <div className="flex items-center gap-4">
+              <div className="w-9 h-9">
+                <UserAvatar
+                  name={creatorName}
+                  size={36}
+                  className="w-full h-full"
+                />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-sm leading-tight tracking-wide">
+                  {creatorName}
+                </p>
+                <p className="font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-relaxed mt-0.5">
+                  {formatDate(startsnap.created_at)}
+                </p>
+              </div>
             </div>
-            <div className="min-w-0 flex-1">
-              <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-sm leading-tight tracking-wide">
-                {creatorName}
-              </p>
-              <p className="font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-relaxed mt-0.5">
-                {formatDate(startsnap.created_at)}
-              </p>
-            </div>
-          </div>
+          )}
         </CardContent>
       )}
     </Card>
