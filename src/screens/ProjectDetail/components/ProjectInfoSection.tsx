@@ -219,19 +219,19 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
         {creator && (
           <div className="flex items-center pt-6 border-t border-gray-200/80 mb-6">
             {creator.username && creator.username !== 'Anonymous' ? (
-              <Link to={`/profiles/${creator.username}`} className="flex items-center gap-4 group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-startsnap-french-rose">
+              <Link to={`/profiles/${creator.username}`} className="flex items-center gap-4 group hover:text-startsnap-french-rose transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-startsnap-french-rose">
                 <div className="w-12 h-12">
                   <UserAvatar
                     name={creator.username}
                     size={48}
-                    className="w-full h-full group-hover:opacity-80 transition-opacity"
+                    className="w-full h-full"
                   />
                 </div>
                 <div>
-                  <p className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay leading-tight group-hover:underline">
+                  <p className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay leading-tight group-hover:text-startsnap-french-rose">
                     {creator.username}
                   </p>
-                  <p className="font-['Roboto',Helvetica] text-startsnap-shuttle-gray text-sm">
+                  <p className="font-['Roboto',Helvetica] text-startsnap-shuttle-gray text-sm group-hover:text-startsnap-french-rose">
                     Launched: {formatDetailedDate(startsnap.created_at)}
                   </p>
                 </div>

@@ -18,7 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from "../../../components/ui/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, Edit, Trash2 } from "lucide-react";
 import type { VibeLog, VibeLogFormData } from "../../../types/vibeLog";
 
 /**
@@ -173,7 +173,7 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
   const handleShareOnX = (title: string) => {
     const baseUrl = window.location.origin;
     const projectUrl = `${baseUrl}${window.location.pathname}`;
-    
+
     let shareText = `${title}\n\n`;
     shareText += `Checkout ${projectName} on\n\n ${projectUrl}`;
     if (isHackathonEntry) {
@@ -181,8 +181,8 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
     } else {
       shareText += "\n\n#buildinpublic";
     }
-    
-    
+
+
     const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
     window.open(shareUrl, '_blank');
   };
@@ -310,30 +310,35 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
                     </p>
                     {isOwner && (
                       <DropdownMenu>
-                        <DropdownMenuTrigger className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-gray-100">
-                          <MoreHorizontal className="h-4 w-4 text-startsnap-oxford-blue" />
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="min-w-[160px]">
+                        <DropdownMenuContent align="end">
                         <DropdownMenuItem
                             onClick={() => handleShareOnX(entry.title)}
-                            className="cursor-pointer flex items-center gap-2"
+                            className="text-startsnap-oxford-blue hover:bg-startsnap-french-rose/10"
                           >
-                            <span><FaXTwitter className="text-base" /></span>
+                            <span className="mr-2 flex items-center justify-center">
+                              <FaXTwitter className="text-sm" />
+                            </span>
                           Share on X
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => handleEditVibeLogInline(entry)}
-                            className="cursor-pointer flex items-center gap-2"
+                            className="text-startsnap-oxford-blue hover:bg-startsnap-french-rose/10"
                           >
-                            <span className="material-icons text-sm">edit</span>
+                            <Edit className="mr-2 h-4 w-4" />
                             Edit
                           </DropdownMenuItem>
 
                           <DropdownMenuItem
                             onClick={() => handleDeleteVibeLog(entry.id)}
-                            className="cursor-pointer text-red-600 flex items-center gap-2"
+                            className="text-red-600 hover:bg-red-50"
                           >
-                            <span className="material-icons text-sm">delete</span>
+                            <Trash2 className="mr-2 h-4 w-4" />
                             Delete
                           </DropdownMenuItem>
                         </DropdownMenuContent>

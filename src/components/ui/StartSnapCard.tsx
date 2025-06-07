@@ -186,19 +186,19 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
       {showCreator && (
         <CardContent className="pt-5 mt-1 border-t border-gray-200/80">
           {creatorName && creatorName !== 'Anonymous' ? (
-            <Link to={`/profiles/${creatorName}`} className="flex items-center gap-4 group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-startsnap-french-rose">
+            <Link to={`/profiles/${creatorName}`} className="flex items-center gap-4 group hover:text-startsnap-french-rose transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-startsnap-french-rose">
               <div className="w-9 h-9">
                 <UserAvatar
                   name={creatorName}
                   size={36}
-                  className="w-full h-full group-hover:opacity-80 transition-opacity"
+                  className="w-full h-full"
                 />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-sm leading-tight tracking-wide group-hover:underline">
+                <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-sm leading-tight tracking-wide group-hover:text-startsnap-french-rose">
                   {creatorName}
                 </p>
-                <p className="font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-relaxed mt-0.5">
+                <p className="font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-relaxed mt-0.5 group-hover:text-startsnap-french-rose">
                   {formatDate(startsnap.created_at)}
                 </p>
               </div>
