@@ -10,16 +10,7 @@ import { getUserStatusOptions } from "../../config/categories";
 import { UserAvatar, getAvatarName } from "../../components/ui/user-avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
 import { Card, CardContent } from "../../components/ui/card";
-
-/**
- * @description Interface for profile summary data displayed in the directory
- */
-interface ProfileSummary {
-  user_id: string;
-  username: string;
-  bio: string | null;
-  status: string;
-}
+import type { ProfileSummary } from "../../types/user";
 
 /**
  * @description Directory page component for discovering and filtering Vibe Coders

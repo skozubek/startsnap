@@ -8,4 +8,7 @@ Are all new elements styled using existing Tailwind classes and neobrutalist con
 Are there any new, unexplained gaps or misalignments in the UI? If so, revert and simplify the addition.
 
 
-Thoughts
+###  All new or modified interfaces and types that are used across multiple components or represent data structures from the database (e.g., UserProfileData, StartSnapProject, ProfileSummary) must be defined in their respective files within the src/types/ directory.
+
+
+### Avoid defining interfaces or types inline within component files unless they are strictly local to that component and will not be reused elsewhere.

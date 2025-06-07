@@ -11,3 +11,13 @@ export interface UserProfileData {
   username: string;
   // Add other profile fields as needed, e.g., avatar_url, full_name, bio, etc.
 }
+
+/**
+ * @description Interface for profile summary data displayed in the directory
+ */
+export interface ProfileSummary {
+  user_id: string;
+  username: string;
+  bio: string | null;
+  status: string;
+}
