@@ -322,9 +322,9 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
                             className="text-startsnap-oxford-blue hover:bg-startsnap-french-rose/10"
                           >
                             <span className="mr-2 flex items-center justify-center">
-                              <FaXTwitter className="text-sm" />
+                              {React.createElement(FaXTwitter as any, { className: "text-sm" })}
                             </span>
-                          Share on X
+                          Share
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => handleEditVibeLogInline(entry)}
