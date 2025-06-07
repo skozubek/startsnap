@@ -45,6 +45,7 @@ export const Profile = (): JSX.Element => {
     linkedin: "",
     website: ""
   });
+  const [usernameError, setUsernameError] = useState<string>("");
   const [statusPopoverOpen, setStatusPopoverOpen] = useState(false);
 
   useEffect(() => {
@@ -136,6 +137,11 @@ export const Profile = (): JSX.Element => {
     const { name, value } = e.target;
     setProfile(prev => ({ ...prev, [name]: value }));
 
+    // Clear username error when field is edited
+    if (name === 'username') {
+      setUsernameError("");
+    }
+
     // Clear error when field is edited
     if (name in linkErrors) {
       setLinkErrors(prev => ({ ...prev, [name]: "" }));
@@ -175,6 +181,34 @@ export const Profile = (): JSX.Element => {
    */
   const updateProfile = async () => {
     if (!user) return;
+
+    // --- START NEW VALIDATION LOGIC ---
+    if (profile.username.length < 3) {
+      setUsernameError("Username must be at least 3 characters.");
+      return; // Stop the update process
+    }
+
+    // Check if the username is taken by another user
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('user_id')
+        .eq('username', profile.username)
+        .neq('user_id', user.id) // IMPORTANT: Exclude the current user from the check
+        .limit(1);
+
+      if (error) throw error; // Let the main catch block handle Supabase errors
+
+      if (data && data.length > 0) {
+        setUsernameError("This username is already taken. Please choose another.");
+        return; // Stop the update process
+      }
+    } catch (error) {
+      console.error('Error checking username uniqueness:', error);
+      alert('Could not verify username. Please try again.');
+      return;
+    }
+    // --- END NEW VALIDATION LOGIC ---
 
     // Validate links before updating
     if (!validateLinks()) {
@@ -300,8 +334,11 @@ export const Profile = (): JSX.Element => {
                       value={profile.username}
                       onChange={handleChange}
                       placeholder="Your username"
-                      className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
+                      className={`border-2 border-solid ${usernameError ? 'border-red-500' : 'border-gray-800'} rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
                     />
+                    {usernameError && (
+                      <p className="text-red-500 text-sm mt-1">{usernameError}</p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
