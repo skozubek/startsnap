@@ -218,23 +218,28 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
         )}
         {creator && (
           <div className="flex items-center pt-6 border-t border-gray-200/80 mb-6">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12">
-                <UserAvatar
-                  name={creator?.username || 'Anonymous'}
-                  size={48}
-                  className="w-full h-full"
-                />
+            <Link 
+              to={`/profiles/${creator?.username}`} 
+              className="group inline-block"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12">
+                  <UserAvatar
+                    name={creator?.username || 'Anonymous'}
+                    size={48}
+                    className="w-full h-full"
+                  />
+                </div>
+                <div>
+                  <p className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay leading-tight group-hover:text-startsnap-french-rose transition-colors">
+                    {creator?.username || 'Anonymous'}
+                  </p>
+                  <p className="font-['Roboto',Helvetica] text-startsnap-shuttle-gray text-sm">
+                    Launched: {formatDetailedDate(startsnap.created_at)}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay leading-tight">
-                  {creator?.username || 'Anonymous'}
-                </p>
-                <p className="font-['Roboto',Helvetica] text-startsnap-shuttle-gray text-sm">
-                  Launched: {formatDetailedDate(startsnap.created_at)}
-                </p>
-              </div>
-            </div>
+            </Link>
           </div>
         )}
       </div>
