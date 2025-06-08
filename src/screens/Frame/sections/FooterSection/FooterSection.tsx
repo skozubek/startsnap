@@ -4,6 +4,7 @@
  */
 
 import React from "react";
+import { Link } from "react-router-dom";
 import { FaXTwitter, FaInstagram, FaYoutube } from "react-icons/fa6";
 import { IconType } from "react-icons";
 
@@ -15,8 +16,8 @@ export const FooterSection = (): JSX.Element => {
   // Footer navigation links data
   const footerLinks = [
     { title: "About", href: "#" },
-    { title: "Terms", href: "#" },
-    { title: "Privacy", href: "#" },
+    { title: "Terms", href: "/terms" },
+    { title: "Privacy", href: "/privacy" },
   ];
 
   // Social media links
@@ -49,13 +50,23 @@ export const FooterSection = (): JSX.Element => {
         {/* Navigation Links */}
         <div className="flex items-center gap-6">
           {footerLinks.map((link, index) => (
-            <a
-              key={index}
-              href={link.href}
-              className="font-['Roboto',Helvetica] font-normal text-startsnap-ebony-clay text-base text-center leading-6 hover:text-startsnap-french-rose transition-colors"
-            >
-              {link.title}
-            </a>
+            link.href === "#" ? (
+              <a
+                key={index}
+                href={link.href}
+                className="font-['Roboto',Helvetica] font-normal text-startsnap-ebony-clay text-base text-center leading-6 hover:text-startsnap-french-rose transition-colors"
+              >
+                {link.title}
+              </a>
+            ) : (
+              <Link
+                key={index}
+                to={link.href}
+                className="font-['Roboto',Helvetica] font-normal text-startsnap-ebony-clay text-base text-center leading-6 hover:text-startsnap-french-rose transition-colors"
+              >
+                {link.title}
+              </Link>
+            )
           ))}
         </div>
 

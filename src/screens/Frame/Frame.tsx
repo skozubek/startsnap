@@ -16,6 +16,8 @@ import { EditStartSnap } from "../EditStartSnap";
 import { Profile } from "../Profile";
 import { PublicProfile } from "../PublicProfile";
 import { Profiles } from "../Profiles";
+import { Terms } from "../Terms";
+import { Privacy } from "../Privacy";
 import { AuthProvider, useAuth } from "../../context/AuthContext";
 import { ScrollToTop } from "../../components/utils/ScrollToTop";
 
@@ -61,6 +63,8 @@ export const Frame = (): JSX.Element => {
             <Route path="/projects/:slug" element={<ProjectDetail />} />
             <Route path="/profiles" element={<Profiles />} />
             <Route path="/profiles/:username" element={<PublicProfile />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
             <Route
               path="/create"
               element={
