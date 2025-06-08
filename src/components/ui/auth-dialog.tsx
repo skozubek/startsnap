@@ -3,191 +3,452 @@
  * @description Authentication dialog component for user login and signup
  */
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "./button";
 import { Input } from "./input";
 import { Label } from "./label";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "./dialog";
+import { Dialog, DialogContent, DialogTitle } from "./dialog";
 import { supabase } from "../../lib/supabase";
+import { FaXTwitter } from "react-icons/fa6";
 
 interface AuthDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  mode: 'login' | 'signup';
+  mode: 'signup' | 'login';
   onSuccess?: () => void;
 }
 
 /**
- * @description Authentication dialog component that handles both login and signup
+ * @description Component for handling user authentication (login/signup)
  * @param {AuthDialogProps} props - Component props
- * @param {boolean} props.isOpen - Whether the dialog is open
- * @param {() => void} props.onClose - Function to close the dialog
- * @param {'login' | 'signup'} props.mode - Authentication mode
- * @param {() => void} [props.onSuccess] - Optional callback on successful authentication
- * @returns {JSX.Element} Authentication dialog component
+ * @returns {JSX.Element} Authentication dialog with form fields
+ * @sideEffects Interacts with Supabase auth API for user authentication
  */
-export const AuthDialog = ({ isOpen, onClose, mode, onSuccess }: AuthDialogProps): JSX.Element => {
+export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: AuthDialogProps): JSX.Element => {
+  const [mode, setMode] = useState<'signup' | 'login'>(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [twitterLoading, setTwitterLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+
+  const emailInputRef = useRef<HTMLInputElement>(null);
+  const passwordInputRef = useRef<HTMLInputElement>(null);
+
+  // Effect to update mode and set initial focus
+  useEffect(() => {
+    if (isOpen) {
+      setMode(initialMode);
+      setError(null);
+      setEmailError(null);
+      setPasswordError(null);
+
+      // Debug Supabase configuration
+      console.log('🔧 Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
+      console.log('🔑 Supabase Anon Key (first 10 chars):', import.meta.env.VITE_SUPABASE_ANON_KEY?.substring(0, 10) + '...');
+
+      // Delay focus slightly to ensure input is ready after potential re-renders
+      requestAnimationFrame(() => {
+        emailInputRef.current?.focus();
+      });
+    }
+  }, [initialMode, isOpen]);
+
+  // Effect to listen for auth state changes and handle Twitter profile extraction
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('🔐 Auth state change:', event);
+      console.log('📄 Session:', session);
+      console.log('👤 User:', session?.user);
+      console.log('🔧 App metadata:', session?.user?.app_metadata);
+      console.log('📊 User metadata:', session?.user?.user_metadata);
+
+      if (event === 'SIGNED_IN' && session?.user) {
+        console.log('✅ User signed in successfully');
+        // Check if user signed in with Twitter and extract profile information
+        if (session.user.app_metadata?.provider === 'twitter') {
+          console.log('🐦 Twitter login detected, extracting profile...');
+          await handleTwitterProfileExtraction(session.user);
+        } else {
+          console.log('📧 Non-Twitter login, provider:', session.user.app_metadata?.provider);
+        }
+      }
+
+      if (event === 'SIGNED_OUT') {
+        console.log('🚪 User signed out');
+      }
+
+      if (event === 'TOKEN_REFRESHED') {
+        console.log('🔄 Token refreshed');
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+    /**
+   * @description Extracts Twitter profile information and updates user profile
+   * @async
+   * @param {any} user - Supabase user object
+   * @sideEffects Updates user profile with Twitter profile URL if available
+   */
+  const handleTwitterProfileExtraction = async (user: any) => {
+    try {
+      console.log('🔍 Extracting Twitter profile from user:', user);
+
+      // Extract Twitter username from user metadata
+      const twitterUsername = user.user_metadata?.user_name || user.user_metadata?.preferred_username;
+      console.log('📝 Extracted Twitter username:', twitterUsername);
+      console.log('🔍 Available metadata keys:', Object.keys(user.user_metadata || {}));
+
+      if (twitterUsername) {
+        const twitterUrl = `https://twitter.com/${twitterUsername}`;
+        console.log('🔗 Generated Twitter URL:', twitterUrl);
+
+        // Update the profile with Twitter URL
+        const { error } = await supabase
+          .from('profiles')
+          .upsert({
+            user_id: user.id,
+            twitter_url: twitterUrl,
+            updated_at: new Date()
+          }, {
+            onConflict: 'user_id'
+          });
+
+        if (error) {
+          console.error('❌ Error updating profile with Twitter URL:', error);
+        } else {
+          console.log('✅ Successfully updated profile with Twitter URL:', twitterUrl);
+        }
+      } else {
+        console.warn('⚠️ No Twitter username found in user metadata');
+        console.log('📋 Full user_metadata:', JSON.stringify(user.user_metadata, null, 2));
+      }
+    } catch (error) {
+      console.error('💥 Error extracting Twitter profile information:', error);
+    }
+  };
 
   /**
-   * @description Handles form submission for authentication
-   * @async
-   * @param {React.FormEvent} e - Form event
-   * @sideEffects Authenticates user via Supabase and closes dialog on success
+   * @description Toggles between login and signup modes
    */
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  const toggleMode = () => {
+    setMode(mode === 'login' ? 'signup' : 'login');
     setError(null);
+    setEmailError(null);
+    setPasswordError(null);
+    requestAnimationFrame(() => { // Ensure DOM is updated before focusing
+      emailInputRef.current?.focus();
+    });
+  };
+
+  /**
+   * @description Clears the dialog state and closes it
+   */
+  const handleClose = () => {
+    setEmail('');
+    setPassword('');
+    setError(null);
+    setEmailError(null);
+    setPasswordError(null);
+    setLoading(false);
+    setTwitterLoading(false);
+    onClose();
+  };
+
+  /**
+   * @description Validates the email format
+   * @param {string} email - Email to validate
+   * @returns {boolean} Whether the email is valid
+   */
+  const validateEmail = (email: string): boolean => {
+    if (!email.trim()) {
+      setEmailError('Email is required');
+      return false;
+    }
+
+    // More comprehensive email validation
+    const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (!emailRegex.test(email)) {
+      setEmailError('Please enter a valid email address');
+      return false;
+    }
+
+    setEmailError(null);
+    return true;
+  };
+
+  /**
+   * @description Validates the password
+   * @param {string} password - Password to validate
+   * @returns {boolean} Whether the password is valid
+   */
+  const validatePassword = (password: string): boolean => {
+    if (!password) {
+      setPasswordError('Password is required');
+      return false;
+    }
+
+    if (password.length < 6) {
+      setPasswordError('Password must be at least 6 characters');
+      return false;
+    }
+
+    setPasswordError(null);
+    return true;
+  };
+
+  /**
+   * @description Handles form submission (login or signup)
+   * @param {React.FormEvent<HTMLFormElement>} e - The form event
+   * @async
+   */
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (mode === 'login') {
+      await handleLogin();
+    } else {
+      await handleSignUp();
+    }
+  };
+
+  /**
+   * @description Handles Twitter OAuth login
+   * @async
+   * @sideEffects Initiates Twitter OAuth flow via Supabase
+   */
+  const handleTwitterLogin = async () => {
+    try {
+      console.log('🐦 Starting Twitter OAuth flow...');
+      console.log('🌐 Current origin:', window.location.origin);
+      console.log('📍 Current URL:', window.location.href);
+
+      setTwitterLoading(true);
+      setError(null);
+
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'twitter'
+      });
+
+      console.log('📤 OAuth response data:', data);
+      console.log('❌ OAuth error:', error);
+
+      if (error) {
+        console.error('💥 OAuth initiation failed:', error);
+        throw error;
+      }
+
+      if (data?.url) {
+        console.log('🔗 OAuth URL received:', data.url);
+        console.log('🚀 Redirecting to Twitter...');
+      } else {
+        console.warn('⚠️ No URL returned from OAuth');
+      }
+
+      // The redirect will happen automatically, so we don't need to handle success here
+      // The auth state change listener will handle profile extraction
+    } catch (error: any) {
+      console.error('💥 Error logging in with Twitter:', error);
+      console.error('📋 Full error object:', JSON.stringify(error, null, 2));
+      setError(error.message || 'An error occurred during Twitter login');
+      setTwitterLoading(false);
+    }
+  };
+
+  /**
+   * @description Handles the login submission
+   * @async
+   * @sideEffects Attempts to sign in the user via Supabase auth
+   */
+  const handleLogin = async () => {
+    // Validate inputs first
+    const isEmailValid = validateEmail(email);
+    const isPasswordValid = validatePassword(password);
+
+    if (!isEmailValid || !isPasswordValid) {
+      return;
+    }
 
     try {
-      if (mode === 'signup') {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-        });
-        if (error) throw error;
-        alert('Check your email for the confirmation link!');
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (error) throw error;
-      }
-      
-      onClose();
+      setLoading(true);
+      setError(null);
+
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
       if (onSuccess) {
         onSuccess();
       }
+      handleClose();
     } catch (error: any) {
-      setError(error.message);
+      console.error('Error logging in:', error);
+      setError(error.message || 'Invalid login credentials');
     } finally {
       setLoading(false);
     }
   };
 
   /**
-   * @description Handles Twitter OAuth authentication
+   * @description Handles the signup submission
    * @async
-   * @sideEffects Initiates Twitter OAuth flow via Supabase
+   * @sideEffects Creates a new user account via Supabase auth
    */
-  const handleTwitterAuth = async () => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'twitter',
-        options: {
-          redirectTo: `${window.location.origin}`
-        }
-      });
-      if (error) throw error;
-    } catch (error: any) {
-      setError(error.message);
-    }
-  };
+  const handleSignUp = async () => {
+    // Validate inputs first
+    const isEmailValid = validateEmail(email);
+    const isPasswordValid = validatePassword(password);
 
-  /**
-   * @description Resets form state when dialog closes
-   */
-  const handleClose = () => {
-    setEmail('');
-    setPassword('');
-    setError(null);
-    onClose();
+    if (!isEmailValid || !isPasswordValid) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      if (onSuccess) {
+        onSuccess();
+      }
+      handleClose();
+      alert('Account created, enjoy the ride!');
+    } catch (error: any) {
+      console.error('Error signing up:', error);
+      setError(error.message || 'An error occurred during sign up');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md bg-startsnap-white border-2 border-gray-800 rounded-lg shadow-[3px_3px_0px_#1f2937]">
-        <DialogHeader>
-          <DialogTitle className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-2xl">
-            {mode === 'login' ? 'Welcome Back!' : 'Join the Vibe Coders'}
-          </DialogTitle>
-          <DialogDescription className="font-['Roboto',Helvetica] text-startsnap-river-bed">
-            {mode === 'login' 
-              ? 'Sign in to your account to continue building in public'
-              : 'Create your account and start sharing your StartSnaps'
-            }
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent
+        className="max-w-xs p-6 sm:max-w-md sm:p-8 bg-white rounded-lg border-3 border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]"
+      >
+        <DialogTitle className="text-3xl sm:text-4xl font-bold text-startsnap-ebony-clay text-center font-['Space_Grotesk',Helvetica] leading-tight mb-6 sm:mb-8">
+          {mode === 'login' ? 'Welcome Back' : 'Create Your Account'}
+        </DialogTitle>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+          {/* Twitter Login Button */}
+          <Button
+            type="button"
+            onClick={handleTwitterLogin}
+            disabled={twitterLoading || loading}
+            className="w-full startsnap-button bg-black text-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center justify-center gap-3 hover:bg-gray-800"
+          >
+            {React.createElement(FaXTwitter as any, { size: 20 })}
+            {twitterLoading ? 'Connecting...' : `${mode === 'login' ? 'Login' : 'Sign up'} with Twitter`}
+          </Button>
+
+          {/* Divider */}
+          <div className="flex items-center my-4">
+            <div className="flex-1 border-t border-gray-300"></div>
+            <span className="px-4 text-gray-500 font-['Roboto',Helvetica]">or</span>
+            <div className="flex-1 border-t border-gray-300"></div>
+          </div>
+
           <div className="space-y-2">
-            <Label htmlFor="email" className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue">
+            <Label
+              htmlFor="email"
+              className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-xl leading-7"
+            >
               Email
             </Label>
             <Input
+              ref={emailInputRef}
               id="email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="border-2 border-solid border-gray-800 rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky"
-              placeholder="your@email.com"
+              onClick={(e) => e.currentTarget.focus()}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setEmailError(null);
+                setError(null);
+              }}
+              className={`w-full border-2 border-solid ${emailError ? 'border-red-500' : 'border-gray-800'} rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
+              placeholder="your.email@example.com"
+              tabIndex={0}
+              disabled={twitterLoading}
             />
+            {emailError && (
+              <p className="text-red-500 text-sm mt-1">{emailError}</p>
+            )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password" className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue">
+            <Label
+              htmlFor="password"
+              className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-xl leading-7"
+            >
               Password
             </Label>
             <Input
+              ref={passwordInputRef}
               id="password"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="border-2 border-solid border-gray-800 rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky"
-              placeholder="Enter your password"
+              onClick={(e) => e.currentTarget.focus()}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setPasswordError(null);
+                setError(null);
+              }}
+              className={`w-full border-2 border-solid ${passwordError ? 'border-red-500' : 'border-gray-800'} rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
+              tabIndex={0}
+              disabled={twitterLoading}
             />
+            {passwordError && (
+              <p className="text-red-500 text-sm mt-1">{passwordError}</p>
+            )}
           </div>
 
           {error && (
-            <div className="text-red-600 text-sm font-['Roboto',Helvetica]">
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md">
               {error}
             </div>
           )}
 
-          <Button
-            type="submit"
-            disabled={loading}
-            className="w-full startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
-          >
-            {loading ? 'Processing...' : (mode === 'login' ? 'Sign In' : 'Create Account')}
-          </Button>
-        </form>
-
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-gray-300" />
+          <div className="flex gap-4 pt-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleClose}
+              className="flex-1 startsnap-button bg-gray-200 text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+              tabIndex={0}
+              disabled={loading || twitterLoading}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={loading || twitterLoading}
+              className="flex-1 startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+              tabIndex={0}
+            >
+              {loading ? (mode === 'login' ? 'Logging In...' : 'Signing Up...') : (mode === 'login' ? 'Log In' : 'Sign Up')}
+            </Button>
           </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-startsnap-white px-2 text-startsnap-pale-sky font-['Roboto',Helvetica]">
-              Or continue with
+
+          <div className="text-center text-startsnap-french-rose hover:underline cursor-pointer mt-6">
+            <span onClick={toggleMode} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && toggleMode()}>
+              {mode === 'login' ? "Don't have an account? Sign up" : "Already have an account? Log in"}
             </span>
           </div>
-        </div>
-
-        <Button
-          type="button"
-          variant="outline"
-          onClick={handleTwitterAuth}
-          className="w-full startsnap-button bg-gray-200 text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center justify-center gap-2"
-        >
-          <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-          </svg>
-          Continue with X (Twitter)
-        </Button>
+        </form>
       </DialogContent>
     </Dialog>
   );
