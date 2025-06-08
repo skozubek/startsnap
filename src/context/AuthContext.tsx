@@ -40,6 +40,50 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
 
+  /**
+   * @description Extracts Twitter profile information and updates user profile
+   * @async
+   * @param {any} user - Supabase user object
+   * @sideEffects Updates user profile with Twitter profile URL if available
+   */
+  const handleTwitterProfileExtraction = async (user: any) => {
+    try {
+      console.log('🔍 Extracting Twitter profile from user:', user);
+
+      // Extract Twitter username from user metadata
+      const twitterUsername = user.user_metadata?.user_name || user.user_metadata?.preferred_username;
+      console.log('📝 Extracted Twitter username:', twitterUsername);
+      console.log('🔍 Available metadata keys:', Object.keys(user.user_metadata || {}));
+
+      if (twitterUsername) {
+        const twitterUrl = `https://twitter.com/${twitterUsername}`;
+        console.log('🔗 Generated Twitter URL:', twitterUrl);
+
+        // Update the profile with Twitter URL
+        const { error } = await supabase
+          .from('profiles')
+          .upsert({
+            user_id: user.id,
+            twitter_url: twitterUrl,
+            updated_at: new Date()
+          }, {
+            onConflict: 'user_id'
+          });
+
+        if (error) {
+          console.error('❌ Error updating profile with Twitter URL:', error);
+        } else {
+          console.log('✅ Successfully updated profile with Twitter URL:', twitterUrl);
+        }
+      } else {
+        console.warn('⚠️ No Twitter username found in user metadata');
+        console.log('📋 Full user_metadata:', JSON.stringify(user.user_metadata, null, 2));
+      }
+    } catch (error) {
+      console.error('💥 Error extracting Twitter profile information:', error);
+    }
+  };
+
   useEffect(() => {
     setLoading(true);
     // Check current session on mount
@@ -56,15 +100,19 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event: AuthChangeEvent, currentSession: Session | null) => {
+      async (event: AuthChangeEvent, currentSession: Session | null) => {
         setUser(currentSession?.user ?? null);
         setSession(currentSession);
-        // If an event occurs (like SIGNED_OUT), loading state might not be the primary concern here
-        // as it's about ongoing session changes, not initial load.
-        // Ensure loading is false if it was somehow still true.
         if (loading) {
             setLoading(false);
         }
+
+        // --- START NEW LOGIC ---
+        if (event === "SIGNED_IN" && currentSession?.user.app_metadata.provider === 'twitter') {
+          // This is the correct, persistent place to handle the post-login action.
+          await handleTwitterProfileExtraction(currentSession.user);
+        }
+        // --- END NEW LOGIC ---
       }
     );
 
