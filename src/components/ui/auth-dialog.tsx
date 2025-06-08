@@ -453,5 +453,3 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: Au
     </Dialog>
   );
 };
-
-export { AuthDialog }

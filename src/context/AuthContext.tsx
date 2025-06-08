@@ -40,39 +40,6 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
 
-  /**
-   * @description Handles Twitter profile data extraction after successful Twitter OAuth sign-in
-   * @async
-   * @param {User} user - The authenticated user object from Supabase
-   * @sideEffects Updates user profile in database with Twitter URL if available
-   */
-  const handleTwitterProfileExtraction = async (user: User) => {
-    try {
-      // Check if user signed in with Twitter and has Twitter username
-      if (user.app_metadata.provider === 'twitter') {
-        const twitterUsername = user.user_metadata?.user_name || user.user_metadata?.preferred_username;
-        
-        if (twitterUsername) {
-          const twitterUrl = `https://twitter.com/${twitterUsername}`;
-          
-          // Update the user's profile with Twitter URL
-          const { error } = await supabase
-            .from('profiles')
-            .update({ twitter_url: twitterUrl })
-            .eq('user_id', user.id);
-          
-          if (error) {
-            console.error('Error updating Twitter profile:', error);
-          } else {
-            console.log('Twitter profile updated successfully');
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Error in handleTwitterProfileExtraction:', error);
-    }
-  };
-
   useEffect(() => {
     setLoading(true);
     // Check current session on mount
@@ -89,7 +56,7 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event: AuthChangeEvent, currentSession: Session | null) => {
+      (_event: AuthChangeEvent, currentSession: Session | null) => {
         setUser(currentSession?.user ?? null);
         setSession(currentSession);
         // If an event occurs (like SIGNED_OUT), loading state might not be the primary concern here
@@ -98,13 +65,6 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
         if (loading) {
             setLoading(false);
         }
-
-        // --- START NEW LOGIC ---
-        if (event === "SIGNED_IN" && currentSession?.user.app_metadata.provider === 'twitter') {
-          // This is the correct, persistent place to handle the post-login action.
-          await handleTwitterProfileExtraction(currentSession.user);
-        }
-        // --- END NEW LOGIC ---
       }
     );
 
