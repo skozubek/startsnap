@@ -275,6 +275,10 @@ export const HeaderSection = (): JSX.Element => {
         isOpen={isAuthDialogOpen}
         onClose={() => setIsAuthDialogOpen(false)}
         mode={authMode}
+        onSuccess={() => {
+          // Optional: Add any additional success handling here
+          // The auth state change will be handled by AuthProvider
+        }}
       />
     </header>
   );
