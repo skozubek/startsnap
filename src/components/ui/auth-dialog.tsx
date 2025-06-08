@@ -3,304 +3,178 @@
  * @description Authentication dialog component for user login and signup
  */
 
-import React, { useState, useEffect, useRef } from "react";
-import { Button } from "./button";
-import { Input } from "./input";
-import { Label } from "./label";
-import { Dialog, DialogContent, DialogTitle } from "./dialog";
-import { supabase } from "../../lib/supabase";
+import React, { useState } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './dialog';
+import { Button } from './button';
+import { Input } from './input';
+import { Label } from './label';
+import { supabase } from '../../lib/supabase';
+import { FaXTwitter } from 'react-icons/fa6';
 
 interface AuthDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  mode: 'signup' | 'login';
+  mode: 'login' | 'signup';
   onSuccess?: () => void;
 }
 
 /**
- * @description Component for handling user authentication (login/signup)
+ * @description Authentication dialog component with email/password and Twitter OAuth options
  * @param {AuthDialogProps} props - Component props
- * @returns {JSX.Element} Authentication dialog with form fields
- * @sideEffects Interacts with Supabase auth API for user authentication
+ * @returns {JSX.Element} Auth dialog with login/signup forms and Twitter OAuth
  */
-export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: AuthDialogProps): JSX.Element => {
-  const [mode, setMode] = useState<'signup' | 'login'>(initialMode);
+export const AuthDialog: React.FC<AuthDialogProps> = ({ isOpen, onClose, mode, onSuccess }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [emailError, setEmailError] = useState<string | null>(null);
-  const [passwordError, setPasswordError] = useState<string | null>(null);
-
-  const emailInputRef = useRef<HTMLInputElement>(null);
-  const passwordInputRef = useRef<HTMLInputElement>(null);
-
-  // Effect to update mode and set initial focus
-  useEffect(() => {
-    if (isOpen) {
-      setMode(initialMode);
-      setError(null);
-      setEmailError(null);
-      setPasswordError(null);
-      // Delay focus slightly to ensure input is ready after potential re-renders
-      requestAnimationFrame(() => {
-        emailInputRef.current?.focus();
-      });
-    }
-  }, [initialMode, isOpen]);
 
   /**
-   * @description Toggles between login and signup modes
-   */
-  const toggleMode = () => {
-    setMode(mode === 'login' ? 'signup' : 'login');
-    setError(null);
-    setEmailError(null);
-    setPasswordError(null);
-    requestAnimationFrame(() => { // Ensure DOM is updated before focusing
-      emailInputRef.current?.focus();
-    });
-  };
-
-  /**
-   * @description Clears the dialog state and closes it
-   */
-  const handleClose = () => {
-    setEmail('');
-    setPassword('');
-    setError(null);
-    setEmailError(null);
-    setPasswordError(null);
-    setLoading(false);
-    onClose();
-  };
-
-  /**
-   * @description Validates the email format
-   * @param {string} email - Email to validate
-   * @returns {boolean} Whether the email is valid
-   */
-  const validateEmail = (email: string): boolean => {
-    if (!email.trim()) {
-      setEmailError('Email is required');
-      return false;
-    }
-
-    // More comprehensive email validation
-    const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    if (!emailRegex.test(email)) {
-      setEmailError('Please enter a valid email address');
-      return false;
-    }
-
-    setEmailError(null);
-    return true;
-  };
-
-  /**
-   * @description Validates the password
-   * @param {string} password - Password to validate
-   * @returns {boolean} Whether the password is valid
-   */
-  const validatePassword = (password: string): boolean => {
-    if (!password) {
-      setPasswordError('Password is required');
-      return false;
-    }
-
-    if (password.length < 6) {
-      setPasswordError('Password must be at least 6 characters');
-      return false;
-    }
-
-    setPasswordError(null);
-    return true;
-  };
-
-  /**
-   * @description Handles form submission (login or signup)
-   * @param {React.FormEvent<HTMLFormElement>} e - The form event
+   * @description Handles Twitter OAuth authentication
    * @async
+   * @sideEffects Initiates OAuth flow with Twitter provider via Supabase
    */
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (mode === 'login') {
-      await handleLogin();
-    } else {
-      await handleSignUp();
-    }
-  };
-
-  /**
-   * @description Handles the login submission
-   * @async
-   * @sideEffects Attempts to sign in the user via Supabase auth
-   */
-  const handleLogin = async () => {
-    // Validate inputs first
-    const isEmailValid = validateEmail(email);
-    const isPasswordValid = validatePassword(password);
-
-    if (!isEmailValid || !isPasswordValid) {
-      return;
-    }
-
+  const handleTwitterAuth = async () => {
     try {
       setLoading(true);
       setError(null);
-
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'twitter',
+        options: {
+          redirectTo: window.location.origin + window.location.pathname,
+        }
       });
-
+      
       if (error) throw error;
-
-      if (onSuccess) {
-        onSuccess();
-      }
-      handleClose();
+      
+      // OAuth will redirect, so we don't need to handle success here
+      // The auth state change will be handled by the AuthProvider
+      
     } catch (error: any) {
-      console.error('Error logging in:', error);
-      setError(error.message || 'Invalid login credentials');
+      console.error('Twitter auth error:', error);
+      setError(error.message || 'Failed to authenticate with Twitter');
     } finally {
       setLoading(false);
     }
   };
 
   /**
-   * @description Handles the signup submission
+   * @description Handles email/password authentication
    * @async
-   * @sideEffects Creates a new user account via Supabase auth
+   * @param {React.FormEvent} e - Form submission event
+   * @sideEffects Authenticates user via Supabase auth
    */
-  const handleSignUp = async () => {
-    // Validate inputs first
-    const isEmailValid = validateEmail(email);
-    const isPasswordValid = validatePassword(password);
-
-    if (!isEmailValid || !isPasswordValid) {
-      return;
-    }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
 
     try {
-      setLoading(true);
-      setError(null);
-
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-
-      if (error) throw error;
-
+      if (mode === 'signup') {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+        });
+        if (error) throw error;
+        alert('Check your email for the confirmation link!');
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) throw error;
+      }
+      
+      onClose();
       if (onSuccess) {
         onSuccess();
       }
-      handleClose();
-      alert('Account created, enjoy the ride!');
     } catch (error: any) {
-      console.error('Error signing up:', error);
-      setError(error.message || 'An error occurred during sign up');
+      setError(error.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent
-        className="max-w-xs p-6 sm:max-w-md sm:p-8 bg-white rounded-lg border-3 border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]"
-      >
-        <DialogTitle className="text-3xl sm:text-4xl font-bold text-startsnap-ebony-clay text-center font-['Space_Grotesk',Helvetica] leading-tight mb-6 sm:mb-8">
-          {mode === 'login' ? 'Welcome Back' : 'Create Your Account'}
-        </DialogTitle>
-
-        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-          <div className="space-y-2">
-            <Label
-              htmlFor="email"
-              className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-xl leading-7"
-            >
-              Email
-            </Label>
-            <Input
-              ref={emailInputRef}
-              id="email"
-              type="email"
-              value={email}
-              onClick={(e) => e.currentTarget.focus()}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                setEmailError(null);
-                setError(null);
-              }}
-              className={`w-full border-2 border-solid ${emailError ? 'border-red-500' : 'border-gray-800'} rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
-              placeholder="your.email@example.com"
-              tabIndex={0}
-            />
-            {emailError && (
-              <p className="text-red-500 text-sm mt-1">{emailError}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label
-              htmlFor="password"
-              className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-xl leading-7"
-            >
-              Password
-            </Label>
-            <Input
-              ref={passwordInputRef}
-              id="password"
-              type="password"
-              value={password}
-              onClick={(e) => e.currentTarget.focus()}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                setPasswordError(null);
-                setError(null);
-              }}
-              className={`w-full border-2 border-solid ${passwordError ? 'border-red-500' : 'border-gray-800'} rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
-              tabIndex={0}
-            />
-            {passwordError && (
-              <p className="text-red-500 text-sm mt-1">{passwordError}</p>
-            )}
-          </div>
-
-          {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md">
-              {error}
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-md bg-startsnap-white border-2 border-gray-800 rounded-lg shadow-[5px_5px_0px_#1f2937]">
+        <DialogHeader>
+          <DialogTitle className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-2xl text-center">
+            {mode === 'login' ? 'Welcome Back!' : 'Join the Vibe!'}
+          </DialogTitle>
+        </DialogHeader>
+        
+        <div className="space-y-6 p-6">
+          {/* Twitter OAuth Button */}
+          <Button
+            onClick={handleTwitterAuth}
+            disabled={loading}
+            className="w-full startsnap-button bg-startsnap-ebony-clay text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center justify-center gap-3 py-3"
+          >
+            <FaXTwitter size={20} />
+            {mode === 'login' ? 'Continue with Twitter' : 'Sign up with Twitter'}
+          </Button>
+          
+          {/* Divider */}
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-gray-300" />
             </div>
-          )}
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-startsnap-white px-2 text-startsnap-pale-sky font-['Roboto',Helvetica]">
+                Or continue with email
+              </span>
+            </div>
+          </div>
 
-          <div className="flex gap-4 pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClose}
-              className="flex-1 startsnap-button bg-gray-200 text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
-              tabIndex={0}
-            >
-              Cancel
-            </Button>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue">
+                Email
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="border-2 border-solid border-gray-800 rounded-lg p-3 font-['Roboto',Helvetica]"
+                placeholder="Enter your email"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="password" className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue">
+                Password
+              </Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="border-2 border-solid border-gray-800 rounded-lg p-3 font-['Roboto',Helvetica]"
+                placeholder="Enter your password"
+              />
+            </div>
+            
+            {error && (
+              <div className="text-red-500 text-sm font-['Roboto',Helvetica]">
+                {error}
+              </div>
+            )}
+            
             <Button
               type="submit"
               disabled={loading}
-              className="flex-1 startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
-              tabIndex={0}
+              className="w-full startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
             >
-              {loading ? (mode === 'login' ? 'Logging In...' : 'Signing Up...') : (mode === 'login' ? 'Log In' : 'Sign Up')}
+              {loading ? 'Loading...' : (mode === 'login' ? 'Sign In' : 'Sign Up')}
             </Button>
-          </div>
-
-          <div className="text-center text-startsnap-french-rose hover:underline cursor-pointer mt-6">
-            <span onClick={toggleMode} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && toggleMode()}>
-              {mode === 'login' ? "Don't have an account? Sign up" : "Already have an account? Log in"}
-            </span>
-          </div>
-        </form>
+          </form>
+        </div>
       </DialogContent>
     </Dialog>
   );

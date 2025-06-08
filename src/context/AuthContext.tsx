@@ -31,6 +31,7 @@ interface AuthProviderProps {
  * @description Provider component that manages authentication state globally.
  * It initializes the session state on load, listens to Supabase auth state changes,
  * and provides a function to handle authentication errors by signing the user out.
+ * Also handles Twitter OAuth profile data extraction and storage.
  * @param {AuthProviderProps} props - Component props containing children
  * @returns {JSX.Element} AuthContext provider wrapping children
  * @sideEffects Listens to Supabase auth state changes and updates global state.
@@ -40,12 +41,63 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
 
+  /**
+   * @description Extracts and stores Twitter profile URL when user authenticates via Twitter OAuth
+   * @async
+   * @param {User} user - The authenticated user object from Supabase
+   * @sideEffects Updates the profiles table with Twitter URL if available
+   */
+  const handleTwitterProfileData = async (user: User) => {
+    // Check if this is a Twitter OAuth login and we have Twitter data
+    if (user.app_metadata?.provider === 'twitter' && user.user_metadata?.user_name) {
+      const twitterUsername = user.user_metadata.user_name;
+      const twitterUrl = `https://twitter.com/${twitterUsername}`;
+      
+      try {
+        // Check if profile exists and doesn't already have a Twitter URL
+        const { data: existingProfile, error: fetchError } = await supabase
+          .from('profiles')
+          .select('twitter_url')
+          .eq('user_id', user.id)
+          .single();
+        
+        if (fetchError && fetchError.code !== 'PGRST116') {
+          console.error('Error fetching profile for Twitter URL update:', fetchError);
+          return;
+        }
+        
+        // Only update if profile exists and doesn't have a Twitter URL, or if it's different
+        if (existingProfile && (!existingProfile.twitter_url || existingProfile.twitter_url !== twitterUrl)) {
+          const { error: updateError } = await supabase
+            .from('profiles')
+            .update({ 
+              twitter_url: twitterUrl,
+              updated_at: new Date()
+            })
+            .eq('user_id', user.id);
+          
+          if (updateError) {
+            console.error('Error updating Twitter URL in profile:', updateError);
+          }
+        }
+      } catch (error) {
+        console.error('Error handling Twitter profile data:', error);
+      }
+    }
+  };
+
   useEffect(() => {
     setLoading(true);
     // Check current session on mount
     supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
       setUser(initialSession?.user ?? null);
       setSession(initialSession);
+      
+      // Handle Twitter profile data for initial session
+      if (initialSession?.user) {
+        handleTwitterProfileData(initialSession.user);
+      }
+      
       setLoading(false); // Finish loading after initial session check
     }).catch(() => {
       // Handle potential errors during getSession, though unlikely to be critical here
@@ -59,6 +111,12 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
       (_event: AuthChangeEvent, currentSession: Session | null) => {
         setUser(currentSession?.user ?? null);
         setSession(currentSession);
+        
+        // Handle Twitter profile data for auth state changes
+        if (currentSession?.user) {
+          handleTwitterProfileData(currentSession.user);
+        }
+        
         // If an event occurs (like SIGNED_OUT), loading state might not be the primary concern here
         // as it's about ongoing session changes, not initial load.
         // Ensure loading is false if it was somehow still true.
