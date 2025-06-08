@@ -33,7 +33,7 @@ BEGIN
   SET support_count = GREATEST(0, support_count - 1) -- Ensure count doesn't go below 0
   WHERE id = p_startsnap_id
   RETURNING support_count INTO new_count;
-  
+
   RETURN new_count;
 END;
 $$;
@@ -49,6 +49,7 @@ DECLARE
   initial_username TEXT;
   unique_username TEXT;
   random_suffix TEXT;
+  twitter_url TEXT;
 BEGIN
   initial_username := SPLIT_PART(NEW.email, '@', 1);
   unique_username := initial_username;
@@ -61,8 +62,18 @@ BEGIN
     unique_username := initial_username || '-' || random_suffix;
   END LOOP;
 
-  INSERT INTO public.profiles (user_id, username)
-  VALUES (NEW.id, unique_username);
+  -- Extract Twitter profile URL if user signed up with Twitter
+  twitter_url := NULL;
+  IF NEW.raw_app_meta_data->>'provider' = 'twitter' THEN
+    IF NEW.raw_user_meta_data->>'user_name' IS NOT NULL THEN
+      twitter_url := 'https://twitter.com/' || (NEW.raw_user_meta_data->>'user_name');
+    ELSIF NEW.raw_user_meta_data->>'preferred_username' IS NOT NULL THEN
+      twitter_url := 'https://twitter.com/' || (NEW.raw_user_meta_data->>'preferred_username');
+    END IF;
+  END IF;
+
+  INSERT INTO public.profiles (user_id, username, twitter_url)
+  VALUES (NEW.id, unique_username, twitter_url);
 
   RETURN NEW;
 END;
@@ -83,7 +94,7 @@ BEGIN
   SET support_count = support_count + 1
   WHERE id = p_startsnap_id
   RETURNING support_count INTO new_count;
-  
+
   RETURN new_count;
 END;
 $$;

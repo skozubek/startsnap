@@ -9,6 +9,7 @@ import { Input } from "./input";
 import { Label } from "./label";
 import { Dialog, DialogContent, DialogTitle } from "./dialog";
 import { supabase } from "../../lib/supabase";
+import { FaXTwitter } from "react-icons/fa6";
 
 interface AuthDialogProps {
   isOpen: boolean;
@@ -28,6 +29,7 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: Au
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [twitterLoading, setTwitterLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [emailError, setEmailError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
@@ -42,12 +44,93 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: Au
       setError(null);
       setEmailError(null);
       setPasswordError(null);
+
+      // Debug Supabase configuration
+      console.log('🔧 Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
+      console.log('🔑 Supabase Anon Key (first 10 chars):', import.meta.env.VITE_SUPABASE_ANON_KEY?.substring(0, 10) + '...');
+
       // Delay focus slightly to ensure input is ready after potential re-renders
       requestAnimationFrame(() => {
         emailInputRef.current?.focus();
       });
     }
   }, [initialMode, isOpen]);
+
+  // Effect to listen for auth state changes and handle Twitter profile extraction
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('🔐 Auth state change:', event);
+      console.log('📄 Session:', session);
+      console.log('👤 User:', session?.user);
+      console.log('🔧 App metadata:', session?.user?.app_metadata);
+      console.log('📊 User metadata:', session?.user?.user_metadata);
+
+      if (event === 'SIGNED_IN' && session?.user) {
+        console.log('✅ User signed in successfully');
+        // Check if user signed in with Twitter and extract profile information
+        if (session.user.app_metadata?.provider === 'twitter') {
+          console.log('🐦 Twitter login detected, extracting profile...');
+          await handleTwitterProfileExtraction(session.user);
+        } else {
+          console.log('📧 Non-Twitter login, provider:', session.user.app_metadata?.provider);
+        }
+      }
+
+      if (event === 'SIGNED_OUT') {
+        console.log('🚪 User signed out');
+      }
+
+      if (event === 'TOKEN_REFRESHED') {
+        console.log('🔄 Token refreshed');
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+    /**
+   * @description Extracts Twitter profile information and updates user profile
+   * @async
+   * @param {any} user - Supabase user object
+   * @sideEffects Updates user profile with Twitter profile URL if available
+   */
+  const handleTwitterProfileExtraction = async (user: any) => {
+    try {
+      console.log('🔍 Extracting Twitter profile from user:', user);
+
+      // Extract Twitter username from user metadata
+      const twitterUsername = user.user_metadata?.user_name || user.user_metadata?.preferred_username;
+      console.log('📝 Extracted Twitter username:', twitterUsername);
+      console.log('🔍 Available metadata keys:', Object.keys(user.user_metadata || {}));
+
+      if (twitterUsername) {
+        const twitterUrl = `https://twitter.com/${twitterUsername}`;
+        console.log('🔗 Generated Twitter URL:', twitterUrl);
+
+        // Update the profile with Twitter URL
+        const { error } = await supabase
+          .from('profiles')
+          .upsert({
+            user_id: user.id,
+            twitter_url: twitterUrl,
+            updated_at: new Date()
+          }, {
+            onConflict: 'user_id'
+          });
+
+        if (error) {
+          console.error('❌ Error updating profile with Twitter URL:', error);
+        } else {
+          console.log('✅ Successfully updated profile with Twitter URL:', twitterUrl);
+        }
+      } else {
+        console.warn('⚠️ No Twitter username found in user metadata');
+        console.log('📋 Full user_metadata:', JSON.stringify(user.user_metadata, null, 2));
+      }
+    } catch (error) {
+      console.error('💥 Error extracting Twitter profile information:', error);
+    }
+  };
 
   /**
    * @description Toggles between login and signup modes
@@ -72,6 +155,7 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: Au
     setEmailError(null);
     setPasswordError(null);
     setLoading(false);
+    setTwitterLoading(false);
     onClose();
   };
 
@@ -128,6 +212,49 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: Au
       await handleLogin();
     } else {
       await handleSignUp();
+    }
+  };
+
+  /**
+   * @description Handles Twitter OAuth login
+   * @async
+   * @sideEffects Initiates Twitter OAuth flow via Supabase
+   */
+  const handleTwitterLogin = async () => {
+    try {
+      console.log('🐦 Starting Twitter OAuth flow...');
+      console.log('🌐 Current origin:', window.location.origin);
+      console.log('📍 Current URL:', window.location.href);
+
+      setTwitterLoading(true);
+      setError(null);
+
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'twitter'
+      });
+
+      console.log('📤 OAuth response data:', data);
+      console.log('❌ OAuth error:', error);
+
+      if (error) {
+        console.error('💥 OAuth initiation failed:', error);
+        throw error;
+      }
+
+      if (data?.url) {
+        console.log('🔗 OAuth URL received:', data.url);
+        console.log('🚀 Redirecting to Twitter...');
+      } else {
+        console.warn('⚠️ No URL returned from OAuth');
+      }
+
+      // The redirect will happen automatically, so we don't need to handle success here
+      // The auth state change listener will handle profile extraction
+    } catch (error: any) {
+      console.error('💥 Error logging in with Twitter:', error);
+      console.error('📋 Full error object:', JSON.stringify(error, null, 2));
+      setError(error.message || 'An error occurred during Twitter login');
+      setTwitterLoading(false);
     }
   };
 
@@ -216,6 +343,24 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: Au
         </DialogTitle>
 
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+          {/* Twitter Login Button */}
+          <Button
+            type="button"
+            onClick={handleTwitterLogin}
+            disabled={twitterLoading || loading}
+            className="w-full startsnap-button bg-black text-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center justify-center gap-3 hover:bg-gray-800"
+          >
+            {React.createElement(FaXTwitter as any, { size: 20 })}
+            {twitterLoading ? 'Connecting...' : `${mode === 'login' ? 'Login' : 'Sign up'} with Twitter`}
+          </Button>
+
+          {/* Divider */}
+          <div className="flex items-center my-4">
+            <div className="flex-1 border-t border-gray-300"></div>
+            <span className="px-4 text-gray-500 font-['Roboto',Helvetica]">or</span>
+            <div className="flex-1 border-t border-gray-300"></div>
+          </div>
+
           <div className="space-y-2">
             <Label
               htmlFor="email"
@@ -237,6 +382,7 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: Au
               className={`w-full border-2 border-solid ${emailError ? 'border-red-500' : 'border-gray-800'} rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
               placeholder="your.email@example.com"
               tabIndex={0}
+              disabled={twitterLoading}
             />
             {emailError && (
               <p className="text-red-500 text-sm mt-1">{emailError}</p>
@@ -263,6 +409,7 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: Au
               }}
               className={`w-full border-2 border-solid ${passwordError ? 'border-red-500' : 'border-gray-800'} rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
               tabIndex={0}
+              disabled={twitterLoading}
             />
             {passwordError && (
               <p className="text-red-500 text-sm mt-1">{passwordError}</p>
@@ -282,12 +429,13 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: Au
               onClick={handleClose}
               className="flex-1 startsnap-button bg-gray-200 text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
               tabIndex={0}
+              disabled={loading || twitterLoading}
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              disabled={loading}
+              disabled={loading || twitterLoading}
               className="flex-1 startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
               tabIndex={0}
             >
