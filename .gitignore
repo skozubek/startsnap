@@ -25,3 +25,4 @@ dist-ssr
 repomix-output.xml
 .cursorrules
 .env
+supabase/config.toml
