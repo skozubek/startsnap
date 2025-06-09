@@ -20,6 +20,8 @@ import {
 } from "../../../components/ui/dropdown-menu";
 import { MoreHorizontal, Edit, Trash2 } from "lucide-react";
 import type { VibeLog, VibeLogFormData } from "../../../types/vibeLog";
+import { toast } from "sonner";
+import { ConfirmationDialog } from "../../../components/ui/confirmation-dialog";
 
 /**
  * @description Props for the VibeLogSection component.
@@ -63,6 +65,10 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
   });
   const [currentEditVibeLogData, setCurrentEditVibeLogData] = useState<VibeLogFormData | null>(null);
 
+  // Confirmation dialog state
+  const [deletingVibeLogId, setDeletingVibeLogId] = useState<string | null>(null);
+  const [isDeletingVibeLog, setIsDeletingVibeLog] = useState(false);
+
   useEffect(() => {
     setVibeLogEntries(initialVibeLogEntries);
   }, [initialVibeLogEntries]);
@@ -75,7 +81,9 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
   const handleVibeLogSubmit = async () => {
     if (!startsnapId) return;
     if (!newVibeLogData.title.trim() || !newVibeLogData.content.trim()) {
-      alert('Please provide a title and content for the Vibe Log entry.');
+      toast.error('Missing Information', {
+        description: 'Please provide a title and content for the Vibe Log entry.'
+      });
       return;
     }
     try {
@@ -88,12 +96,17 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
           content: newVibeLogData.content
         });
       if (error) throw error;
+      toast.success('Vibe Log Added!', {
+        description: 'Your new entry has been added to the project.'
+      });
       await onVibeLogChange();
       setIsAddingVibeLog(false);
       setNewVibeLogData({ log_type: 'update', title: '', content: '' });
     } catch (error) {
       console.error('Error adding vibe log entry:', error);
-      alert('Failed to add vibe log entry. Please try again.');
+      toast.error('Add Failed', {
+        description: 'Failed to add vibe log entry. Please try again.'
+      });
     }
   };
 
@@ -105,7 +118,9 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
   const handleUpdateVibeLog = async () => {
     if (!editingVibeLogInline || !currentEditVibeLogData) return;
     if (!currentEditVibeLogData.title.trim() || !currentEditVibeLogData.content.trim()) {
-      alert('Please provide a title and content for the Vibe Log entry.');
+      toast.error('Missing Information', {
+        description: 'Please provide a title and content for the Vibe Log entry.'
+      });
       return;
     }
     try {
@@ -119,12 +134,17 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
         })
         .eq('id', editingVibeLogInline.id);
       if (error) throw error;
+      toast.success('Vibe Log Updated!', {
+        description: 'Your changes have been saved successfully.'
+      });
       await onVibeLogChange();
       setEditingVibeLogInline(null);
       setCurrentEditVibeLogData(null);
     } catch (error) {
       console.error('Error updating vibe log entry:', error);
-      alert('Failed to update vibe log entry. Please try again.');
+      toast.error('Update Failed', {
+        description: 'Failed to update vibe log entry. Please try again.'
+      });
     }
   };
 
@@ -143,25 +163,41 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
   };
 
   /**
-   * @description Handles deletion of a Vibe Log entry.
-   * @async
-   * @param {string} entryId - The ID of the Vibe Log entry to delete.
-   * @sideEffects Makes a Supabase delete call and then calls onVibeLogChange.
+   * @description Shows confirmation dialog for vibe log deletion
+   * @param {string} entryId - The ID of the Vibe Log entry to delete
    */
-  const handleDeleteVibeLog = async (entryId: string) => {
-    if (!window.confirm('Are you sure you want to delete this vibe log entry? This action cannot be undone.')) {
-      return;
-    }
+  const handleDeleteVibeLog = (entryId: string) => {
+    setDeletingVibeLogId(entryId);
+  };
+
+  /**
+   * @description Confirms and executes vibe log deletion
+   * @async
+   * @sideEffects Makes a Supabase delete call and then calls onVibeLogChange
+   */
+  const confirmDeleteVibeLog = async () => {
+    if (!deletingVibeLogId) return;
+
+    setIsDeletingVibeLog(true);
     try {
       const { error } = await supabase
         .from('vibelogs')
         .delete()
-        .eq('id', entryId);
+        .eq('id', deletingVibeLogId);
       if (error) throw error;
+
+      toast.success('Vibe Log Deleted', {
+        description: 'The entry has been permanently removed.'
+      });
       await onVibeLogChange();
+      setDeletingVibeLogId(null);
     } catch (error) {
       console.error('Error deleting vibe log entry:', error);
-      alert('Failed to delete vibe log entry. Please try again.');
+      toast.error('Delete Failed', {
+        description: 'Failed to delete vibe log entry. Please try again.'
+      });
+    } finally {
+      setIsDeletingVibeLog(false);
     }
   };
 
@@ -363,6 +399,18 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
           No vibe log entries yet. Check back soon for updates!
         </p>
       )}
+
+      {/* Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={deletingVibeLogId !== null}
+        onClose={() => setDeletingVibeLogId(null)}
+        onConfirm={confirmDeleteVibeLog}
+        title="Delete Vibe Log Entry"
+        description="Are you sure you want to delete this vibe log entry? This action cannot be undone."
+        confirmText="Delete Entry"
+        isLoading={isDeletingVibeLog}
+        type="danger"
+      />
     </div>
   );
 };

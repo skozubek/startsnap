@@ -10,6 +10,7 @@ import { Label } from "./label";
 import { Dialog, DialogContent, DialogTitle } from "./dialog";
 import { supabase } from "../../lib/supabase";
 import { FaXTwitter } from "react-icons/fa6";
+import { toast } from "sonner";
 
 interface AuthDialogProps {
   isOpen: boolean;
@@ -151,12 +152,27 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: Au
       console.log('🐦 Starting Twitter OAuth flow...');
       console.log('🌐 Current origin:', window.location.origin);
       console.log('📍 Current URL:', window.location.href);
+      console.log('⏰ Current time:', new Date().toISOString());
+      console.log('🔧 User agent:', navigator.userAgent);
 
       setTwitterLoading(true);
       setError(null);
 
+      // Check if we're in a secure context
+      if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+        console.warn('⚠️ OAuth might fail: not in secure context');
+      }
+
+      // Log current auth state before OAuth
+      const { data: currentSession } = await supabase.auth.getSession();
+      console.log('📝 Current session before OAuth:', currentSession);
+
       const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'twitter'
+        provider: 'twitter',
+        options: {
+          // Add redirect URL explicitly to ensure it's correct
+          redirectTo: window.location.origin
+        }
       });
 
       console.log('📤 OAuth response data:', data);
@@ -164,14 +180,38 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: Au
 
       if (error) {
         console.error('💥 OAuth initiation failed:', error);
-        throw error;
+        console.error('📋 Error details:', {
+          code: error.code,
+          message: error.message,
+          status: error.status,
+          details: (error as any).details
+        });
+
+        // Provide more specific error messages based on error type
+        if (error.message.includes('redirect_uri')) {
+          setError('OAuth configuration error: Redirect URI mismatch. Please check your Twitter app settings.');
+        } else if (error.message.includes('client_id')) {
+          setError('OAuth configuration error: Invalid client ID. Please check your environment variables.');
+        } else if (error.message.includes('rate_limit')) {
+          setError('Too many OAuth attempts. Please wait a moment and try again.');
+        } else {
+          setError(error.message || 'An error occurred during Twitter login');
+        }
+
+        setTwitterLoading(false);
+        return;
       }
 
       if (data?.url) {
         console.log('🔗 OAuth URL received:', data.url);
         console.log('🚀 Redirecting to Twitter...');
+
+        // Log the redirect for debugging
+        console.log('🔄 About to redirect to:', data.url);
       } else {
         console.warn('⚠️ No URL returned from OAuth');
+        setError('OAuth initialization failed: No redirect URL received');
+        setTwitterLoading(false);
       }
 
       // The redirect will happen automatically, so we don't need to handle success here
@@ -179,7 +219,19 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: Au
     } catch (error: any) {
       console.error('💥 Error logging in with Twitter:', error);
       console.error('📋 Full error object:', JSON.stringify(error, null, 2));
-      setError(error.message || 'An error occurred during Twitter login');
+      console.error('🕐 Error timestamp:', new Date().toISOString());
+
+      // Enhanced error reporting
+      const errorMessage = error.message || 'An error occurred during Twitter login';
+
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        setError('Network error: Unable to connect to authentication service. Please check your internet connection.');
+      } else if (error.message.includes('timeout')) {
+        setError('Request timeout: Authentication service is taking too long to respond. Please try again.');
+      } else {
+        setError(errorMessage);
+      }
+
       setTwitterLoading(false);
     }
   };
@@ -250,7 +302,9 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: Au
         onSuccess();
       }
       handleClose();
-      alert('Account created, enjoy the ride!');
+      toast.success('Account Created Successfully!', {
+        description: 'Welcome to StartSnap! Enjoy the ride!'
+      });
     } catch (error: any) {
       console.error('Error signing up:', error);
       setError(error.message || 'An error occurred during sign up');

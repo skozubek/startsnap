@@ -12,12 +12,13 @@ import { useAuth } from "../../context/AuthContext";
 import { ProjectInfoSection } from "./components/ProjectInfoSection";
 import { VibeLogSection } from "./components/VibeLogSection";
 import { FeedbackSection } from "./components/FeedbackSection";
-import { ConfirmationDialog } from "../../components/ui/ConfirmationDialog";
+import { ConfirmationDialog } from "../../components/ui/confirmation-dialog";
 import type { User } from '@supabase/supabase-js';
 import type { StartSnapProject } from "../../types/startsnap"; // Import centralized type
 import type { UserProfileData } from "../../types/user"; // Import UserProfileData
 import type { FeedbackEntry, FeedbackReply } from "../../types/feedback"; // Import feedback types
 import type { VibeLog } from "../../types/vibeLog"; // Import VibeLog type
+import { toast } from "sonner";
 
 // Define types that were previously inline or implicitly defined
 // These might be moved to a dedicated types.ts file if they grow further or are used elsewhere
@@ -41,6 +42,7 @@ export const ProjectDetail = (): JSX.Element => {
   const [isSupportActionLoading, setIsSupportActionLoading] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [projectToDeleteName, setProjectToDeleteName] = useState('');
+  const [isDeletingProject, setIsDeletingProject] = useState(false);
 
   const VIBE_LOG_PAGE_SIZE = 3; // Number of vibe logs to show per page
   const [visibleVibeLogCount, setVisibleVibeLogCount] = useState(VIBE_LOG_PAGE_SIZE);
@@ -295,7 +297,9 @@ export const ProjectDetail = (): JSX.Element => {
       }
     } catch (error) {
       console.error('Error toggling project support:', error);
-      alert('Failed to update project support. Please try again.');
+      toast.error('Support Update Failed', {
+        description: 'Failed to update project support. Please try again.'
+      });
     } finally {
       setIsSupportActionLoading(false);
     }
@@ -322,11 +326,14 @@ export const ProjectDetail = (): JSX.Element => {
   const handleConfirmDelete = async () => {
     if (!startsnap || !startsnap.id) {
       console.error("Project data or ID is missing, cannot delete.");
-      alert("Could not delete project. Essential data missing.");
+      toast.error('Delete Failed', {
+        description: 'Could not delete project. Essential data missing.'
+      });
       setIsDeleteConfirmOpen(false);
       return;
     }
 
+    setIsDeletingProject(true);
     try {
       // With ON DELETE CASCADE set up in the database,
       // only need to delete the main project record.
@@ -341,13 +348,18 @@ export const ProjectDetail = (): JSX.Element => {
         throw new Error(`Error deleting project: ${projectDeleteError.message} (Code: ${projectDeleteError.code})`);
       }
 
-      alert(`Project "${projectToDeleteName}" deleted successfully!`);
+      toast.success('Project Deleted Successfully!', {
+        description: `"${projectToDeleteName}" has been permanently removed.`
+      });
       setIsDeleteConfirmOpen(false);
       navigate('/'); // Navigate to profile page after deletion
     } catch (error: any) {
       console.error("Error during project deletion process:", error);
-      alert(`Failed to delete project: ${error.message}`);
-      setIsDeleteConfirmOpen(false);
+      toast.error('Delete Failed', {
+        description: `Failed to delete project: ${error.message}`
+      });
+    } finally {
+      setIsDeletingProject(false);
     }
   };
 
@@ -430,10 +442,11 @@ export const ProjectDetail = (): JSX.Element => {
         isOpen={isDeleteConfirmOpen}
         onClose={() => setIsDeleteConfirmOpen(false)}
         onConfirm={handleConfirmDelete}
-        title="Confirm Deletion"
-        description={`Are you sure you want to delete the project "${projectToDeleteName}"? This action cannot be undone, and all associated data (vibe logs, feedback, etc.) will be permanently removed.`}
-        confirmButtonText="Yes, Delete Project"
-        confirmButtonVariant="destructive"
+        title="Delete Project"
+        description={`Are you sure you want to delete "${projectToDeleteName}"? This action cannot be undone, and all associated data (vibe logs, feedback, etc.) will be permanently removed.`}
+        confirmText="Delete Project"
+        isLoading={isDeletingProject}
+        type="danger"
       />
     </>
   );

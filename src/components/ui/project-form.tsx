@@ -3,7 +3,7 @@
  * @description Form component for creating and editing StartSnap projects
  */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent } from "./card";
 import { Button } from "./button";
 import { Input } from "./input";
@@ -83,6 +83,9 @@ export function ProjectForm({
     vibeLogContent: ""
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+
   // Initialize form with initial data if editing
   useEffect(() => {
     if (mode === "edit" && initialData) {
@@ -90,6 +93,18 @@ export function ProjectForm({
     }
     // Create mode defaults are handled by useState and handleProjectTypeChange
   }, [mode, initialData]);
+
+  /**
+   * @description Scrolls to the top of the form on validation errors
+   */
+  const scrollToFormTop = () => {
+    if (formRef.current) {
+      formRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
 
   // Form validation
   const validateForm = () => {
@@ -148,6 +163,14 @@ export function ProjectForm({
     }
 
     setErrors(newErrors);
+
+    // Gently scroll to top of form if validation fails
+    if (!isValid) {
+      requestAnimationFrame(() => {
+        scrollToFormTop();
+      });
+    }
+
     return isValid;
   };
 
@@ -244,18 +267,27 @@ export function ProjectForm({
   };
 
   // Form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    
     if (validateForm()) {
-      onSubmit(formState);
+      setIsSubmitting(true);
+      try {
+        await onSubmit(formState);
+      } catch (error) {
+        // Error handling is done in the parent component
+        console.error('Form submission error:', error);
+      } finally {
+        setIsSubmitting(false);
+      }
     }
+    // Validation will gently scroll to first error - no need for aggressive toast
   };
 
   return (
     <Card className="w-full max-w-3xl bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]">
       <CardContent className="p-8">
-        <form onSubmit={handleSubmit} className="space-y-8">
+                <form ref={formRef} onSubmit={handleSubmit} className="space-y-8">
           {/* Project Type Section */}
           <div className="space-y-4">
             <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
@@ -499,9 +531,13 @@ export function ProjectForm({
             </Button>
             <Button
               type="submit"
-              className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+              disabled={isSubmitting}
+              className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {mode === "create" ? "Launch StartSnap" : "Update StartSnap"}
+              {isSubmitting
+                ? (mode === "create" ? "Launching..." : "Updating...")
+                : (mode === "create" ? "Launch StartSnap" : "Update StartSnap")
+              }
             </Button>
           </div>
         </form>

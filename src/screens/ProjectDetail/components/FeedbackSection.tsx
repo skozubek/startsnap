@@ -20,6 +20,8 @@ import type { User } from '@supabase/supabase-js';
 import type { UserProfileData } from '../../../types/user';
 import type { FeedbackEntry, FeedbackReply } from '../../../types/feedback'; // Import feedback types
 import { Link } from 'react-router-dom';
+import { toast } from "sonner";
+import { ConfirmationDialog } from "../../../components/ui/confirmation-dialog";
 
 /**
  * @description Props for the FeedbackSection component.
@@ -63,6 +65,12 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
   const [replySubmitting, setReplySubmitting] = useState(false);
   const [replyError, setReplyError] = useState<string | null>(null);
 
+  // Confirmation dialog states
+  const [deletingFeedbackId, setDeletingFeedbackId] = useState<string | null>(null);
+  const [deletingReplyId, setDeletingReplyId] = useState<string | null>(null);
+  const [isDeletingFeedback, setIsDeletingFeedback] = useState(false);
+  const [isDeletingReply, setIsDeletingReply] = useState(false);
+
   useEffect(() => {
     setFeedbackEntries(initialFeedbackEntries);
   }, [initialFeedbackEntries]);
@@ -75,7 +83,9 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
    */
   const handleFeedbackSubmit = async (data: { content: string }) => {
     if (!currentUser) {
-      alert('You need to be logged in to submit feedback.');
+      toast.error('Authentication Required', {
+        description: 'You need to be logged in to submit feedback.'
+      });
       return;
     }
     if (!startsnapId) return;
@@ -89,12 +99,18 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
           content: data.content,
         });
       if (error) throw error;
+      toast.success('Feedback Submitted!', {
+        description: 'Thank you for your feedback on this project.'
+      });
       await onFeedbackChange();
       setFeedbackContent(''); // Clear main submission form
       setSubmissionError(null);
     } catch (error) {
       console.error('Error submitting feedback:', error);
       setSubmissionError('Failed to submit feedback. Please try again.');
+      toast.error('Submission Failed', {
+        description: 'Failed to submit feedback. Please try again.'
+      });
       // Re-throw to allow caller to handle UI updates if needed
       throw error;
     }
@@ -121,7 +137,9 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
   const handleUpdateFeedback = async () => {
     if (!editingFeedback || !currentUser) return;
     if (!inlineEditFeedbackContent.trim()) {
-      alert('Feedback content cannot be empty.');
+      toast.error('Missing Content', {
+        description: 'Feedback content cannot be empty.'
+      });
       return;
     }
     setIsSubmitting(true);
@@ -134,33 +152,45 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
         })
         .eq('id', editingFeedback.id);
       if (error) throw error;
+      toast.success('Feedback Updated!', {
+        description: 'Your changes have been saved successfully.'
+      });
       await onFeedbackChange();
       setEditingFeedback(null);
       setInlineEditFeedbackContent('');
     } catch (error) {
       console.error('Error updating feedback:', error);
-      alert('Failed to update feedback. Please try again.');
+      toast.error('Update Failed', {
+        description: 'Failed to update feedback. Please try again.'
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   /**
-   * @description Handles deletion of a feedback entry.
-   * @async
-   * @param {string} feedbackId - The ID of the feedback to delete.
-   * @sideEffects Makes a Supabase delete call, then calls onFeedbackChange.
+   * @description Shows confirmation dialog for feedback deletion
+   * @param {string} feedbackId - The ID of the feedback to delete
    */
-  const handleDeleteFeedback = async (feedbackId: string) => {
-    if (!window.confirm('Are you sure you want to delete this feedback? This action cannot be undone.')) {
-      return;
-    }
+  const handleDeleteFeedback = (feedbackId: string) => {
+    setDeletingFeedbackId(feedbackId);
+  };
+
+  /**
+   * @description Confirms and executes feedback deletion
+   * @async
+   * @sideEffects Makes a Supabase delete call, then calls onFeedbackChange
+   */
+  const confirmDeleteFeedback = async () => {
+    if (!deletingFeedbackId) return;
+
+    setIsDeletingFeedback(true);
     try {
       // Also delete associated replies first (or set up cascade delete in DB)
       const { error: repliesError } = await supabase
           .from('feedback_replies')
           .delete()
-          .eq('parent_feedback_id', feedbackId);
+          .eq('parent_feedback_id', deletingFeedbackId);
       if (repliesError) {
           console.error('Error deleting associated replies:', repliesError);
           // Decide if you want to proceed or alert user
@@ -169,12 +199,21 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
       const { error } = await supabase
         .from('feedbacks')
         .delete()
-        .eq('id', feedbackId);
+        .eq('id', deletingFeedbackId);
       if (error) throw error;
+
+      toast.success('Feedback Deleted', {
+        description: 'The feedback has been permanently removed.'
+      });
       await onFeedbackChange();
+      setDeletingFeedbackId(null);
     } catch (error) {
       console.error('Error deleting feedback:', error);
-      alert('Failed to delete feedback. Please try again.');
+      toast.error('Delete Failed', {
+        description: 'Failed to delete feedback. Please try again.'
+      });
+    } finally {
+      setIsDeletingFeedback(false);
     }
   };
 
@@ -267,25 +306,41 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
   };
 
   /**
-   * @description Handles deletion of a feedback reply.
-   * @async
-   * @param {string} replyId - The ID of the reply to delete.
-   * @sideEffects Makes a Supabase delete call, then calls onFeedbackChange.
+   * @description Shows confirmation dialog for reply deletion
+   * @param {string} replyId - The ID of the reply to delete
    */
-  const handleDeleteReply = async (replyId: string) => {
-    if (!window.confirm('Are you sure you want to delete this reply? This action cannot be undone.')) {
-      return;
-    }
+  const handleDeleteReply = (replyId: string) => {
+    setDeletingReplyId(replyId);
+  };
+
+  /**
+   * @description Confirms and executes reply deletion
+   * @async
+   * @sideEffects Makes a Supabase delete call, then calls onFeedbackChange
+   */
+  const confirmDeleteReply = async () => {
+    if (!deletingReplyId) return;
+
+    setIsDeletingReply(true);
     try {
       const { error } = await supabase
         .from('feedback_replies')
         .delete()
-        .eq('id', replyId);
+        .eq('id', deletingReplyId);
       if (error) throw error;
+
+      toast.success('Reply Deleted', {
+        description: 'The reply has been permanently removed.'
+      });
       await onFeedbackChange();
+      setDeletingReplyId(null);
     } catch (error) {
       console.error('Error deleting reply:', error);
-      alert('Failed to delete reply. Please try again.');
+      toast.error('Delete Failed', {
+        description: 'Failed to delete reply. Please try again.'
+      });
+    } finally {
+      setIsDeletingReply(false);
     }
   };
 
@@ -872,6 +927,29 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Confirmation Dialogs */}
+      <ConfirmationDialog
+        isOpen={deletingFeedbackId !== null}
+        onClose={() => setDeletingFeedbackId(null)}
+        onConfirm={confirmDeleteFeedback}
+        title="Delete Feedback"
+        description="Are you sure you want to delete this feedback? This action cannot be undone and will also delete all replies to this feedback."
+        confirmText="Delete Feedback"
+        isLoading={isDeletingFeedback}
+        type="danger"
+      />
+
+      <ConfirmationDialog
+        isOpen={deletingReplyId !== null}
+        onClose={() => setDeletingReplyId(null)}
+        onConfirm={confirmDeleteReply}
+        title="Delete Reply"
+        description="Are you sure you want to delete this reply? This action cannot be undone."
+        confirmText="Delete Reply"
+        isLoading={isDeletingReply}
+        type="danger"
+      />
     </div>
   );
 };

@@ -20,6 +20,7 @@ import { Terms } from "../Terms";
 import { Privacy } from "../Privacy";
 import { AuthProvider, useAuth } from "../../context/AuthContext";
 import { ScrollToTop } from "../../components/utils/ScrollToTop";
+import { ToastProvider } from "../../components/providers/ToastProvider";
 
 /**
  * @description Component that protects routes requiring authentication
@@ -53,6 +54,7 @@ export const Frame = (): JSX.Element => {
   return (
     <div className="flex flex-col min-h-screen w-full bg-startsnap-candlelight">
       <AuthProvider>
+        <ToastProvider />
         <ScrollToTop />
         <HeaderSection />
         <Subheader />

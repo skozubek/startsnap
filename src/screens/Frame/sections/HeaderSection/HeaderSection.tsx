@@ -33,7 +33,7 @@ export const HeaderSection = (): JSX.Element => {
   const [authMode, setAuthMode] = useState<'signup' | 'login'>('login');
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const [userProfile, setUserProfile] = useState<Pick<UserProfileData, 'username'> | null>(null);
-  const { user } = useAuth();
+  const { user, handleAuthErrorAndSignOut } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Fetch user profile when user changes to get consistent username
@@ -86,17 +86,12 @@ export const HeaderSection = (): JSX.Element => {
   };
 
   /**
-   * @description Handles user sign out process
+   * @description Handles user sign out process with robust error handling
    * @async
-   * @sideEffects Signs out the current user via Supabase auth
+   * @sideEffects Signs out the current user using enhanced AuthContext logout
    */
   const handleSignOut = async () => {
-    try {
-      await supabase.auth.signOut();
-      console.log('Successfully signed out');
-    } catch (error) {
-      console.error('Error signing out:', error);
-    }
+    await handleAuthErrorAndSignOut();
   };
 
   return (

@@ -9,6 +9,7 @@ import { ProjectForm } from "../../components/ui/project-form";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import { generateSlug } from "../../lib/utils";
+import { toast } from "sonner";
 
 /**
  * @description Page component for creating a new StartSnap project
@@ -26,7 +27,9 @@ export const CreateStartSnap = (): JSX.Element => {
    */
   const handleSubmit = async (formData: any) => {
     if (!user) {
-      alert('You need to be logged in to create a project.');
+      toast.error('Authentication Required', {
+        description: 'You need to be logged in to create a project.'
+      });
       return;
     }
 
@@ -34,7 +37,9 @@ export const CreateStartSnap = (): JSX.Element => {
     const newPotentialSlug = generateSlug(formData.projectName);
 
     if (!newPotentialSlug) {
-      alert('Project name cannot be empty or invalid.');
+      toast.error('Invalid Project Name', {
+        description: 'Project name cannot be empty or invalid.'
+      });
       return;
     }
 
@@ -48,17 +53,23 @@ export const CreateStartSnap = (): JSX.Element => {
 
       if (checkError) {
         console.error("Error checking slug uniqueness:", checkError);
-        alert("Error checking project name uniqueness. Please try again.");
+        toast.error('Validation Error', {
+          description: 'Error checking project name uniqueness. Please try again.'
+        });
         return;
       }
 
       if (existingProject) {
-        alert("A project with a similar name already exists, resulting in a conflicting URL. Please try a different project name.");
+        toast.error('Name Already Exists', {
+          description: 'A project with a similar name already exists. Please try a different name.'
+        });
         return;
       }
     } catch (error) {
       console.error("Error during slug uniqueness check:", error);
-      alert("An unexpected error occurred while ensuring project name is unique. Please try again.");
+      toast.error('Unexpected Error', {
+        description: 'An unexpected error occurred while validating project name. Please try again.'
+      });
       return;
     }
 
@@ -99,13 +110,17 @@ export const CreateStartSnap = (): JSX.Element => {
 
     // 4. Redirect to the project detail page using the new slug
     if (startsnap && startsnap.length > 0 && startsnap[0].slug) {
+      toast.success('StartSnap Created Successfully!', {
+        description: 'Your project is now live on startsnap.fun'
+      });
       navigate(`/projects/${startsnap[0].slug}`);
-      alert('StartSnap created successfully!');
     } else {
       // Fallback, though ideally startsnap[0].slug should always exist
       console.error("Failed to get slug from created startsnap:", startsnap);
+      toast.warning('StartSnap Created', {
+        description: 'Project created but there was an issue with the redirect.'
+      });
       navigate('/');
-      alert('StartSnap created, but there was an issue with the redirect.');
     }
   };
 

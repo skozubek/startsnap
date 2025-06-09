@@ -19,6 +19,7 @@ import { formatDate, validateSocialLinks, LinkValidationErrors, ProfileLinks } f
 import { useAuth } from "../../context/AuthContext";
 import { UserAvatar, getAvatarName } from "../../components/ui/user-avatar";
 import type { UserProfileData } from "../../types/user";
+import { toast } from "sonner";
 
 /**
  * @description User profile page with settings and project management
@@ -206,7 +207,9 @@ export const Profile = (): JSX.Element => {
       }
     } catch (error) {
       console.error('Error checking username uniqueness:', error);
-      alert('Could not verify username. Please try again.');
+      toast.error('Username Validation Failed', {
+        description: 'Could not verify username. Please try again.'
+      });
       return;
     }
     // --- END NEW VALIDATION LOGIC ---
@@ -237,10 +240,14 @@ export const Profile = (): JSX.Element => {
 
       if (error) throw error;
 
-      alert('Profile updated successfully!');
+      toast.success('Profile Updated Successfully!', {
+        description: 'Your profile changes have been saved.'
+      });
     } catch (error) {
       console.error('Error updating profile:', error);
-      alert('Error updating profile. Please try again.');
+      toast.error('Update Failed', {
+        description: 'Error updating profile. Please try again.'
+      });
     } finally {
       setUpdating(false);
     }

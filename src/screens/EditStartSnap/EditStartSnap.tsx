@@ -9,6 +9,7 @@ import { ProjectForm } from "../../components/ui/project-form";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import { generateSlug } from "../../lib/utils";
+import { toast } from "sonner";
 
 /**
  * @description Page component for editing an existing StartSnap project
@@ -40,14 +41,18 @@ export const EditStartSnap = (): JSX.Element => {
         if (error) throw error;
 
         if (!data) {
-          alert('Project not found');
+          toast.error('Project Not Found', {
+            description: 'The requested project could not be found.'
+          });
           navigate('/profile');
           return;
         }
 
         // Verify ownership
         if (data.user_id !== user.id) {
-          alert('You do not have permission to edit this project');
+          toast.error('Access Denied', {
+            description: 'You do not have permission to edit this project.'
+          });
           navigate('/profile');
           return;
         }
@@ -73,7 +78,9 @@ export const EditStartSnap = (): JSX.Element => {
         setLoading(false);
       } catch (error) {
         console.error('Error fetching project data:', error);
-        alert('Error loading project data');
+        toast.error('Loading Error', {
+          description: 'Error loading project data. Please try again.'
+        });
         navigate('/profile');
       }
     };
@@ -90,7 +97,9 @@ export const EditStartSnap = (): JSX.Element => {
   const handleSubmit = async (formData: any) => {
     if (!id || !initialData) {
       console.error("Project ID or initial data is missing for update.");
-      alert("Could not update project. Data missing.");
+      toast.error('Update Failed', {
+        description: 'Could not update project. Required data is missing.'
+      });
       return;
     }
 
@@ -112,7 +121,9 @@ export const EditStartSnap = (): JSX.Element => {
 
         if (checkError) {
           console.error("Error checking slug uniqueness:", checkError);
-          alert("Error checking project name uniqueness. Please try again.");
+          toast.error('Validation Error', {
+            description: 'Error checking project name uniqueness. Please try again.'
+          });
           return;
         }
 
@@ -123,7 +134,9 @@ export const EditStartSnap = (): JSX.Element => {
         slugToSave = newPotentialSlug;
       } catch (error) {
         console.error("Error during slug uniqueness check:", error);
-        alert("An unexpected error occurred while ensuring project name is unique. Please try again.");
+        toast.error('Unexpected Error', {
+          description: 'An unexpected error occurred while validating project name. Please try again.'
+        });
         return;
       }
     }
@@ -153,12 +166,16 @@ export const EditStartSnap = (): JSX.Element => {
 
       if (startsnapError) throw startsnapError;
 
+      toast.success('StartSnap Updated Successfully!', {
+        description: 'Your changes have been saved and are now live.'
+      });
       navigate(`/projects/${slugToSave}`);
-      alert('StartSnap updated successfully!');
 
     } catch (error) {
       console.error('Error updating StartSnap:', error);
-      alert('Failed to update StartSnap. Please try again.');
+      toast.error('Update Failed', {
+        description: 'Failed to update StartSnap. Please try again.'
+      });
     }
   };
 
