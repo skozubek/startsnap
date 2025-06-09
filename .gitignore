@@ -26,3 +26,5 @@ repomix-output.xml
 .cursorrules
 .env
 supabase/config.toml
+supabase/.branches
+supabase/.temp

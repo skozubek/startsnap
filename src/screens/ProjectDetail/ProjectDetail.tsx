@@ -152,83 +152,98 @@ export const ProjectDetail = (): JSX.Element => {
   };
 
   /**
-   * @description Fetches feedback entries and their associated user profiles and replies.
+   * @description Optimized function to fetch feedback entries with their profiles and replies using batched queries.
+   * Eliminates N+1 problem by batching profile lookups instead of making individual queries.
+   *
+   * PERFORMANCE IMPROVEMENT:
+   * - Before: 1 + N + N + M queries (where N = feedbacks, M = total replies)
+   * - After: 4 queries total (feedbacks + batched profiles + replies + batched reply profiles)
+   * - Example: 10 feedbacks with 50 total replies: 71 queries → 4 queries
+   *
    * @async
+   * @sideEffects Sets feedbackEntries state with complete nested data
    */
-  const fetchFeedbacks = async () => { // No projectId argument
-    if (!startsnap || !startsnap.id) { // Check if startsnap and its id are available
+  const fetchFeedbacks = async () => {
+    if (!startsnap?.id) {
       console.warn('Cannot fetch feedbacks: startsnap data or ID is not available yet. This might be normal on initial load.');
       return;
     }
-    const projectId = startsnap.id; // Get id from state
 
     try {
+      // 1. Fetch all feedbacks
       const { data: feedbackData, error: feedbackError } = await supabase
         .from('feedbacks')
         .select('*')
-        .eq('startsnap_id', projectId) // Use projectId from state
+        .eq('startsnap_id', startsnap.id)
         .order('created_at', { ascending: true });
 
       if (feedbackError) throw feedbackError;
 
-      if (feedbackData && feedbackData.length > 0) {
-        const feedbacksWithProfilesAndReplies = await Promise.all(
-          feedbackData.map(async (feedback) => {
-            const { data: profileData, error: profileError } = await supabase
-              .from('profiles')
-              .select('username')
-              .eq('user_id', feedback.user_id)
-              .single();
-
-            if (profileError && profileError.code !== 'PGRST116') {
-                console.error('Error fetching profile for feedback:', profileError);
-            }
-
-            const { data: repliesData, error: repliesError } = await supabase
-              .from('feedback_replies')
-              .select('*') // Select all reply fields
-              .eq('parent_feedback_id', feedback.id)
-              .order('created_at', { ascending: false });
-
-            if (repliesError) {
-              console.error('Error fetching replies:', repliesError);
-              return {
-                ...feedback,
-                profile: profileData || { username: 'Anonymous' },
-                replies: []
-              } as FeedbackEntry;
-            }
-
-            const repliesWithProfiles = repliesData ? await Promise.all(
-              repliesData.map(async (reply) => {
-                const { data: replyProfileData, error: replyProfileErr } = await supabase
-                  .from('profiles')
-                  .select('username')
-                  .eq('user_id', reply.user_id)
-                  .single();
-                if (replyProfileErr && replyProfileErr.code !== 'PGRST116') {
-                    console.error('Error fetching profile for reply:', replyProfileErr);
-                }
-                return {
-                  ...reply,
-                  profile: replyProfileData || { username: 'Anonymous' }
-                } as FeedbackReply;
-              })
-            ) : [];
-
-            return {
-              ...feedback,
-              profile: profileData || { username: 'Anonymous' },
-              replies: repliesWithProfiles || []
-            } as FeedbackEntry;
-          })
-        );
-        setFeedbackEntries(feedbacksWithProfilesAndReplies);
-      } else {
+      if (!feedbackData || feedbackData.length === 0) {
         setFeedbackEntries([]);
+        return;
       }
+
+      // 2. Fetch all feedback replies in one query
+      const feedbackIds = feedbackData.map(f => f.id);
+      const { data: repliesData, error: repliesError } = await supabase
+        .from('feedback_replies')
+        .select('*')
+        .in('parent_feedback_id', feedbackIds)
+        .order('created_at', { ascending: false });
+
+      if (repliesError) {
+        console.error('Error fetching replies:', repliesError);
+        // Continue without replies rather than failing completely
+      }
+
+      // 3. Batch fetch all unique user profiles (feedback authors + reply authors)
+      const feedbackUserIds = feedbackData.map(f => f.user_id);
+      const replyUserIds = repliesData ? repliesData.map(r => r.user_id) : [];
+      const allUserIds = [...new Set([...feedbackUserIds, ...replyUserIds])]; // Remove duplicates
+
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('user_id, username')
+        .in('user_id', allUserIds);
+
+      if (profilesError) {
+        console.error('Error fetching profiles:', profilesError);
+        // Continue with anonymous profiles rather than failing
+      }
+
+      // 4. Create lookup maps for O(1) profile access
+      const profileMap = new Map();
+      if (profilesData) {
+        profilesData.forEach(profile => {
+          profileMap.set(profile.user_id, { username: profile.username });
+        });
+      }
+
+      // 5. Group replies by feedback ID for O(1) lookup
+      const repliesByFeedbackId = new Map();
+      if (repliesData) {
+        repliesData.forEach(reply => {
+          if (!repliesByFeedbackId.has(reply.parent_feedback_id)) {
+            repliesByFeedbackId.set(reply.parent_feedback_id, []);
+          }
+          repliesByFeedbackId.get(reply.parent_feedback_id).push({
+            ...reply,
+            profile: profileMap.get(reply.user_id) || { username: 'Anonymous' }
+          });
+        });
+      }
+
+      // 6. Combine all data
+      const transformedFeedbacks: FeedbackEntry[] = feedbackData.map(feedback => ({
+        ...feedback,
+        profile: profileMap.get(feedback.user_id) || { username: 'Anonymous' },
+        replies: repliesByFeedbackId.get(feedback.id) || []
+      }));
+
+      setFeedbackEntries(transformedFeedbacks);
     } catch (error) {
-      console.error('Error fetching feedback:', error);
+      console.error('Error fetching feedback with batched queries:', error);
       setFeedbackEntries([]);
     }
   };
