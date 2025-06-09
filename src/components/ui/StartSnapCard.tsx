@@ -120,7 +120,7 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
             {/* Project Type and Hackathon badges */}
             <div className="flex gap-2 flex-wrap items-center mb-4">
               {startsnap.type === "live" ? (
-                <Badge variant="outline" className="bg-startsnap-mountain-meadow text-white font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-green-700 px-2 py-1 flex items-center gap-1">
+                <Badge variant="outline\" className="bg-startsnap-mountain-meadow text-white font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-green-700 px-2 py-1 flex items-center gap-1">
                   <span className="material-icons text-xs">rocket_launch</span>
                   Live
                 </Badge>
