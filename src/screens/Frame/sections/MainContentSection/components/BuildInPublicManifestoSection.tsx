@@ -45,11 +45,13 @@ export const BuildInPublicManifestoSection = (): JSX.Element => {
           <div className="flex flex-col-reverse md:flex-row gap-12 items-center max-w-6xl mx-auto mb-16">
             <div className="w-full md:w-[60%]">
               <p className="text-lg lg:text-xl text-startsnap-river-bed mb-6 leading-relaxed font-['Roboto',Helvetica]">
-                We're running on coffee, AI prompts, and the thrill of making cool stuff — out loud, in real time. Those rough edges? They just mean we're moving fast.
+                We build in public - sharing ideas, wins, and lessons as we go.
               </p>
-              <p className="text-lg lg:text-xl text-startsnap-river-bed mb-6 leading-relaxed font-['Roboto',Helvetica]">Getting <strong>real feedback</strong> before it's "done" is just smart. That's the Vibe Log story: every wild swing, every small win.</p>
               <p className="text-lg lg:text-xl text-startsnap-river-bed mb-6 leading-relaxed font-['Roboto',Helvetica]">
-                <strong>Startsnap.fun</strong> is where these stories live. Explore raw projects, find your crew, share your own StartSnap. Build <strong>your thing, your way</strong>, and show it off!
+                We learn from each other, with feedback that helps us get better.
+              </p>
+              <p className="text-lg lg:text-xl text-startsnap-river-bed mb-6 leading-relaxed font-['Roboto',Helvetica]">
+                StartSnap.fun is a place to connect, share your progress, or just see what others are up to.
               </p>
             </div>
 
@@ -72,19 +74,19 @@ export const BuildInPublicManifestoSection = (): JSX.Element => {
               <ul className="space-y-4 text-startsnap-river-bed">
                 <li className="flex items-start gap-2">
                   <span className="material-icons text-startsnap-french-rose mt-1">rocket_launch</span>
-                  <span><strong>Share Fearlessly. No Shame.</strong> Your process? Pure gold. Every stumble, every detour - it's a lesson for the next Vibe Coder.</span>
+                  <span><strong>Show your process.</strong> Every step counts, even the rough ones.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="material-icons text-startsnap-french-rose mt-1">forum</span>
-                  <span><strong>Feedback is Fuel. The Real Kind.</strong> No sugar-coating here. Get the honest takes that actually help you build better, faster.</span>
+                  <span><strong>Get real feedback.</strong> Honest thoughts help you improve.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="material-icons text-startsnap-french-rose mt-1">diversity_3</span>
-                  <span><strong>Connect & Grow. Your Tribe Awaits.</strong> Ditch the echo chamber. Find your collaborators, your mentors, your future co-founders. They're here.</span>
+                  <span><strong>Meet others.</strong> Builders, mentors, and friends are here too.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="material-icons text-startsnap-french-rose mt-1">auto_awesome</span>
-                  <span><strong>Inspire Others. Be the Spark.</strong> Your journey - the grind, the wins, the "what ifs" - it's the kickstart someone else needs. Pass it on.</span>
+                  <span><strong>Inspire someone.</strong> Your story might help someone else start.</span>
                 </li>
               </ul>
             </div>
@@ -96,19 +98,19 @@ export const BuildInPublicManifestoSection = (): JSX.Element => {
               <ul className="space-y-4 text-startsnap-river-bed">
                 <li className="flex items-start gap-2">
                   <span className="material-icons text-startsnap-persian-blue mt-1">insights</span>
-                  <span><strong>Vibe Log: Your Uncut Journey.</strong> Document it all - the genius prompt, the "why won't this work?!" moment, the late-night breakthroughs. One raw update at a time.</span>
+                  <span><strong>Vibe Log:</strong> Share updates - big or small, as they happen.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="material-icons text-startsnap-persian-blue mt-1">groups</span>
-                  <span><strong>Community Feedback: Straight Up, No Chaser.</strong> Get real insights from fellow builders. The kind that actually makes your StartSnap better, not just boosts your ego.</span>
+                  <span><strong>Community Feedback:</strong> Get advice and ideas from others.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="material-icons text-startsnap-persian-blue mt-1">favorite</span>
-                  <span><strong>Project Support: Rally Your Believers.</strong> Let folks show some love for your vision. That support count? It's pure Vibe Coder fuel.</span>
+                  <span><strong>Project Support:</strong> See who's cheering you on.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="material-icons text-startsnap-persian-blue mt-1">work</span>
-                  <span><strong>Opportunities: Connect & Conquer.</strong> Ready for what's next? Signal it. Let collaborators, employers, or your next adventure find you right here.</span>
+                  <span><strong>Opportunities:</strong> Let people know if you're open to new things.</span>
                 </li>
               </ul>
             </div>
