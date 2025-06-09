@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { CATEGORY_CONFIG, getCategoryDisplay } from "../../config/categories";
 import { formatDate } from "../../lib/utils";
+import { TrendingSection } from "./components/TrendingSection";
 import type { ProjectDiscoveryState, FilterOptions } from "../../types/projectDiscovery";
 import type { StartSnapProject } from "../../types/startsnap";
 import type { UserProfileData } from "../../types/user";
@@ -130,54 +131,62 @@ export const Projects = (): JSX.Element => {
           Explore StartSnaps Gallery
         </h1>
 
-        <SearchAndFilterBar
-          initialSearchTerm={discoveryState.searchTerm}
-          initialFilters={discoveryState.filters}
-          initialSort={discoveryState.sort}
-          categories={categoryOptions}
-          onDiscoveryChange={handleDiscoveryChange}
-        />
+        <h2 className="text-3xl font-bold text-startsnap-ebony-clay text-center mb-8 font-['Space_Grotesk',Helvetica]">
+          🔥 Trending StartSnaps
+        </h2>
 
-        {loading ? (
-          <div className="text-center py-20">
-            <p className="text-xl text-startsnap-pale-sky">Loading projects...</p>
-          </div>
-        ) : startSnaps.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
-            {startSnaps.map((startsnap) => {
-              const creatorName = creators[startsnap.user_id] || 'Anonymous';
+        <TrendingSection />
 
-              return (
-                <StartSnapCard
-                  key={startsnap.id}
-                  startsnap={startsnap}
-                  showCreator={true}
-                  creatorName={creatorName}
-                  variant="main-page"
-                  formatDate={formatDate}
-                  getCategoryDisplay={getCategoryDisplay}
-                />
-              );
-            })}
-          </div>
-        ) : areFiltersOrSearchActive(discoveryState) ? (
-          <div className="text-center py-20">
-            <p className="text-xl text-startsnap-pale-sky">No projects match your criteria. Try adjusting your search or filters!</p>
-            <Button
-              onClick={() => setDiscoveryState(DEFAULT_DISCOVERY_STATE)}
-              className="startsnap-button mt-4 bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
-            >
-              Clear Search & Filters
-            </Button>
-          </div>
-        ) : (
-          <div className="text-center py-20">
-            <p className="text-xl text-startsnap-pale-sky">No projects found yet. Why not be the first to add one?</p>
-            <Button className="startsnap-button mt-4 bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]" asChild>
-              <Link to="/create">Create StartSnap</Link>
-            </Button>
-          </div>
-        )}
+        <div className="mt-16">
+          <SearchAndFilterBar
+            initialSearchTerm={discoveryState.searchTerm}
+            initialFilters={discoveryState.filters}
+            initialSort={discoveryState.sort}
+            categories={categoryOptions}
+            onDiscoveryChange={handleDiscoveryChange}
+          />
+
+          {loading ? (
+            <div className="text-center py-20">
+              <p className="text-xl text-startsnap-pale-sky">Loading projects...</p>
+            </div>
+          ) : startSnaps.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
+              {startSnaps.map((startsnap) => {
+                const creatorName = creators[startsnap.user_id] || 'Anonymous';
+
+                return (
+                  <StartSnapCard
+                    key={startsnap.id}
+                    startsnap={startsnap}
+                    showCreator={true}
+                    creatorName={creatorName}
+                    variant="main-page"
+                    formatDate={formatDate}
+                    getCategoryDisplay={getCategoryDisplay}
+                  />
+                );
+              })}
+            </div>
+          ) : areFiltersOrSearchActive(discoveryState) ? (
+            <div className="text-center py-20">
+              <p className="text-xl text-startsnap-pale-sky">No projects match your criteria. Try adjusting your search or filters!</p>
+              <Button
+                onClick={() => setDiscoveryState(DEFAULT_DISCOVERY_STATE)}
+                className="startsnap-button mt-4 bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+              >
+                Clear Search & Filters
+              </Button>
+            </div>
+          ) : (
+            <div className="text-center py-20">
+              <p className="text-xl text-startsnap-pale-sky">No projects found yet. Why not be the first to add one?</p>
+              <Button className="startsnap-button mt-4 bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]" asChild>
+                <Link to="/create">Create StartSnap</Link>
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
