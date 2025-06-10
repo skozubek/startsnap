@@ -65,7 +65,9 @@ export function getTransformedImageUrl(originalUrl: string, options: ImageTransf
       return originalUrl;
     }
     
-    const bucketName = pathParts[0].split('/').pop();
+    // Extract bucket name from the path
+    const pathSegments = pathParts[0].split('/');
+    const bucketName = pathSegments[pathSegments.length - 1];
     const filePath = pathParts[1];
     
     if (!bucketName || !filePath) {
@@ -74,7 +76,7 @@ export function getTransformedImageUrl(originalUrl: string, options: ImageTransf
     }
     
     // Construct the transformation URL according to Supabase docs
-    // Format: https://<PROJECT_REF>.supabase.co/storage/v1/render/image/public/<BUCKET_NAME>/<FILE_PATH>
+    // Format: https://<PROJECT_REF>.supabase.co/storage/v1/render/image/public/BUCKET_NAME/FILE_PATH
     const baseUrl = `${url.origin}/storage/v1/render/image/public/${bucketName}/${filePath}`;
     
     // Add query parameters
@@ -83,7 +85,9 @@ export function getTransformedImageUrl(originalUrl: string, options: ImageTransf
     params.set('quality', (options.quality ?? 75).toString());
     params.set('format', options.format ?? 'webp');
     
-    return `${baseUrl}?${params.toString()}`;
+    const transformedUrl = `${baseUrl}?${params.toString()}`;
+    console.log('Transformed URL:', transformedUrl);
+    return transformedUrl;
   } catch (error) {
     console.error('Error transforming image URL:', error);
     // Return the original URL if transformation fails
