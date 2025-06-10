@@ -27,4 +27,5 @@ repomix-output.xml
 .env
 supabase/config.toml
 supabase/.branches
-supabase/.temp
+supabase/.tempnpx
+supabase/migrations/20250610095223_remote_schema.sql

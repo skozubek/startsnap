@@ -18,6 +18,7 @@ import { ImageUploader } from "./ImageUploader";
 import { getFormOptions, getVibeLogOptions } from "../../config/categories";
 import { isValidUrl } from "../../lib/utils";
 import { X } from "lucide-react";
+import { toast } from "sonner";
 
 /**
  * @description Interface for the form state data
@@ -248,26 +249,63 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
   };
 
   /**
+   * @description Scrolls to the top of the form to show validation errors
+   */
+  const scrollToTop = () => {
+    const formElement = document.querySelector('.project-form-container');
+    if (formElement) {
+      formElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    } else {
+      // Fallback: scroll to top of page
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  /**
    * @description Handles form submission
    * @async
    * @sideEffects Calls onSubmit prop with form data
    */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
+    console.log('🚀 Form submission started');
+    console.log('📝 Current form state:', formState);
+
     const validationErrors = validateForm();
+    console.log('✅ Validation errors:', validationErrors);
+
     if (Object.keys(validationErrors).length > 0) {
+      console.log('❌ Form validation failed, showing errors');
       setErrors(validationErrors);
+      scrollToTop(); // Scroll to show validation errors
       return;
     }
 
+    console.log('✅ Form validation passed, submitting...');
     setIsSubmitting(true);
     try {
+      console.log('📤 Calling onSubmit with form data...');
       await onSubmit(formState);
+      console.log('✅ Form submission completed successfully');
     } catch (error) {
-      console.error('Form submission error:', error);
+      console.error('❌ Form submission error:', error);
+      // Add user-friendly error toast if one isn't already shown
+      const errorMessage = error instanceof Error ? error.message : '';
+      if (!errorMessage.includes('toast') && !errorMessage.includes('error')) {
+        toast.error('Submission Failed', {
+          description: 'An unexpected error occurred. Please try again.'
+        });
+      }
     } finally {
       setIsSubmitting(false);
+      console.log('🏁 Form submission process completed');
     }
   };
 
@@ -288,7 +326,7 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
   const vibeLogOptions = getVibeLogOptions();
 
   return (
-    <Card className="w-full max-w-4xl bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]">
+    <Card className="project-form-container w-full max-w-4xl bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]">
       <CardContent className="p-8">
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Project Type */}
@@ -297,10 +335,6 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
               Project Type
             </Label>
             <SegmentedControl
-              options={[
-                { value: 'idea', label: 'Idea / Concept' },
-                { value: 'live', label: 'Live Project' }
-              ]}
               value={formState.projectType}
               onChange={(value) => handleInputChange('projectType', value)}
             />
@@ -367,7 +401,7 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
             <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
               Project Links
             </h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-3">
                 <Label htmlFor="liveUrl" className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-base leading-6">
@@ -542,16 +576,16 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
             </Label>
           </div>
 
-          {/* Initial Vibe Log (Create mode only) */}
+                    {/* Initial Vibe Log (Create mode only) */}
           {mode === 'create' && (
             <div className="space-y-6 border-t-2 border-gray-200 pt-8">
               <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-xl leading-7">
-                Initial Vibe Log Entry
+                Initial Vibe Log Entry *
               </h3>
               <p className="text-sm text-startsnap-pale-sky font-['Roboto',Helvetica]">
                 Start documenting your journey with your first vibe log entry.
               </p>
-              
+
               <VibeLogEntry
                 type={formState.vibeLogType}
                 title={formState.vibeLogTitle}
@@ -560,9 +594,19 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
                 onTitleChange={(title) => handleInputChange('vibeLogTitle', title)}
                 onContentChange={(content) => handleInputChange('vibeLogContent', content)}
                 showAllTypes={false}
-                titleError={errors.vibeLogTitle}
-                contentError={errors.vibeLogContent}
               />
+
+              {/* Display validation errors for vibe log fields */}
+              {(errors.vibeLogTitle || errors.vibeLogContent) && (
+                <div className="space-y-2">
+                  {errors.vibeLogTitle && (
+                    <p className="text-red-500 text-sm">• {errors.vibeLogTitle}</p>
+                  )}
+                  {errors.vibeLogContent && (
+                    <p className="text-red-500 text-sm">• {errors.vibeLogContent}</p>
+                  )}
+                </div>
+              )}
             </div>
           )}
 

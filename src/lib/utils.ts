@@ -11,8 +11,10 @@ import { twMerge } from "tailwind-merge";
  */
 export interface ImageTransformations {
   width: number;
+  height?: number;
   quality?: number;
-  format?: 'webp';
+  format?: 'webp' | 'origin';
+  resize?: 'cover' | 'contain' | 'fill';
 }
 
 /**
@@ -27,13 +29,14 @@ export function cn(...inputs: ClassValue[]) {
 /**
  * @description Transforms a Supabase Storage URL into an optimized image URL using Supabase's Image Transformation API
  * @param {string} originalUrl - The original Supabase public storage URL
- * @param {ImageTransformations} options - Transformation options including width, quality, and format
+ * @param {ImageTransformations} options - Transformation options including width, height, quality, format, and resize mode
  * @returns {string} The transformed URL with optimization parameters
  * @example
  * const optimizedUrl = getTransformedImageUrl(
  *   'https://project.supabase.co/storage/v1/object/public/bucket/image.jpg',
- *   { width: 400, quality: 80, format: 'webp' }
+ *   { width: 400, quality: 80, format: 'webp', resize: 'cover' }
  * );
+ * @sideEffects Logs transformation process and any errors
  */
 export function getTransformedImageUrl(originalUrl: string, options: ImageTransformations): string {
   try {
@@ -50,13 +53,13 @@ export function getTransformedImageUrl(originalUrl: string, options: ImageTransf
 
     // Parse the URL
     const url = new URL(originalUrl);
-    
+
     // Check if this is a Supabase storage URL
     if (!url.pathname.includes('/storage/v1/object/public/')) {
       console.warn('URL is not a Supabase storage URL:', originalUrl);
       return originalUrl;
     }
-    
+
     // Extract the bucket name and file path from the URL
     // The format is /storage/v1/object/public/BUCKET_NAME/FILE_PATH
     const pathParts = url.pathname.split('/public/');
@@ -64,33 +67,52 @@ export function getTransformedImageUrl(originalUrl: string, options: ImageTransf
       console.warn('Invalid Supabase storage URL format:', originalUrl);
       return originalUrl;
     }
-    
-    // Extract bucket name from the path
-    const pathSegments = pathParts[0].split('/');
-    const bucketName = pathSegments[pathSegments.length - 1];
-    const filePath = pathParts[1];
-    
-    if (!bucketName || !filePath) {
-      console.warn('Could not extract bucket name or file path from URL:', originalUrl);
+
+    const filePath = pathParts[1]; // This includes bucket/path
+
+    if (!filePath) {
+      console.warn('Could not extract file path from URL:', originalUrl);
       return originalUrl;
     }
-    
-    // FIXED: Construct the transformation URL according to Supabase docs
+
+    // Construct the transformation URL according to Supabase docs
     // Format: https://<PROJECT_REF>.supabase.co/storage/v1/render/image/public/BUCKET_NAME/FILE_PATH
-    // The key issue was that we had an extra "object" in the path that shouldn't be there
-    const baseUrl = `${url.origin}/storage/v1/render/image/public/${bucketName}/${filePath}`;
-    
-    // Add query parameters
+    const baseUrl = `${url.origin}/storage/v1/render/image/public/${filePath}`;
+
+    // Add query parameters for optimization
     const params = new URLSearchParams();
+
+    // Always set width (required)
     params.set('width', options.width.toString());
-    params.set('quality', (options.quality ?? 75).toString());
-    params.set('format', options.format ?? 'webp');
-    
+
+    // Set height if provided
+    if (options.height) {
+      params.set('height', options.height.toString());
+    }
+
+    // Set quality (default to 80 for good balance between quality and size)
+    params.set('quality', (options.quality ?? 80).toString());
+
+    // Set resize mode (default to 'cover' for best visual results)
+    if (options.resize) {
+      params.set('resize', options.resize);
+    }
+
+    // Only set format if explicitly requesting 'origin', otherwise let Supabase auto-optimize
+    // According to docs, Supabase automatically serves WebP when supported by client
+    if (options.format === 'origin') {
+      params.set('format', 'origin');
+    }
+
     const transformedUrl = `${baseUrl}?${params.toString()}`;
-    console.log('🔄 Transformed URL:', transformedUrl);
+    console.log('🔄 Original URL:', originalUrl);
+    console.log('🎯 Transformed URL:', transformedUrl);
+    console.log('⚙️  Transformation options:', options);
     return transformedUrl;
   } catch (error) {
-    console.error('Error transforming image URL:', error);
+    console.error('❌ Error transforming image URL:', error);
+    console.error('📋 Original URL:', originalUrl);
+    console.error('🔧 Options:', options);
     // Return the original URL if transformation fails
     return originalUrl;
   }

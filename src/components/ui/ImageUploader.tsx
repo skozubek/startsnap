@@ -8,6 +8,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 import { Button } from './button';
 import { toast } from 'sonner';
+import { getTransformedImageUrl } from '../../lib/utils';
 
 /**
  * @description Props for the ImageUploader component
@@ -73,7 +74,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
         .getPublicUrl(filePath);
 
       onUploadComplete(publicUrl);
-      
+
       toast.success('Image Uploaded', {
         description: 'Screenshot has been uploaded successfully.'
       });
@@ -123,9 +124,9 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
     for (let i = 0; i < validFiles.length; i++) {
       const file = validFiles[i];
       await uploadFile(file);
-      
+
       // Remove from uploading state after upload
-      setUploadingImages(prev => 
+      setUploadingImages(prev =>
         prev.filter(img => img.file !== file)
       );
     }
@@ -182,7 +183,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
   const handleDrop = (event: React.DragEvent) => {
     event.preventDefault();
     setIsDragOver(false);
-    
+
     const files = event.dataTransfer.files;
     if (files) {
       handleFiles(files);
@@ -215,7 +216,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
       if (error) throw error;
 
       onRemove(url);
-      
+
       toast.success('Image Removed', {
         description: 'Screenshot has been removed successfully.'
       });
@@ -236,7 +237,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
   const handleRemoveUploading = (image: UploadingImage, event: React.MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
-    
+
     URL.revokeObjectURL(image.preview);
     setUploadingImages(prev => prev.filter(img => img !== image));
   };
@@ -261,8 +262,8 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
         onDrop={handleDrop}
         className={`
           border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
-          ${isDragOver 
-            ? 'border-startsnap-french-rose bg-startsnap-wisp-pink' 
+          ${isDragOver
+            ? 'border-startsnap-french-rose bg-startsnap-wisp-pink'
             : 'border-gray-800 bg-startsnap-athens-gray hover:bg-gray-200'
           }
         `}
@@ -286,23 +287,42 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
       {(existingImageUrls.length > 0 || uploadingImages.length > 0) && (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {/* Existing Images */}
-          {existingImageUrls.map((url, index) => (
-            <div key={`existing-${index}`} className="relative group">
-              <img
-                src={url}
-                alt={`Screenshot ${index + 1}`}
-                className="w-full h-24 object-cover rounded-lg border-2 border-gray-800"
-              />
-              <Button
-                type="button"
-                onClick={(event) => handleRemoveExisting(url, event)}
-                className="absolute -top-2 -right-2 w-6 h-6 p-0 bg-startsnap-french-rose text-white rounded-full border-2 border-gray-800 shadow-[2px_2px_0px_#1f2937] opacity-0 group-hover:opacity-100 transition-opacity"
-                aria-label="Remove image"
-              >
-                <span className="material-icons text-sm">close</span>
-              </Button>
-            </div>
-          ))}
+          {existingImageUrls.map((url, index) => {
+            // Optimize existing images for thumbnail display
+            let optimizedUrl = url;
+            try {
+              if (url.includes('supabase.co/storage')) {
+                optimizedUrl = getTransformedImageUrl(url, {
+                  width: 120,
+                  height: 96,
+                  quality: 75,
+                  resize: 'cover'
+                });
+              }
+            } catch (error) {
+              console.error(`Error optimizing preview image ${index + 1}:`, error);
+              optimizedUrl = url; // Fallback to original URL
+            }
+
+            return (
+              <div key={`existing-${index}`} className="relative group">
+                <img
+                  src={optimizedUrl}
+                  alt={`Screenshot ${index + 1}`}
+                  className="w-full h-24 object-cover rounded-lg border-2 border-gray-800"
+                  loading="lazy"
+                />
+                <Button
+                  type="button"
+                  onClick={(event) => handleRemoveExisting(url, event)}
+                  className="absolute -top-2 -right-2 w-6 h-6 p-0 bg-startsnap-french-rose text-white rounded-full border-2 border-gray-800 shadow-[2px_2px_0px_#1f2937] opacity-0 group-hover:opacity-100 transition-opacity"
+                  aria-label="Remove image"
+                >
+                  <span className="material-icons text-sm">close</span>
+                </Button>
+              </div>
+            );
+          })}
 
           {/* Uploading Images */}
           {uploadingImages.map((image, index) => (

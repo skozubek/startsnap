@@ -3,7 +3,7 @@
  * @description Component for displaying project screenshots in a responsive grid with lightbox functionality
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getTransformedImageUrl } from '../../../lib/utils';
 import { Button } from '../../../components/ui/button';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -67,17 +67,31 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
 
   /**
    * @description Handles keyboard navigation in the lightbox
-   * @param {React.KeyboardEvent} e - Keyboard event
+   * @param {KeyboardEvent} e - Keyboard event
    */
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (!lightboxOpen) return;
+
     if (e.key === 'Escape') {
       closeLightbox();
     } else if (e.key === 'ArrowLeft') {
+      e.preventDefault();
       previousImage();
     } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
       nextImage();
     }
   };
+
+  // Add global keyboard event listener
+  useEffect(() => {
+    if (lightboxOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      return () => {
+        document.removeEventListener('keydown', handleKeyDown);
+      };
+    }
+  }, [lightboxOpen, currentImageIndex]); // Include currentImageIndex to ensure navigation works properly
 
   // Fallback image URL for when images fail to load
   const fallbackImageUrl = "https://placehold.co/400x300/e2e8f0/1f2937?text=Image+Unavailable";
@@ -94,54 +108,64 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
             photo_library
           </span>
         </div>
-        
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {urls.map((url, index) => {
             // Determine if this is a Supabase URL that needs transformation
             let imageUrl = url;
-            
+
             try {
               if (url.includes('supabase.co/storage')) {
-                // Fix the URL structure before transformation
-                // Remove any double 'object' in the path that might be causing issues
-                const fixedUrl = url.replace('/storage/v1/object/public/object/', '/storage/v1/object/public/');
-                imageUrl = getTransformedImageUrl(fixedUrl, { width: 400, format: 'webp' });
-                console.log(`🔄 Fixed URL for image ${index + 1}:`, fixedUrl);
+                // Optimize for thumbnail display: 400x300 with cover resize and quality 75
+                imageUrl = getTransformedImageUrl(url, {
+                  width: 400,
+                  height: 300,
+                  quality: 75,
+                  resize: 'cover'
+                });
+                console.log(`🔄 Transformed thumbnail URL for image ${index + 1}:`, imageUrl);
               }
             } catch (error) {
               console.error(`Error transforming URL for image ${index + 1}:`, error);
               imageUrl = url; // Fallback to original URL
             }
-            
+
             console.log(`🖼️ Image ${index + 1}:
   Original URL: ${url}
   Display URL: ${imageUrl}`);
-            
+
             return (
               <div
                 key={index}
-                className="relative group cursor-pointer overflow-hidden rounded-lg border-2 border-gray-800 shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_#1f2937] transition-all duration-200"
+                className="relative group cursor-pointer overflow-hidden rounded-lg border-2 border-gray-800 bg-white shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_#1f2937] transition-all duration-200"
                 onClick={() => openLightbox(index)}
               >
-                <img
-                  src={imageUrl}
-                  alt={`Screenshot ${index + 1}`}
-                  className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-200"
-                  loading="lazy"
-                  onError={(e) => {
-                    console.error(`🚨 Failed to load image ${index + 1}:`, imageUrl, e);
-                    // Set fallback image
-                    (e.target as HTMLImageElement).src = fallbackImageUrl;
-                    (e.target as HTMLImageElement).className = "w-full h-48 object-contain bg-gray-200";
-                  }}
-                  onLoad={() => {
-                    console.log(`✅ Successfully loaded image ${index + 1}:`, imageUrl);
-                  }}
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 flex items-center justify-center">
-                  <span className="material-icons text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-3xl">
-                    zoom_in
-                  </span>
+                {/* Simplified image container */}
+                <div className="relative w-full h-48 overflow-hidden">
+                  <img
+                    src={imageUrl}
+                    alt={`Screenshot ${index + 1}`}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                    onError={(e) => {
+                      console.error(`🚨 Failed to load image ${index + 1}:`, imageUrl, e);
+                      // Set fallback image
+                      (e.target as HTMLImageElement).src = fallbackImageUrl;
+                      (e.target as HTMLImageElement).className = "w-full h-full object-contain bg-gray-200";
+                    }}
+                    onLoad={() => {
+                      console.log(`✅ Successfully loaded image ${index + 1}:`, imageUrl);
+                    }}
+                  />
+
+                  {/* Simple hover overlay */}
+                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200 flex items-center justify-center">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-white/20 backdrop-blur-sm rounded-full p-3 border border-white/30">
+                      <span className="material-icons text-white text-2xl">
+                        zoom_in
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             );
@@ -149,104 +173,198 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
         </div>
       </div>
 
-      {/* Lightbox Modal */}
+      {/* Lightbox Modal - Redesigned for better aesthetics */}
       {lightboxOpen && (
         <div
-          className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
           onClick={closeLightbox}
-          onKeyDown={handleKeyDown}
           tabIndex={0}
           role="dialog"
           aria-modal="true"
           aria-label="Screenshot lightbox"
+          style={{
+            background: 'linear-gradient(135deg, rgba(0,0,0,0.85) 0%, rgba(30,41,59,0.9) 50%, rgba(0,0,0,0.85) 100%)',
+            animation: 'fadeIn 0.3s ease-out'
+          }}
         >
-          {/* Close Button */}
+          {/* Enhanced Close Button */}
           <Button
             variant="ghost"
             size="icon"
-            className="absolute top-4 right-4 z-10 text-white hover:bg-white hover:bg-opacity-20 rounded-full"
+            className="absolute top-6 right-6 z-20 text-white bg-black/30 hover:bg-white/20 rounded-full border border-white/20 backdrop-blur-md transition-all duration-200 hover:scale-110 shadow-lg"
             onClick={(e) => {
               e.stopPropagation();
               closeLightbox();
             }}
             aria-label="Close lightbox"
           >
-            <X size={24} />
+            <X size={20} />
           </Button>
 
-          {/* Navigation Buttons */}
+          {/* Enhanced Navigation Buttons */}
           {urls.length > 1 && (
             <>
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 text-white hover:bg-white hover:bg-opacity-20 rounded-full"
+                className="absolute left-6 top-1/2 transform -translate-y-1/2 z-20 text-white bg-black/30 hover:bg-white/20 rounded-full border border-white/20 backdrop-blur-md transition-all duration-200 hover:scale-110 shadow-lg"
                 onClick={(e) => {
                   e.stopPropagation();
                   previousImage();
                 }}
                 aria-label="Previous image"
               >
-                <ChevronLeft size={24} />
+                <ChevronLeft size={20} />
               </Button>
 
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 text-white hover:bg-white hover:bg-opacity-20 rounded-full"
+                className="absolute right-6 top-1/2 transform -translate-y-1/2 z-20 text-white bg-black/30 hover:bg-white/20 rounded-full border border-white/20 backdrop-blur-md transition-all duration-200 hover:scale-110 shadow-lg"
                 onClick={(e) => {
                   e.stopPropagation();
                   nextImage();
                 }}
                 aria-label="Next image"
               >
-                <ChevronRight size={24} />
+                <ChevronRight size={20} />
               </Button>
             </>
           )}
 
-          {/* Main Image */}
+          {/* Main Image Container - Enhanced with beautiful styling */}
           <div
-            className="relative max-w-full max-h-full"
+            className="relative max-w-[90vw] max-h-[85vh] bg-white rounded-2xl shadow-2xl border-4 border-gray-800 overflow-hidden"
             onClick={(e) => e.stopPropagation()}
+            style={{
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+              animation: 'scaleIn 0.3s ease-out'
+            }}
           >
-            {urls[currentImageIndex] && (
-              <img
-                src={(() => {
-                  try {
-                    // Only transform Supabase URLs
-                    if (urls[currentImageIndex].includes('supabase.co/storage')) {
-                      // Fix the URL structure before transformation
-                      const fixedUrl = urls[currentImageIndex].replace('/storage/v1/object/public/object/', '/storage/v1/object/public/');
-                      return getTransformedImageUrl(fixedUrl, { width: 1280, format: 'webp' });
-                    }
-                    return urls[currentImageIndex];
-                  } catch (error) {
-                    console.error('Error transforming lightbox image URL:', error);
-                    return urls[currentImageIndex];
-                  }
-                })()}
-                alt={`Screenshot ${currentImageIndex + 1}`}
-                className="max-w-full max-h-full object-contain rounded-lg border-2 border-gray-300"
-                onError={(e) => {
-                  console.error(`🚨 Failed to load lightbox image:`, urls[currentImageIndex], e);
-                  // Set fallback image
-                  (e.target as HTMLImageElement).src = fallbackImageUrl;
-                  (e.target as HTMLImageElement).className = "max-w-full max-h-full object-contain rounded-lg border-2 border-gray-300 bg-gray-200";
-                }}
-                onLoad={() => {
-                  console.log(`✅ Successfully loaded lightbox image:`, urls[currentImageIndex]);
-                }}
-              />
-            )}
-            
-            {/* Image Counter */}
-            {urls.length > 1 && (
-              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-70 text-white px-3 py-1 rounded-full text-sm font-['Roboto',Helvetica]">
-                {currentImageIndex + 1} / {urls.length}
+            {/* Image Header with StartSnap styling */}
+            <div className="bg-startsnap-candlelight border-b-2 border-gray-800 px-6 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="material-icons text-startsnap-persian-blue text-xl">
+                  photo_camera
+                </span>
+                <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-lg">
+                  Screenshot Preview
+                </h3>
               </div>
-            )}
+
+              {/* Image Counter in header */}
+              {urls.length > 1 && (
+                <div className="bg-startsnap-wisp-pink border-2 border-gray-800 rounded-full px-3 py-1 shadow-[2px_2px_0px_#1f2937]">
+                  <span className="font-['Roboto',Helvetica] font-semibold text-startsnap-ebony-clay text-sm">
+                    {currentImageIndex + 1} of {urls.length}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Image Container */}
+            <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center min-h-[60vh]">
+              {urls[currentImageIndex] && (
+                <img
+                  src={(() => {
+                    try {
+                      // Only transform Supabase URLs
+                      if (urls[currentImageIndex].includes('supabase.co/storage')) {
+                        // Optimize for lightbox display: 1200px max width with contain resize and higher quality
+                        return getTransformedImageUrl(urls[currentImageIndex], {
+                          width: 1200,
+                          quality: 85,
+                          resize: 'contain'
+                        });
+                      }
+                      return urls[currentImageIndex];
+                    } catch (error) {
+                      console.error('Error transforming lightbox image URL:', error);
+                      return urls[currentImageIndex];
+                    }
+                  })()}
+                  alt={`Screenshot ${currentImageIndex + 1}`}
+                  className="max-w-full max-h-[75vh] object-contain rounded-lg shadow-lg transition-all duration-300"
+                  style={{
+                    filter: 'drop-shadow(0 10px 25px rgba(0, 0, 0, 0.2))',
+                    animation: 'imageSlideIn 0.4s ease-out'
+                  }}
+                  onError={(e) => {
+                    console.error(`🚨 Failed to load lightbox image:`, urls[currentImageIndex], e);
+                    // Set fallback image
+                    (e.target as HTMLImageElement).src = fallbackImageUrl;
+                    (e.target as HTMLImageElement).className = "max-w-full max-h-[75vh] object-contain rounded-lg shadow-lg bg-gray-200";
+                  }}
+                  onLoad={() => {
+                    console.log(`✅ Successfully loaded lightbox image:`, urls[currentImageIndex]);
+                  }}
+                />
+              )}
+
+              {/* Loading indicator area */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="opacity-20">
+                  <span className="material-icons text-6xl text-gray-400">
+                    image
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Image Footer with additional info */}
+            <div className="bg-startsnap-candlelight border-t-2 border-gray-800 px-6 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-2 text-sm text-startsnap-pale-sky font-['Roboto',Helvetica]">
+                <span className="material-icons text-startsnap-persian-blue text-lg">
+                  info
+                </span>
+                Click outside or press ESC to close
+              </div>
+
+              {/* Navigation hints */}
+              {urls.length > 1 && (
+                <div className="flex items-center gap-4 text-xs text-startsnap-pale-sky font-['Roboto',Helvetica]">
+                  <div className="flex items-center gap-1">
+                    <span className="material-icons text-sm">keyboard_arrow_left</span>
+                    <span>Prev</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span>Next</span>
+                    <span className="material-icons text-sm">keyboard_arrow_right</span>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
+
+          {/* Add custom animations via inline styles */}
+          <style>{`
+            @keyframes fadeIn {
+              from { opacity: 0; }
+              to { opacity: 1; }
+            }
+
+            @keyframes scaleIn {
+              from {
+                opacity: 0;
+                transform: scale(0.9);
+              }
+              to {
+                opacity: 1;
+                transform: scale(1);
+              }
+            }
+
+            @keyframes imageSlideIn {
+              from {
+                opacity: 0;
+                transform: translateY(20px);
+              }
+              to {
+                opacity: 1;
+                transform: translateY(0);
+              }
+            }
+          `}</style>
         </div>
       )}
     </>
