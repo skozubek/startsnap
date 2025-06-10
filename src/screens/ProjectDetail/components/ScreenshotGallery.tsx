@@ -102,16 +102,20 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
             
             try {
               if (url.includes('supabase.co/storage')) {
-                imageUrl = getTransformedImageUrl(url, { width: 400, format: 'webp' });
+                // Fix the URL structure before transformation
+                // Remove any double 'object' in the path that might be causing issues
+                const fixedUrl = url.replace('/storage/v1/object/public/object/', '/storage/v1/object/public/');
+                imageUrl = getTransformedImageUrl(fixedUrl, { width: 400, format: 'webp' });
+                console.log(`🔄 Fixed URL for image ${index + 1}:`, fixedUrl);
               }
             } catch (error) {
               console.error(`Error transforming URL for image ${index + 1}:`, error);
               imageUrl = url; // Fallback to original URL
             }
             
-            console.log(`🖼️ Image ${index + 1}:`);
-            console.log(`  Original URL: ${url}`);
-            console.log(`  Display URL: ${imageUrl}`);
+            console.log(`🖼️ Image ${index + 1}:
+  Original URL: ${url}
+  Display URL: ${imageUrl}`);
             
             return (
               <div
@@ -125,7 +129,7 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
                   className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-200"
                   loading="lazy"
                   onError={(e) => {
-                    console.error(`🚨 Failed to load image ${index + 1}:`, imageUrl);
+                    console.error(`🚨 Failed to load image ${index + 1}:`, imageUrl, e);
                     // Set fallback image
                     (e.target as HTMLImageElement).src = fallbackImageUrl;
                     (e.target as HTMLImageElement).className = "w-full h-48 object-contain bg-gray-200";
@@ -212,7 +216,9 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
                   try {
                     // Only transform Supabase URLs
                     if (urls[currentImageIndex].includes('supabase.co/storage')) {
-                      return getTransformedImageUrl(urls[currentImageIndex], { width: 1280, format: 'webp' });
+                      // Fix the URL structure before transformation
+                      const fixedUrl = urls[currentImageIndex].replace('/storage/v1/object/public/object/', '/storage/v1/object/public/');
+                      return getTransformedImageUrl(fixedUrl, { width: 1280, format: 'webp' });
                     }
                     return urls[currentImageIndex];
                   } catch (error) {
@@ -223,10 +229,13 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
                 alt={`Screenshot ${currentImageIndex + 1}`}
                 className="max-w-full max-h-full object-contain rounded-lg border-2 border-gray-300"
                 onError={(e) => {
-                  console.error(`🚨 Failed to load lightbox image:`, urls[currentImageIndex]);
+                  console.error(`🚨 Failed to load lightbox image:`, urls[currentImageIndex], e);
                   // Set fallback image
                   (e.target as HTMLImageElement).src = fallbackImageUrl;
                   (e.target as HTMLImageElement).className = "max-w-full max-h-full object-contain rounded-lg border-2 border-gray-300 bg-gray-200";
+                }}
+                onLoad={() => {
+                  console.log(`✅ Successfully loaded lightbox image:`, urls[currentImageIndex]);
                 }}
               />
             )}

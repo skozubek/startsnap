@@ -75,8 +75,9 @@ export function getTransformedImageUrl(originalUrl: string, options: ImageTransf
       return originalUrl;
     }
     
-    // Construct the transformation URL according to Supabase docs
+    // FIXED: Construct the transformation URL according to Supabase docs
     // Format: https://<PROJECT_REF>.supabase.co/storage/v1/render/image/public/BUCKET_NAME/FILE_PATH
+    // The key issue was that we had an extra "object" in the path that shouldn't be there
     const baseUrl = `${url.origin}/storage/v1/render/image/public/${bucketName}/${filePath}`;
     
     // Add query parameters
@@ -86,7 +87,7 @@ export function getTransformedImageUrl(originalUrl: string, options: ImageTransf
     params.set('format', options.format ?? 'webp');
     
     const transformedUrl = `${baseUrl}?${params.toString()}`;
-    console.log('Transformed URL:', transformedUrl);
+    console.log('🔄 Transformed URL:', transformedUrl);
     return transformedUrl;
   } catch (error) {
     console.error('Error transforming image URL:', error);
