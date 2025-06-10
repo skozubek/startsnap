@@ -143,31 +143,6 @@ export const EditStartSnap = (): JSX.Element => {
       }
     }
 
-    // Delete removed images from storage
-    if (imagesToDelete.length > 0) {
-      for (const url of imagesToDelete) {
-        try {
-          // Extract file path from URL
-          const urlParts = url.split('/');
-          const fileName = urlParts[urlParts.length - 1];
-          const userId = urlParts[urlParts.length - 2];
-          const filePath = `${userId}/${fileName}`;
-
-          const { error: deleteError } = await supabase.storage
-            .from('project-screenshots')
-            .remove([filePath]);
-
-          if (deleteError) {
-            console.warn('Error deleting image:', deleteError);
-            // Don't fail the save if image deletion fails - just log it
-          }
-        } catch (error) {
-          console.warn('Error processing image deletion:', error);
-          // Continue with the save even if image deletion fails
-        }
-      }
-    }
-
     const updatePayload: any = {
       name: formData.projectName,
       description: formData.description,
@@ -187,12 +162,38 @@ export const EditStartSnap = (): JSX.Element => {
     }
 
     try {
+      // CRITICAL: Update database FIRST to prevent race condition
       const { error: startsnapError } = await supabase
         .from('startsnaps')
         .update(updatePayload)
         .eq('id', id);
 
       if (startsnapError) throw startsnapError;
+
+      // Only delete images from storage AFTER database update succeeds
+      if (imagesToDelete.length > 0) {
+        for (const url of imagesToDelete) {
+          try {
+            // Extract file path from URL
+            const urlParts = url.split('/');
+            const fileName = urlParts[urlParts.length - 1];
+            const userId = urlParts[urlParts.length - 2];
+            const filePath = `${userId}/${fileName}`;
+
+            const { error: deleteError } = await supabase.storage
+              .from('project-screenshots')
+              .remove([filePath]);
+
+            if (deleteError) {
+              console.warn('Error deleting image from storage:', deleteError);
+              // Don't fail the save if image deletion fails - database is already updated correctly
+            }
+          } catch (error) {
+            console.warn('Error processing image deletion:', error);
+            // Continue with cleanup even if individual image deletion fails
+          }
+        }
+      }
 
       toast.success('StartSnap Updated Successfully!', {
         description: 'Your changes have been saved and are now live.'

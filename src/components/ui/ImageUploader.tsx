@@ -95,6 +95,17 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
    * @sideEffects Updates uploadingImages state and triggers file uploads
    */
   const handleFiles = useCallback(async (files: FileList) => {
+    const MAX_SCREENSHOTS = 3;
+    const currentImageCount = existingImageUrls.length + uploadingImages.length;
+
+    // Check if adding new files would exceed the limit
+    if (currentImageCount >= MAX_SCREENSHOTS) {
+      toast.error('Screenshot Limit Reached', {
+        description: `You can only upload up to ${MAX_SCREENSHOTS} screenshots per project.`
+      });
+      return;
+    }
+
     const validFiles = Array.from(files).filter(file => {
       if (!file.type.startsWith('image/')) {
         toast.error('Invalid File Type', {
@@ -113,8 +124,18 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
 
     if (validFiles.length === 0) return;
 
+    // Limit the number of files to not exceed the maximum
+    const remainingSlots = MAX_SCREENSHOTS - currentImageCount;
+    const filesToUpload = validFiles.slice(0, remainingSlots);
+
+    if (filesToUpload.length < validFiles.length) {
+      toast.warning('Some Images Skipped', {
+        description: `Only uploading ${filesToUpload.length} images to stay within the ${MAX_SCREENSHOTS} screenshot limit.`
+      });
+    }
+
     // Create preview objects for uploading images
-    const newUploadingImages: UploadingImage[] = validFiles.map(file => ({
+    const newUploadingImages: UploadingImage[] = filesToUpload.map(file => ({
       file,
       preview: URL.createObjectURL(file),
       uploading: true
@@ -123,8 +144,8 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
     setUploadingImages(prev => [...prev, ...newUploadingImages]);
 
     // Upload each file
-    for (let i = 0; i < validFiles.length; i++) {
-      const file = validFiles[i];
+    for (let i = 0; i < filesToUpload.length; i++) {
+      const file = filesToUpload[i];
       await uploadFile(file);
 
       // Remove from uploading state after upload
@@ -132,16 +153,25 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
         prev.filter(img => img.file !== file)
       );
     }
-  }, [uploadFile]);
+  }, [uploadFile, existingImageUrls.length, uploadingImages.length]);
 
   /**
    * @description Handles click on upload area to trigger file input
    * @param {React.MouseEvent} event - Click event
-   * @sideEffects Triggers file input click
+   * @sideEffects Triggers file input click unless limit is reached
    */
   const handleUploadAreaClick = (event: React.MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
+
+    // Don't allow upload if limit is reached
+    if (existingImageUrls.length >= 3) {
+      toast.info('Screenshot Limit Reached', {
+        description: 'Remove an existing image to upload a new one.'
+      });
+      return;
+    }
+
     fileInputRef.current?.click();
   };
 
@@ -278,6 +308,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
             ? 'border-startsnap-french-rose bg-startsnap-wisp-pink'
             : 'border-gray-800 bg-startsnap-athens-gray hover:bg-gray-200'
           }
+          ${existingImageUrls.length >= 3 ? 'opacity-50 cursor-not-allowed' : ''}
         `}
       >
         <div className="flex flex-col items-center gap-4">
@@ -286,10 +317,16 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
           </span>
           <div>
             <p className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-lg">
-              Drop images here or click to upload
+              {existingImageUrls.length >= 3
+                ? 'Maximum screenshots reached'
+                : 'Drop images here or click to upload'
+              }
             </p>
             <p className="font-['Roboto',Helvetica] text-startsnap-pale-sky text-sm mt-1">
-              PNG, JPG, GIF up to 5MB each
+              {existingImageUrls.length >= 3
+                ? 'Remove an image to upload a new one'
+                : `PNG, JPG, GIF up to 5MB each (${existingImageUrls.length + uploadingImages.length}/3)`
+              }
             </p>
           </div>
         </div>
