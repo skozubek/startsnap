@@ -50,7 +50,7 @@ interface ProjectFormProps {
   mode: 'create' | 'edit';
   projectId?: string;
   initialData?: Partial<FormState>;
-  onSubmit: (data: FormState) => Promise<void>;
+  onSubmit: (data: FormState, imagesToDelete?: string[]) => Promise<void>;
   onCancel: () => void;
 }
 
@@ -82,6 +82,7 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
 
   // Populate form with initial data when editing
   useEffect(() => {
@@ -199,12 +200,18 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
   /**
    * @description Handles screenshot removal
    * @param {string} url - URL of the screenshot to remove
+   * @sideEffects Updates form state and tracks images for deletion in edit mode
    */
   const handleScreenshotRemove = (url: string) => {
     setFormState(prev => ({
       ...prev,
       screenshotUrls: prev.screenshotUrls.filter(screenshotUrl => screenshotUrl !== url)
     }));
+
+    // Track image for deletion in edit mode
+    if (mode === 'edit') {
+      setImagesToDelete(prev => [...prev, url]);
+    }
   };
 
   /**
@@ -270,30 +277,22 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
   /**
    * @description Handles form submission
    * @async
-   * @sideEffects Calls onSubmit prop with form data
+   * @sideEffects Calls onSubmit prop with form data and images to delete
    */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log('🚀 Form submission started');
-    console.log('📝 Current form state:', formState);
-
     const validationErrors = validateForm();
-    console.log('✅ Validation errors:', validationErrors);
 
     if (Object.keys(validationErrors).length > 0) {
-      console.log('❌ Form validation failed, showing errors');
       setErrors(validationErrors);
       scrollToTop(); // Scroll to show validation errors
       return;
     }
 
-    console.log('✅ Form validation passed, submitting...');
     setIsSubmitting(true);
     try {
-      console.log('📤 Calling onSubmit with form data...');
-      await onSubmit(formState);
-      console.log('✅ Form submission completed successfully');
+      await onSubmit(formState, imagesToDelete);
     } catch (error) {
       console.error('❌ Form submission error:', error);
       // Add user-friendly error toast if one isn't already shown
@@ -305,7 +304,6 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
       }
     } finally {
       setIsSubmitting(false);
-      console.log('🏁 Form submission process completed');
     }
   };
 
@@ -449,6 +447,7 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
               onUploadComplete={handleScreenshotUploadComplete}
               onRemove={handleScreenshotRemove}
               existingImageUrls={formState.screenshotUrls}
+              mode={mode}
             />
           </div>
 

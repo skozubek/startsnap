@@ -93,9 +93,10 @@ export const EditStartSnap = (): JSX.Element => {
    * @description Handles form submission to update an existing StartSnap
    * @async
    * @param {Object} formData - Form data containing updated project information
-   * @sideEffects Updates StartSnap in database and redirects on success
+   * @param {string[]} imagesToDelete - Array of image URLs to delete from storage
+   * @sideEffects Updates StartSnap in database, deletes removed images, and redirects on success
    */
-  const handleSubmit = async (formData: any) => {
+  const handleSubmit = async (formData: any, imagesToDelete: string[] = []) => {
     if (!id || !initialData) {
       console.error("Project ID or initial data is missing for update.");
       toast.error('Update Failed', {
@@ -139,6 +140,31 @@ export const EditStartSnap = (): JSX.Element => {
           description: 'An unexpected error occurred while validating project name. Please try again.'
         });
         return;
+      }
+    }
+
+    // Delete removed images from storage
+    if (imagesToDelete.length > 0) {
+      for (const url of imagesToDelete) {
+        try {
+          // Extract file path from URL
+          const urlParts = url.split('/');
+          const fileName = urlParts[urlParts.length - 1];
+          const userId = urlParts[urlParts.length - 2];
+          const filePath = `${userId}/${fileName}`;
+
+          const { error: deleteError } = await supabase.storage
+            .from('project-screenshots')
+            .remove([filePath]);
+
+          if (deleteError) {
+            console.warn('Error deleting image:', deleteError);
+            // Don't fail the save if image deletion fails - just log it
+          }
+        } catch (error) {
+          console.warn('Error processing image deletion:', error);
+          // Continue with the save even if image deletion fails
+        }
       }
     }
 

@@ -17,6 +17,7 @@ interface ImageUploaderProps {
   onUploadComplete: (url: string) => void;
   onRemove: (url: string) => void;
   existingImageUrls: string[];
+  mode?: 'create' | 'edit'; // Add mode to differentiate behavior
 }
 
 /**
@@ -36,7 +37,8 @@ interface UploadingImage {
 export const ImageUploader: React.FC<ImageUploaderProps> = ({
   onUploadComplete,
   onRemove,
-  existingImageUrls
+  existingImageUrls,
+  mode = 'create'
 }) => {
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -195,12 +197,22 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
    * @async
    * @param {string} url - URL of image to remove
    * @param {React.MouseEvent} event - Click event
-   * @sideEffects Deletes image from Supabase Storage and calls onRemove
+   * @sideEffects In create mode: deletes image from Supabase Storage immediately. In edit mode: only updates form state.
    */
   const handleRemoveExisting = async (url: string, event: React.MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
 
+    // In edit mode, only update form state - don't delete from storage yet
+    if (mode === 'edit') {
+      onRemove(url);
+      toast.success('Image Marked for Removal', {
+        description: 'Image will be deleted when you save the project.'
+      });
+      return;
+    }
+
+    // In create mode, delete immediately (existing behavior)
     try {
       // Extract file path from URL
       const urlParts = url.split('/');

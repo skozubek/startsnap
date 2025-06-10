@@ -23,28 +23,23 @@ export const CreateStartSnap = (): JSX.Element => {
    * @description Handles form submission to create a new StartSnap
    * @async
    * @param {Object} formData - Form data containing project information
+   * @param {string[]} imagesToDelete - Array of image URLs to delete (unused in create mode)
    * @sideEffects Inserts new StartSnap into database and redirects on success
    */
-  const handleSubmit = async (formData: any) => {
-    console.log('🎯 CreateStartSnap handleSubmit called with data:', formData);
+  const handleSubmit = async (formData: any, imagesToDelete?: string[]) => {
+    // Note: imagesToDelete is not used in create mode since images are deleted immediately
 
     if (!user) {
-      console.log('❌ No authenticated user found');
       toast.error('Authentication Required', {
         description: 'You need to be logged in to create a project.'
       });
       return;
     }
 
-    console.log('✅ User authenticated:', user.id);
-
     // 1. Generate the slug from the project name
-    console.log('🔤 Generating slug from project name:', formData.projectName);
     const newPotentialSlug = generateSlug(formData.projectName);
-    console.log('🏷️ Generated slug:', newPotentialSlug);
 
     if (!newPotentialSlug) {
-      console.log('❌ Slug generation failed');
       toast.error('Invalid Project Name', {
         description: 'Project name cannot be empty or invalid.'
       });
@@ -52,7 +47,6 @@ export const CreateStartSnap = (): JSX.Element => {
     }
 
     // 2. Check for slug uniqueness
-    console.log('🔍 Checking slug uniqueness for:', newPotentialSlug);
     try {
       const { data: existingProject, error: checkError } = await supabase
         .from('startsnaps')
@@ -61,7 +55,7 @@ export const CreateStartSnap = (): JSX.Element => {
         .maybeSingle();
 
       if (checkError) {
-        console.error("❌ Error checking slug uniqueness:", checkError);
+        console.error("Error checking slug uniqueness:", checkError);
         toast.error('Validation Error', {
           description: 'Error checking project name uniqueness. Please try again.'
         });
@@ -69,16 +63,14 @@ export const CreateStartSnap = (): JSX.Element => {
       }
 
       if (existingProject) {
-        console.log('❌ Slug already exists:', existingProject);
         toast.error('Name Already Exists', {
           description: 'A project with a similar name already exists. Please try a different name.'
         });
         return;
       }
 
-      console.log('✅ Slug is unique, proceeding with creation');
     } catch (error) {
-      console.error("❌ Error during slug uniqueness check:", error);
+      console.error("Error during slug uniqueness check:", error);
       toast.error('Unexpected Error', {
         description: 'An unexpected error occurred while validating project name. Please try again.'
       });
