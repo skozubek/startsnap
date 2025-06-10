@@ -62,7 +62,7 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
           width: 600,
           height: 300,
           quality: 80,
-          resize: 'fill'
+          resize: 'contain'
         });
       }
       return firstScreenshot;

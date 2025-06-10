@@ -116,7 +116,7 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
                   width: 400,
                   height: 300,
                   quality: 75,
-                  resize: 'fill'
+                  resize: 'contain'
                 });
 
               }
