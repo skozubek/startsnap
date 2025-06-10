@@ -241,6 +241,11 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
       newErrors.videoUrl = 'Please enter a valid URL';
     }
 
+    // Validate screenshot count (max 3)
+    if (formState.screenshotUrls.length > 3) {
+      newErrors.screenshots = 'Maximum 3 screenshots allowed per project';
+    }
+
     // Only validate vibe log for create mode
     if (mode === 'create') {
       if (!formState.vibeLogTitle.trim()) {
@@ -437,11 +442,16 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
 
           {/* Project Screenshots */}
           <div className="space-y-3">
-            <Label className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
-              Project Screenshots
-            </Label>
+            <div className="flex items-center justify-between">
+              <Label className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+                Project Screenshots
+              </Label>
+              <span className="text-sm font-['Roboto',Helvetica] text-startsnap-pale-sky">
+                {formState.screenshotUrls.length}/3 uploaded
+              </span>
+            </div>
             <p className="text-sm text-startsnap-pale-sky font-['Roboto',Helvetica]">
-              Upload screenshots to showcase your project visually. Drag and drop or click to select images.
+              Upload screenshots to showcase your project visually. Maximum 3 images allowed.
             </p>
             <ImageUploader
               onUploadComplete={handleScreenshotUploadComplete}
@@ -449,6 +459,9 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
               existingImageUrls={formState.screenshotUrls}
               mode={mode}
             />
+            {errors.screenshots && (
+              <p className="text-red-500 text-sm">{errors.screenshots}</p>
+            )}
           </div>
 
           {/* Tags */}
