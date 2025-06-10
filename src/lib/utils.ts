@@ -7,12 +7,50 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 /**
+ * @description Configuration options for Supabase image transformations
+ */
+export interface ImageTransformations {
+  width: number;
+  quality?: number;
+  format?: 'webp';
+}
+
+/**
  * @description Combines multiple class names using clsx and tailwind-merge
  * @param {...ClassValue[]} inputs - Class names to combine
  * @returns {string} Merged class names with tailwind conflicts resolved
  */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+/**
+ * @description Transforms a Supabase Storage URL into an optimized image URL using Supabase's Image Transformation API
+ * @param {string} originalUrl - The original Supabase public storage URL
+ * @param {ImageTransformations} options - Transformation options including width, quality, and format
+ * @returns {string} The transformed URL with optimization parameters
+ * @example
+ * const optimizedUrl = getTransformedImageUrl(
+ *   'https://project.supabase.co/storage/v1/object/public/bucket/image.jpg',
+ *   { width: 400, quality: 80, format: 'webp' }
+ * );
+ */
+export function getTransformedImageUrl(originalUrl: string, options: ImageTransformations): string {
+  // Extract the base URL and path components
+  const url = new URL(originalUrl);
+  
+  // Transform the path from /object/public/ to /render/image/public/
+  const transformedPath = url.pathname.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/');
+  
+  // Create the new URL with the transformed path
+  const transformedUrl = new URL(transformedPath, url.origin);
+  
+  // Add transformation parameters
+  transformedUrl.searchParams.set('width', options.width.toString());
+  transformedUrl.searchParams.set('quality', (options.quality ?? 75).toString());
+  transformedUrl.searchParams.set('format', options.format ?? 'webp');
+  
+  return transformedUrl.toString();
 }
 
 /**
