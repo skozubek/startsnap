@@ -46,7 +46,7 @@ export const MainContentSection = (): JSX.Element => {
       setLoading(true);
       let query = supabase
         .from('startsnaps')
-        .select('*, support_count');
+        .select('*, support_count, screenshot_urls');
 
       if (currentDiscoveryState.searchTerm) {
         const searchTerm = `%${currentDiscoveryState.searchTerm}%`;
@@ -117,7 +117,7 @@ export const MainContentSection = (): JSX.Element => {
 
       const { data, error } = await supabase
         .from('startsnaps')
-        .select('*, support_count')
+        .select('*, support_count, screenshot_urls')
         .eq('id', platformId)
         .single();
 

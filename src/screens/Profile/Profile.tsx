@@ -115,7 +115,7 @@ export const Profile = (): JSX.Element => {
       // Fetch startsnaps for the user
       const { data, error } = await supabase
         .from('startsnaps')
-        .select('*')
+        .select('*, screenshot_urls')
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
 

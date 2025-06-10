@@ -29,11 +29,11 @@ export const TrendingSection = (): JSX.Element => {
     const fetchTrendingProjects = async () => {
       try {
         setLoading(true);
-        
+
         // Fetch top 3 projects by support count
         const { data: projectsData, error: projectsError } = await supabase
           .from('startsnaps')
-          .select('*, support_count')
+          .select('*, support_count, screenshot_urls')
           .order('support_count', { ascending: false })
           .limit(3);
 

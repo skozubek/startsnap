@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent } from "./card";
 import { Badge } from "./badge";
 import { UserAvatar, getAvatarName } from "./user-avatar";
+import { getTransformedImageUrl } from "../../lib/utils";
 
 /**
  * @description Props interface for the StartSnapCard component
@@ -46,6 +47,31 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
   const categoryDisplay = getCategoryDisplay(startsnap.category);
 
   /**
+   * @description Gets the optimized thumbnail URL for the card header
+   * @returns {string | null} Optimized image URL or null if no screenshot available
+   */
+  const getCardThumbnail = (): string | null => {
+    if (!startsnap.screenshot_urls || !startsnap.screenshot_urls.length) {
+      return null;
+    }
+
+    try {
+      const firstScreenshot = startsnap.screenshot_urls[0];
+      if (firstScreenshot.includes('supabase.co/storage')) {
+        return getTransformedImageUrl(firstScreenshot, {
+          width: 600,
+          height: 300,
+          quality: 80,
+          resize: 'cover'
+        });
+      }
+      return firstScreenshot;
+    } catch (error) {
+      return null;
+    }
+  };
+
+  /**
    * @description Gets the appropriate styling for rank badges
    * @param {number} rank - The rank number (1, 2, or 3)
    * @returns {string} CSS classes for the rank badge
@@ -81,25 +107,40 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
     }
   };
 
+  const thumbnailUrl = getCardThumbnail();
+
   return (
     <Link to={`/projects/${startsnap.slug}`} className="block group">
       <Card className="h-full bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] group-hover:-translate-y-1 transition-transform duration-200">
         <CardContent className="p-0 h-full flex flex-col">
-          {/* Category Header with optional rank badge */}
-          <div className={`${categoryDisplay.bgColor} px-6 py-4 border-b-2 border-gray-800 relative`}>
-            <div className="flex justify-between items-center">
+          {/* Category Header with optional screenshot background */}
+          <div
+            className={`${thumbnailUrl ? 'relative min-h-[250px]' : categoryDisplay.bgColor} px-6 ${thumbnailUrl ? 'pt-6 pb-6' : 'py-4'} border-b-2 border-gray-800 relative ${thumbnailUrl ? 'flex flex-col' : 'flex items-center'}`}
+            style={thumbnailUrl ? {
+              backgroundImage: `url(${thumbnailUrl})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat'
+            } : undefined}
+          >
+            {/* Dark overlay for readability when using image background */}
+            {thumbnailUrl && (
+              <div className="absolute inset-0 bg-black/40"></div>
+            )}
+
+            <div className="flex justify-between items-center relative z-10 w-full">
               <Badge
                 variant="outline"
-                className={`${categoryDisplay.bgColor} ${categoryDisplay.textColor} border ${categoryDisplay.borderColor} rounded-full px-3 py-1 font-['Space_Mono',Helvetica] font-normal text-xs`}
+                className={`${thumbnailUrl ? 'bg-white/90 text-gray-900 border-white/50' : `${categoryDisplay.bgColor} ${categoryDisplay.textColor} border ${categoryDisplay.borderColor}`} rounded-full px-3 py-1 font-['Space_Mono',Helvetica] font-normal text-xs`}
               >
                 {categoryDisplay.name}
               </Badge>
-              
+
               {/* Rank badge - only show for ranks 1, 2, 3 */}
               {rank && rank <= 3 && (
                 <Badge
                   variant="outline"
-                  className={`${getRankBadgeStyle(rank)} rounded-full px-2 py-1 font-['Space_Mono',Helvetica] font-bold text-xs border-2`}
+                  className={`${getRankBadgeStyle(rank)} rounded-full px-2 py-1 font-['Space_Mono',Helvetica] font-bold text-xs border-2 ${thumbnailUrl ? 'bg-white/90' : ''}`}
                 >
                   {getRankEmoji(rank)} #{rank}
                 </Badge>
@@ -120,7 +161,7 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
             {/* Project Type and Hackathon badges */}
             <div className="flex gap-2 flex-wrap items-center mb-4">
               {startsnap.type === "live" ? (
-                <Badge variant="outline\" className="bg-startsnap-mountain-meadow text-white font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-green-700 px-2 py-1 flex items-center gap-1">
+                <Badge variant="outline" className="bg-startsnap-mountain-meadow text-white font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-green-700 px-2 py-1 flex items-center gap-1">
                   <span className="material-icons text-xs">rocket_launch</span>
                   Live
                 </Badge>
@@ -203,7 +244,7 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
                   )}
                 </div>
               )}
-              
+
               {variant === 'profile' && isOwner && (
                 <div className="flex items-center gap-2">
                   <Link

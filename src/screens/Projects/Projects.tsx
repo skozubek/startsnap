@@ -54,7 +54,7 @@ export const Projects = (): JSX.Element => {
       setLoading(true);
       let query = supabase
         .from('startsnaps')
-        .select('*, support_count');
+        .select('*, support_count, screenshot_urls');
 
       if (currentDiscoveryState.searchTerm) {
         const searchTerm = `%${currentDiscoveryState.searchTerm}%`;
