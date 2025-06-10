@@ -96,22 +96,21 @@ export const ProjectDetail = (): JSX.Element => {
     if (!slug) return;
     try {
       setLoading(true);
-      console.log('🔍 Fetching project data for slug:', slug);
-      
+
+
       const { data: projectData, error: projectError } = await supabase
         .from('startsnaps')
         .select('*, support_count, screenshot_urls')
         .eq('slug', slug)
         .maybeSingle();
-      
+
       if (projectError) throw projectError;
       if (!projectData) {
         throw new Error('Project not found');
       }
-      
-      console.log('📊 Project data fetched:', projectData);
-      console.log('🖼️ Screenshot URLs from database:', projectData.screenshot_urls);
-      
+
+
+
       setStartsnap(projectData as StartSnapProject);
 
       // Initialize support count

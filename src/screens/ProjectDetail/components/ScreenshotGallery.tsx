@@ -25,13 +25,8 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // Debug logging
-  console.log('🖼️ ScreenshotGallery - URLs received:', urls);
-  console.log('🖼️ ScreenshotGallery - URLs length:', urls?.length);
-
   // Don't render anything if no URLs provided
   if (!urls || urls.length === 0) {
-    console.log('🖼️ ScreenshotGallery - No URLs provided, returning null');
     return null;
   }
 
@@ -123,16 +118,14 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
                   quality: 75,
                   resize: 'cover'
                 });
-                console.log(`🔄 Transformed thumbnail URL for image ${index + 1}:`, imageUrl);
+
               }
             } catch (error) {
               console.error(`Error transforming URL for image ${index + 1}:`, error);
               imageUrl = url; // Fallback to original URL
             }
 
-            console.log(`🖼️ Image ${index + 1}:
-  Original URL: ${url}
-  Display URL: ${imageUrl}`);
+
 
             return (
               <div
@@ -148,13 +141,9 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     loading="lazy"
                     onError={(e) => {
-                      console.error(`🚨 Failed to load image ${index + 1}:`, imageUrl, e);
                       // Set fallback image
                       (e.target as HTMLImageElement).src = fallbackImageUrl;
                       (e.target as HTMLImageElement).className = "w-full h-full object-contain bg-gray-200";
-                    }}
-                    onLoad={() => {
-                      console.log(`✅ Successfully loaded image ${index + 1}:`, imageUrl);
                     }}
                   />
 
@@ -279,24 +268,19 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
                       }
                       return urls[currentImageIndex];
                     } catch (error) {
-                      console.error('Error transforming lightbox image URL:', error);
                       return urls[currentImageIndex];
                     }
                   })()}
                   alt={`Screenshot ${currentImageIndex + 1}`}
-                  className="max-w-full max-h-[75vh] object-contain rounded-lg shadow-lg transition-all duration-300"
+                  className="max-w-full max-h-[75vh] object-contain shadow-lg transition-all duration-300"
                   style={{
                     filter: 'drop-shadow(0 10px 25px rgba(0, 0, 0, 0.2))',
                     animation: 'imageSlideIn 0.4s ease-out'
                   }}
                   onError={(e) => {
-                    console.error(`🚨 Failed to load lightbox image:`, urls[currentImageIndex], e);
                     // Set fallback image
                     (e.target as HTMLImageElement).src = fallbackImageUrl;
-                    (e.target as HTMLImageElement).className = "max-w-full max-h-[75vh] object-contain rounded-lg shadow-lg bg-gray-200";
-                  }}
-                  onLoad={() => {
-                    console.log(`✅ Successfully loaded lightbox image:`, urls[currentImageIndex]);
+                    (e.target as HTMLImageElement).className = "max-w-full max-h-[75vh] object-contain shadow-lg bg-gray-200";
                   }}
                 />
               )}
@@ -311,29 +295,7 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
               </div>
             </div>
 
-            {/* Image Footer with additional info */}
-            <div className="bg-startsnap-candlelight border-t-2 border-gray-800 px-6 py-3 flex items-center justify-between">
-              <div className="flex items-center gap-2 text-sm text-startsnap-pale-sky font-['Roboto',Helvetica]">
-                <span className="material-icons text-startsnap-persian-blue text-lg">
-                  info
-                </span>
-                Click outside or press ESC to close
-              </div>
 
-              {/* Navigation hints */}
-              {urls.length > 1 && (
-                <div className="flex items-center gap-4 text-xs text-startsnap-pale-sky font-['Roboto',Helvetica]">
-                  <div className="flex items-center gap-1">
-                    <span className="material-icons text-sm">keyboard_arrow_left</span>
-                    <span>Prev</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <span>Next</span>
-                    <span className="material-icons text-sm">keyboard_arrow_right</span>
-                  </div>
-                </div>
-              )}
-            </div>
           </div>
 
           {/* Add custom animations via inline styles */}

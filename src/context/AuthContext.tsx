@@ -182,16 +182,11 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
    */
   const handleTwitterProfileExtraction = async (user: any) => {
     try {
-      console.log('🔍 Extracting Twitter profile from user:', user);
-
       // Extract Twitter username from user metadata
       const twitterUsername = user.user_metadata?.user_name || user.user_metadata?.preferred_username;
-      console.log('📝 Extracted Twitter username:', twitterUsername);
-      console.log('🔍 Available metadata keys:', Object.keys(user.user_metadata || {}));
 
       if (twitterUsername) {
         const twitterUrl = `https://twitter.com/${twitterUsername}`;
-        console.log('🔗 Generated Twitter URL:', twitterUrl);
 
         // Add timeout and retry logic for the profile update
         const updateProfile = async (retryCount = 0) => {
@@ -216,7 +211,7 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
               throw error;
             }
 
-            console.log('✅ Successfully updated profile with Twitter URL:', twitterUrl);
+
           } catch (retryError) {
             if (retryCount < 2) {
               console.warn(`⚠️ Profile update failed, retrying... (${retryCount + 1}/3)`, retryError);
@@ -232,10 +227,7 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
         updateProfile().catch(error => {
           console.warn('⚠️ Twitter profile extraction failed but auth flow continues:', error);
         });
-      } else {
-        console.warn('⚠️ No Twitter username found in user metadata');
-        console.log('📋 Full user_metadata:', JSON.stringify(user.user_metadata, null, 2));
-      }
+              }
     } catch (error) {
       console.error('💥 Error extracting Twitter profile information:', error);
       // Don't throw - let auth flow continue
@@ -262,7 +254,7 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event: AuthChangeEvent, currentSession: Session | null) => {
-        console.log('🔄 Auth state change:', event, currentSession?.user?.id);
+
 
         // Handle sign out events
         if (event === 'SIGNED_OUT') {
@@ -277,13 +269,10 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
 
         // --- START IMPROVED TWITTER LOGIC ---
         if (event === "SIGNED_IN" && currentSession?.user.app_metadata.provider === 'twitter') {
-          console.log('🐦 Twitter sign-in detected, scheduling profile extraction...');
-
           // Delay profile extraction to allow auth flow to complete
           // This prevents interference with session establishment
           setTimeout(async () => {
             try {
-              console.log('🐦 Starting delayed Twitter profile extraction...');
               await handleTwitterProfileExtraction(currentSession.user);
             } catch (error) {
               console.warn('⚠️ Delayed Twitter profile extraction failed:', error);
@@ -298,13 +287,10 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
     // Set up periodic session health checks (every 10 minutes instead of 5)
     const healthCheckInterval = setInterval(async () => {
       if (session && user) {
-        console.log('🔍 Running periodic session health check...');
         const isHealthy = await validateSessionHealth();
         if (!isHealthy) {
           console.warn('🚨 Periodic health check failed, forcing logout');
           await forceLogout();
-        } else {
-          console.log('✅ Session health check passed');
         }
       }
     }, 10 * 60 * 1000); // 10 minutes instead of 5
@@ -322,7 +308,6 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
    * @sideEffects Attempts normal logout, falls back to force logout if needed
    */
   const handleAuthErrorAndSignOut = async (): Promise<void> => {
-    console.log('🚪 Initiating logout...');
 
     try {
       // Try normal logout first with timeout
@@ -337,7 +322,6 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
         console.warn('⚠️ Normal logout failed, trying force logout:', error);
         await forceLogout();
       } else {
-        console.log('✅ Normal logout successful');
         // Clear local data as backup
         clearLocalAuthData();
       }
