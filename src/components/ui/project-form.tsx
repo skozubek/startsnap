@@ -1,34 +1,29 @@
 /**
  * src/components/ui/project-form.tsx
- * @description Form component for creating and editing StartSnap projects
+ * @description Reusable form component for creating and editing StartSnap projects
  */
 
-import React, { useState, useEffect, useRef } from "react";
-import { Card, CardContent } from "./card";
+import React, { useState, useEffect } from "react";
 import { Button } from "./button";
 import { Input } from "./input";
+import { Label } from "./label";
 import { Textarea } from "./textarea";
-import { Badge } from "./badge";
-import { Separator } from "./separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./select";
 import { Checkbox } from "./checkbox";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "./select";
-import { getFormOptions, getVibeLogOptions } from "../../config/categories";
+import { Card, CardContent } from "./card";
+import { Badge } from "./badge";
 import { SegmentedControl } from "./segmented-control";
 import { VibeLogEntry } from "./vibe-log-entry";
-
-interface ProjectFormProps {
-  mode: "create" | "edit";
-  onSubmit: (data: any) => void;
-  onCancel: () => void;
-  initialData?: any;
-  projectId?: string;
-}
+import { ImageUploader } from "./ImageUploader";
+import { getFormOptions, getVibeLogOptions } from "../../config/categories";
+import { isValidUrl } from "../../lib/utils";
+import { X } from "lucide-react";
 
 /**
- * Form state interface with proper typing
+ * @description Interface for the form state data
  */
 interface FormState {
-  projectType: "idea" | "live";
+  projectType: 'idea' | 'live';
   projectName: string;
   description: string;
   category: string;
@@ -39,509 +34,559 @@ interface FormState {
   isHackathon: boolean;
   toolsInput: string;
   toolsUsed: string[];
+  feedbackInput: string;
+  feedbackAreas: string[];
   vibeLogType: string;
   vibeLogTitle: string;
   vibeLogContent: string;
+  screenshotUrls: string[];
 }
 
 /**
- * @description Form component for creating and editing StartSnap projects
- * @param {ProjectFormProps} props - Component props
- * @returns {JSX.Element} Project form UI component
+ * @description Props for the ProjectForm component
  */
-export function ProjectForm({
-  mode,
-  onSubmit,
-  onCancel,
-  initialData,
-  projectId,
-}: ProjectFormProps): JSX.Element {
+interface ProjectFormProps {
+  mode: 'create' | 'edit';
+  projectId?: string;
+  initialData?: Partial<FormState>;
+  onSubmit: (data: FormState) => Promise<void>;
+  onCancel: () => void;
+}
+
+/**
+ * @description Reusable form component for creating and editing StartSnap projects
+ * @param {ProjectFormProps} props - Component props
+ * @returns {JSX.Element} Project form with all necessary fields and validation
+ */
+export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }: ProjectFormProps): JSX.Element => {
   const [formState, setFormState] = useState<FormState>({
-    projectType: "idea",
-    projectName: "",
-    description: "",
-    category: "",
-    liveUrl: "",
-    videoUrl: "",
-    tagsInput: "",
-    tags: [] as string[],
+    projectType: 'idea',
+    projectName: '',
+    description: '',
+    category: '',
+    liveUrl: '',
+    videoUrl: '',
+    tagsInput: '',
+    tags: [],
     isHackathon: false,
-    toolsInput: "",
-    toolsUsed: [] as string[],
-    vibeLogType: "idea",
-    vibeLogTitle: "My New Idea!",
-    vibeLogContent: "Excited to explore this concept..."
+    toolsInput: '',
+    toolsUsed: [],
+    feedbackInput: '',
+    feedbackAreas: [],
+    vibeLogType: 'launch',
+    vibeLogTitle: '',
+    vibeLogContent: '',
+    screenshotUrls: [],
   });
 
-  const [errors, setErrors] = useState({
-    projectName: "",
-    description: "",
-    category: "",
-    liveUrl: "",
-    videoUrl: "",
-    vibeLogTitle: "",
-    vibeLogContent: ""
-  });
-
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const formRef = useRef<HTMLFormElement>(null);
 
-  // Initialize form with initial data if editing
+  // Populate form with initial data when editing
   useEffect(() => {
-    if (mode === "edit" && initialData) {
-      setFormState(initialData);
+    if (mode === 'edit' && initialData) {
+      setFormState(prev => ({
+        ...prev,
+        ...initialData,
+        screenshotUrls: initialData.screenshotUrls || [],
+      }));
     }
-    // Create mode defaults are handled by useState and handleProjectTypeChange
   }, [mode, initialData]);
 
   /**
-   * @description Scrolls to the top of the form on validation errors
+   * @description Handles input changes for form fields
+   * @param {string} field - Field name to update
+   * @param {any} value - New value for the field
    */
-  const scrollToFormTop = () => {
-    if (formRef.current) {
-      formRef.current.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-      });
+  const handleInputChange = (field: string, value: any) => {
+    setFormState(prev => ({ ...prev, [field]: value }));
+    // Clear error when field is edited
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: '' }));
     }
   };
 
-  // Form validation
-  const validateForm = () => {
-    const newErrors = {
-      projectName: "",
-      description: "",
-      category: "",
-      liveUrl: "",
-      videoUrl: "",
-      vibeLogTitle: "",
-      vibeLogContent: ""
-    };
-
-    let isValid = true;
-
-    // Required fields
-    if (!formState.projectName.trim() || formState.projectName.length < 3) {
-      newErrors.projectName = "Project name must be at least 3 characters";
-      isValid = false;
-    }
-
-    if (!formState.description.trim() || formState.description.length < 10) {
-      newErrors.description = "Description must be at least 10 characters";
-      isValid = false;
-    }
-
-    if (!formState.category) {
-      newErrors.category = "Please select a category";
-      isValid = false;
-    }
-
-    // URL validation
-    const urlRegex = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
-
-    if (formState.liveUrl && !urlRegex.test(formState.liveUrl)) {
-      newErrors.liveUrl = "Please enter a valid URL";
-      isValid = false;
-    }
-
-    if (formState.videoUrl && !urlRegex.test(formState.videoUrl)) {
-      newErrors.videoUrl = "Please enter a valid URL";
-      isValid = false;
-    }
-
-    // Vibe log validation (only for create mode)
-    if (mode === "create" && formState.vibeLogContent.trim()) {
-      if (formState.vibeLogTitle.length < 3) {
-        newErrors.vibeLogTitle = "Title must be at least 3 characters";
-        isValid = false;
-      }
-
-      if (formState.vibeLogContent.length < 10) {
-        newErrors.vibeLogContent = "Content must be at least 10 characters";
-        isValid = false;
-      }
-    }
-
-    setErrors(newErrors);
-
-    // Gently scroll to top of form if validation fails
-    if (!isValid) {
-      requestAnimationFrame(() => {
-        scrollToFormTop();
-      });
-    }
-
-    return isValid;
-  };
-
-  // Handle input changes
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormState(prev => ({ ...prev, [name]: value }));
-
-    // Clear error for the field being edited
-    if (name in errors && errors[name as keyof typeof errors]) {
-      setErrors(prev => ({ ...prev, [name]: "" }));
-    }
-  };
-
-  // Handle checkbox changes
-  const handleCheckboxChange = (checked: boolean) => {
-    setFormState(prev => ({ ...prev, isHackathon: checked }));
-  };
-
-  // Handle project type changes
-  const handleProjectTypeChange = (value: "idea" | "live") => {
-    if (value === "idea") {
+  /**
+   * @description Adds a tag to the tags array
+   * @param {string} tag - Tag to add
+   */
+  const addTag = (tag: string) => {
+    const trimmedTag = tag.trim();
+    if (trimmedTag && !formState.tags.includes(trimmedTag)) {
       setFormState(prev => ({
         ...prev,
-        projectType: "idea",
-        vibeLogType: "idea",
-        vibeLogTitle: "My New Idea!",
-        vibeLogContent: "Excited to explore this concept..."
-      }));
-    } else { // live
-      setFormState(prev => ({
-        ...prev,
-        projectType: "live",
-        vibeLogType: "launch",
-        vibeLogTitle: "Initial Launch!",
-        vibeLogContent: "Just getting started with my project! More updates coming soon."
+        tags: [...prev.tags, trimmedTag],
+        tagsInput: ''
       }));
     }
   };
 
-  // Handle select changes
-  const handleSelectChange = (name: string, value: string) => {
-    setFormState(prev => ({ ...prev, [name]: value }));
-
-    // Clear error for the field being edited
-    if (name in errors && errors[name as keyof typeof errors]) {
-      setErrors(prev => ({ ...prev, [name]: "" }));
-    }
-  };
-
-  // Handle tag-like inputs (tags, tools)
-  const handleTagInput = (type: "tags" | "toolsUsed", inputName: "tags" | "tools") => {
-    const inputKey = `${inputName}Input` as keyof FormState;
-    const inputValue = (formState[inputKey] as string).trim();
-
-    if (inputValue && !formState[type].includes(inputValue)) {
-      setFormState(prev => ({
-        ...prev,
-        [type]: [...prev[type], inputValue],
-        [inputKey]: ""
-      }));
-    }
-  };
-
-  // Handle tag-like input key press (Enter)
-  const handleTagInputKeyPress = (e: React.KeyboardEvent, type: "tags" | "toolsUsed", inputName: "tags" | "tools") => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleTagInput(type, inputName);
-    }
-  };
-
-  // Remove tag-like item
-  const removeItem = (type: "tags" | "toolsUsed", index: number) => {
+  /**
+   * @description Removes a tag from the tags array
+   * @param {string} tagToRemove - Tag to remove
+   */
+  const removeTag = (tagToRemove: string) => {
     setFormState(prev => ({
       ...prev,
-      [type]: prev[type].filter((_, i) => i !== index)
+      tags: prev.tags.filter(tag => tag !== tagToRemove)
     }));
   };
 
-  // Specific handlers for VibeLogEntry title and content with error clearing
-  const handleVibeLogTitleChange = (value: string) => {
-    setFormState(prev => ({ ...prev, vibeLogTitle: value }));
-    if (errors.vibeLogTitle) {
-      setErrors(prev => ({ ...prev, vibeLogTitle: "" }));
+  /**
+   * @description Adds a tool to the tools array
+   * @param {string} tool - Tool to add
+   */
+  const addTool = (tool: string) => {
+    const trimmedTool = tool.trim();
+    if (trimmedTool && !formState.toolsUsed.includes(trimmedTool)) {
+      setFormState(prev => ({
+        ...prev,
+        toolsUsed: [...prev.toolsUsed, trimmedTool],
+        toolsInput: ''
+      }));
     }
   };
 
-  const handleVibeLogContentChange = (value: string) => {
-    setFormState(prev => ({ ...prev, vibeLogContent: value }));
-    if (errors.vibeLogContent) {
-      setErrors(prev => ({ ...prev, vibeLogContent: "" }));
+  /**
+   * @description Removes a tool from the tools array
+   * @param {string} toolToRemove - Tool to remove
+   */
+  const removeTool = (toolToRemove: string) => {
+    setFormState(prev => ({
+      ...prev,
+      toolsUsed: prev.toolsUsed.filter(tool => tool !== toolToRemove)
+    }));
+  };
+
+  /**
+   * @description Adds a feedback area to the feedback areas array
+   * @param {string} area - Feedback area to add
+   */
+  const addFeedbackArea = (area: string) => {
+    const trimmedArea = area.trim();
+    if (trimmedArea && !formState.feedbackAreas.includes(trimmedArea)) {
+      setFormState(prev => ({
+        ...prev,
+        feedbackAreas: [...prev.feedbackAreas, trimmedArea],
+        feedbackInput: ''
+      }));
     }
   };
 
-  // Form submission
+  /**
+   * @description Removes a feedback area from the feedback areas array
+   * @param {string} areaToRemove - Feedback area to remove
+   */
+  const removeFeedbackArea = (areaToRemove: string) => {
+    setFormState(prev => ({
+      ...prev,
+      feedbackAreas: prev.feedbackAreas.filter(area => area !== areaToRemove)
+    }));
+  };
+
+  /**
+   * @description Handles screenshot upload completion
+   * @param {string} url - URL of the uploaded screenshot
+   */
+  const handleScreenshotUploadComplete = (url: string) => {
+    setFormState(prev => ({
+      ...prev,
+      screenshotUrls: [...prev.screenshotUrls, url]
+    }));
+  };
+
+  /**
+   * @description Handles screenshot removal
+   * @param {string} url - URL of the screenshot to remove
+   */
+  const handleScreenshotRemove = (url: string) => {
+    setFormState(prev => ({
+      ...prev,
+      screenshotUrls: prev.screenshotUrls.filter(screenshotUrl => screenshotUrl !== url)
+    }));
+  };
+
+  /**
+   * @description Validates the form and returns validation errors
+   * @returns {Record<string, string>} Object containing validation errors
+   */
+  const validateForm = (): Record<string, string> => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formState.projectName.trim()) {
+      newErrors.projectName = 'Project name is required';
+    }
+
+    if (!formState.description.trim()) {
+      newErrors.description = 'Description is required';
+    }
+
+    if (!formState.category) {
+      newErrors.category = 'Category is required';
+    }
+
+    if (formState.liveUrl && !isValidUrl(formState.liveUrl)) {
+      newErrors.liveUrl = 'Please enter a valid URL';
+    }
+
+    if (formState.videoUrl && !isValidUrl(formState.videoUrl)) {
+      newErrors.videoUrl = 'Please enter a valid URL';
+    }
+
+    // Only validate vibe log for create mode
+    if (mode === 'create') {
+      if (!formState.vibeLogTitle.trim()) {
+        newErrors.vibeLogTitle = 'Vibe log title is required';
+      }
+
+      if (!formState.vibeLogContent.trim()) {
+        newErrors.vibeLogContent = 'Vibe log content is required';
+      }
+    }
+
+    return newErrors;
+  };
+
+  /**
+   * @description Handles form submission
+   * @async
+   * @sideEffects Calls onSubmit prop with form data
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (validateForm()) {
-      setIsSubmitting(true);
-      try {
-        await onSubmit(formState);
-      } catch (error) {
-        // Error handling is done in the parent component
-        console.error('Form submission error:', error);
-      } finally {
-        setIsSubmitting(false);
-      }
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
     }
-    // Validation will gently scroll to first error - no need for aggressive toast
+
+    setIsSubmitting(true);
+    try {
+      await onSubmit(formState);
+    } catch (error) {
+      console.error('Form submission error:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
+  /**
+   * @description Handles key press events for tag/tool inputs
+   * @param {React.KeyboardEvent} e - Keyboard event
+   * @param {Function} addFunction - Function to call when Enter is pressed
+   * @param {string} inputValue - Current input value
+   */
+  const handleKeyPress = (e: React.KeyboardEvent, addFunction: (value: string) => void, inputValue: string) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addFunction(inputValue);
+    }
+  };
+
+  const categoryOptions = getFormOptions();
+  const vibeLogOptions = getVibeLogOptions();
+
   return (
-    <Card className="w-full max-w-3xl bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]">
+    <Card className="w-full max-w-4xl bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]">
       <CardContent className="p-8">
-                <form ref={formRef} onSubmit={handleSubmit} className="space-y-8">
-          {/* Project Type Section */}
-          <div className="space-y-4">
-            <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
-              StartSnap Type
-            </label>
-
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Project Type */}
+          <div className="space-y-3">
+            <Label className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+              Project Type
+            </Label>
             <SegmentedControl
+              options={[
+                { value: 'idea', label: 'Idea / Concept' },
+                { value: 'live', label: 'Live Project' }
+              ]}
               value={formState.projectType}
-              onChange={handleProjectTypeChange}
+              onChange={(value) => handleInputChange('projectType', value)}
             />
-
-            <div className="flex items-center space-x-2 mt-4">
-              <Checkbox
-                id="hackathon"
-                checked={formState.isHackathon}
-                onCheckedChange={handleCheckboxChange}
-              />
-              <label
-                htmlFor="hackathon"
-                className="font-['Roboto',Helvetica] text-startsnap-oxford-blue cursor-pointer"
-              >
-                This is a Hackathon Entry
-              </label>
-            </div>
           </div>
 
-          <Separator className="bg-gray-200" />
-
-          {/* Basic Information Section */}
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
-                StartSnap Name*
-              </label>
-              <Input
-                name="projectName"
-                value={formState.projectName}
-                onChange={handleChange}
-                placeholder="e.g., My Awesome Idea"
-                className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
-              />
-              {errors.projectName && (
-                <p className="text-red-500 text-sm mt-1">{errors.projectName}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
-                Description*
-              </label>
-              <Textarea
-                name="description"
-                value={formState.description}
-                onChange={handleChange}
-                placeholder="Briefly describe your project..."
-                className="border-2 border-solid border-gray-800 rounded-lg p-3.5 min-h-[120px] font-['Roboto',Helvetica] text-startsnap-pale-sky"
-              />
-              {errors.description && (
-                <p className="text-red-500 text-sm mt-1">{errors.description}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
-                Category*
-              </label>
-              <Select
-                value={formState.category}
-                onValueChange={(value) => handleSelectChange("category", value)}
-              >
-                <SelectTrigger className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky">
-                  <SelectValue placeholder="Select a category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {getFormOptions().map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors.category && (
-                <p className="text-red-500 text-sm mt-1">{errors.category}</p>
-              )}
-            </div>
+          {/* Project Name */}
+          <div className="space-y-3">
+            <Label htmlFor="projectName" className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+              Project Name *
+            </Label>
+            <Input
+              id="projectName"
+              value={formState.projectName}
+              onChange={(e) => handleInputChange('projectName', e.target.value)}
+              placeholder="Enter your project name"
+              className={`border-2 border-solid ${errors.projectName ? 'border-red-500' : 'border-gray-800'} rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
+            />
+            {errors.projectName && (
+              <p className="text-red-500 text-sm">{errors.projectName}</p>
+            )}
           </div>
 
-          <Separator className="bg-gray-200" />
+          {/* Description */}
+          <div className="space-y-3">
+            <Label htmlFor="description" className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+              Description *
+            </Label>
+            <Textarea
+              id="description"
+              value={formState.description}
+              onChange={(e) => handleInputChange('description', e.target.value)}
+              placeholder="Describe your project, what it does, and what makes it special..."
+              className={`border-2 border-solid ${errors.description ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3.5 min-h-[120px] font-['Roboto',Helvetica] text-startsnap-pale-sky`}
+            />
+            {errors.description && (
+              <p className="text-red-500 text-sm">{errors.description}</p>
+            )}
+          </div>
 
-          {/* Links Section */}
-          {formState.projectType === "live" && (
-            <>
-              <div className="space-y-4">
-                <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
-                  Project Links
-                </h3>
-
-                <div className="space-y-2">
-                  <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">
-                    Live Demo URL
-                  </label>
-                  <Input
-                    name="liveUrl"
-                    value={formState.liveUrl}
-                    onChange={handleChange}
-                    placeholder="https://myproject.com"
-                    className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
-                  />
-                  {errors.liveUrl && (
-                    <p className="text-red-500 text-sm mt-1">{errors.liveUrl}</p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">
-                    Video Demo URL
-                  </label>
-                  <Input
-                    name="videoUrl"
-                    value={formState.videoUrl}
-                    onChange={handleChange}
-                    placeholder="https://youtube.com/watch?v=..."
-                    className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
-                  />
-                  {errors.videoUrl && (
-                    <p className="text-red-500 text-sm mt-1">{errors.videoUrl}</p>
-                  )}
-                </div>
-              </div>
-              <Separator className="bg-gray-200" />
-            </>
-          )}
-
-          {/* Tags Section */}
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
-                Tags (press Enter to add)
-              </label>
-              <Input
-                type="text"
-                id="tagsInput"
-                name="tagsInput"
-                placeholder="e.g., AI, SaaS, Productivity"
-                value={formState.tagsInput}
-                onChange={handleChange}
-                onKeyDown={(e) => handleTagInputKeyPress(e, "tags", "tags")}
-                className="border-2 border-solid border-gray-800 rounded-lg p-3.5 font-['Roboto',Helvetica]"
-              />
-              <div className="flex flex-wrap gap-2 mt-2">
-                {formState.tags.map((tag, index) => (
-                  <Badge
-                    key={`tag-${index}`}
-                    variant="outline"
-                    className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-gray-800 px-3 py-1 flex items-center gap-2"
-                  >
-                    #{tag}
-                    <button
-                      type="button"
-                      onClick={() => removeItem("tags", index)}
-                      className="text-startsnap-ebony-clay hover:text-startsnap-french-rose"
-                    >
-                      <span className="material-icons text-sm">close</span>
-                    </button>
-                  </Badge>
+          {/* Category */}
+          <div className="space-y-3">
+            <Label className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+              Category *
+            </Label>
+            <Select value={formState.category} onValueChange={(value) => handleInputChange('category', value)}>
+              <SelectTrigger className={`border-2 border-solid ${errors.category ? 'border-red-500' : 'border-gray-800'} rounded-lg p-4 font-['Roboto',Helvetica]`}>
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categoryOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
                 ))}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
-                Tools (press Enter to add)
-              </label>
-              <Input
-                name="toolsInput"
-                value={formState.toolsInput}
-                onChange={handleChange}
-                onKeyDown={(e) => handleTagInputKeyPress(e, "toolsUsed", "tools")}
-                placeholder="e.g., Bolt.new, Cursor, Lovable"
-                className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky"
-              />
-              <div className="flex flex-wrap gap-2 mt-2">
-                {formState.toolsUsed.map((tool, index) => (
-                  <Badge
-                    key={`tool-${index}`}
-                    variant="outline"
-                    className="bg-startsnap-french-pass text-startsnap-persian-blue font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-blue-700 px-3 py-1 flex items-center gap-2"
-                  >
-                    {tool}
-                    <button
-                      type="button"
-                      onClick={() => removeItem("toolsUsed", index)}
-                      className="text-startsnap-persian-blue hover:text-startsnap-french-rose"
-                    >
-                      <span className="material-icons text-sm">close</span>
-                    </button>
-                  </Badge>
-                ))}
-              </div>
-            </div>
+              </SelectContent>
+            </Select>
+            {errors.category && (
+              <p className="text-red-500 text-sm">{errors.category}</p>
+            )}
           </div>
 
-          {/* Vibe Log Section - Only for create mode */}
-          {mode === "create" && (
-            <>
-              <Separator className="bg-gray-200" />
-              <div className="space-y-4">
-                <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
-                  Initial Vibe Log Entry
-                </h3>
-
-                <VibeLogEntry
-                  title={formState.vibeLogTitle}
-                  onTitleChange={handleVibeLogTitleChange}
-                  content={formState.vibeLogContent}
-                  onContentChange={handleVibeLogContentChange}
-                  type={formState.vibeLogType}
-                  onTypeChange={() => {}} // Type is controlled by projectType
-                  showAllTypes={false}
-                  singleOptionType={formState.projectType === "idea" ? "idea" : "launch"}
+          {/* Project Links */}
+          <div className="space-y-6">
+            <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+              Project Links
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <Label htmlFor="liveUrl" className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-base leading-6">
+                  Live Demo URL
+                </Label>
+                <Input
+                  id="liveUrl"
+                  value={formState.liveUrl}
+                  onChange={(e) => handleInputChange('liveUrl', e.target.value)}
+                  placeholder="https://your-project.com"
+                  className={`border-2 border-solid ${errors.liveUrl ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
                 />
-                {errors.vibeLogTitle && (
-                  <p className="text-red-500 text-sm mt-1">{errors.vibeLogTitle}</p>
-                )}
-                {errors.vibeLogContent && (
-                  <p className="text-red-500 text-sm mt-1">{errors.vibeLogContent}</p>
+                {errors.liveUrl && (
+                  <p className="text-red-500 text-sm">{errors.liveUrl}</p>
                 )}
               </div>
-            </>
+
+              <div className="space-y-3">
+                <Label htmlFor="videoUrl" className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-base leading-6">
+                  Demo Video URL
+                </Label>
+                <Input
+                  id="videoUrl"
+                  value={formState.videoUrl}
+                  onChange={(e) => handleInputChange('videoUrl', e.target.value)}
+                  placeholder="https://youtube.com/watch?v=..."
+                  className={`border-2 border-solid ${errors.videoUrl ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
+                />
+                {errors.videoUrl && (
+                  <p className="text-red-500 text-sm">{errors.videoUrl}</p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Project Screenshots */}
+          <div className="space-y-3">
+            <Label className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+              Project Screenshots
+            </Label>
+            <p className="text-sm text-startsnap-pale-sky font-['Roboto',Helvetica]">
+              Upload screenshots to showcase your project visually. Drag and drop or click to select images.
+            </p>
+            <ImageUploader
+              onUploadComplete={handleScreenshotUploadComplete}
+              onRemove={handleScreenshotRemove}
+              existingImageUrls={formState.screenshotUrls}
+            />
+          </div>
+
+          {/* Tags */}
+          <div className="space-y-3">
+            <Label className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+              Tags
+            </Label>
+            <div className="space-y-3">
+              <Input
+                value={formState.tagsInput}
+                onChange={(e) => handleInputChange('tagsInput', e.target.value)}
+                onKeyPress={(e) => handleKeyPress(e, addTag, formState.tagsInput)}
+                placeholder="Add tags (press Enter to add)"
+                className="border-2 border-solid border-gray-800 rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky"
+              />
+              {formState.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {formState.tags.map((tag, index) => (
+                    <Badge
+                      key={index}
+                      variant="outline"
+                      className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-gray-800 px-3 py-1 flex items-center gap-2"
+                    >
+                      #{tag}
+                      <button
+                        type="button"
+                        onClick={() => removeTag(tag)}
+                        className="hover:text-red-500"
+                      >
+                        <X size={14} />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Tools Used */}
+          <div className="space-y-3">
+            <Label className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+              Tools Used
+            </Label>
+            <div className="space-y-3">
+              <Input
+                value={formState.toolsInput}
+                onChange={(e) => handleInputChange('toolsInput', e.target.value)}
+                onKeyPress={(e) => handleKeyPress(e, addTool, formState.toolsInput)}
+                placeholder="Add tools and technologies (press Enter to add)"
+                className="border-2 border-solid border-gray-800 rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky"
+              />
+              {formState.toolsUsed.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {formState.toolsUsed.map((tool, index) => (
+                    <Badge
+                      key={index}
+                      variant="outline"
+                      className="bg-startsnap-french-pass text-startsnap-persian-blue font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-blue-700 px-3 py-1 flex items-center gap-2"
+                    >
+                      {tool}
+                      <button
+                        type="button"
+                        onClick={() => removeTool(tool)}
+                        className="hover:text-red-500"
+                      >
+                        <X size={14} />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Feedback Areas */}
+          <div className="space-y-3">
+            <Label className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+              Feedback Areas
+            </Label>
+            <p className="text-sm text-startsnap-pale-sky font-['Roboto',Helvetica]">
+              What specific aspects would you like feedback on?
+            </p>
+            <div className="space-y-3">
+              <Input
+                value={formState.feedbackInput}
+                onChange={(e) => handleInputChange('feedbackInput', e.target.value)}
+                onKeyPress={(e) => handleKeyPress(e, addFeedbackArea, formState.feedbackInput)}
+                placeholder="Add feedback areas (press Enter to add)"
+                className="border-2 border-solid border-gray-800 rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky"
+              />
+              {formState.feedbackAreas.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {formState.feedbackAreas.map((area, index) => (
+                    <Badge
+                      key={index}
+                      variant="outline"
+                      className="bg-startsnap-ice-cold text-startsnap-jewel font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-green-700 px-3 py-1 flex items-center gap-2"
+                    >
+                      {area}
+                      <button
+                        type="button"
+                        onClick={() => removeFeedbackArea(area)}
+                        className="hover:text-red-500"
+                      >
+                        <X size={14} />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Hackathon Entry */}
+          <div className="flex items-center space-x-3">
+            <Checkbox
+              id="isHackathon"
+              checked={formState.isHackathon}
+              onCheckedChange={(checked) => handleInputChange('isHackathon', checked)}
+              className="border-2 border-solid border-gray-800"
+            />
+            <Label htmlFor="isHackathon" className="font-['Roboto',Helvetica] font-medium text-startsnap-oxford-blue text-base leading-6">
+              This is a hackathon entry
+            </Label>
+          </div>
+
+          {/* Initial Vibe Log (Create mode only) */}
+          {mode === 'create' && (
+            <div className="space-y-6 border-t-2 border-gray-200 pt-8">
+              <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-xl leading-7">
+                Initial Vibe Log Entry
+              </h3>
+              <p className="text-sm text-startsnap-pale-sky font-['Roboto',Helvetica]">
+                Start documenting your journey with your first vibe log entry.
+              </p>
+              
+              <VibeLogEntry
+                type={formState.vibeLogType}
+                title={formState.vibeLogTitle}
+                content={formState.vibeLogContent}
+                onTypeChange={(type) => handleInputChange('vibeLogType', type)}
+                onTitleChange={(title) => handleInputChange('vibeLogTitle', title)}
+                onContentChange={(content) => handleInputChange('vibeLogContent', content)}
+                showAllTypes={false}
+                titleError={errors.vibeLogTitle}
+                contentError={errors.vibeLogContent}
+              />
+            </div>
           )}
 
           {/* Form Actions */}
-          <div className="flex justify-end space-x-4 pt-4">
+          <div className="flex flex-col sm:flex-row gap-4 justify-end pt-6 border-t-2 border-gray-200">
             <Button
               type="button"
               variant="outline"
               onClick={onCancel}
-              className="startsnap-button bg-gray-200 text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+              className="startsnap-button bg-gray-200 text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] order-2 sm:order-1"
+              disabled={isSubmitting}
             >
               Cancel
             </Button>
             <Button
               type="submit"
+              className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] order-1 sm:order-2"
               disabled={isSubmitting}
-              className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting
-                ? (mode === "create" ? "Launching..." : "Updating...")
-                : (mode === "create" ? "Launch StartSnap" : "Update StartSnap")
-              }
+              {isSubmitting ? (mode === 'create' ? 'Creating...' : 'Updating...') : (mode === 'create' ? 'Create StartSnap' : 'Update StartSnap')}
             </Button>
           </div>
         </form>
       </CardContent>
     </Card>
   );
-}
+};

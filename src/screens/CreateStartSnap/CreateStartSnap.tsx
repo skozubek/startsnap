@@ -73,7 +73,7 @@ export const CreateStartSnap = (): JSX.Element => {
       return;
     }
 
-    // 3. Insert the startsnap with the slug
+    // 3. Insert the startsnap with the slug and screenshot URLs
     const { data: startsnap, error: startsnapError } = await supabase
       .from('startsnaps')
       .insert({
@@ -88,7 +88,8 @@ export const CreateStartSnap = (): JSX.Element => {
         tools_used: formData.toolsUsed,
         feedback_tags: formData.feedbackAreas,
         is_hackathon_entry: formData.isHackathon,
-        tags: formData.tags
+        tags: formData.tags,
+        screenshot_urls: formData.screenshotUrls
       })
       .select();
 

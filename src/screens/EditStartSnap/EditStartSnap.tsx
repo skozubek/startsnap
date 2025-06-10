@@ -72,7 +72,8 @@ export const EditStartSnap = (): JSX.Element => {
           toolsInput: '',
           toolsUsed: data.tools_used || [],
           feedbackInput: '',
-          feedbackAreas: data.feedback_tags || []
+          feedbackAreas: data.feedback_tags || [],
+          screenshotUrls: data.screenshot_urls || []
         });
 
         setLoading(false);
@@ -151,6 +152,7 @@ export const EditStartSnap = (): JSX.Element => {
       tools_used: formData.toolsUsed,
       is_hackathon_entry: formData.isHackathon,
       tags: formData.tags,
+      screenshot_urls: formData.screenshotUrls,
       updated_at: new Date()
     };
 
