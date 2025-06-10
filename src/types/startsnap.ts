@@ -23,5 +23,6 @@ export interface StartSnapProject {
   live_demo_url?: string;
   demo_video_url?: string;
   feedback_tags?: string[]; // Tags specifically for feedback areas
+  screenshot_urls?: string[]; // Array of screenshot URLs
   // Add any other fields directly from the 'startsnaps' table as needed
 }

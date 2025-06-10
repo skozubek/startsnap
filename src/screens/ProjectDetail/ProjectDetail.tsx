@@ -12,6 +12,7 @@ import { useAuth } from "../../context/AuthContext";
 import { ProjectInfoSection } from "./components/ProjectInfoSection";
 import { VibeLogSection } from "./components/VibeLogSection";
 import { FeedbackSection } from "./components/FeedbackSection";
+import { ScreenshotGallery } from "./components/ScreenshotGallery";
 import { ConfirmationDialog } from "../../components/ui/confirmation-dialog";
 import type { User } from '@supabase/supabase-js';
 import type { StartSnapProject } from "../../types/startsnap"; // Import centralized type
@@ -97,7 +98,7 @@ export const ProjectDetail = (): JSX.Element => {
       setLoading(true);
       const { data: projectData, error: projectError } = await supabase
         .from('startsnaps')
-        .select('*, support_count')
+        .select('*, support_count, screenshot_urls')
         .eq('slug', slug)
         .maybeSingle();
       if (projectError) throw projectError;
@@ -397,6 +398,7 @@ export const ProjectDetail = (): JSX.Element => {
               onSupportToggle={handleSupportToggle}
               onDeleteProjectRequest={openDeleteConfirmation}
             />
+            <ScreenshotGallery urls={startsnap.screenshot_urls || []} />
             <VibeLogSection
               startsnapId={startsnap.id}
               initialVibeLogEntries={vibeLogEntries.slice(0, visibleVibeLogCount)}
