@@ -7,7 +7,6 @@ import React, { useState, useRef, useCallback } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 import { Button } from './button';
-import { X, Upload, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 /**
@@ -31,7 +30,7 @@ interface UploadingImage {
 /**
  * @description Reusable image uploader component with drag-and-drop functionality
  * @param {ImageUploaderProps} props - Component props
- * @returns {JSX.Element} Image uploader component
+ * @returns {JSX.Element} ImageUploader component
  */
 export const ImageUploader: React.FC<ImageUploaderProps> = ({
   onUploadComplete,
@@ -39,9 +38,9 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
   existingImageUrls
 }) => {
   const { user } = useAuth();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadingImages, setUploadingImages] = useState<UploadingImage[]>([]);
   const [isDragOver, setIsDragOver] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   /**
    * @description Handles file upload to Supabase Storage
@@ -58,25 +57,23 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
     }
 
     const fileExt = file.name.split('.').pop();
-    const fileName = `${Date.now()}.${fileExt}`;
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
     const filePath = `${user.id}/${fileName}`;
 
     try {
-      const { error: uploadError } = await supabase.storage
+      const { data, error } = await supabase.storage
         .from('project-screenshots')
         .upload(filePath, file);
 
-      if (uploadError) throw uploadError;
+      if (error) throw error;
 
+      // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('project-screenshots')
         .getPublicUrl(filePath);
 
       onUploadComplete(publicUrl);
       
-      // Remove from uploading state
-      setUploadingImages(prev => prev.filter(img => img.file !== file));
-
       toast.success('Image Uploaded', {
         description: 'Screenshot has been uploaded successfully.'
       });
@@ -85,18 +82,16 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
       toast.error('Upload Failed', {
         description: 'Failed to upload image. Please try again.'
       });
-      
-      // Remove from uploading state on error
-      setUploadingImages(prev => prev.filter(img => img.file !== file));
     }
   }, [user, onUploadComplete]);
 
   /**
-   * @description Handles file selection and starts upload process
+   * @description Handles file selection and upload
+   * @async
    * @param {FileList} files - Selected files
-   * @sideEffects Adds files to uploading state and starts upload
+   * @sideEffects Updates uploadingImages state and triggers file uploads
    */
-  const handleFiles = useCallback((files: FileList) => {
+  const handleFiles = useCallback(async (files: FileList) => {
     const validFiles = Array.from(files).filter(file => {
       if (!file.type.startsWith('image/')) {
         toast.error('Invalid File Type', {
@@ -113,28 +108,95 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
       return true;
     });
 
-    validFiles.forEach(file => {
-      const preview = URL.createObjectURL(file);
-      const uploadingImage: UploadingImage = {
-        file,
-        preview,
-        uploading: true
-      };
+    if (validFiles.length === 0) return;
 
-      setUploadingImages(prev => [...prev, uploadingImage]);
-      uploadFile(file);
-    });
+    // Create preview objects for uploading images
+    const newUploadingImages: UploadingImage[] = validFiles.map(file => ({
+      file,
+      preview: URL.createObjectURL(file),
+      uploading: true
+    }));
+
+    setUploadingImages(prev => [...prev, ...newUploadingImages]);
+
+    // Upload each file
+    for (let i = 0; i < validFiles.length; i++) {
+      const file = validFiles[i];
+      await uploadFile(file);
+      
+      // Remove from uploading state after upload
+      setUploadingImages(prev => 
+        prev.filter(img => img.file !== file)
+      );
+    }
   }, [uploadFile]);
 
   /**
-   * @description Handles removing an existing image
-   * @async
+   * @description Handles click on upload area to trigger file input
    * @param {React.MouseEvent} event - Click event
-   * @param {string} url - URL of image to remove
-   * @sideEffects Deletes file from Supabase Storage and calls onRemove
+   * @sideEffects Triggers file input click
    */
-  const handleRemoveExisting = async (event: React.MouseEvent, url: string) => {
-    // CRITICAL FIX: Prevent form submission
+  const handleUploadAreaClick = (event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    fileInputRef.current?.click();
+  };
+
+  /**
+   * @description Handles file input change
+   * @param {React.ChangeEvent<HTMLInputElement>} event - Change event
+   * @sideEffects Processes selected files
+   */
+  const handleFileInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      handleFiles(files);
+    }
+    // Reset input value to allow selecting the same file again
+    event.target.value = '';
+  };
+
+  /**
+   * @description Handles drag over event
+   * @param {React.DragEvent} event - Drag event
+   */
+  const handleDragOver = (event: React.DragEvent) => {
+    event.preventDefault();
+    setIsDragOver(true);
+  };
+
+  /**
+   * @description Handles drag leave event
+   * @param {React.DragEvent} event - Drag event
+   */
+  const handleDragLeave = (event: React.DragEvent) => {
+    event.preventDefault();
+    setIsDragOver(false);
+  };
+
+  /**
+   * @description Handles file drop
+   * @param {React.DragEvent} event - Drop event
+   * @sideEffects Processes dropped files
+   */
+  const handleDrop = (event: React.DragEvent) => {
+    event.preventDefault();
+    setIsDragOver(false);
+    
+    const files = event.dataTransfer.files;
+    if (files) {
+      handleFiles(files);
+    }
+  };
+
+  /**
+   * @description Handles removal of existing images
+   * @async
+   * @param {string} url - URL of image to remove
+   * @param {React.MouseEvent} event - Click event
+   * @sideEffects Deletes image from Supabase Storage and calls onRemove
+   */
+  const handleRemoveExisting = async (url: string, event: React.MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
 
@@ -145,6 +207,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
       const userId = urlParts[urlParts.length - 2];
       const filePath = `${userId}/${fileName}`;
 
+      // Delete from Supabase Storage
       const { error } = await supabase.storage
         .from('project-screenshots')
         .remove([filePath]);
@@ -165,107 +228,54 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
   };
 
   /**
-   * @description Handles removing an uploading image
+   * @description Handles removal of uploading images
+   * @param {UploadingImage} image - Image to remove
    * @param {React.MouseEvent} event - Click event
-   * @param {UploadingImage} uploadingImage - Image being uploaded
-   * @sideEffects Removes image from uploading state
+   * @sideEffects Updates uploadingImages state
    */
-  const handleRemoveUploading = (event: React.MouseEvent, uploadingImage: UploadingImage) => {
-    // CRITICAL FIX: Prevent form submission
-    event.preventDefault();
-    event.stopPropagation();
-
-    URL.revokeObjectURL(uploadingImage.preview);
-    setUploadingImages(prev => prev.filter(img => img !== uploadingImage));
-  };
-
-  /**
-   * @description Handles drag over events
-   * @param {React.DragEvent} event - Drag event
-   */
-  const handleDragOver = (event: React.DragEvent) => {
-    event.preventDefault();
-    setIsDragOver(true);
-  };
-
-  /**
-   * @description Handles drag leave events
-   * @param {React.DragEvent} event - Drag event
-   */
-  const handleDragLeave = (event: React.DragEvent) => {
-    event.preventDefault();
-    setIsDragOver(false);
-  };
-
-  /**
-   * @description Handles file drop events
-   * @param {React.DragEvent} event - Drop event
-   */
-  const handleDrop = (event: React.DragEvent) => {
-    event.preventDefault();
-    setIsDragOver(false);
-    
-    const files = event.dataTransfer.files;
-    if (files.length > 0) {
-      handleFiles(files);
-    }
-  };
-
-  /**
-   * @description Handles file input change
-   * @param {React.ChangeEvent<HTMLInputElement>} event - Change event
-   */
-  const handleFileInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files && files.length > 0) {
-      handleFiles(files);
-    }
-    // Reset input value to allow selecting the same file again
-    event.target.value = '';
-  };
-
-  /**
-   * @description Handles click on upload area
-   * @param {React.MouseEvent} event - Click event
-   */
-  const handleUploadAreaClick = (event: React.MouseEvent) => {
-    // CRITICAL FIX: Prevent form submission
+  const handleRemoveUploading = (image: UploadingImage, event: React.MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
     
-    fileInputRef.current?.click();
+    URL.revokeObjectURL(image.preview);
+    setUploadingImages(prev => prev.filter(img => img !== image));
   };
 
   return (
     <div className="space-y-4">
+      {/* File Input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        onChange={handleFileInputChange}
+        className="hidden"
+      />
+
       {/* Upload Area */}
       <div
-        className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
-          isDragOver
-            ? 'border-startsnap-french-rose bg-startsnap-wisp-pink'
-            : 'border-gray-400 hover:border-startsnap-french-rose hover:bg-gray-50'
-        }`}
+        onClick={handleUploadAreaClick}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        onClick={handleUploadAreaClick}
+        className={`
+          border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
+          ${isDragOver 
+            ? 'border-startsnap-french-rose bg-startsnap-wisp-pink' 
+            : 'border-gray-800 bg-startsnap-athens-gray hover:bg-gray-200'
+          }
+        `}
       >
-        <input
-          ref={fileInputRef}
-          type="file"
-          multiple
-          accept="image/*"
-          onChange={handleFileInputChange}
-          className="hidden"
-        />
-        
         <div className="flex flex-col items-center gap-4">
-          <Upload className="w-12 h-12 text-gray-400" />
+          <span className="material-icons text-4xl text-startsnap-pale-sky">
+            cloud_upload
+          </span>
           <div>
-            <p className="text-lg font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica]">
+            <p className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-lg">
               Drop images here or click to upload
             </p>
-            <p className="text-sm text-startsnap-pale-sky font-['Roboto',Helvetica]">
+            <p className="font-['Roboto',Helvetica] text-startsnap-pale-sky text-sm mt-1">
               PNG, JPG, GIF up to 5MB each
             </p>
           </div>
@@ -278,48 +288,43 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
           {/* Existing Images */}
           {existingImageUrls.map((url, index) => (
             <div key={`existing-${index}`} className="relative group">
-              <div className="aspect-square rounded-lg overflow-hidden border-2 border-gray-800 shadow-[3px_3px_0px_#1f2937]">
-                <img
-                  src={url}
-                  alt={`Screenshot ${index + 1}`}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <button
-                type="button" // CRITICAL FIX: Explicitly set button type
-                onClick={(e) => handleRemoveExisting(e, url)}
-                className="absolute -top-2 -right-2 w-6 h-6 bg-startsnap-french-rose text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+              <img
+                src={url}
+                alt={`Screenshot ${index + 1}`}
+                className="w-full h-24 object-cover rounded-lg border-2 border-gray-800"
+              />
+              <Button
+                type="button"
+                onClick={(event) => handleRemoveExisting(url, event)}
+                className="absolute -top-2 -right-2 w-6 h-6 p-0 bg-startsnap-french-rose text-white rounded-full border-2 border-gray-800 shadow-[2px_2px_0px_#1f2937] opacity-0 group-hover:opacity-100 transition-opacity"
                 aria-label="Remove image"
               >
-                <X size={14} />
-              </button>
+                <span className="material-icons text-sm">close</span>
+              </Button>
             </div>
           ))}
 
           {/* Uploading Images */}
-          {uploadingImages.map((uploadingImage, index) => (
+          {uploadingImages.map((image, index) => (
             <div key={`uploading-${index}`} className="relative group">
-              <div className="aspect-square rounded-lg overflow-hidden border-2 border-gray-800 shadow-[3px_3px_0px_#1f2937]">
-                <img
-                  src={uploadingImage.preview}
-                  alt={`Uploading ${index + 1}`}
-                  className="w-full h-full object-cover"
-                />
-                {uploadingImage.uploading && (
-                  <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                    <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  </div>
-                )}
-              </div>
-              <button
-                type="button" // CRITICAL FIX: Explicitly set button type
-                onClick={(e) => handleRemoveUploading(e, uploadingImage)}
-                className="absolute -top-2 -right-2 w-6 h-6 bg-startsnap-french-rose text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+              <img
+                src={image.preview}
+                alt={`Uploading ${index + 1}`}
+                className="w-full h-24 object-cover rounded-lg border-2 border-gray-800"
+              />
+              {image.uploading && (
+                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
+                  <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                </div>
+              )}
+              <Button
+                type="button"
+                onClick={(event) => handleRemoveUploading(image, event)}
+                className="absolute -top-2 -right-2 w-6 h-6 p-0 bg-startsnap-french-rose text-white rounded-full border-2 border-gray-800 shadow-[2px_2px_0px_#1f2937] opacity-0 group-hover:opacity-100 transition-opacity"
                 aria-label="Remove image"
-                disabled={uploadingImage.uploading}
               >
-                <X size={14} />
-              </button>
+                <span className="material-icons text-sm">close</span>
+              </Button>
             </div>
           ))}
         </div>
