@@ -48,7 +48,7 @@ export function getTransformedImageUrl(originalUrl: string, options: ImageTransf
       return originalUrl;
     }
 
-    // Create a URL object to parse the original URL
+    // Parse the URL
     const url = new URL(originalUrl);
     
     // Check if this is a Supabase storage URL
@@ -57,18 +57,33 @@ export function getTransformedImageUrl(originalUrl: string, options: ImageTransf
       return originalUrl;
     }
     
-    // Transform the path from /object/public/ to /render/image/public/
-    const transformedPath = url.pathname.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/');
+    // Extract the bucket name and file path from the URL
+    // The format is /storage/v1/object/public/BUCKET_NAME/FILE_PATH
+    const pathParts = url.pathname.split('/public/');
+    if (pathParts.length !== 2) {
+      console.warn('Invalid Supabase storage URL format:', originalUrl);
+      return originalUrl;
+    }
     
-    // Create the new URL with the transformed path
-    const transformedUrl = new URL(transformedPath, url.origin);
+    const bucketName = pathParts[0].split('/').pop();
+    const filePath = pathParts[1];
     
-    // Add transformation parameters
-    transformedUrl.searchParams.set('width', options.width.toString());
-    transformedUrl.searchParams.set('quality', (options.quality ?? 75).toString());
-    transformedUrl.searchParams.set('format', options.format ?? 'webp');
+    if (!bucketName || !filePath) {
+      console.warn('Could not extract bucket name or file path from URL:', originalUrl);
+      return originalUrl;
+    }
     
-    return transformedUrl.toString();
+    // Construct the transformation URL according to Supabase docs
+    // Format: https://<PROJECT_REF>.supabase.co/storage/v1/render/image/public/<BUCKET_NAME>/<FILE_PATH>
+    const baseUrl = `${url.origin}/storage/v1/render/image/public/${bucketName}/${filePath}`;
+    
+    // Add query parameters
+    const params = new URLSearchParams();
+    params.set('width', options.width.toString());
+    params.set('quality', (options.quality ?? 75).toString());
+    params.set('format', options.format ?? 'webp');
+    
+    return `${baseUrl}?${params.toString()}`;
   } catch (error) {
     console.error('Error transforming image URL:', error);
     // Return the original URL if transformation fails

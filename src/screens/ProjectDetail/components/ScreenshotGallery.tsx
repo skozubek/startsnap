@@ -79,7 +79,7 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
     }
   };
 
-  // Fallback image URL for when transformation fails
+  // Fallback image URL for when images fail to load
   const fallbackImageUrl = "https://placehold.co/400x300/e2e8f0/1f2937?text=Image+Unavailable";
 
   return (
@@ -97,11 +97,17 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {urls.map((url, index) => {
-            // Use the original URL directly if it's not a Supabase URL
-            const isSupabaseUrl = url.includes('supabase.co/storage');
-            const imageUrl = isSupabaseUrl 
-              ? getTransformedImageUrl(url, { width: 400, format: 'webp' })
-              : url;
+            // Determine if this is a Supabase URL that needs transformation
+            let imageUrl = url;
+            
+            try {
+              if (url.includes('supabase.co/storage')) {
+                imageUrl = getTransformedImageUrl(url, { width: 400, format: 'webp' });
+              }
+            } catch (error) {
+              console.error(`Error transforming URL for image ${index + 1}:`, error);
+              imageUrl = url; // Fallback to original URL
+            }
             
             console.log(`🖼️ Image ${index + 1}:`);
             console.log(`  Original URL: ${url}`);
@@ -122,6 +128,7 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
                     console.error(`🚨 Failed to load image ${index + 1}:`, imageUrl);
                     // Set fallback image
                     (e.target as HTMLImageElement).src = fallbackImageUrl;
+                    (e.target as HTMLImageElement).className = "w-full h-48 object-contain bg-gray-200";
                   }}
                   onLoad={() => {
                     console.log(`✅ Successfully loaded image ${index + 1}:`, imageUrl);
@@ -199,18 +206,27 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
             className="relative max-w-full max-h-full"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Use the original URL directly if it's not a Supabase URL */}
             {urls[currentImageIndex] && (
               <img
-                src={urls[currentImageIndex].includes('supabase.co/storage')
-                  ? getTransformedImageUrl(urls[currentImageIndex], { width: 1280, format: 'webp' })
-                  : urls[currentImageIndex]}
+                src={(() => {
+                  try {
+                    // Only transform Supabase URLs
+                    if (urls[currentImageIndex].includes('supabase.co/storage')) {
+                      return getTransformedImageUrl(urls[currentImageIndex], { width: 1280, format: 'webp' });
+                    }
+                    return urls[currentImageIndex];
+                  } catch (error) {
+                    console.error('Error transforming lightbox image URL:', error);
+                    return urls[currentImageIndex];
+                  }
+                })()}
                 alt={`Screenshot ${currentImageIndex + 1}`}
                 className="max-w-full max-h-full object-contain rounded-lg border-2 border-gray-300"
                 onError={(e) => {
                   console.error(`🚨 Failed to load lightbox image:`, urls[currentImageIndex]);
                   // Set fallback image
                   (e.target as HTMLImageElement).src = fallbackImageUrl;
+                  (e.target as HTMLImageElement).className = "max-w-full max-h-full object-contain rounded-lg border-2 border-gray-300 bg-gray-200";
                 }}
               />
             )}
