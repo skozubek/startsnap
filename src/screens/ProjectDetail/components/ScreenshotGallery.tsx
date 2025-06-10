@@ -285,14 +285,7 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
                 />
               )}
 
-              {/* Loading indicator area */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="opacity-20">
-                  <span className="material-icons text-6xl text-gray-400">
-                    image
-                  </span>
-                </div>
-              </div>
+
             </div>
 
 
