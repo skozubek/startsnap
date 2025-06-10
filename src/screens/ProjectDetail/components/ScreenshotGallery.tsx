@@ -25,8 +25,13 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
+  // Debug logging
+  console.log('🖼️ ScreenshotGallery - URLs received:', urls);
+  console.log('🖼️ ScreenshotGallery - URLs length:', urls?.length);
+
   // Don't render anything if no URLs provided
   if (!urls || urls.length === 0) {
+    console.log('🖼️ ScreenshotGallery - No URLs provided, returning null');
     return null;
   }
 
@@ -88,25 +93,42 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {urls.map((url, index) => (
-            <div
-              key={index}
-              className="relative group cursor-pointer overflow-hidden rounded-lg border-2 border-gray-800 shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_#1f2937] transition-all duration-200"
-              onClick={() => openLightbox(index)}
-            >
-              <img
-                src={getTransformedImageUrl(url, { width: 400, format: 'webp' })}
-                alt={`Screenshot ${index + 1}`}
-                className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-200"
-                loading="lazy"
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 flex items-center justify-center">
-                <span className="material-icons text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-3xl">
-                  zoom_in
-                </span>
+          {urls.map((url, index) => {
+            // Debug each URL transformation
+            const originalUrl = url;
+            const transformedUrl = getTransformedImageUrl(url, { width: 400, format: 'webp' });
+            
+            console.log(`🖼️ Image ${index + 1}:`);
+            console.log(`  Original URL: ${originalUrl}`);
+            console.log(`  Transformed URL: ${transformedUrl}`);
+            
+            return (
+              <div
+                key={index}
+                className="relative group cursor-pointer overflow-hidden rounded-lg border-2 border-gray-800 shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_#1f2937] transition-all duration-200"
+                onClick={() => openLightbox(index)}
+              >
+                <img
+                  src={transformedUrl}
+                  alt={`Screenshot ${index + 1}`}
+                  className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-200"
+                  loading="lazy"
+                  onError={(e) => {
+                    console.error(`🚨 Failed to load image ${index + 1}:`, transformedUrl);
+                    console.error('🚨 Error event:', e);
+                  }}
+                  onLoad={() => {
+                    console.log(`✅ Successfully loaded image ${index + 1}:`, transformedUrl);
+                  }}
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 flex items-center justify-center">
+                  <span className="material-icons text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-3xl">
+                    zoom_in
+                  </span>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -172,6 +194,9 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
               src={getTransformedImageUrl(urls[currentImageIndex], { width: 1280, format: 'webp' })}
               alt={`Screenshot ${currentImageIndex + 1}`}
               className="max-w-full max-h-full object-contain rounded-lg border-2 border-gray-300"
+              onError={(e) => {
+                console.error(`🚨 Failed to load lightbox image:`, getTransformedImageUrl(urls[currentImageIndex], { width: 1280, format: 'webp' }));
+              }}
             />
             
             {/* Image Counter */}
