@@ -79,6 +79,9 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
     }
   };
 
+  // Fallback image URL for when transformation fails
+  const fallbackImageUrl = "https://placehold.co/400x300/e2e8f0/1f2937?text=Image+Unavailable";
+
   return (
     <>
       {/* Screenshot Grid */}
@@ -94,13 +97,15 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {urls.map((url, index) => {
-            // Debug each URL transformation
-            const originalUrl = url;
-            const transformedUrl = getTransformedImageUrl(url, { width: 400, format: 'webp' });
+            // Use the original URL directly if it's not a Supabase URL
+            const isSupabaseUrl = url.includes('supabase.co/storage');
+            const imageUrl = isSupabaseUrl 
+              ? getTransformedImageUrl(url, { width: 400, format: 'webp' })
+              : url;
             
             console.log(`🖼️ Image ${index + 1}:`);
-            console.log(`  Original URL: ${originalUrl}`);
-            console.log(`  Transformed URL: ${transformedUrl}`);
+            console.log(`  Original URL: ${url}`);
+            console.log(`  Display URL: ${imageUrl}`);
             
             return (
               <div
@@ -109,16 +114,17 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
                 onClick={() => openLightbox(index)}
               >
                 <img
-                  src={transformedUrl}
+                  src={imageUrl}
                   alt={`Screenshot ${index + 1}`}
                   className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-200"
                   loading="lazy"
                   onError={(e) => {
-                    console.error(`🚨 Failed to load image ${index + 1}:`, transformedUrl);
-                    console.error('🚨 Error event:', e);
+                    console.error(`🚨 Failed to load image ${index + 1}:`, imageUrl);
+                    // Set fallback image
+                    (e.target as HTMLImageElement).src = fallbackImageUrl;
                   }}
                   onLoad={() => {
-                    console.log(`✅ Successfully loaded image ${index + 1}:`, transformedUrl);
+                    console.log(`✅ Successfully loaded image ${index + 1}:`, imageUrl);
                   }}
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 flex items-center justify-center">
@@ -148,7 +154,10 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
             variant="ghost"
             size="icon"
             className="absolute top-4 right-4 z-10 text-white hover:bg-white hover:bg-opacity-20 rounded-full"
-            onClick={closeLightbox}
+            onClick={(e) => {
+              e.stopPropagation();
+              closeLightbox();
+            }}
             aria-label="Close lightbox"
           >
             <X size={24} />
@@ -190,14 +199,21 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
             className="relative max-w-full max-h-full"
             onClick={(e) => e.stopPropagation()}
           >
-            <img
-              src={getTransformedImageUrl(urls[currentImageIndex], { width: 1280, format: 'webp' })}
-              alt={`Screenshot ${currentImageIndex + 1}`}
-              className="max-w-full max-h-full object-contain rounded-lg border-2 border-gray-300"
-              onError={(e) => {
-                console.error(`🚨 Failed to load lightbox image:`, getTransformedImageUrl(urls[currentImageIndex], { width: 1280, format: 'webp' }));
-              }}
-            />
+            {/* Use the original URL directly if it's not a Supabase URL */}
+            {urls[currentImageIndex] && (
+              <img
+                src={urls[currentImageIndex].includes('supabase.co/storage')
+                  ? getTransformedImageUrl(urls[currentImageIndex], { width: 1280, format: 'webp' })
+                  : urls[currentImageIndex]}
+                alt={`Screenshot ${currentImageIndex + 1}`}
+                className="max-w-full max-h-full object-contain rounded-lg border-2 border-gray-300"
+                onError={(e) => {
+                  console.error(`🚨 Failed to load lightbox image:`, urls[currentImageIndex]);
+                  // Set fallback image
+                  (e.target as HTMLImageElement).src = fallbackImageUrl;
+                }}
+              />
+            )}
             
             {/* Image Counter */}
             {urls.length > 1 && (
