@@ -64,9 +64,10 @@ export const HeaderSection = (): JSX.Element => {
     }
   }, [user]);
 
-  // Only "Feed" is visible to all users
+  // Only "Feed" & Profiles are visible to all users
   const navLinks = [
     { title: "Projects", href: "/projects" },
+    { title: "Profiles", href: "/profiles" },
   ];
 
   /**
