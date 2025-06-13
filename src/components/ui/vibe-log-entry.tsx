@@ -95,9 +95,24 @@ export const VibeLogEntry = ({
       </div>
 
       <div className="space-y-2">
-        <Label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
-          Entry Content
-        </Label>
+        <div className="flex items-center justify-between">
+          <Label className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+            Entry Content
+          </Label>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handleAiFormat}
+            disabled={isFormatting || !content.trim()}
+            className="startsnap-button bg-startsnap-wisp-pink text-startsnap-purple-heart font-['Roboto',Helvetica] font-bold text-sm rounded-lg border-2 border-solid border-gray-800 shadow-[2px_2px_0px_#1f2937] flex items-center gap-2 px-3 py-1.5"
+          >
+            <span className={`material-icons text-lg ${isFormatting ? 'animate-spin' : ''}`}>
+              auto_awesome
+            </span>
+            {isFormatting ? 'Formatting...' : 'AI Magic'}
+          </Button>
+        </div>
         <Textarea
           value={content}
           onChange={(e) => onContentChange(e.target.value)}
