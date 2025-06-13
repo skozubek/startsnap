@@ -335,57 +335,112 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
             <div key={entry.id} className="mb-8 last:mb-0">
               <div className="flex items-start">
                 <div
-                  className={`p-2.5 ${iconData.iconBg} rounded-full border-2 border-solid ${iconData.iconBorder} ${iconData.iconColor} text-3xl flex items-center justify-center`}
+                  className={`p-2.5 ${iconData.iconBg} rounded-full border-2 border-solid ${iconData.iconBorder} ${iconData.iconColor} text-3xl flex items-center justify-center flex-shrink-0`}
                 >
                   <span className="material-icons text-3xl">{iconData.icon}</span>
                 </div>
-                <div className="ml-4 flex-1">
-                  <div className="flex items-center justify-between">
+                <div className="ml-4 flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-2">
                     <p className="font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4">
                       {formatDetailedDate(entry.created_at)}
                     </p>
                     {isOwner && (
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                            onClick={() => handleShareOnX(entry.title)}
-                            className="text-startsnap-oxford-blue hover:bg-startsnap-french-rose/10"
-                          >
-                            <span className="mr-2 flex items-center justify-center">
-                              {React.createElement(FaXTwitter as any, { className: "text-sm" })}
-                            </span>
-                          Share
-                          </DropdownMenuItem>
+                      <div className="flex-shrink-0 ml-4">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                              <span className="sr-only">Open menu</span>
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
                           <DropdownMenuItem
-                            onClick={() => handleEditVibeLogInline(entry)}
-                            className="text-startsnap-oxford-blue hover:bg-startsnap-french-rose/10"
-                          >
-                            <Edit className="mr-2 h-4 w-4" />
-                            Edit
-                          </DropdownMenuItem>
+                              onClick={() => handleShareOnX(entry.title)}
+                              className="text-startsnap-oxford-blue hover:bg-startsnap-french-rose/10"
+                            >
+                              <span className="mr-2 flex items-center justify-center">
+                                {React.createElement(FaXTwitter as any, { className: "text-sm" })}
+                              </span>
+                            Share
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleEditVibeLogInline(entry)}
+                              className="text-startsnap-oxford-blue hover:bg-startsnap-french-rose/10"
+                            >
+                              <Edit className="mr-2 h-4 w-4" />
+                              Edit
+                            </DropdownMenuItem>
 
-                          <DropdownMenuItem
-                            onClick={() => handleDeleteVibeLog(entry.id)}
-                            className="text-red-600 hover:bg-red-50"
-                          >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                            <DropdownMenuItem
+                              onClick={() => handleDeleteVibeLog(entry.id)}
+                              className="text-red-600 hover:bg-red-50"
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
                     )}
                   </div>
-                  <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7 mt-1">
+                  <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7 mb-3">
                     {entry.title}
                   </h3>
-                  <div className="prose prose-sm md:prose-base max-w-none text-startsnap-river-bed font-['Roboto',Helvetica] leading-relaxed">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                    <div className="prose prose-sm md:prose-base max-w-none text-startsnap-river-bed font-['Roboto',Helvetica] leading-relaxed">
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        pre: ({ children }) => (
+                          <pre className="bg-gray-900 text-white border-2 border-gray-800 rounded-lg p-4 overflow-x-auto text-sm font-mono my-4">
+                            {children}
+                          </pre>
+                        ),
+                        code: ({ inline, children }) => (
+                          inline ? (
+                            <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm font-mono">
+                              {children}
+                            </code>
+                          ) : (
+                            <code className="block">{children}</code>
+                          )
+                        ),
+                        h1: ({ children }) => (
+                          <h1 className="text-xl font-bold text-startsnap-oxford-blue mt-6 mb-3 first:mt-0">
+                            {children}
+                          </h1>
+                        ),
+                        h2: ({ children }) => (
+                          <h2 className="text-lg font-bold text-startsnap-oxford-blue mt-5 mb-2 first:mt-0">
+                            {children}
+                          </h2>
+                        ),
+                        h3: ({ children }) => (
+                          <h3 className="text-base font-bold text-startsnap-oxford-blue mt-4 mb-2 first:mt-0">
+                            {children}
+                          </h3>
+                        ),
+                        ul: ({ children }) => (
+                          <ul className="list-disc list-inside space-y-1 my-3">
+                            {children}
+                          </ul>
+                        ),
+                        ol: ({ children }) => (
+                          <ol className="list-decimal list-inside space-y-1 my-3">
+                            {children}
+                          </ol>
+                        ),
+                        p: ({ children }) => (
+                          <p className="my-2 first:mt-0 last:mb-0">
+                            {children}
+                          </p>
+                        ),
+                        strong: ({ children }) => (
+                          <strong className="font-bold text-startsnap-oxford-blue">
+                            {children}
+                          </strong>
+                        ),
+                      }}
+                    >
                       {entry.content || ''}
                     </ReactMarkdown>
                   </div>

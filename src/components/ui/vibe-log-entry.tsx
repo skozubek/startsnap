@@ -6,7 +6,7 @@
  * both single-option and multi-option type selection modes.
  */
 
-import React from "react";
+import React, { useState, useCallback } from "react";
 import { Label } from "./label";
 import { Input } from "./input";
 import { Textarea } from "./textarea";
@@ -19,8 +19,9 @@ import {
   SelectValue,
 } from "./select";
 import { getVibeLogOptions, getVibeLogDisplay } from "../../config/categories";
-import { formatDetailedDate } from "../../lib/utils";
-import Avatar from "boring-avatars";
+
+import { supabase } from "../../lib/supabase";
+import { toast } from "sonner";
 
 interface VibeLogEntryProps {
   title: string;
@@ -48,6 +49,7 @@ export const VibeLogEntry = ({
   showAllTypes = false,
   singleOptionType = 'launch',
 }: VibeLogEntryProps): JSX.Element => {
+  const [isFormatting, setIsFormatting] = useState(false);
   const vibeLogOptions = getVibeLogOptions();
   const currentTypeConfig = vibeLogOptions.find(option => option.value === type);
 
@@ -57,13 +59,34 @@ export const VibeLogEntry = ({
     ? vibeLogOptions.find(o => o.value === 'launch')?.contentPlaceholder || "Share details about your project, key features, what problems it solves, and what makes it special..."
     : vibeLogOptions.find(o => o.value === 'idea')?.contentPlaceholder || "Share your idea, what inspired it, the problem you want to solve, and your vision for the solution...";
 
-  // Placeholder functions for AI formatting functionality
-  const handleAiFormat = () => {
-    // TODO: Implement AI formatting functionality
-    console.log('AI formatting not yet implemented');
-  };
-
-  const isFormatting = false; // TODO: Implement actual formatting state
+  /**
+   * @description Handles AI formatting of the vibe log content by invoking the Supabase Edge Function.
+   * @async
+   * @returns {Promise<void>}
+   * @sideEffects Calls Supabase Edge Function, updates content, and shows toast notifications.
+   */
+  const handleAiFormat = useCallback(async () => {
+    setIsFormatting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-vibe-log-formatter', {
+        body: { rawContent: content, logType: type },
+      });
+      if (error) {
+        toast.error("AI formatting failed: " + (error.message || error.description || "Unknown error"));
+        return;
+      }
+      if (data && data.formattedLog) {
+        onContentChange(data.formattedLog);
+        toast.success('Vibe Log polished with AI!');
+      } else {
+        toast.error("AI formatting failed: No formatted log returned.");
+      }
+    } catch (err: any) {
+      toast.error("AI formatting failed: " + (err?.message || "Unknown error"));
+    } finally {
+      setIsFormatting(false);
+    }
+  }, [content, type, onContentChange]);
 
   return (
     <div className="space-y-6">
