@@ -1,7 +1,16 @@
+/**
+ * src/components/ui/vibe-log-entry.tsx
+ * 
+ * @description VibeLogEntry component for creating and editing vibe log entries.
+ * Provides form fields for title, content, and type selection with support for
+ * both single-option and multi-option type selection modes.
+ */
+
 import React from "react";
 import { Label } from "./label";
 import { Input } from "./input";
 import { Textarea } from "./textarea";
+import { Button } from "./button";
 import {
   Select,
   SelectContent,
@@ -24,6 +33,11 @@ interface VibeLogEntryProps {
   singleOptionType?: 'launch' | 'idea';
 }
 
+/**
+ * @description VibeLogEntry component for creating and editing vibe log entries
+ * @param {VibeLogEntryProps} props - Component props
+ * @returns {JSX.Element} The rendered VibeLogEntry component
+ */
 export const VibeLogEntry = ({
   title,
   content,
@@ -42,6 +56,14 @@ export const VibeLogEntry = ({
     : singleOptionType === 'launch'
     ? vibeLogOptions.find(o => o.value === 'launch')?.contentPlaceholder || "Share details about your project, key features, what problems it solves, and what makes it special..."
     : vibeLogOptions.find(o => o.value === 'idea')?.contentPlaceholder || "Share your idea, what inspired it, the problem you want to solve, and your vision for the solution...";
+
+  // Placeholder functions for AI formatting functionality
+  const handleAiFormat = () => {
+    // TODO: Implement AI formatting functionality
+    console.log('AI formatting not yet implemented');
+  };
+
+  const isFormatting = false; // TODO: Implement actual formatting state
 
   return (
     <div className="space-y-6">
