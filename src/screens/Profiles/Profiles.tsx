@@ -118,22 +118,28 @@ export const Profiles = (): JSX.Element => {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {profiles.map(profile => (
                   <Link to={`/profiles/${profile.username}`} key={profile.user_id} className="block group">
-                    <Card className="h-full bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] group-hover:-translate-y-1 transition-transform duration-200">
+                    <Card className="h-full bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] hover:opacity-90 transition-opacity duration-200">
+                      {/* Colorful header strip */}
+                      <div className="h-3 bg-gradient-to-r from-startsnap-french-rose via-startsnap-corn to-startsnap-mountain-meadow"></div>
+
                       <CardContent className="p-6 flex flex-col items-center text-center">
-                        <div className="w-20 h-20 mb-4">
+                        <div className="w-20 h-20 mb-4 relative">
                           <UserAvatar name={getAvatarName(null, profile.username)} size={80} className="w-full h-full" />
+                          {/* Status indicator dot */}
+                          <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-white border-2 border-gray-800 rounded-full flex items-center justify-center shadow-[2px_2px_0px_#1f2937]">
+                            <span className="material-icons text-xs text-gray-700">
+                              {(() => {
+                                const foundOption = statusOptions.find(opt => opt.value === profile.status);
+                                return (foundOption && 'icon' in foundOption) ? foundOption.icon : 'lightbulb';
+                              })()}
+                            </span>
+                          </div>
                         </div>
-                        <h3 className="text-xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica]">{profile.username}</h3>
-                        <p className="text-sm text-startsnap-pale-sky font-['Roboto',Helvetica] line-clamp-2 h-10 mt-2">{profile.bio || 'No bio yet.'}</p>
-                        <div className="mt-4 text-xs font-['Space_Mono',Helvetica] text-startsnap-ebony-clay bg-startsnap-athens-gray px-3 py-1 rounded-full border border-solid border-gray-800 flex items-center gap-1">
-                          <span className="material-icons text-sm">
-                            {(() => {
-                              const foundOption = statusOptions.find(opt => opt.value === profile.status);
-                              return (foundOption && 'icon' in foundOption) ? foundOption.icon : 'lightbulb';
-                            })()}
-                          </span>
-                          {statusOptions.find(opt => opt.value === profile.status)?.label || 'Vibing'}
-                        </div>
+
+                        <h3 className="text-xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-2">{profile.username}</h3>
+                        <p className="text-sm text-startsnap-river-bed font-['Roboto',Helvetica] line-clamp-3 flex-1 leading-relaxed">{profile.bio || 'No bio yet.'}</p>
+
+
                       </CardContent>
                     </Card>
                   </Link>

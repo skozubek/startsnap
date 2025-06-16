@@ -114,7 +114,7 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
   const isScouted = creatorName === 'VibeScout';
 
   const cardContent = (
-    <Card className="h-full bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] group-hover:-translate-y-1 transition-transform duration-200">
+    <Card className="h-full bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] hover:opacity-90 transition-opacity duration-200">
       <CardContent className="p-0 h-full flex flex-col">
         {/* Category Header with optional screenshot background */}
         <div

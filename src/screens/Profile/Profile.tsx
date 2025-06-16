@@ -289,6 +289,9 @@ export const Profile = (): JSX.Element => {
 
           {/* Profile Edit Card */}
           <Card className="bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]">
+            {/* Colorful header strip */}
+            <div className="h-4 bg-gradient-to-r from-startsnap-french-rose via-startsnap-corn to-startsnap-mountain-meadow"></div>
+
             <CardContent className="p-8">
               <div className="flex flex-col md:flex-row gap-8">
                 <div className="flex flex-col items-center min-w-[250px]">
@@ -320,13 +323,10 @@ export const Profile = (): JSX.Element => {
                           <button
                             key={option.value}
                             onClick={() => handleStatusChange(option.value)}
-                            className="w-full text-left px-3 py-2 rounded-md hover:bg-startsnap-athens-gray flex items-center text-sm"
+                            className="w-full text-left px-3 py-2 rounded-md hover:bg-startsnap-athens-gray flex items-center text-sm font-medium"
                           >
                             <span className="material-icons text-sm mr-2">{option.icon}</span>
-                            <div>
-                              <div className="font-medium">{option.label}</div>
-                              <div className="text-xs text-startsnap-pale-sky">{option.description}</div>
-                            </div>
+                            {option.label}
                           </button>
                         ))}
                       </div>

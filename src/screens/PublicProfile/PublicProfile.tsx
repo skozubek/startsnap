@@ -98,7 +98,10 @@ export const PublicProfile = (): JSX.Element => {
       <div className="w-full bg-gradient-to-b from-startsnap-beige to-startsnap-candlelight">
         <div className="w-full max-w-4xl px-8 py-16 mx-auto">
           {/* Profile Card */}
-          <Card className="bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] transform hover:shadow-[8px_8px_0px_#1f2937] transition-all duration-200">
+          <Card className="bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] hover:opacity-95 transition-opacity duration-200">
+            {/* Colorful header strip */}
+            <div className="h-4 bg-gradient-to-r from-startsnap-french-rose via-startsnap-corn to-startsnap-mountain-meadow"></div>
+
             <CardContent className="p-8">
               <div className="flex flex-col md:flex-row gap-8">
                 <div className="flex flex-col items-center min-w-[250px]">
@@ -106,10 +109,10 @@ export const PublicProfile = (): JSX.Element => {
                     <UserAvatar name={getAvatarName(null, profile.username)} size={96} className="w-full h-full" />
                   </div>
                   <div className="mt-4 text-center">
-                    <h2 className="text-3xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica]">
+                                        <h2 className="text-3xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica]">
                       {profile.username}
                     </h2>
-                    <Badge variant="outline" className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-gray-800 px-3 py-1.5 mt-2">
+                    <Badge variant="outline" className="bg-startsnap-athens-gray text-startsnap-river-bed font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-gray-300 px-3 py-1.5 mt-2">
                       <span className="material-icons text-sm mr-1">{getStatusIcon(profile.status)}</span>
                       {getUserStatusOptions().find(opt => opt.value === profile.status)?.label || 'Vibing'}
                     </Badge>
