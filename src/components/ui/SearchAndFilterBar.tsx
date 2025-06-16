@@ -40,7 +40,7 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
   onDiscoveryChange,
 }) => {
   const [searchTerm, setSearchTerm] = useState<string>(initialSearchTerm);
-  const [tempFilters, setTempFilters] = useState<FilterOptions>(initialFilters);
+  const [currentFilters, setCurrentFilters] = useState<FilterOptions>(initialFilters);
   const [currentSort, setCurrentSort] = useState<SortOption>(initialSort);
   const [isFilterPopoverOpen, setIsFilterPopoverOpen] = useState<boolean>(false); // State for popover
 
@@ -50,7 +50,7 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
   }, [initialSearchTerm]);
 
   useEffect(() => {
-    setTempFilters(initialFilters);
+    setCurrentFilters(initialFilters);
   }, [initialFilters]);
 
   useEffect(() => {
@@ -71,7 +71,7 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
   }, [searchTerm, initialSearchTerm]);
 
   const handleApplyChanges = (updatedFilters?: FilterOptions, updatedSort?: SortOption) => {
-    const finalFilters = updatedFilters || tempFilters;
+    const finalFilters = updatedFilters || currentFilters;
     const finalSort = updatedSort || currentSort;
     onDiscoveryChange({
       searchTerm,
@@ -103,15 +103,28 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
     handleApplyChanges(undefined, newSort);
   };
 
-  const handleFilterApply = () => {
-    handleApplyChanges(tempFilters, undefined);
-    setIsFilterPopoverOpen(false);
+  const handleCategoryChange = (value: string) => {
+    const newFilters = { ...currentFilters, category: value === 'all' ? undefined : value };
+    setCurrentFilters(newFilters);
+    handleApplyChanges(newFilters);
+  };
+
+  const handleProjectTypeChange = (type: 'all' | 'live' | 'idea') => {
+    const newFilters = { ...currentFilters, type };
+    setCurrentFilters(newFilters);
+    handleApplyChanges(newFilters);
+  };
+
+  const handleHackathonToggle = (checked: boolean) => {
+    const newFilters = { ...currentFilters, isHackathonEntry: checked ? true : undefined };
+    setCurrentFilters(newFilters);
+    handleApplyChanges(newFilters);
   };
 
   const handleFilterClear = () => {
     const clearedFilters: FilterOptions = { type: 'all', category: undefined, isHackathonEntry: undefined };
-    setTempFilters(clearedFilters);
-    handleApplyChanges(clearedFilters, undefined);
+    setCurrentFilters(clearedFilters);
+    handleApplyChanges(clearedFilters);
     setIsFilterPopoverOpen(false);
   };
 
@@ -124,7 +137,7 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
     return 'Sort by';
   };
 
-  const barStyle = "flex flex-col md:flex-row items-center gap-4 p-4 bg-startsnap-white border-2 border-gray-800 shadow-[4px_4px_0px_#1f2937] rounded-lg mb-8";
+  const barStyle = "flex flex-col md:flex-row items-center gap-4 p-6 bg-startsnap-white border-2 border-gray-800 shadow-[4px_4px_0px_#1f2937] rounded-lg mb-8";
   const newPopoverContentStyle = "p-5 bg-startsnap-white border-2 border-gray-800 rounded-lg shadow-[2px_2px_0px_#1f2937]";
   const newSelectTriggerStyle = "flex-grow border border-gray-800 rounded-md p-2 shadow-[1px_1px_0px_#1f2937] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring w-full";
   const newSelectContentPanelStyle = "bg-startsnap-white border-2 border-gray-800 rounded-lg shadow-[2px_2px_0px_#1f2937]";
@@ -161,8 +174,8 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
             <div>
               <Label htmlFor="filter-category" className="font-semibold text-startsnap-ebony-clay block mb-1.5">Category</Label>
               <Select
-                value={tempFilters.category || ''}
-                onValueChange={(value) => setTempFilters(prev => ({ ...prev, category: value === 'all' ? undefined : value }))}
+                value={currentFilters.category || ''}
+                onValueChange={handleCategoryChange}
               >
                 <SelectTrigger id="filter-category" className={newSelectTriggerStyle}>
                   <SelectValue placeholder="All Categories" />
@@ -184,9 +197,9 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
                 {(['all', 'live', 'idea'] as const).map(type => (
                   <Button
                     key={type}
-                    variant={tempFilters.type === type ? 'filterOptionSelected' : 'filterOption'}
+                    variant={currentFilters.type === type ? 'filterOptionSelected' : 'filterOption'}
                     size="sm" // Keep size consistent for these options
-                    onClick={() => setTempFilters(prev => ({ ...prev, type }))}
+                    onClick={() => handleProjectTypeChange(type)}
                     className={"capitalize flex-1"} // flex-1 for equal width
                   >
                     {type}
@@ -199,18 +212,16 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="filter-hackathon"
-                checked={!!tempFilters.isHackathonEntry}
-                onCheckedChange={(checked) => setTempFilters(prev => ({ ...prev, isHackathonEntry: !!checked }))}
+                checked={!!currentFilters.isHackathonEntry}
+                onCheckedChange={handleHackathonToggle}
                 className="border-gray-800 shadow-[1px_1px_0px_#1f2937] data-[state=checked]:bg-startsnap-french-rose data-[state=checked]:text-startsnap-white"
               />
               <Label htmlFor="filter-hackathon" className="font-semibold text-startsnap-ebony-clay">Hackathon Entries Only</Label>
             </div>
 
-            {/* Increased vertical margin for separator */}
-            <div className="h-px my-3 bg-gray-300" />
-            <div className="flex justify-end gap-2 mt-3">
-              <Button variant="filterOption" size="sm" onClick={handleFilterClear}>Clear</Button>
-              <Button variant="primaryPopoverAction" size="sm" onClick={handleFilterApply}>Apply Filters</Button>
+            {/* Clear Filters Button */}
+            <div className="flex justify-end mt-3">
+              <Button variant="filterOption" size="sm" onClick={handleFilterClear}>Clear All Filters</Button>
             </div>
           </div>
         </PopoverContent>
