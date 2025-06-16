@@ -288,7 +288,7 @@ export const Profile = (): JSX.Element => {
           </div>
 
           {/* Profile Edit Card */}
-          <Card className="bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] transform hover:shadow-[8px_8px_0px_#1f2937] transition-all duration-200">
+          <Card className="bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]">
             <CardContent className="p-8">
               <div className="flex flex-col md:flex-row gap-8">
                 <div className="flex flex-col items-center min-w-[250px]">

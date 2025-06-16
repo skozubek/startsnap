@@ -399,7 +399,7 @@ export const ProjectDetail = (): JSX.Element => {
         <div className="flex flex-col w-full items-center pt-12 pb-8 px-8">
           {/* Project Showcase Zone */}
           <div className="w-full max-w-4xl">
-            <Card className="w-full bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] transform hover:shadow-[8px_8px_0px_#1f2937] transition-all duration-200">
+            <Card className="w-full bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]">
               <CardContent className="p-0">
                 <ProjectInfoSection
                   startsnap={startsnap}

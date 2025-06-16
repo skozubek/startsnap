@@ -160,17 +160,8 @@ export const Projects = (): JSX.Element => {
       {/* Browse Section - White Background for Contrast */}
       <div className="w-full bg-white">
         <div className="w-full max-w-screen-2xl px-8 py-16 mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-startsnap-ebony-clay mb-3 font-['Space_Grotesk',Helvetica]">
-              Browse All StartSnaps
-            </h2>
-            <p className="text-lg text-startsnap-river-bed font-['Roboto',Helvetica]">
-              Discover amazing projects from our community of builders and creators
-            </p>
-          </div>
-
-          {/* Search Bar in Subtle Container */}
-          <div className="bg-startsnap-beige/50 p-6 rounded-lg border-2 border-gray-200 mb-8">
+          {/* Streamlined Search Bar */}
+          <div className="mb-12">
             <SearchAndFilterBar
               initialSearchTerm={discoveryState.searchTerm}
               initialFilters={discoveryState.filters}

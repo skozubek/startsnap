@@ -137,116 +137,128 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
     return 'Sort by';
   };
 
-  const barStyle = "flex flex-col md:flex-row items-center gap-4 p-6 bg-startsnap-white border-2 border-gray-800 shadow-[4px_4px_0px_#1f2937] rounded-lg mb-8";
-  const newPopoverContentStyle = "p-5 bg-startsnap-white border-2 border-gray-800 rounded-lg shadow-[2px_2px_0px_#1f2937]";
-  const newSelectTriggerStyle = "flex-grow border border-gray-800 rounded-md p-2 shadow-[1px_1px_0px_#1f2937] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring w-full";
-  const newSelectContentPanelStyle = "bg-startsnap-white border-2 border-gray-800 rounded-lg shadow-[2px_2px_0px_#1f2937]";
-
   return (
-    <div className={barStyle}>
-      {/* Search Input */}
-      <div className="relative flex-grow w-full md:w-auto">
-        <span className="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">search</span>
-        <Input
-          type="text"
-          placeholder="Search by Name, Description, Tags, Tools..."
-          value={searchTerm}
-          onChange={handleSearchInputChange}
-          onKeyDown={(e) => e.key === 'Enter' && handleSearchApply()} // Apply search on Enter key
-          // Use a generic input style, or define one if specific tweaks are needed
-          className={"flex-grow border border-gray-800 rounded-md p-2 shadow-[2px_2px_0px_#1f2937] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring pl-10"}
-        />
-      </div>
+    <div className="bg-startsnap-ebony-clay p-6 rounded-xl border-4 border-startsnap-french-rose shadow-[6px_6px_0px_#ef4444] transform rotate-[0.5deg] hover:rotate-0 transition-all duration-300">
+      {/* Search Section */}
+      <div className="flex flex-col lg:flex-row gap-4 items-center">
+        {/* Main Search Input - Takes Most Space */}
+        <div className="relative flex-1 w-full">
+          <span className="material-icons absolute left-4 top-1/2 -translate-y-1/2 text-startsnap-beige text-xl">search</span>
+          <Input
+            type="text"
+            placeholder="Search projects, tags, tools..."
+            value={searchTerm}
+            onChange={handleSearchInputChange}
+            onKeyDown={(e) => e.key === 'Enter' && handleSearchApply()}
+            className="w-full bg-startsnap-beige text-startsnap-ebony-clay placeholder:text-startsnap-ebony-clay/60 border-2 border-startsnap-ebony-clay rounded-lg pl-12 pr-4 py-3 text-base font-medium shadow-[3px_3px_0px_#1f2937] focus:shadow-[5px_5px_0px_#1f2937] focus:translate-x-[-2px] focus:translate-y-[-2px] transition-all duration-200"
+          />
+        </div>
 
-      {/* Filter Controls */}
-      <Popover open={isFilterPopoverOpen} onOpenChange={setIsFilterPopoverOpen}>
-        <PopoverTrigger asChild>
-          <Button variant="filterTrigger" size="sm"> {/* Adjusted size to sm as original py-2 px-4 is smaller than default */}
-            <span className="material-icons text-base">filter_list</span>
-            Filters
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className={newPopoverContentStyle} align="start">
-          <div className="grid gap-5">
-            <h3 className="font-bold text-lg text-startsnap-ebony-clay mb-1">Filter By</h3>
+        {/* Compact Filter & Sort Controls */}
+        <div className="flex gap-3 shrink-0">
+          {/* Filter Popover */}
+          <Popover open={isFilterPopoverOpen} onOpenChange={setIsFilterPopoverOpen}>
+            <PopoverTrigger asChild>
+              <Button className="bg-startsnap-french-rose text-white border-2 border-startsnap-ebony-clay rounded-lg px-4 py-3 font-bold shadow-[3px_3px_0px_#1f2937] hover:shadow-[5px_5px_0px_#1f2937] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200 flex items-center gap-2">
+                <span className="material-icons text-lg">tune</span>
+                <span className="hidden sm:inline">Filter</span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="p-6 bg-startsnap-white border-3 border-startsnap-ebony-clay rounded-xl shadow-[6px_6px_0px_#1f2937] w-80" align="start">
+              <div className="space-y-6">
+                <h3 className="font-bold text-xl text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica]">🎯 Filter Projects</h3>
 
-            {/* Category Filter */}
-            <div>
-              <Label htmlFor="filter-category" className="font-semibold text-startsnap-ebony-clay block mb-1.5">Category</Label>
-              <Select
-                value={currentFilters.category || ''}
-                onValueChange={handleCategoryChange}
-              >
-                <SelectTrigger id="filter-category" className={newSelectTriggerStyle}>
-                  <SelectValue placeholder="All Categories" />
-                </SelectTrigger>
-                <SelectContent className={newSelectContentPanelStyle}> {/* Panel style */}
-                  <SelectItem value="all">All Categories</SelectItem>
-                  {categories.map(cat => (
-                    <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+                {/* Category Filter */}
+                <div>
+                  <Label className="font-bold text-startsnap-ebony-clay block mb-3 font-['Space_Grotesk',Helvetica]">Category</Label>
+                  <Select value={currentFilters.category || ''} onValueChange={handleCategoryChange}>
+                    <SelectTrigger className="w-full bg-startsnap-beige border-2 border-startsnap-ebony-clay rounded-lg p-3 shadow-[2px_2px_0px_#1f2937] font-medium">
+                      <SelectValue placeholder="All Categories" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-startsnap-white border-2 border-startsnap-ebony-clay rounded-lg shadow-[4px_4px_0px_#1f2937]">
+                      <SelectItem value="all">All Categories</SelectItem>
+                      {categories.map(cat => (
+                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            {/* Project Type Filter */}
-            <div>
-              <Label className="font-semibold text-startsnap-ebony-clay block mb-1.5">Project Type</Label>
-              {/* Using buttons as radio group for neo-brutalist style */}
-              <div className="flex gap-2">
-                {(['all', 'live', 'idea'] as const).map(type => (
-                  <Button
-                    key={type}
-                    variant={currentFilters.type === type ? 'filterOptionSelected' : 'filterOption'}
-                    size="sm" // Keep size consistent for these options
-                    onClick={() => handleProjectTypeChange(type)}
-                    className={"capitalize flex-1"} // flex-1 for equal width
+                {/* Project Type Filter */}
+                <div>
+                  <Label className="font-bold text-startsnap-ebony-clay block mb-3 font-['Space_Grotesk',Helvetica]">Project Type</Label>
+                  <div className="flex gap-2">
+                    {(['all', 'live', 'idea'] as const).map(type => (
+                      <Button
+                        key={type}
+                        onClick={() => handleProjectTypeChange(type)}
+                        className={`flex-1 capitalize font-bold border-2 border-startsnap-ebony-clay rounded-lg py-2 px-3 shadow-[2px_2px_0px_#1f2937] transition-all duration-200 ${
+                          currentFilters.type === type
+                            ? 'bg-startsnap-french-rose text-white'
+                            : 'bg-startsnap-beige text-startsnap-ebony-clay hover:bg-startsnap-french-rose hover:text-white'
+                        }`}
+                      >
+                        {type}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Hackathon Filter */}
+                <div className="flex items-center gap-3 p-3 bg-startsnap-beige rounded-lg border-2 border-startsnap-ebony-clay">
+                  <Checkbox
+                    id="filter-hackathon"
+                    checked={!!currentFilters.isHackathonEntry}
+                    onCheckedChange={handleHackathonToggle}
+                    className="border-2 border-startsnap-ebony-clay shadow-[1px_1px_0px_#1f2937] data-[state=checked]:bg-startsnap-french-rose"
+                  />
+                  <Label htmlFor="filter-hackathon" className="font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] cursor-pointer">
+                    🏆 Hackathon Projects Only
+                  </Label>
+                </div>
+
+                {/* Clear Button */}
+                <Button
+                  onClick={handleFilterClear}
+                  className="w-full bg-startsnap-ebony-clay text-startsnap-beige border-2 border-startsnap-french-rose rounded-lg py-3 font-bold shadow-[3px_3px_0px_#ef4444] hover:shadow-[5px_5px_0px_#ef4444] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200"
+                >
+                  Clear All Filters
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
+
+          {/* Sort Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button className="bg-startsnap-beige text-startsnap-ebony-clay border-2 border-startsnap-ebony-clay rounded-lg px-4 py-3 font-bold shadow-[3px_3px_0px_#1f2937] hover:shadow-[5px_5px_0px_#1f2937] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200 flex items-center gap-2">
+                <span className="material-icons text-lg">sort</span>
+                <span className="hidden sm:inline">{getSortLabel(currentSort)}</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="p-4 bg-startsnap-white border-3 border-startsnap-ebony-clay rounded-xl shadow-[6px_6px_0px_#1f2937] min-w-[200px]" align="end">
+              <div className="space-y-2">
+                <div className="font-bold text-startsnap-ebony-clay mb-3 font-['Space_Grotesk',Helvetica]">📊 Sort By</div>
+                {[
+                  { field: 'created_at', direction: 'desc', label: '🆕 Newest First' },
+                  { field: 'created_at', direction: 'asc', label: '📅 Oldest First' },
+                  { field: 'support_count', direction: 'desc', label: '❤️ Most Supported' },
+                  { field: 'name', direction: 'asc', label: '🔤 Name (A-Z)' },
+                  { field: 'name', direction: 'desc', label: '🔤 Name (Z-A)' }
+                ].map(({ field, direction, label }) => (
+                  <DropdownMenuItem
+                    key={`${field}-${direction}`}
+                    onClick={() => handleSortChange(field as SortableField, direction as SortDirection)}
+                    className="cursor-pointer hover:bg-startsnap-beige rounded-lg p-2 font-medium transition-colors duration-200"
                   >
-                    {type}
-                  </Button>
+                    {label}
+                  </DropdownMenuItem>
                 ))}
               </div>
-            </div>
-
-            {/* Hackathon Entry Filter */}
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="filter-hackathon"
-                checked={!!currentFilters.isHackathonEntry}
-                onCheckedChange={handleHackathonToggle}
-                className="border-gray-800 shadow-[1px_1px_0px_#1f2937] data-[state=checked]:bg-startsnap-french-rose data-[state=checked]:text-startsnap-white"
-              />
-              <Label htmlFor="filter-hackathon" className="font-semibold text-startsnap-ebony-clay">Hackathon Entries Only</Label>
-            </div>
-
-            {/* Clear Filters Button */}
-            <div className="flex justify-end mt-3">
-              <Button variant="filterOption" size="sm" onClick={handleFilterClear}>Clear All Filters</Button>
-            </div>
-          </div>
-        </PopoverContent>
-      </Popover>
-
-      {/* Sort Controls */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="filterTrigger" size="sm"> {/* Adjusted size to sm */}
-            <span className="material-icons text-base">sort</span>
-            {getSortLabel(currentSort)}
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className={newPopoverContentStyle} align="end"> {/* Re-use style for consistency */}
-          {/* Replaced DropdownMenuLabel with a styled div */}
-          <div className="px-2 py-1.5 text-sm font-semibold text-startsnap-ebony-clay">Sort By</div>
-          {/* Replaced DropdownMenuSeparator with a styled div */}
-          <div className="h-px my-1 bg-gray-300" />
-          <DropdownMenuItem onClick={() => handleSortChange('created_at', 'desc')} className="hover:bg-gray-100 cursor-pointer">Newest</DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleSortChange('created_at', 'asc')} className="hover:bg-gray-100 cursor-pointer">Oldest</DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleSortChange('support_count', 'desc')} className="hover:bg-gray-100 cursor-pointer">Most Supported</DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleSortChange('name', 'asc')} className="hover:bg-gray-100 cursor-pointer">Name (A-Z)</DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleSortChange('name', 'desc')} className="hover:bg-gray-100 cursor-pointer">Name (Z-A)</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
     </div>
   );
 };
