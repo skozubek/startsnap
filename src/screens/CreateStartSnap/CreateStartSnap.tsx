@@ -139,7 +139,7 @@ export const CreateStartSnap = (): JSX.Element => {
   return (
     <div className="flex flex-col w-full items-center bg-startsnap-candlelight">
       {/* Hero Section with Gradient */}
-      <div className="w-full bg-gradient-to-b from-startsnap-beige to-startsnap-candlelight">
+      <div className="w-full bg-startsnap-candlelight">
         <div className="w-full max-w-screen-xl px-8 py-16 mx-auto">
           <div className="text-center">
             <h2 className="text-5xl font-bold text-startsnap-ebony-clay mb-4 font-['Space_Grotesk',Helvetica] leading-[48px]">

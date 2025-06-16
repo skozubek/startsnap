@@ -64,7 +64,7 @@ export const PublicProfile = (): JSX.Element => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-startsnap-beige to-startsnap-candlelight">
+      <div className="flex justify-center items-center min-h-screen bg-startsnap-candlelight">
         <div className="bg-startsnap-ebony-clay p-8 rounded-xl border-4 border-startsnap-french-rose shadow-[8px_8px_0px_#ef4444]">
           <p className="text-xl font-bold text-startsnap-beige">Loading Profile...</p>
         </div>
@@ -74,7 +74,7 @@ export const PublicProfile = (): JSX.Element => {
 
   if (!profile) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-startsnap-beige to-startsnap-candlelight">
+      <div className="flex justify-center items-center min-h-screen bg-startsnap-candlelight">
         <div className="bg-startsnap-ebony-clay p-8 rounded-xl border-4 border-startsnap-french-rose shadow-[8px_8px_0px_#ef4444]">
           <p className="text-xl font-bold text-startsnap-beige">Vibe Coder not found.</p>
         </div>
@@ -95,7 +95,7 @@ export const PublicProfile = (): JSX.Element => {
   return (
     <div className="flex flex-col w-full items-center bg-white">
       {/* Hero Section with Gradient */}
-      <div className="w-full bg-gradient-to-b from-startsnap-beige to-startsnap-candlelight">
+      <div className="w-full bg-startsnap-candlelight">
         <div className="w-full max-w-4xl px-8 py-16 mx-auto">
           {/* Profile Card */}
           <Card className="bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] hover:opacity-95 transition-opacity duration-200">

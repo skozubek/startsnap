@@ -257,7 +257,7 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
             </div>
 
             {/* Image Container */}
-            <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center min-h-[60vh]">
+            <div className="relative bg-gray-100 flex items-center justify-center min-h-[60vh]">
               {urls[currentImageIndex] && (
                 <img
                   src={(() => {

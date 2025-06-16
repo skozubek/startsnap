@@ -10,6 +10,16 @@ import { getUserStatusOptions } from "../../config/categories";
 import { UserAvatar, getAvatarName } from "../../components/ui/user-avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
 import { Card, CardContent } from "../../components/ui/card";
+import { Input } from "../../components/ui/input";
+import { Button } from "../../components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "../../components/ui/popover";
+import { Label } from "../../components/ui/label";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../components/ui/dropdown-menu";
 import { FaGithub, FaXTwitter, FaLinkedinIn } from "react-icons/fa6";
 import type { UserProfileData, ProfileSummary } from "../../types/user";
 
@@ -20,25 +30,51 @@ import type { UserProfileData, ProfileSummary } from "../../types/user";
 export const Profiles = (): JSX.Element => {
   const [loading, setLoading] = useState(true);
   const [profiles, setProfiles] = useState<ProfileSummary[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [sortOption, setSortOption] = useState<string>("name_asc");
+  const [isFilterPopoverOpen, setIsFilterPopoverOpen] = useState<boolean>(false);
   const statusOptions = [{ value: "all", label: "All Statuses" }, ...getUserStatusOptions()];
 
   useEffect(() => {
     /**
-     * @description Fetches profiles from the database with optional status filtering
+     * @description Fetches profiles from the database with optional search, status filtering, and sorting
      * @async
-     * @sideEffects Updates profiles state with filtered results
+     * @sideEffects Updates profiles state with filtered and sorted results
      */
     const fetchProfiles = async () => {
       setLoading(true);
       try {
         let query = supabase
           .from('profiles')
-          .select('user_id, username, bio, status, github_url, twitter_url, linkedin_url, website_url')
-          .order('username', { ascending: true });
+          .select('user_id, username, bio, status, github_url, twitter_url, linkedin_url, website_url, created_at');
 
+        // Apply search filter
+        if (searchTerm.trim()) {
+          query = query.or(`username.ilike.%${searchTerm}%,bio.ilike.%${searchTerm}%`);
+        }
+
+        // Apply status filter
         if (statusFilter !== "all") {
           query = query.eq('status', statusFilter);
+        }
+
+        // Apply sorting
+        switch (sortOption) {
+          case "name_asc":
+            query = query.order('username', { ascending: true });
+            break;
+          case "name_desc":
+            query = query.order('username', { ascending: false });
+            break;
+          case "newest":
+            query = query.order('created_at', { ascending: false });
+            break;
+          case "oldest":
+            query = query.order('created_at', { ascending: true });
+            break;
+          default:
+            query = query.order('username', { ascending: true });
         }
 
         const { data, error } = await query;
@@ -54,13 +90,47 @@ export const Profiles = (): JSX.Element => {
       }
     };
 
-    fetchProfiles();
-  }, [statusFilter]);
+    // Debounce search
+    const handler = setTimeout(() => {
+      fetchProfiles();
+    }, 300);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm, statusFilter, sortOption]);
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const handleStatusChange = (value: string) => {
+    setStatusFilter(value);
+  };
+
+  const handleSortChange = (sort: string) => {
+    setSortOption(sort);
+  };
+
+  const handleFilterClear = () => {
+    setStatusFilter("all");
+    setIsFilterPopoverOpen(false);
+  };
+
+  const getSortLabel = (sort: string): string => {
+    switch (sort) {
+      case "name_asc": return "Name (A-Z)";
+      case "name_desc": return "Name (Z-A)";
+      case "newest": return "Newest";
+      case "oldest": return "Oldest";
+      default: return "Sort by";
+    }
+  };
 
   return (
     <div className="flex flex-col w-full items-center bg-white">
       {/* Hero Section with Gradient */}
-      <div className="w-full bg-gradient-to-b from-startsnap-beige to-startsnap-candlelight">
+      <div className="w-full bg-startsnap-candlelight">
         <div className="w-full max-w-6xl px-8 py-16 mx-auto">
           <div className="text-center">
             <h1 className="text-5xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-4">
@@ -91,23 +161,99 @@ export const Profiles = (): JSX.Element => {
       <div className="w-full bg-white pb-24 pt-8">
         <div className="flex flex-col w-full items-center px-8">
           <div className="w-full max-w-6xl">
-            {/* Filter Section */}
-            <div className="mb-8 max-w-sm mx-auto">
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica]">
-                  <SelectValue placeholder="Filter by status..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {statusOptions.map(option => (
-                    <SelectItem key={option.value} value={option.value}>
-                      <div className="flex items-center gap-2">
-                        {option.value !== 'all' && 'icon' in option && <span className="material-icons text-base">{option.icon}</span>}
-                        <span>{option.label}</span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            {/* BRUTAL Profile Search Bar */}
+            <div className="mb-12">
+              <div className="bg-startsnap-ebony-clay p-6 rounded-xl border-2 border-startsnap-french-rose shadow-[3px_3px_0px_#ef4444] transform rotate-[0.25deg] hover:rotate-0 transition-all duration-300">
+                {/* Search Section */}
+                <div className="flex flex-col lg:flex-row gap-4 items-center">
+                  {/* Main Search Input - Takes Most Space */}
+                  <div className="relative flex-1 w-full">
+                    <span className="material-icons absolute left-4 top-1/2 -translate-y-1/2 text-startsnap-ebony-clay text-xl z-10 pointer-events-none">search</span>
+                    <Input
+                      type="text"
+                      placeholder="Search vibe coders by username or bio..."
+                      value={searchTerm}
+                      onChange={handleSearchChange}
+                      onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+                      className="w-full bg-startsnap-beige text-startsnap-ebony-clay placeholder:text-startsnap-ebony-clay/60 border-2 border-startsnap-ebony-clay rounded-lg pl-12 pr-4 py-3 text-base font-medium shadow-[3px_3px_0px_#1f2937] focus:shadow-[5px_5px_0px_#1f2937] focus:translate-x-[-2px] focus:translate-y-[-2px] transition-all duration-200"
+                    />
+                  </div>
+
+                  {/* Compact Filter & Sort Controls */}
+                  <div className="flex gap-3 shrink-0">
+                    {/* Filter Popover */}
+                    <Popover open={isFilterPopoverOpen} onOpenChange={setIsFilterPopoverOpen}>
+                      <PopoverTrigger asChild>
+                        <Button className="bg-startsnap-beige text-startsnap-ebony-clay border-2 border-startsnap-ebony-clay rounded-lg px-4 py-3 font-bold shadow-[3px_3px_0px_#1f2937] hover:bg-startsnap-beige hover:shadow-[4px_4px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all duration-200 flex items-center gap-2">
+                          <span className="material-icons text-lg">tune</span>
+                          <span className="hidden sm:inline">Filter</span>
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="p-4 bg-startsnap-white border-2 border-gray-800 rounded-lg shadow-[3px_3px_0px_#1f2937] w-72" align="start">
+                        <div className="space-y-4">
+                          <h3 className="font-semibold text-startsnap-ebony-clay">Filter Vibe Coders</h3>
+
+                          {/* Status Filter */}
+                          <div>
+                            <Label className="font-medium text-startsnap-ebony-clay block mb-2">Status</Label>
+                            <Select value={statusFilter} onValueChange={handleStatusChange}>
+                              <SelectTrigger className="w-full border border-gray-800 rounded-md p-2">
+                                <SelectValue placeholder="All Statuses" />
+                              </SelectTrigger>
+                              <SelectContent className="bg-startsnap-white border border-gray-800 rounded-md">
+                                {statusOptions.map(option => (
+                                  <SelectItem key={option.value} value={option.value}>
+                                    <div className="flex items-center gap-2">
+                                      {option.value !== 'all' && 'icon' in option && <span className="material-icons text-base">{option.icon}</span>}
+                                      <span>{option.label}</span>
+                                    </div>
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          {/* Clear Button */}
+                          <Button
+                            onClick={handleFilterClear}
+                            variant="outline"
+                            size="sm"
+                            className="w-full"
+                          >
+                            Clear All Filters
+                          </Button>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+
+                    {/* Sort Dropdown */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button className="bg-startsnap-beige text-startsnap-ebony-clay border-2 border-startsnap-ebony-clay rounded-lg px-4 py-3 font-bold shadow-[3px_3px_0px_#1f2937] hover:bg-startsnap-beige hover:shadow-[4px_4px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all duration-200 flex items-center gap-2">
+                          <span className="material-icons text-lg">sort</span>
+                          <span className="hidden sm:inline">{getSortLabel(sortOption)}</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="bg-startsnap-white border-2 border-gray-800 rounded-lg shadow-[3px_3px_0px_#1f2937]" align="end">
+                        <div className="px-2 py-1.5 text-sm font-semibold text-startsnap-ebony-clay">Sort By</div>
+                        <div className="h-px my-1 bg-gray-300" />
+                        <DropdownMenuItem onClick={() => handleSortChange('newest')} className="hover:bg-gray-100 cursor-pointer">
+                          Newest
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleSortChange('oldest')} className="hover:bg-gray-100 cursor-pointer">
+                          Oldest
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleSortChange('name_asc')} className="hover:bg-gray-100 cursor-pointer">
+                          Name (A-Z)
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleSortChange('name_desc')} className="hover:bg-gray-100 cursor-pointer">
+                          Name (Z-A)
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Results Section */}

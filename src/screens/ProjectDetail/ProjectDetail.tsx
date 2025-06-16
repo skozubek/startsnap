@@ -372,7 +372,7 @@ export const ProjectDetail = (): JSX.Element => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-startsnap-beige to-startsnap-candlelight">
+      <div className="flex justify-center items-center min-h-screen bg-startsnap-candlelight">
         <div className="bg-startsnap-ebony-clay p-8 rounded-xl border-4 border-startsnap-french-rose shadow-[8px_8px_0px_#ef4444]">
           <p className="text-xl font-bold text-startsnap-beige">Loading project...</p>
         </div>
@@ -382,7 +382,7 @@ export const ProjectDetail = (): JSX.Element => {
 
   if (!startsnap) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-startsnap-beige to-startsnap-candlelight">
+      <div className="flex justify-center items-center min-h-screen bg-startsnap-candlelight">
         <div className="bg-startsnap-ebony-clay p-8 rounded-xl border-4 border-startsnap-french-rose shadow-[8px_8px_0px_#ef4444]">
           <p className="text-xl font-bold text-startsnap-beige">Project not found or ID is missing.</p>
         </div>
@@ -395,7 +395,7 @@ export const ProjectDetail = (): JSX.Element => {
   return (
     <>
       {/* Hero Background with Gradient */}
-      <div className="w-full bg-gradient-to-b from-startsnap-beige to-startsnap-candlelight">
+      <div className="w-full bg-startsnap-candlelight">
         <div className="flex flex-col w-full items-center pt-12 pb-8 px-8">
           {/* Project Showcase Zone */}
           <div className="w-full max-w-4xl">

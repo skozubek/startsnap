@@ -127,7 +127,7 @@ export const Projects = (): JSX.Element => {
   return (
     <div className="flex flex-col w-full items-center bg-startsnap-candlelight">
       {/* Hero Section with Gradient */}
-      <div className="w-full bg-gradient-to-b from-startsnap-beige to-startsnap-candlelight">
+      <div className="w-full bg-startsnap-candlelight">
         <div className="w-full max-w-screen-2xl px-8 py-16 mx-auto">
           <h1 className="text-5xl font-bold text-startsnap-ebony-clay text-center mb-16 font-['Space_Grotesk',Helvetica]">
             Explore StartSnaps Gallery
