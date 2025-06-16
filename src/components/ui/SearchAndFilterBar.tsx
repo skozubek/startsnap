@@ -138,44 +138,44 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
   };
 
   return (
-    <div className="bg-startsnap-ebony-clay p-6 rounded-xl border-4 border-startsnap-french-rose shadow-[6px_6px_0px_#ef4444] transform rotate-[0.5deg] hover:rotate-0 transition-all duration-300">
+    <div className="bg-startsnap-ebony-clay p-6 rounded-xl border-2 border-startsnap-french-rose shadow-[3px_3px_0px_#ef4444] transform rotate-[0.25deg] hover:rotate-0 transition-all duration-300">
       {/* Search Section */}
       <div className="flex flex-col lg:flex-row gap-4 items-center">
         {/* Main Search Input - Takes Most Space */}
         <div className="relative flex-1 w-full">
-          <span className="material-icons absolute left-4 top-1/2 -translate-y-1/2 text-startsnap-beige text-xl">search</span>
-          <Input
-            type="text"
+          <span className="material-icons absolute left-4 top-1/2 -translate-y-1/2 text-startsnap-ebony-clay text-xl z-10 pointer-events-none">search</span>
+        <Input
+          type="text"
             placeholder="Search projects, tags, tools..."
-            value={searchTerm}
-            onChange={handleSearchInputChange}
+          value={searchTerm}
+          onChange={handleSearchInputChange}
             onKeyDown={(e) => e.key === 'Enter' && handleSearchApply()}
             className="w-full bg-startsnap-beige text-startsnap-ebony-clay placeholder:text-startsnap-ebony-clay/60 border-2 border-startsnap-ebony-clay rounded-lg pl-12 pr-4 py-3 text-base font-medium shadow-[3px_3px_0px_#1f2937] focus:shadow-[5px_5px_0px_#1f2937] focus:translate-x-[-2px] focus:translate-y-[-2px] transition-all duration-200"
-          />
-        </div>
+        />
+      </div>
 
         {/* Compact Filter & Sort Controls */}
         <div className="flex gap-3 shrink-0">
           {/* Filter Popover */}
-          <Popover open={isFilterPopoverOpen} onOpenChange={setIsFilterPopoverOpen}>
-            <PopoverTrigger asChild>
-              <Button className="bg-startsnap-french-rose text-white border-2 border-startsnap-ebony-clay rounded-lg px-4 py-3 font-bold shadow-[3px_3px_0px_#1f2937] hover:shadow-[5px_5px_0px_#1f2937] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200 flex items-center gap-2">
+      <Popover open={isFilterPopoverOpen} onOpenChange={setIsFilterPopoverOpen}>
+        <PopoverTrigger asChild>
+              <Button className="bg-startsnap-beige text-startsnap-ebony-clay border-2 border-startsnap-ebony-clay rounded-lg px-4 py-3 font-bold shadow-[3px_3px_0px_#1f2937] hover:bg-startsnap-beige hover:shadow-[4px_4px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all duration-200 flex items-center gap-2">
                 <span className="material-icons text-lg">tune</span>
                 <span className="hidden sm:inline">Filter</span>
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="p-6 bg-startsnap-white border-3 border-startsnap-ebony-clay rounded-xl shadow-[6px_6px_0px_#1f2937] w-80" align="start">
-              <div className="space-y-6">
-                <h3 className="font-bold text-xl text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica]">🎯 Filter Projects</h3>
+          </Button>
+        </PopoverTrigger>
+                        <PopoverContent className="p-4 bg-startsnap-white border-2 border-gray-800 rounded-lg shadow-[3px_3px_0px_#1f2937] w-72" align="start">
+              <div className="space-y-4">
+                <h3 className="font-semibold text-startsnap-ebony-clay">Filter Projects</h3>
 
                 {/* Category Filter */}
                 <div>
-                  <Label className="font-bold text-startsnap-ebony-clay block mb-3 font-['Space_Grotesk',Helvetica]">Category</Label>
+                  <Label className="font-medium text-startsnap-ebony-clay block mb-2">Category</Label>
                   <Select value={currentFilters.category || ''} onValueChange={handleCategoryChange}>
-                    <SelectTrigger className="w-full bg-startsnap-beige border-2 border-startsnap-ebony-clay rounded-lg p-3 shadow-[2px_2px_0px_#1f2937] font-medium">
+                    <SelectTrigger className="w-full border border-gray-800 rounded-md p-2">
                       <SelectValue placeholder="All Categories" />
                     </SelectTrigger>
-                    <SelectContent className="bg-startsnap-white border-2 border-startsnap-ebony-clay rounded-lg shadow-[4px_4px_0px_#1f2937]">
+                    <SelectContent className="bg-startsnap-white border border-gray-800 rounded-md">
                       <SelectItem value="all">All Categories</SelectItem>
                       {categories.map(cat => (
                         <SelectItem key={cat} value={cat}>{cat}</SelectItem>
@@ -186,17 +186,15 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
 
                 {/* Project Type Filter */}
                 <div>
-                  <Label className="font-bold text-startsnap-ebony-clay block mb-3 font-['Space_Grotesk',Helvetica]">Project Type</Label>
+                  <Label className="font-medium text-startsnap-ebony-clay block mb-2">Project Type</Label>
                   <div className="flex gap-2">
                     {(['all', 'live', 'idea'] as const).map(type => (
                       <Button
                         key={type}
                         onClick={() => handleProjectTypeChange(type)}
-                        className={`flex-1 capitalize font-bold border-2 border-startsnap-ebony-clay rounded-lg py-2 px-3 shadow-[2px_2px_0px_#1f2937] transition-all duration-200 ${
-                          currentFilters.type === type
-                            ? 'bg-startsnap-french-rose text-white'
-                            : 'bg-startsnap-beige text-startsnap-ebony-clay hover:bg-startsnap-french-rose hover:text-white'
-                        }`}
+                        variant={currentFilters.type === type ? 'default' : 'outline'}
+                        size="sm"
+                        className="flex-1 capitalize"
                       >
                         {type}
                       </Button>
@@ -205,58 +203,59 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
                 </div>
 
                 {/* Hackathon Filter */}
-                <div className="flex items-center gap-3 p-3 bg-startsnap-beige rounded-lg border-2 border-startsnap-ebony-clay">
+                <div className="flex items-center space-x-2">
                   <Checkbox
                     id="filter-hackathon"
                     checked={!!currentFilters.isHackathonEntry}
                     onCheckedChange={handleHackathonToggle}
-                    className="border-2 border-startsnap-ebony-clay shadow-[1px_1px_0px_#1f2937] data-[state=checked]:bg-startsnap-french-rose"
+                    className="border-gray-800"
                   />
-                  <Label htmlFor="filter-hackathon" className="font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] cursor-pointer">
-                    🏆 Hackathon Projects Only
+                  <Label htmlFor="filter-hackathon" className="font-medium text-startsnap-ebony-clay cursor-pointer">
+                    Hackathon Projects Only
                   </Label>
                 </div>
 
                 {/* Clear Button */}
                 <Button
                   onClick={handleFilterClear}
-                  className="w-full bg-startsnap-ebony-clay text-startsnap-beige border-2 border-startsnap-french-rose rounded-lg py-3 font-bold shadow-[3px_3px_0px_#ef4444] hover:shadow-[5px_5px_0px_#ef4444] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200"
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
                 >
                   Clear All Filters
                 </Button>
               </div>
             </PopoverContent>
-          </Popover>
+      </Popover>
 
           {/* Sort Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button className="bg-startsnap-beige text-startsnap-ebony-clay border-2 border-startsnap-ebony-clay rounded-lg px-4 py-3 font-bold shadow-[3px_3px_0px_#1f2937] hover:shadow-[5px_5px_0px_#1f2937] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200 flex items-center gap-2">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+              <Button className="bg-startsnap-beige text-startsnap-ebony-clay border-2 border-startsnap-ebony-clay rounded-lg px-4 py-3 font-bold shadow-[3px_3px_0px_#1f2937] hover:bg-startsnap-beige hover:shadow-[4px_4px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all duration-200 flex items-center gap-2">
                 <span className="material-icons text-lg">sort</span>
                 <span className="hidden sm:inline">{getSortLabel(currentSort)}</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="p-4 bg-startsnap-white border-3 border-startsnap-ebony-clay rounded-xl shadow-[6px_6px_0px_#1f2937] min-w-[200px]" align="end">
-              <div className="space-y-2">
-                <div className="font-bold text-startsnap-ebony-clay mb-3 font-['Space_Grotesk',Helvetica]">📊 Sort By</div>
-                {[
-                  { field: 'created_at', direction: 'desc', label: '🆕 Newest First' },
-                  { field: 'created_at', direction: 'asc', label: '📅 Oldest First' },
-                  { field: 'support_count', direction: 'desc', label: '❤️ Most Supported' },
-                  { field: 'name', direction: 'asc', label: '🔤 Name (A-Z)' },
-                  { field: 'name', direction: 'desc', label: '🔤 Name (Z-A)' }
-                ].map(({ field, direction, label }) => (
-                  <DropdownMenuItem
-                    key={`${field}-${direction}`}
-                    onClick={() => handleSortChange(field as SortableField, direction as SortDirection)}
-                    className="cursor-pointer hover:bg-startsnap-beige rounded-lg p-2 font-medium transition-colors duration-200"
-                  >
-                    {label}
-                  </DropdownMenuItem>
-                ))}
-              </div>
+          </Button>
+        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="bg-startsnap-white border-2 border-gray-800 rounded-lg shadow-[3px_3px_0px_#1f2937]" align="end">
+              <div className="px-2 py-1.5 text-sm font-semibold text-startsnap-ebony-clay">Sort By</div>
+              <div className="h-px my-1 bg-gray-300" />
+              <DropdownMenuItem onClick={() => handleSortChange('created_at', 'desc')} className="hover:bg-gray-100 cursor-pointer">
+                Newest
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleSortChange('created_at', 'asc')} className="hover:bg-gray-100 cursor-pointer">
+                Oldest
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleSortChange('support_count', 'desc')} className="hover:bg-gray-100 cursor-pointer">
+                Most Supported
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleSortChange('name', 'asc')} className="hover:bg-gray-100 cursor-pointer">
+                Name (A-Z)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleSortChange('name', 'desc')} className="hover:bg-gray-100 cursor-pointer">
+                Name (Z-A)
+              </DropdownMenuItem>
             </DropdownMenuContent>
-          </DropdownMenu>
+      </DropdownMenu>
         </div>
       </div>
     </div>
