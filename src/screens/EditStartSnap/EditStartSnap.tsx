@@ -210,33 +210,66 @@ export const EditStartSnap = (): JSX.Element => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-startsnap-candlelight">
-        <p className="text-xl font-bold text-startsnap-ebony-clay">Loading project data...</p>
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-startsnap-beige to-startsnap-candlelight">
+        <div className="bg-startsnap-ebony-clay p-8 rounded-xl border-4 border-startsnap-french-rose shadow-[8px_8px_0px_#ef4444]">
+          <p className="text-xl font-bold text-startsnap-beige">Loading project data...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col w-full items-center gap-8 pt-8 pb-24 px-8 bg-startsnap-candlelight">
-      <h2 className="text-5xl font-bold text-startsnap-ebony-clay text-center font-['Space_Grotesk',Helvetica] leading-[48px]">
-        Edit your StartSnap
-      </h2>
+    <div className="flex flex-col w-full items-center bg-white">
+      {/* Hero Section with Gradient */}
+      <div className="w-full bg-gradient-to-b from-startsnap-beige to-startsnap-candlelight">
+        <div className="w-full max-w-4xl px-8 py-16 mx-auto">
+          <div className="text-center">
+            <h2 className="text-5xl font-bold text-startsnap-ebony-clay mb-4 font-['Space_Grotesk',Helvetica] leading-[48px]">
+              Edit your StartSnap
+            </h2>
+            <p className="text-xl text-startsnap-river-bed font-['Roboto',Helvetica]">
+              Update your project details and keep your StartSnap current
+            </p>
+          </div>
+        </div>
+      </div>
 
-      <ProjectForm
-        mode="edit"
-        projectId={id}
-        initialData={initialData}
-        onSubmit={handleSubmit}
-        onCancel={() => {
-          const projectSlug = initialData?.slug || '';
-          if (projectSlug) {
-            navigate(`/projects/${projectSlug}`);
-          } else {
-            navigate('/profile');
-            console.warn('Could not determine project slug for cancel navigation during edit.');
-          }
-        }}
-      />
+      {/* Dynamic Separator */}
+      <div className="w-full bg-startsnap-beige relative">
+        <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(0,0,0,0.03)_10px,rgba(0,0,0,0.03)_20px)]"></div>
+        <div className="w-full max-w-4xl px-8 py-8 mx-auto relative">
+          <div className="flex items-center justify-center">
+            <div className="flex-1 h-2 bg-startsnap-french-rose transform -skew-x-12"></div>
+            <div className="px-6 py-2 bg-startsnap-ebony-clay text-startsnap-beige font-bold text-sm rounded-full border-2 border-startsnap-french-rose">
+              UPDATE PROJECT
+            </div>
+            <div className="flex-1 h-2 bg-startsnap-french-rose transform skew-x-12"></div>
+          </div>
+        </div>
+      </div>
+
+      {/* Form Zone - Clean White Background */}
+      <div className="w-full bg-white pb-24 pt-8">
+        <div className="flex flex-col w-full items-center px-8">
+          <div className="w-full max-w-4xl">
+            <ProjectForm
+              mode="edit"
+              projectId={id}
+              initialData={initialData}
+              onSubmit={handleSubmit}
+              onCancel={() => {
+                const projectSlug = initialData?.slug || '';
+                if (projectSlug) {
+                  navigate(`/projects/${projectSlug}`);
+                } else {
+                  navigate('/profile');
+                  console.warn('Could not determine project slug for cancel navigation during edit.');
+                }
+              }}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

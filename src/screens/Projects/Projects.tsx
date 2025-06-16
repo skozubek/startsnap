@@ -126,80 +126,102 @@ export const Projects = (): JSX.Element => {
 
   return (
     <div className="flex flex-col w-full items-center bg-startsnap-candlelight">
-      <div className="w-full max-w-screen-2xl px-8 py-16">
-        <h1 className="text-5xl font-bold text-startsnap-ebony-clay text-center mb-12 font-['Space_Grotesk',Helvetica]">
-          Explore StartSnaps Gallery
-        </h1>
+      {/* Hero Section with Gradient */}
+      <div className="w-full bg-gradient-to-b from-startsnap-beige to-startsnap-candlelight">
+        <div className="w-full max-w-screen-2xl px-8 py-16 mx-auto">
+          <h1 className="text-5xl font-bold text-startsnap-ebony-clay text-center mb-16 font-['Space_Grotesk',Helvetica]">
+            Explore StartSnaps Gallery
+          </h1>
 
-        <h2 className="text-3xl font-bold text-startsnap-ebony-clay text-center mb-8 font-['Space_Grotesk',Helvetica]">
-          Trending StartSnaps
-        </h2>
-
-        <TrendingSection />
-
-        {/* Visual separator between trending and browse sections */}
-        <div className="mt-20 mb-8">
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+          {/* Trending Zone - Now with Bold Contrast */}
+          <div className="bg-startsnap-ebony-clay p-8 md:p-12 rounded-xl border-4 border-startsnap-french-rose shadow-[8px_8px_0px_#ef4444] transform rotate-[-0.5deg] hover:rotate-0 transition-transform duration-300">
+            <h2 className="text-3xl font-bold text-startsnap-beige text-center mb-8 font-['Space_Grotesk',Helvetica]">
+              🔥 Trending StartSnaps
+            </h2>
+            <TrendingSection />
+          </div>
         </div>
+      </div>
 
-        {/* Browse All StartSnaps Section */}
-        <div className="text-center mb-8">
-          <h2 className="text-4xl font-bold text-startsnap-ebony-clay mb-3 font-['Space_Grotesk',Helvetica]">
-            Browse All StartSnaps
-          </h2>
-          <p className="text-lg text-startsnap-river-bed font-['Roboto',Helvetica]">
-            Discover amazing projects from our community of builders and creators
-          </p>
+      {/* Dynamic Separator */}
+      <div className="w-full bg-startsnap-beige relative">
+        <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(0,0,0,0.03)_10px,rgba(0,0,0,0.03)_20px)]"></div>
+        <div className="w-full max-w-screen-2xl px-8 py-8 mx-auto relative">
+          <div className="flex items-center justify-center">
+            <div className="flex-1 h-2 bg-startsnap-french-rose transform -skew-x-12"></div>
+            <div className="px-6 py-2 bg-startsnap-ebony-clay text-startsnap-beige font-bold text-sm rounded-full border-2 border-startsnap-french-rose">
+              BROWSE ALL
+            </div>
+            <div className="flex-1 h-2 bg-startsnap-french-rose transform skew-x-12"></div>
+          </div>
         </div>
+      </div>
 
-        <SearchAndFilterBar
-          initialSearchTerm={discoveryState.searchTerm}
-          initialFilters={discoveryState.filters}
-          initialSort={discoveryState.sort}
-          categories={categoryOptions}
-          onDiscoveryChange={handleDiscoveryChange}
-        />
+      {/* Browse Section - White Background for Contrast */}
+      <div className="w-full bg-white">
+        <div className="w-full max-w-screen-2xl px-8 py-16 mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-startsnap-ebony-clay mb-3 font-['Space_Grotesk',Helvetica]">
+              Browse All StartSnaps
+            </h2>
+            <p className="text-lg text-startsnap-river-bed font-['Roboto',Helvetica]">
+              Discover amazing projects from our community of builders and creators
+            </p>
+          </div>
 
-        {loading ? (
-          <div className="text-center py-20">
-            <p className="text-xl text-startsnap-pale-sky">Loading projects...</p>
+          {/* Search Bar in Subtle Container */}
+          <div className="bg-startsnap-beige/50 p-6 rounded-lg border-2 border-gray-200 mb-8">
+            <SearchAndFilterBar
+              initialSearchTerm={discoveryState.searchTerm}
+              initialFilters={discoveryState.filters}
+              initialSort={discoveryState.sort}
+              categories={categoryOptions}
+              onDiscoveryChange={handleDiscoveryChange}
+            />
           </div>
-        ) : startSnaps.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
-            {startSnaps.map((startsnap) => {
-              const creatorName = creators[startsnap.user_id] || 'Anonymous';
 
-              return (
-                <StartSnapCard
-                  key={startsnap.id}
-                  startsnap={startsnap}
-                  showCreator={true}
-                  creatorName={creatorName}
-                  variant="main-page"
-                  formatDate={formatDate}
-                  getCategoryDisplay={getCategoryDisplay}
-                />
-              );
-            })}
-          </div>
-        ) : areFiltersOrSearchActive(discoveryState) ? (
-          <div className="text-center py-20">
-            <p className="text-xl text-startsnap-pale-sky">No projects match your criteria. Try adjusting your search or filters!</p>
-            <Button
-              onClick={() => setDiscoveryState(DEFAULT_DISCOVERY_STATE)}
-              className="startsnap-button mt-4 bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
-            >
-              Clear Search & Filters
-            </Button>
-          </div>
-        ) : (
-          <div className="text-center py-20">
-            <p className="text-xl text-startsnap-pale-sky">No projects found yet. Why not be the first to add one?</p>
-            <Button className="startsnap-button mt-4 bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]" asChild>
-              <Link to="/create">Create StartSnap</Link>
-            </Button>
-          </div>
-        )}
+          {/* Projects Grid */}
+          {loading ? (
+            <div className="text-center py-20 bg-startsnap-candlelight/20 rounded-lg border-2 border-dashed border-gray-300">
+              <p className="text-xl text-startsnap-pale-sky">Loading projects...</p>
+            </div>
+          ) : startSnaps.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {startSnaps.map((startsnap) => {
+                const creatorName = creators[startsnap.user_id] || 'Anonymous';
+
+                return (
+                  <StartSnapCard
+                    key={startsnap.id}
+                    startsnap={startsnap}
+                    showCreator={true}
+                    creatorName={creatorName}
+                    variant="main-page"
+                    formatDate={formatDate}
+                    getCategoryDisplay={getCategoryDisplay}
+                  />
+                );
+              })}
+            </div>
+          ) : areFiltersOrSearchActive(discoveryState) ? (
+            <div className="text-center py-20 bg-startsnap-candlelight/20 rounded-lg border-2 border-dashed border-gray-300">
+              <p className="text-xl text-startsnap-pale-sky">No projects match your criteria. Try adjusting your search or filters!</p>
+              <Button
+                onClick={() => setDiscoveryState(DEFAULT_DISCOVERY_STATE)}
+                className="startsnap-button mt-4 bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+              >
+                Clear Search & Filters
+              </Button>
+            </div>
+          ) : (
+            <div className="text-center py-20 bg-startsnap-candlelight/20 rounded-lg border-2 border-dashed border-gray-300">
+              <p className="text-xl text-startsnap-pale-sky">No projects found yet. Why not be the first to add one?</p>
+              <Button className="startsnap-button mt-4 bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]" asChild>
+                <Link to="/new">Create Your First StartSnap</Link>
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

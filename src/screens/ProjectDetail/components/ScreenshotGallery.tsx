@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { getTransformedImageUrl } from '../../../lib/utils';
 import { Button } from '../../../components/ui/button';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -162,16 +163,17 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
         </div>
       </div>
 
-      {/* Lightbox Modal - Redesigned for better aesthetics */}
-      {lightboxOpen && (
+      {/* Lightbox Modal - Rendered via Portal to Document Body */}
+      {lightboxOpen && createPortal(
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
+          className="fixed inset-0 flex items-center justify-center p-4 backdrop-blur-sm"
           onClick={closeLightbox}
           tabIndex={0}
           role="dialog"
           aria-modal="true"
           aria-label="Screenshot lightbox"
           style={{
+            zIndex: 9999,
             background: 'linear-gradient(135deg, rgba(0,0,0,0.85) 0%, rgba(30,41,59,0.9) 50%, rgba(0,0,0,0.85) 100%)',
             animation: 'fadeIn 0.3s ease-out'
           }}
@@ -180,12 +182,13 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
           <Button
             variant="ghost"
             size="icon"
-            className="absolute top-6 right-6 z-20 text-white bg-black/30 hover:bg-white/20 rounded-full border border-white/20 backdrop-blur-md transition-all duration-200 hover:scale-110 shadow-lg"
+            className="absolute top-6 right-6 text-white bg-black/30 hover:bg-white/20 rounded-full border border-white/20 backdrop-blur-md transition-all duration-200 hover:scale-110 shadow-lg"
             onClick={(e) => {
               e.stopPropagation();
               closeLightbox();
             }}
             aria-label="Close lightbox"
+            style={{ zIndex: 10001 }}
           >
             <X size={20} />
           </Button>
@@ -196,12 +199,13 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute left-6 top-1/2 transform -translate-y-1/2 z-20 text-white bg-black/30 hover:bg-white/20 rounded-full border border-white/20 backdrop-blur-md transition-all duration-200 hover:scale-110 shadow-lg"
+                className="absolute left-6 top-1/2 transform -translate-y-1/2 text-white bg-black/30 hover:bg-white/20 rounded-full border border-white/20 backdrop-blur-md transition-all duration-200 hover:scale-110 shadow-lg"
                 onClick={(e) => {
                   e.stopPropagation();
                   previousImage();
                 }}
                 aria-label="Previous image"
+                style={{ zIndex: 10001 }}
               >
                 <ChevronLeft size={20} />
               </Button>
@@ -209,12 +213,13 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute right-6 top-1/2 transform -translate-y-1/2 z-20 text-white bg-black/30 hover:bg-white/20 rounded-full border border-white/20 backdrop-blur-md transition-all duration-200 hover:scale-110 shadow-lg"
+                className="absolute right-6 top-1/2 transform -translate-y-1/2 text-white bg-black/30 hover:bg-white/20 rounded-full border border-white/20 backdrop-blur-md transition-all duration-200 hover:scale-110 shadow-lg"
                 onClick={(e) => {
                   e.stopPropagation();
                   nextImage();
                 }}
                 aria-label="Next image"
+                style={{ zIndex: 10001 }}
               >
                 <ChevronRight size={20} />
               </Button>
@@ -320,7 +325,8 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
               }
             }
           `}</style>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

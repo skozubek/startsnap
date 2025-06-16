@@ -372,16 +372,20 @@ export const ProjectDetail = (): JSX.Element => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-startsnap-candlelight">
-        <p className="text-xl font-bold text-startsnap-ebony-clay">Loading project...</p>
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-startsnap-beige to-startsnap-candlelight">
+        <div className="bg-startsnap-ebony-clay p-8 rounded-xl border-4 border-startsnap-french-rose shadow-[8px_8px_0px_#ef4444]">
+          <p className="text-xl font-bold text-startsnap-beige">Loading project...</p>
+        </div>
       </div>
     );
   }
 
   if (!startsnap) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-startsnap-candlelight">
-        <p className="text-xl font-bold text-startsnap-ebony-clay">Project not found or ID is missing.</p>
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-startsnap-beige to-startsnap-candlelight">
+        <div className="bg-startsnap-ebony-clay p-8 rounded-xl border-4 border-startsnap-french-rose shadow-[8px_8px_0px_#ef4444]">
+          <p className="text-xl font-bold text-startsnap-beige">Project not found or ID is missing.</p>
+        </div>
       </div>
     );
   }
@@ -390,62 +394,95 @@ export const ProjectDetail = (): JSX.Element => {
 
   return (
     <>
-      <div className="flex flex-col w-full items-center gap-16 pt-8 pb-24 px-8 bg-startsnap-candlelight">
-        <Card className="max-w-4xl w-full bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]">
-          <CardContent className="p-0">
-            <ProjectInfoSection
-              startsnap={startsnap}
-              creator={creator}
-              isOwner={isOwner}
-              currentUser={currentUser as User | null}
-              isSupportedByCurrentUser={isSupportedByCurrentUser}
-              currentSupportCount={currentSupportCount}
-              isSupportActionLoading={isSupportActionLoading}
-              onSupportToggle={handleSupportToggle}
-              onDeleteProjectRequest={openDeleteConfirmation}
-            />
-            <ScreenshotGallery urls={startsnap.screenshot_urls || []} />
-            <VibeLogSection
-              startsnapId={startsnap.id}
-              initialVibeLogEntries={vibeLogEntries.slice(0, visibleVibeLogCount)}
-              isOwner={isOwner}
-              projectName={startsnap.name}
-              isHackathonEntry={startsnap.is_hackathon_entry}
-              currentUserId={currentUser?.id}
-              onVibeLogChange={fetchProjectData}
-            />
-            {(visibleVibeLogCount < vibeLogEntries.length || visibleVibeLogCount > VIBE_LOG_PAGE_SIZE) && (
-              <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-6 p-8 pt-0 border-b-2 border-gray-800">
-                {visibleVibeLogCount > VIBE_LOG_PAGE_SIZE && (
-                  <Button
-                    onClick={handleShowLessVibeLogs}
-                    variant="outline"
-                    className="startsnap-button bg-startsnap-mischka text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] py-2 px-5 text-base hover:bg-gray-300"
-                  >
-                    Show Less Vibe Logs
-                  </Button>
-                )}
-                {visibleVibeLogCount < vibeLogEntries.length && (
-                  <Button
-                    onClick={handleLoadMoreVibeLogs}
-                    variant="outline"
-                    className="startsnap-button bg-startsnap-mischka text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] py-2 px-5 text-base hover:bg-gray-300"
-                  >
-                    Load More Vibe Logs
-                  </Button>
-                )}
-              </div>
-            )}
-            <FeedbackSection
-              startsnapId={startsnap.id}
-              initialFeedbackEntries={feedbackEntries}
-              currentUser={currentUser as User | null}
-              currentUserProfile={currentUserProfile}
-              onFeedbackChange={fetchFeedbacks}
-            />
-          </CardContent>
-        </Card>
+      {/* Hero Background with Gradient */}
+      <div className="w-full bg-gradient-to-b from-startsnap-beige to-startsnap-candlelight">
+        <div className="flex flex-col w-full items-center pt-12 pb-8 px-8">
+          {/* Project Showcase Zone */}
+          <div className="w-full max-w-4xl">
+            <Card className="w-full bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] transform hover:shadow-[8px_8px_0px_#1f2937] transition-all duration-200">
+              <CardContent className="p-0">
+                <ProjectInfoSection
+                  startsnap={startsnap}
+                  creator={creator}
+                  isOwner={isOwner}
+                  currentUser={currentUser as User | null}
+                  isSupportedByCurrentUser={isSupportedByCurrentUser}
+                  currentSupportCount={currentSupportCount}
+                  isSupportActionLoading={isSupportActionLoading}
+                  onSupportToggle={handleSupportToggle}
+                  onDeleteProjectRequest={openDeleteConfirmation}
+                />
+                <ScreenshotGallery urls={startsnap.screenshot_urls || []} />
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
+
+      {/* Dynamic Separator */}
+      <div className="w-full bg-startsnap-beige relative">
+        <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(0,0,0,0.03)_10px,rgba(0,0,0,0.03)_20px)]"></div>
+        <div className="w-full max-w-4xl px-8 py-8 mx-auto relative">
+          <div className="flex items-center justify-center">
+            <div className="flex-1 h-2 bg-startsnap-french-rose transform -skew-x-12"></div>
+            <div className="px-6 py-2 bg-startsnap-ebony-clay text-startsnap-beige font-bold text-sm rounded-full border-2 border-startsnap-french-rose">
+              VIBE LOGS & FEEDBACK
+            </div>
+            <div className="flex-1 h-2 bg-startsnap-french-rose transform skew-x-12"></div>
+          </div>
+        </div>
+      </div>
+
+      {/* Content Zone - White Background */}
+      <div className="w-full bg-white pb-24 pt-8">
+        <div className="flex flex-col w-full items-center px-8">
+          <div className="w-full max-w-4xl">
+            <Card className="w-full bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]">
+              <CardContent className="p-0">
+                <VibeLogSection
+                  startsnapId={startsnap.id}
+                  initialVibeLogEntries={vibeLogEntries.slice(0, visibleVibeLogCount)}
+                  isOwner={isOwner}
+                  projectName={startsnap.name}
+                  isHackathonEntry={startsnap.is_hackathon_entry}
+                  currentUserId={currentUser?.id}
+                  onVibeLogChange={fetchProjectData}
+                />
+                {(visibleVibeLogCount < vibeLogEntries.length || visibleVibeLogCount > VIBE_LOG_PAGE_SIZE) && (
+                  <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-6 p-8 pt-0 border-b-2 border-gray-800">
+                    {visibleVibeLogCount > VIBE_LOG_PAGE_SIZE && (
+                      <Button
+                        onClick={handleShowLessVibeLogs}
+                        variant="outline"
+                        className="startsnap-button bg-startsnap-mischka text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] py-2 px-5 text-base hover:bg-gray-300"
+                      >
+                        Show Less Vibe Logs
+                      </Button>
+                    )}
+                    {visibleVibeLogCount < vibeLogEntries.length && (
+                      <Button
+                        onClick={handleLoadMoreVibeLogs}
+                        variant="outline"
+                        className="startsnap-button bg-startsnap-mischka text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] py-2 px-5 text-base hover:bg-gray-300"
+                      >
+                        Load More Vibe Logs
+                      </Button>
+                    )}
+                  </div>
+                )}
+                <FeedbackSection
+                  startsnapId={startsnap.id}
+                  initialFeedbackEntries={feedbackEntries}
+                  currentUser={currentUser as User | null}
+                  currentUserProfile={currentUserProfile}
+                  onFeedbackChange={fetchFeedbacks}
+                />
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+
       <ConfirmationDialog
         isOpen={isDeleteConfirmOpen}
         onClose={() => setIsDeleteConfirmOpen(false)}

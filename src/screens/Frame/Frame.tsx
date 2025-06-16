@@ -52,7 +52,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }): JSX.Elemen
  */
 export const Frame = (): JSX.Element => {
   return (
-    <div className="flex flex-col min-h-screen w-full bg-startsnap-candlelight">
+    <div className="flex flex-col min-h-screen w-full bg-white">
       <AuthProvider>
         <ToastProvider />
         <ScrollToTop />

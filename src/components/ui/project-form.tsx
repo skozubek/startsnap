@@ -369,6 +369,24 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
             )}
           </div>
 
+          {/* Hackathon Entry */}
+          <div className="flex items-center space-x-3 p-4 bg-startsnap-french-pass rounded-lg border-2 border-solid border-blue-700">
+            <Checkbox
+              id="isHackathon"
+              checked={formState.isHackathon}
+              onCheckedChange={(checked) => handleInputChange('isHackathon', checked)}
+              className="border-2 border-solid border-blue-700"
+            />
+            <div className="flex-1">
+              <Label htmlFor="isHackathon" className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-persian-blue text-base leading-6 cursor-pointer">
+                This is a hackathon entry
+              </Label>
+              <p className="text-sm text-startsnap-persian-blue/80 font-['Roboto',Helvetica] mt-1">
+                Mark this project if it was created for a hackathon or competition
+              </p>
+            </div>
+          </div>
+
           {/* Project Links */}
           <div className="space-y-6">
             <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
@@ -504,19 +522,6 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
                 </div>
               )}
             </div>
-          </div>
-
-          {/* Hackathon Entry */}
-          <div className="flex items-center space-x-3">
-            <Checkbox
-              id="isHackathon"
-              checked={formState.isHackathon}
-              onCheckedChange={(checked) => handleInputChange('isHackathon', checked)}
-              className="border-2 border-solid border-gray-800"
-            />
-            <Label htmlFor="isHackathon" className="font-['Roboto',Helvetica] font-medium text-startsnap-oxford-blue text-base leading-6">
-              This is a hackathon entry
-            </Label>
           </div>
 
           {/* Initial Vibe Log (Create mode only) */}

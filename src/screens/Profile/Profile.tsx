@@ -255,8 +255,10 @@ export const Profile = (): JSX.Element => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-startsnap-candlelight">
-        <p className="text-xl font-bold text-startsnap-ebony-clay">Loading profile...</p>
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-startsnap-beige to-startsnap-candlelight">
+        <div className="bg-startsnap-ebony-clay p-8 rounded-xl border-4 border-startsnap-french-rose shadow-[8px_8px_0px_#ef4444]">
+          <p className="text-xl font-bold text-startsnap-beige">Loading profile...</p>
+        </div>
       </div>
     );
   }
@@ -272,227 +274,239 @@ export const Profile = (): JSX.Element => {
   };
 
   return (
-    <div className="flex flex-col w-full items-center gap-8 pt-8 pb-24 px-8 bg-startsnap-candlelight">
-      <h2 className="text-5xl font-bold text-startsnap-ebony-clay text-center font-['Space_Grotesk',Helvetica] leading-[48px]">
-        Your Profile
-      </h2>
+    <div className="flex flex-col w-full items-center bg-white">
+      {/* Hero Section with Gradient */}
+      <div className="w-full bg-gradient-to-b from-startsnap-beige to-startsnap-candlelight">
+        <div className="w-full max-w-4xl px-8 py-16 mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-5xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] leading-[48px]">
+              Your Profile
+            </h2>
+            <p className="text-xl text-startsnap-river-bed font-['Roboto',Helvetica] mt-4">
+              Manage your profile and showcase your StartSnaps
+            </p>
+          </div>
 
-      <div className="w-full max-w-4xl">
-        <Card className="bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] mb-8">
-          <CardContent className="p-8">
-            <div className="flex flex-col md:flex-row gap-8">
-              <div className="flex flex-col items-center min-w-[250px]">
-                <div className="w-24 h-24">
-                  <UserAvatar
-                    name={getAvatarName(user, profile.username)}
-                    size={96}
-                    className="w-full h-full"
-                  />
+          {/* Profile Edit Card */}
+          <Card className="bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] transform hover:shadow-[8px_8px_0px_#1f2937] transition-all duration-200">
+            <CardContent className="p-8">
+              <div className="flex flex-col md:flex-row gap-8">
+                <div className="flex flex-col items-center min-w-[250px]">
+                  <div className="w-24 h-24">
+                    <UserAvatar
+                      name={getAvatarName(user, profile.username)}
+                      size={96}
+                      className="w-full h-full"
+                    />
+                  </div>
+
+                  {/* Popover status selector */}
+                  <Popover open={statusPopoverOpen} onOpenChange={setStatusPopoverOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="rounded-full w-full max-w-xs sm:w-56 flex justify-between items-center px-3 py-2 text-sm font-['Roboto',Helvetica] bg-startsnap-athens-gray text-startsnap-ebony-clay hover:bg-gray-300 border-gray-800 border-2 shadow-[2px_2px_0px_#1f2937] mt-4"
+                      >
+                        <div className="flex items-center">
+                          <span className="material-icons text-sm mr-2">{getStatusIcon(profile.status)}</span>
+                          <span>{getUserStatusOptions().find(opt => opt.value === profile.status)?.label}</span>
+                        </div>
+                        <span className="material-icons text-startsnap-ebony-clay">keyboard_arrow_down</span>
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-64 p-2 bg-startsnap-white border-2 border-gray-800 rounded-lg shadow-[4px_4px_0px_#1f2937]">
+                      <div className="space-y-1">
+                        {getUserStatusOptions().map((option) => (
+                          <button
+                            key={option.value}
+                            onClick={() => handleStatusChange(option.value)}
+                            className="w-full text-left px-3 py-2 rounded-md hover:bg-startsnap-athens-gray flex items-center text-sm"
+                          >
+                            <span className="material-icons text-sm mr-2">{option.icon}</span>
+                            <div>
+                              <div className="font-medium">{option.label}</div>
+                              <div className="text-xs text-startsnap-pale-sky">{option.description}</div>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 </div>
 
-                {/* Popover status selector */}
-                <Popover open={statusPopoverOpen} onOpenChange={setStatusPopoverOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="rounded-full w-full max-w-xs sm:w-56 flex justify-between items-center px-3 py-2 text-sm font-['Roboto',Helvetica] bg-startsnap-athens-gray text-startsnap-ebony-clay hover:bg-gray-300 border-gray-800 border-2 shadow-[2px_2px_0px_#1f2937] mt-4"
-                    >
-                      <div className="flex items-center">
-                        <span className="material-icons text-sm mr-2">{getStatusIcon(profile.status)}</span>
-                        <span>{getUserStatusOptions().find(opt => opt.value === profile.status)?.label}</span>
-                      </div>
-                      <span className="material-icons text-startsnap-ebony-clay">keyboard_arrow_down</span>
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-56 p-0 bg-white border-2 border-gray-800 rounded-lg shadow-[3px_3px_0px_#1f2937]">
-                    <div className="p-2">
-                      <p className="text-xs text-center text-startsnap-pale-sky mb-2 font-['Roboto',Helvetica]">
-                        Select your status
-                      </p>
-                      {getUserStatusOptions().map((option) => (
-                        <div
-                          key={option.value}
-                          className={`flex items-center justify-between p-2 rounded-md cursor-pointer transition-colors hover:bg-startsnap-athens-gray ${
-                            profile.status === option.value ? "font-semibold" : ""
-                          }`}
-                          onClick={() => handleStatusChange(option.value)}
-                        >
-                          <div className="flex items-center">
-                            <span className="material-icons text-sm mr-2">{option.icon}</span>
-                            <span className="font-['Roboto',Helvetica]">{option.label}</span>
+                <div className="flex-1">
+                  <form className="space-y-6">
+                    <div className="space-y-2">
+                      <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+                        Username
+                      </label>
+                      <Input
+                        name="username"
+                        value={profile.username}
+                        onChange={handleChange}
+                        placeholder="Your username"
+                        className={`border-2 border-solid ${usernameError ? 'border-red-500' : 'border-gray-800'} rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
+                      />
+                      {usernameError && (
+                        <p className="text-red-500 text-sm mt-1">{usernameError}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+                        Bio
+                      </label>
+                      <Textarea
+                        name="bio"
+                        value={profile.bio}
+                        onChange={handleChange}
+                        placeholder="Tell us about yourself, your skills, interests, and what you're working on..."
+                        className="border-2 border-solid border-gray-800 rounded-lg p-3.5 min-h-[120px] font-['Roboto',Helvetica] text-startsnap-pale-sky"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+                        External Links
+                      </label>
+                      <div className="space-y-3">
+                        {/* GitHub Link - Compact Design */}
+                        <div className="relative">
+                          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 z-10">
+                            {React.createElement(FaGithub as any, { className: "text-gray-600 text-lg" })}
                           </div>
-                          {profile.status === option.value && (
-                            <span className="material-icons text-sm text-startsnap-persian-blue">check</span>
+                          <Input
+                            name="github"
+                            value={profile.github}
+                            onChange={handleChange}
+                            placeholder="https://github.com/username"
+                            className={`border-2 border-solid ${linkErrors.github ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 pl-10 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
+                          />
+                          {linkErrors.github && (
+                            <p className="text-red-500 text-xs mt-1">{linkErrors.github}</p>
                           )}
                         </div>
-                      ))}
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </div>
 
-              <div className="flex-1">
-                <form className="space-y-6">
-                  <div className="space-y-2">
-                    <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
-                      Username
-                    </label>
-                    <Input
-                      name="username"
-                      value={profile.username}
-                      onChange={handleChange}
-                      placeholder="Your username"
-                      className={`border-2 border-solid ${usernameError ? 'border-red-500' : 'border-gray-800'} rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
-                    />
-                    {usernameError && (
-                      <p className="text-red-500 text-sm mt-1">{usernameError}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
-                      Bio
-                    </label>
-                    <Textarea
-                      name="bio"
-                      value={profile.bio}
-                      onChange={handleChange}
-                      placeholder="Tell us about yourself, your skills, interests, and what you're working on..."
-                      className="border-2 border-solid border-gray-800 rounded-lg p-3.5 min-h-[120px] font-['Roboto',Helvetica] text-startsnap-pale-sky"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
-                      External Links
-                    </label>
-                    <div className="space-y-4">
-                      {/* GitHub Link */}
-                      <div className="space-y-1">
-                        <div className="flex items-center">
-                          {React.createElement(FaGithub as any, { className: "text-black mr-2 text-lg" })}
-                          <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">GitHub</label>
+                        {/* Twitter Link - Compact Design */}
+                        <div className="relative">
+                          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 z-10">
+                            {React.createElement(FaXTwitter as any, { className: "text-gray-600 text-lg" })}
+                          </div>
+                          <Input
+                            name="twitter"
+                            value={profile.twitter}
+                            onChange={handleChange}
+                            placeholder="https://twitter.com/username"
+                            className={`border-2 border-solid ${linkErrors.twitter ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 pl-10 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
+                          />
+                          {linkErrors.twitter && (
+                            <p className="text-red-500 text-xs mt-1">{linkErrors.twitter}</p>
+                          )}
                         </div>
-                        <Input
-                          name="github"
-                          value={profile.github}
-                          onChange={handleChange}
-                          placeholder="https://github.com/username"
-                          className={`border-2 border-solid ${linkErrors.github ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky pl-10`}
-                        />
-                        {linkErrors.github && (
-                          <p className="text-red-500 text-xs mt-1">{linkErrors.github}</p>
-                        )}
-                      </div>
 
-                      {/* Twitter Link */}
-                      <div className="space-y-1">
-                        <div className="flex items-center">
-                          {React.createElement(FaXTwitter as any, { className: "text-black mr-2 text-lg" })}
-                          <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">Twitter</label>
+                        {/* LinkedIn Link - Compact Design */}
+                        <div className="relative">
+                          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 z-10">
+                            {React.createElement(FaLinkedinIn as any, { className: "text-gray-600 text-lg" })}
+                          </div>
+                          <Input
+                            name="linkedin"
+                            value={profile.linkedin}
+                            onChange={handleChange}
+                            placeholder="https://linkedin.com/in/username"
+                            className={`border-2 border-solid ${linkErrors.linkedin ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 pl-10 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
+                          />
+                          {linkErrors.linkedin && (
+                            <p className="text-red-500 text-xs mt-1">{linkErrors.linkedin}</p>
+                          )}
                         </div>
-                        <Input
-                          name="twitter"
-                          value={profile.twitter}
-                          onChange={handleChange}
-                          placeholder="https://twitter.com/username"
-                          className={`border-2 border-solid ${linkErrors.twitter ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky pl-10`}
-                        />
-                        {linkErrors.twitter && (
-                          <p className="text-red-500 text-xs mt-1">{linkErrors.twitter}</p>
-                        )}
-                      </div>
 
-                      {/* LinkedIn Link */}
-                      <div className="space-y-1">
-                        <div className="flex items-center">
-                          {React.createElement(FaLinkedinIn as any, { className: "text-black mr-2 text-lg" })}
-                          <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">LinkedIn</label>
+                        {/* Website Link - Compact Design */}
+                        <div className="relative">
+                          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 z-10">
+                            <span className="material-icons text-gray-600 text-lg">public</span>
+                          </div>
+                          <Input
+                            name="website"
+                            value={profile.website}
+                            onChange={handleChange}
+                            placeholder="https://yourwebsite.com"
+                            className={`border-2 border-solid ${linkErrors.website ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 pl-10 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
+                          />
+                          {linkErrors.website && (
+                            <p className="text-red-500 text-xs mt-1">{linkErrors.website}</p>
+                          )}
                         </div>
-                        <Input
-                          name="linkedin"
-                          value={profile.linkedin}
-                          onChange={handleChange}
-                          placeholder="https://linkedin.com/in/username"
-                          className={`border-2 border-solid ${linkErrors.linkedin ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky pl-10`}
-                        />
-                        {linkErrors.linkedin && (
-                          <p className="text-red-500 text-xs mt-1">{linkErrors.linkedin}</p>
-                        )}
-                      </div>
-
-                      {/* Website Link */}
-                      <div className="space-y-1">
-                        <div className="flex items-center">
-                          <span className="material-icons text-black mr-2 text-lg">public</span>
-                          <label className="block font-['Roboto',Helvetica] text-startsnap-pale-sky">Website</label>
-                        </div>
-                        <Input
-                          name="website"
-                          value={profile.website}
-                          onChange={handleChange}
-                          placeholder="https://yourwebsite.com"
-                          className={`border-2 border-solid ${linkErrors.website ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky pl-10`}
-                        />
-                        {linkErrors.website && (
-                          <p className="text-red-500 text-xs mt-1">{linkErrors.website}</p>
-                        )}
                       </div>
                     </div>
-                  </div>
 
-                  <div className="flex justify-end pt-4">
-                    <Button
-                      type="button"
-                      onClick={updateProfile}
-                      disabled={updating}
-                      className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
-                    >
-                      {updating ? 'Saving...' : 'Save Profile'}
-                    </Button>
-                  </div>
-                </form>
+                    <div className="flex justify-end pt-4">
+                      <Button
+                        type="button"
+                        onClick={updateProfile}
+                        disabled={updating}
+                        className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+                      >
+                        {updating ? 'Saving...' : 'Save Profile'}
+                      </Button>
+                    </div>
+                  </form>
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* StartSnaps Portfolio Section */}
-        <h3 className="text-3xl font-bold text-startsnap-ebony-clay mb-6 font-['Space_Grotesk',Helvetica]">
-          Your StartSnaps
-        </h3>
-
-        {loadingStartSnaps ? (
-          <div className="text-center py-8">
-            <p className="text-lg text-startsnap-pale-sky">Loading your StartSnaps...</p>
-          </div>
-        ) : userStartSnaps.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {userStartSnaps.map((startsnap) => (
-              <StartSnapCard
-                key={startsnap.id}
-                startsnap={startsnap}
-                showCreator={false}
-                variant="profile"
-                isOwner={true}
-                formatDate={formatDate}
-                getCategoryDisplay={getCategoryDisplay}
-              />
-            ))}
-          </div>
-        ) : (
-          <Card className="bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] p-8">
-            <div className="text-center">
-              <p className="text-lg text-startsnap-pale-sky mb-4">You haven't created any StartSnaps yet!</p>
-              <Button
-                className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
-                asChild
-              >
-                <Link to="/create">Create Your First StartSnap</Link>
-              </Button>
-            </div>
+            </CardContent>
           </Card>
-        )}
+        </div>
+      </div>
+
+      {/* Dynamic Separator */}
+      <div className="w-full bg-startsnap-beige relative">
+        <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(0,0,0,0.03)_10px,rgba(0,0,0,0.03)_20px)]"></div>
+        <div className="w-full max-w-4xl px-8 py-8 mx-auto relative">
+          <div className="flex items-center justify-center">
+            <div className="flex-1 h-2 bg-startsnap-french-rose transform -skew-x-12"></div>
+            <div className="px-6 py-2 bg-startsnap-ebony-clay text-startsnap-beige font-bold text-sm rounded-full border-2 border-startsnap-french-rose">
+              YOUR STARTSNAPS
+            </div>
+            <div className="flex-1 h-2 bg-startsnap-french-rose transform skew-x-12"></div>
+          </div>
+        </div>
+      </div>
+
+      {/* Content Zone - White Background */}
+      <div className="w-full bg-white pb-24 pt-8">
+        <div className="flex flex-col w-full items-center px-8">
+          <div className="w-full max-w-4xl">
+            {loadingStartSnaps ? (
+              <div className="text-center py-20 bg-startsnap-candlelight/20 rounded-lg border-2 border-dashed border-gray-300">
+                <p className="text-lg text-startsnap-pale-sky">Loading your StartSnaps...</p>
+              </div>
+            ) : userStartSnaps.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {userStartSnaps.map((startsnap) => (
+                  <StartSnapCard
+                    key={startsnap.id}
+                    startsnap={startsnap}
+                    showCreator={false}
+                    variant="profile"
+                    isOwner={true}
+                    formatDate={formatDate}
+                    getCategoryDisplay={getCategoryDisplay}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-20 bg-startsnap-candlelight/20 rounded-lg border-2 border-dashed border-gray-300">
+                <p className="text-lg text-startsnap-pale-sky mb-4">You haven't created any StartSnaps yet!</p>
+                <Button
+                  className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+                  asChild
+                >
+                  <Link to="/create">Create Your First StartSnap</Link>
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
