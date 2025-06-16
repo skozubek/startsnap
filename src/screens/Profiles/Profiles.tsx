@@ -10,6 +10,7 @@ import { getUserStatusOptions } from "../../config/categories";
 import { UserAvatar, getAvatarName } from "../../components/ui/user-avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
 import { Card, CardContent } from "../../components/ui/card";
+import { FaGithub, FaXTwitter, FaLinkedinIn } from "react-icons/fa6";
 import type { UserProfileData, ProfileSummary } from "../../types/user";
 
 /**
@@ -33,7 +34,7 @@ export const Profiles = (): JSX.Element => {
       try {
         let query = supabase
           .from('profiles')
-          .select('user_id, username, bio, status')
+          .select('user_id, username, bio, status, github_url, twitter_url, linkedin_url, website_url')
           .order('username', { ascending: true });
 
         if (statusFilter !== "all") {
@@ -119,8 +120,8 @@ export const Profiles = (): JSX.Element => {
                 {profiles.map(profile => (
                   <Link to={`/profiles/${profile.username}`} key={profile.user_id} className="block group">
                     <Card className="h-full bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] hover:opacity-90 transition-opacity duration-200">
-                      {/* Colorful header strip */}
-                      <div className="h-3 bg-gradient-to-r from-startsnap-french-rose via-startsnap-corn to-startsnap-mountain-meadow"></div>
+                      {/* Header strip */}
+                      <div className="h-3 bg-gradient-to-r from-startsnap-french-rose to-startsnap-french-rose/70"></div>
 
                       <CardContent className="p-6 flex flex-col items-center text-center">
                         <div className="w-20 h-20 mb-4 relative">
@@ -137,7 +138,33 @@ export const Profiles = (): JSX.Element => {
                         </div>
 
                         <h3 className="text-xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-2">{profile.username}</h3>
-                        <p className="text-sm text-startsnap-river-bed font-['Roboto',Helvetica] line-clamp-3 flex-1 leading-relaxed">{profile.bio || 'No bio yet.'}</p>
+                        <p className="text-sm text-startsnap-river-bed font-['Roboto',Helvetica] line-clamp-3 leading-relaxed mb-3">{profile.bio || 'No bio yet.'}</p>
+
+                        {/* Social Icons */}
+                        {(profile.github_url || profile.twitter_url || profile.linkedin_url || profile.website_url) && (
+                          <div className="flex items-center justify-center gap-3 mt-auto">
+                            {profile.github_url && (
+                              <a href={profile.github_url} target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70">
+                                {React.createElement(FaGithub as any, { size: 16, className: "text-gray-600" })}
+                              </a>
+                            )}
+                            {profile.twitter_url && (
+                              <a href={profile.twitter_url} target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70">
+                                {React.createElement(FaXTwitter as any, { size: 16, className: "text-gray-600" })}
+                              </a>
+                            )}
+                            {profile.linkedin_url && (
+                              <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70">
+                                {React.createElement(FaLinkedinIn as any, { size: 16, className: "text-gray-600" })}
+                              </a>
+                            )}
+                            {profile.website_url && (
+                              <a href={profile.website_url} target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70">
+                                <span className="material-icons text-base text-gray-600">public</span>
+                              </a>
+                            )}
+                          </div>
+                        )}
 
 
                       </CardContent>

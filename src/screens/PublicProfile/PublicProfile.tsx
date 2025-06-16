@@ -99,8 +99,8 @@ export const PublicProfile = (): JSX.Element => {
         <div className="w-full max-w-4xl px-8 py-16 mx-auto">
           {/* Profile Card */}
           <Card className="bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] hover:opacity-95 transition-opacity duration-200">
-            {/* Colorful header strip */}
-            <div className="h-4 bg-gradient-to-r from-startsnap-french-rose via-startsnap-corn to-startsnap-mountain-meadow"></div>
+            {/* Header strip */}
+            <div className="h-4 bg-gradient-to-r from-startsnap-french-rose to-startsnap-french-rose/70"></div>
 
             <CardContent className="p-8">
               <div className="flex flex-col md:flex-row gap-8">
@@ -113,7 +113,7 @@ export const PublicProfile = (): JSX.Element => {
                       {profile.username}
                     </h2>
                     <Badge variant="outline" className="bg-startsnap-athens-gray text-startsnap-river-bed font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-gray-300 px-3 py-1.5 mt-2">
-                      <span className="material-icons text-sm mr-1">{getStatusIcon(profile.status)}</span>
+                      <span className="material-icons text-sm mr-1">{getStatusIcon(profile.status || 'brainstorming')}</span>
                       {getUserStatusOptions().find(opt => opt.value === profile.status)?.label || 'Vibing'}
                     </Badge>
                   </div>
@@ -128,9 +128,9 @@ export const PublicProfile = (): JSX.Element => {
                       <div>
                         <h3 className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">Links</h3>
                         <div className="flex flex-wrap items-center gap-4 mt-2">
-                          {profile.github_url && <a href={profile.github_url} target="_blank" rel="noopener noreferrer"><FaGithub size={24} className="text-gray-700 hover:text-black" /></a>}
-                          {profile.twitter_url && <a href={profile.twitter_url} target="_blank" rel="noopener noreferrer"><FaXTwitter size={24} className="text-gray-700 hover:text-black" /></a>}
-                          {profile.linkedin_url && <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer"><FaLinkedinIn size={24} className="text-gray-700 hover:text-blue-700" /></a>}
+                          {profile.github_url && <a href={profile.github_url} target="_blank" rel="noopener noreferrer">{React.createElement(FaGithub as any, { size: 24, className: "text-gray-700 hover:text-black" })}</a>}
+                          {profile.twitter_url && <a href={profile.twitter_url} target="_blank" rel="noopener noreferrer">{React.createElement(FaXTwitter as any, { size: 24, className: "text-gray-700 hover:text-black" })}</a>}
+                          {profile.linkedin_url && <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer">{React.createElement(FaLinkedinIn as any, { size: 24, className: "text-gray-700 hover:text-blue-700" })}</a>}
                           {profile.website_url && <a href={profile.website_url} target="_blank" rel="noopener noreferrer"><span className="material-icons text-gray-700 hover:text-black">public</span></a>}
                         </div>
                       </div>

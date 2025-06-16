@@ -24,4 +24,4 @@ export interface UserProfileData {
  * @description Type alias for profile summary data displayed in the directory.
  * Uses Pick to select only the fields needed for the profiles directory listing.
  */
-export type ProfileSummary = Pick<UserProfileData, 'user_id' | 'username' | 'bio' | 'status'>;
+export type ProfileSummary = Pick<UserProfileData, 'user_id' | 'username' | 'bio' | 'status' | 'github_url' | 'twitter_url' | 'linkedin_url' | 'website_url'>;
