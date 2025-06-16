@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '../../../components/ui/button';
 import { Badge } from '../../../components/ui/badge';
 import { UserAvatar } from '../../../components/ui/user-avatar';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../../components/ui/tooltip';
 import { getCategoryDisplay } from '../../../config/categories';
 import { formatDetailedDate } from '../../../lib/utils';
 import { Pencil, Trash2, MoreHorizontal } from 'lucide-react';
@@ -63,6 +64,7 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
   onDeleteProjectRequest, // Destructure the new prop
 }) => {
   const categoryDisplay = getCategoryDisplay(startsnap.category);
+  const isScouted = creator?.username === 'VibeScout';
 
   const handleDeleteClick = () => {
     // Call the handler passed from the parent (ProjectDetail.tsx)
@@ -218,7 +220,31 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
         )}
         {creator && (
           <div className="flex items-center pt-6 border-t border-gray-200/80 mb-6">
-            {creator.username && creator.username !== 'Anonymous' ? (
+                                    {isScouted ? (
+              <TooltipProvider>
+                <Link
+                  to="/profiles/VibeScout"
+                  className="group hover:text-startsnap-french-rose transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-startsnap-french-rose"
+                >
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="cursor-help">
+                        <Badge variant="outline" className="bg-gray-800 text-white font-['Space_Mono',Helvetica] text-sm rounded-full border-none px-4 py-2 flex items-center gap-1 hover:bg-gray-700 transition-colors duration-150 shadow-[3px_3px_0px_#1f2937]">
+                          ✨ Featured by StartSnap
+                          <span className="material-icons text-sm ml-1 opacity-70">info</span>
+                        </Badge>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <div className="text-center">
+                        <p className="font-medium mb-1">Featured Project!</p>
+                        <p className="text-gray-300">Own this? DM <span className="font-semibold text-white">@startsnapfun</span> to claim it</p>
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                </Link>
+              </TooltipProvider>
+            ) : creator.username && creator.username !== 'Anonymous' ? (
               <Link to={`/profiles/${creator.username}`} className="flex items-center gap-4 group hover:text-startsnap-french-rose transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-startsnap-french-rose">
                 <div className="w-12 h-12">
                   <UserAvatar
