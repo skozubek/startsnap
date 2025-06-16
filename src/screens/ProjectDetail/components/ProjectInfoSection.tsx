@@ -71,33 +71,10 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
     onDeleteProjectRequest(startsnap.name);
   };
 
-  /**
-   * @description Generates a dynamic gradient based on category color for an amazing visual effect
-   * @returns {string} CSS gradient string with category-specific colors
-   */
-    const getCategoryGradientStrip = () => {
-    const categoryMap: { [key: string]: string } = {
-      ai: 'from-violet-600 to-violet-400',
-      blockchain: 'from-blue-600 to-blue-400',
-      gaming: 'from-green-600 to-green-400',
-      community: 'from-purple-600 to-purple-400',
-      music: 'from-pink-600 to-pink-400',
-      design: 'from-orange-600 to-orange-400',
-      education: 'from-yellow-600 to-yellow-400',
-      productivity: 'from-cyan-600 to-cyan-400',
-      other: 'from-gray-600 to-gray-400'
-    };
-
-    return categoryMap[startsnap.category] || categoryMap.other;
-  };
-
   return (
     <>
-      {/* Turbo Awesome Category Gradient Strip */}
-      <div className={`h-2 bg-gradient-to-r ${getCategoryGradientStrip()} relative overflow-hidden`}>
-        {/* Shimmer Effect */}
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse"></div>
-      </div>
+      {/* BRUTAL Category Strip - Raw & Uncompromising! */}
+      <div className={`h-4 ${categoryDisplay.bgColor} border-b-4 border-black`}></div>
 
       <div className="bg-white px-8 py-6 border-b-2 border-gray-800">
         <div className="flex justify-between items-center gap-4 mb-4">

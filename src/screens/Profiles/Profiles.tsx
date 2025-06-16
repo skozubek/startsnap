@@ -121,7 +121,7 @@ export const Profiles = (): JSX.Element => {
                   <Link to={`/profiles/${profile.username}`} key={profile.user_id} className="block group">
                     <Card className="h-full bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] hover:opacity-90 transition-opacity duration-200">
                       {/* Header strip */}
-                      <div className="h-3 bg-gradient-to-r from-startsnap-french-rose to-startsnap-french-rose/70"></div>
+                      <div className="h-3 bg-startsnap-french-rose border-b-4 border-black"></div>
 
                       <CardContent className="p-6 flex flex-col items-center text-center">
                         <div className="w-20 h-20 mb-4 relative">

@@ -100,7 +100,7 @@ export const PublicProfile = (): JSX.Element => {
           {/* Profile Card */}
           <Card className="bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] hover:opacity-95 transition-opacity duration-200">
             {/* Header strip */}
-            <div className="h-4 bg-gradient-to-r from-startsnap-french-rose to-startsnap-french-rose/70"></div>
+            <div className="h-4 bg-startsnap-french-rose border-b-4 border-black"></div>
 
             <CardContent className="p-8">
               <div className="flex flex-col md:flex-row gap-8">
