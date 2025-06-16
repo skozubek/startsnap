@@ -35,8 +35,6 @@ interface FormState {
   isHackathon: boolean;
   toolsInput: string;
   toolsUsed: string[];
-  feedbackInput: string;
-  feedbackAreas: string[];
   vibeLogType: string;
   vibeLogTitle: string;
   vibeLogContent: string;
@@ -72,8 +70,6 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
     isHackathon: false,
     toolsInput: '',
     toolsUsed: [],
-    feedbackInput: '',
-    feedbackAreas: [],
     vibeLogType: 'launch',
     vibeLogTitle: '',
     vibeLogContent: '',
@@ -157,32 +153,6 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
     setFormState(prev => ({
       ...prev,
       toolsUsed: prev.toolsUsed.filter(tool => tool !== toolToRemove)
-    }));
-  };
-
-  /**
-   * @description Adds a feedback area to the feedback areas array
-   * @param {string} area - Feedback area to add
-   */
-  const addFeedbackArea = (area: string) => {
-    const trimmedArea = area.trim();
-    if (trimmedArea && !formState.feedbackAreas.includes(trimmedArea)) {
-      setFormState(prev => ({
-        ...prev,
-        feedbackAreas: [...prev.feedbackAreas, trimmedArea],
-        feedbackInput: ''
-      }));
-    }
-  };
-
-  /**
-   * @description Removes a feedback area from the feedback areas array
-   * @param {string} areaToRemove - Feedback area to remove
-   */
-  const removeFeedbackArea = (areaToRemove: string) => {
-    setFormState(prev => ({
-      ...prev,
-      feedbackAreas: prev.feedbackAreas.filter(area => area !== areaToRemove)
     }));
   };
 
@@ -536,45 +506,6 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
             </div>
           </div>
 
-          {/* Feedback Areas */}
-          <div className="space-y-3">
-            <Label className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
-              Feedback Areas
-            </Label>
-            <p className="text-sm text-startsnap-pale-sky font-['Roboto',Helvetica]">
-              What specific aspects would you like feedback on?
-            </p>
-            <div className="space-y-3">
-              <Input
-                value={formState.feedbackInput}
-                onChange={(e) => handleInputChange('feedbackInput', e.target.value)}
-                onKeyPress={(e) => handleKeyPress(e, addFeedbackArea, formState.feedbackInput)}
-                placeholder="Add feedback areas (press Enter to add)"
-                className="border-2 border-solid border-gray-800 rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky"
-              />
-              {formState.feedbackAreas.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {formState.feedbackAreas.map((area, index) => (
-                    <Badge
-                      key={index}
-                      variant="outline"
-                      className="bg-startsnap-ice-cold text-startsnap-jewel font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-green-700 px-3 py-1 flex items-center gap-2"
-                    >
-                      {area}
-                      <button
-                        type="button"
-                        onClick={() => removeFeedbackArea(area)}
-                        className="hover:text-red-500"
-                      >
-                        <X size={14} />
-                      </button>
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-
           {/* Hackathon Entry */}
           <div className="flex items-center space-x-3">
             <Checkbox
@@ -588,7 +519,7 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
             </Label>
           </div>
 
-                    {/* Initial Vibe Log (Create mode only) */}
+          {/* Initial Vibe Log (Create mode only) */}
           {mode === 'create' && (
             <div className="space-y-6 border-t-2 border-gray-200 pt-8">
               <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-xl leading-7">

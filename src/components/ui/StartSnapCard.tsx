@@ -109,6 +109,9 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
 
   const thumbnailUrl = getCardThumbnail();
 
+  // Check if this project is featured by our scout account
+  const isScouted = creatorName === 'VibeScout';
+
   return (
     <Link to={`/projects/${startsnap.slug}`} className="block group">
       <Card className="h-full bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] group-hover:-translate-y-1 transition-transform duration-200">
@@ -211,38 +214,44 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
               </div>
             )}
 
-            {/* Footer with creator info and support count */}
+            {/* Footer with creator info/featured badge and support count */}
             <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-200/80">
-              {showCreator && creatorName && (
-                <div className="flex items-center">
-                  {creatorName !== 'Anonymous' ? (
-                    <Link to={`/profiles/${creatorName}`} className="flex items-center gap-2 group/creator hover:text-startsnap-french-rose transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-startsnap-french-rose">
-                      <div className="w-6 h-6">
-                        <UserAvatar
-                          name={getAvatarName(null, creatorName)}
-                          size={24}
-                          className="w-full h-full"
-                        />
+              {isScouted ? (
+                <Badge variant="outline" className="bg-gray-800 text-white font-['Space_Mono',Helvetica] text-xs rounded-full border-none px-3 py-1.5 flex items-center gap-1">
+                  ✨ Featured by StartSnap
+                </Badge>
+              ) : (
+                showCreator && creatorName && (
+                  <div className="flex items-center">
+                    {creatorName !== 'Anonymous' ? (
+                      <Link to={`/profiles/${creatorName}`} className="flex items-center gap-2 group/creator hover:text-startsnap-french-rose transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-startsnap-french-rose">
+                        <div className="w-6 h-6">
+                          <UserAvatar
+                            name={getAvatarName(null, creatorName)}
+                            size={24}
+                            className="w-full h-full"
+                          />
+                        </div>
+                        <span className="font-['Roboto',Helvetica] font-medium text-startsnap-oxford-blue text-sm group-hover/creator:text-startsnap-french-rose">
+                          {creatorName}
+                        </span>
+                      </Link>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6">
+                          <UserAvatar
+                            name={getAvatarName(null, creatorName)}
+                            size={24}
+                            className="w-full h-full"
+                          />
+                        </div>
+                        <span className="font-['Roboto',Helvetica] font-medium text-startsnap-oxford-blue text-sm">
+                          {creatorName}
+                        </span>
                       </div>
-                      <span className="font-['Roboto',Helvetica] font-medium text-startsnap-oxford-blue text-sm group-hover/creator:text-startsnap-french-rose">
-                        {creatorName}
-                      </span>
-                    </Link>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6">
-                        <UserAvatar
-                          name={getAvatarName(null, creatorName)}
-                          size={24}
-                          className="w-full h-full"
-                        />
-                      </div>
-                      <span className="font-['Roboto',Helvetica] font-medium text-startsnap-oxford-blue text-sm">
-                        {creatorName}
-                      </span>
-                    </div>
-                  )}
-                </div>
+                    )}
+                  </div>
+                )
               )}
 
               {variant === 'profile' && isOwner && (
@@ -264,8 +273,8 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
               </div>
             </div>
 
-            {/* Launch date for main-page variant */}
-            {variant === 'main-page' && (
+            {/* Launch date for main-page variant - only show if not scouted */}
+            {variant === 'main-page' && !isScouted && (
               <p className="font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4 mt-2">
                 {formatDate(startsnap.created_at)}
               </p>
