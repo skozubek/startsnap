@@ -22,7 +22,7 @@ interface PulsePanelProps {
   onClose: () => void;
 }
 
-const ACTIVITIES_PER_PAGE = 15;
+const ACTIVITIES_PER_PAGE = 5;
 const MAX_ACTIVITIES_IN_MEMORY = 100; // Prevent memory bloat
 
 /**
