@@ -21,6 +21,8 @@ import { Privacy } from "../Privacy";
 import { AuthProvider, useAuth } from "../../context/AuthContext";
 import { ScrollToTop } from "../../components/utils/ScrollToTop";
 import { ToastProvider } from "../../components/providers/ToastProvider";
+import { PulsePanel } from "../../components/ui/PulsePanel";
+import { useState } from "react";
 
 /**
  * @description Component that protects routes requiring authentication
@@ -51,12 +53,24 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }): JSX.Elemen
  * @returns {JSX.Element} The application frame with header, content area, and footer
  */
 export const Frame = (): JSX.Element => {
+  const [isPulsePanelOpen, setIsPulsePanelOpen] = useState(false);
+
+  /**
+   * @description Opens the Community Pulse panel
+   */
+  const openPulsePanel = () => setIsPulsePanelOpen(true);
+
+  /**
+   * @description Closes the Community Pulse panel
+   */
+  const closePulsePanel = () => setIsPulsePanelOpen(false);
+
   return (
     <div className="flex flex-col min-h-screen w-full bg-white">
       <AuthProvider>
         <ToastProvider />
         <ScrollToTop />
-        <HeaderSection />
+        <HeaderSection onPulseButtonClick={openPulsePanel} />
         <Subheader />
         <div className="flex flex-col w-full min-h-screen overflow-y-auto">
           <Routes>
@@ -94,6 +108,7 @@ export const Frame = (): JSX.Element => {
           </Routes>
         </div>
         <FooterSection />
+        <PulsePanel isOpen={isPulsePanelOpen} onClose={closePulsePanel} />
       </AuthProvider>
     </div>
   );
