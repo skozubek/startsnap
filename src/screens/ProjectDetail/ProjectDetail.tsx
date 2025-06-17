@@ -260,7 +260,7 @@ export const ProjectDetail = (): JSX.Element => {
   /**
    * @description Handles toggling project support status
    * @async
-   * @sideEffects Updates project_supporters table and support_count via RPC
+   * @sideEffects Updates project_supporters table (count handled automatically by database triggers)
    */
   const handleSupportToggle = async () => {
     if (!currentUser || !startsnap || !startsnap.id) return;
@@ -270,22 +270,32 @@ export const ProjectDetail = (): JSX.Element => {
 
     try {
       if (!isSupportedByCurrentUser) {
-        // Add support
+        // Add support - database trigger will automatically increment count
         const { error: supportError } = await supabase
           .from('project_supporters')
           .insert({ startsnap_id: currentProjectId, user_id: currentUser.id });
 
         if (supportError) throw supportError;
 
-        const { data: newCount, error: rpcError } = await supabase
-          .rpc('increment_support_count', { p_startsnap_id: currentProjectId });
-
-        if (rpcError) throw rpcError;
-
+        // Update local state
         setIsSupportedByCurrentUser(true);
-        setCurrentSupportCount(newCount || currentSupportCount + 1);
+
+        // Fetch updated support count from database (set by trigger)
+        const { data: updatedProject, error: fetchError } = await supabase
+          .from('startsnaps')
+          .select('support_count')
+          .eq('id', currentProjectId)
+          .single();
+
+        if (fetchError) {
+          console.warn('Could not fetch updated support count:', fetchError);
+          // Fallback to optimistic update
+          setCurrentSupportCount(prev => prev + 1);
+        } else {
+          setCurrentSupportCount(updatedProject.support_count || 0);
+        }
       } else {
-        // Remove support
+        // Remove support - database trigger will automatically decrement count
         const { error: supportError } = await supabase
           .from('project_supporters')
           .delete()
@@ -294,13 +304,23 @@ export const ProjectDetail = (): JSX.Element => {
 
         if (supportError) throw supportError;
 
-        const { data: newCount, error: rpcError } = await supabase
-          .rpc('decrement_support_count', { p_startsnap_id: currentProjectId });
-
-        if (rpcError) throw rpcError;
-
+        // Update local state
         setIsSupportedByCurrentUser(false);
-        setCurrentSupportCount(newCount || Math.max(0, currentSupportCount - 1));
+
+        // Fetch updated support count from database (set by trigger)
+        const { data: updatedProject, error: fetchError } = await supabase
+          .from('startsnaps')
+          .select('support_count')
+          .eq('id', currentProjectId)
+          .single();
+
+        if (fetchError) {
+          console.warn('Could not fetch updated support count:', fetchError);
+          // Fallback to optimistic update
+          setCurrentSupportCount(prev => Math.max(0, prev - 1));
+        } else {
+          setCurrentSupportCount(updatedProject.support_count || 0);
+        }
       }
     } catch (error) {
       console.error('Error toggling project support:', error);
