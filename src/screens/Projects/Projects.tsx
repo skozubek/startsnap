@@ -21,7 +21,7 @@ const DEFAULT_DISCOVERY_STATE: PaginatedProjectDiscoveryState = {
   filters: { type: 'all', category: undefined, isHackathonEntry: false },
   sort: { field: 'created_at', direction: 'desc' },
   page: 1,
-  pageSize: 9,
+  pageSize: 6,
 };
 
 const categoryOptions = Object.values(CATEGORY_CONFIG).map(config => config.label);
@@ -229,12 +229,10 @@ export const Projects = (): JSX.Element => {
           </div>
 
           {/* Projects Grid */}
-          {loading ? (
-            discoveryState.page === 1 ? (
-              <div className="text-center py-20 bg-startsnap-candlelight/20 rounded-lg border-2 border-dashed border-gray-300">
-                <p className="text-xl text-startsnap-pale-sky">Loading projects...</p>
-              </div>
-            ) : null
+          {loading && discoveryState.page === 1 ? (
+            <div className="text-center py-20 bg-startsnap-candlelight/20 rounded-lg border-2 border-dashed border-gray-300">
+              <p className="text-xl text-startsnap-pale-sky">Loading projects...</p>
+            </div>
           ) : startSnaps.length > 0 ? (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -260,10 +258,10 @@ export const Projects = (): JSX.Element => {
                 <div className="text-center mt-12">
                   <Button
                     onClick={handleLoadMore}
-                    disabled={loading}
+                    disabled={loading && discoveryState.page > 1}
                     className="startsnap-button bg-startsnap-persian-blue text-startsnap-white font-['Roboto',Helvetica] font-bold text-lg px-8 py-4 rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
                   >
-                    {loading ? 'Loading More...' : 'Load More Projects'}
+                    {loading && discoveryState.page > 1 ? 'Loading More...' : 'Load More Projects'}
                   </Button>
                 </div>
               )}
@@ -284,13 +282,6 @@ export const Projects = (): JSX.Element => {
               <Button className="startsnap-button mt-4 bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]" asChild>
                 <Link to="/new">Create Your First StartSnap</Link>
               </Button>
-            </div>
-          )}
-
-          {/* Loading indicator for subsequent pages */}
-          {loading && discoveryState.page > 1 && (
-            <div className="text-center py-8">
-              <p className="text-xl text-startsnap-pale-sky">Loading projects...</p>
             </div>
           )}
         </div>
