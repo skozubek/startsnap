@@ -28,9 +28,11 @@ import type { UserProfileData } from "../../../../types/user";
 /**
  * @description Props for the HeaderSection component
  * @param {() => void} onPulseButtonClick - Function to call when the pulse button is clicked
+ * @param {boolean} hasNewActivity - Indicates if there's new activity to signal
  */
 interface HeaderSectionProps {
   onPulseButtonClick: () => void;
+  hasNewActivity: boolean;
 }
 
 /**
@@ -38,7 +40,7 @@ interface HeaderSectionProps {
  * @param {HeaderSectionProps} props - Component props
  * @returns {JSX.Element} Application header with responsive navigation and auth controls
  */
-export const HeaderSection = ({ onPulseButtonClick }: HeaderSectionProps): JSX.Element => {
+export const HeaderSection = ({ onPulseButtonClick, hasNewActivity }: HeaderSectionProps): JSX.Element => {
   const [authMode, setAuthMode] = useState<'signup' | 'login'>('login');
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const [userProfile, setUserProfile] = useState<Pick<UserProfileData, 'username'> | null>(null);
@@ -144,7 +146,7 @@ export const HeaderSection = ({ onPulseButtonClick }: HeaderSectionProps): JSX.E
           {/* Community Pulse Button */}
           <Button
             onClick={onPulseButtonClick}
-            className="startsnap-button bg-startsnap-mountain-meadow text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-2"
+            className={`startsnap-button bg-startsnap-mountain-meadow text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-2 ${hasNewActivity ? 'animate-pulse-glow' : ''}`}
             aria-label="Open Community Pulse"
           >
             <span className="material-icons text-lg">bolt</span>
@@ -232,7 +234,7 @@ export const HeaderSection = ({ onPulseButtonClick }: HeaderSectionProps): JSX.E
                 onPulseButtonClick();
                 toggleMobileMenu();
               }}
-              className="w-full startsnap-button bg-startsnap-mountain-meadow text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center justify-center gap-2"
+              className={`w-full startsnap-button bg-startsnap-mountain-meadow text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center justify-center gap-2 ${hasNewActivity ? 'animate-pulse-glow' : ''}`}
             >
               <span className="material-icons text-lg">bolt</span>
               <span>Community Pulse</span>

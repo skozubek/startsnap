@@ -54,11 +54,15 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }): JSX.Elemen
  */
 export const Frame = (): JSX.Element => {
   const [isPulsePanelOpen, setIsPulsePanelOpen] = useState(false);
+  const [hasNewActivity, setHasNewActivity] = useState(false);
 
   /**
-   * @description Opens the Community Pulse panel
+   * @description Opens the Community Pulse panel and stops the pulsing effect
    */
-  const openPulsePanel = () => setIsPulsePanelOpen(true);
+  const openPulsePanel = () => {
+    setIsPulsePanelOpen(true);
+    setHasNewActivity(false); // Stop pulsing when panel is opened
+  };
 
   /**
    * @description Closes the Community Pulse panel
@@ -70,7 +74,10 @@ export const Frame = (): JSX.Element => {
       <AuthProvider>
         <ToastProvider />
         <ScrollToTop />
-        <HeaderSection onPulseButtonClick={openPulsePanel} />
+        <HeaderSection 
+          onPulseButtonClick={openPulsePanel} 
+          hasNewActivity={hasNewActivity}
+        />
         <Subheader />
         <div className="flex flex-col w-full min-h-screen overflow-y-auto">
           <Routes>
@@ -108,7 +115,11 @@ export const Frame = (): JSX.Element => {
           </Routes>
         </div>
         <FooterSection />
-        <PulsePanel isOpen={isPulsePanelOpen} onClose={closePulsePanel} />
+        <PulsePanel 
+          isOpen={isPulsePanelOpen} 
+          onClose={closePulsePanel}
+          onNewActivityDetected={() => setHasNewActivity(true)}
+        />
       </AuthProvider>
     </div>
   );
