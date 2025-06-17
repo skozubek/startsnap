@@ -163,12 +163,6 @@ export const ProjectDetail = (): JSX.Element => {
   /**
    * @description Optimized function to fetch feedback entries with their profiles and replies using batched queries.
    * Eliminates N+1 problem by batching profile lookups instead of making individual queries.
-   *
-   * PERFORMANCE IMPROVEMENT:
-   * - Before: 1 + N + N + M queries (where N = feedbacks, M = total replies)
-   * - After: 4 queries total (feedbacks + batched profiles + replies + batched reply profiles)
-   * - Example: 10 feedbacks with 50 total replies: 71 queries → 4 queries
-   *
    * @async
    * @sideEffects Sets feedbackEntries state with complete nested data
    */
