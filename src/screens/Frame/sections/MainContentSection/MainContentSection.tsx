@@ -12,19 +12,13 @@ import { SearchAndFilterBar } from "../../../../components/ui/SearchAndFilterBar
 import { CATEGORY_CONFIG } from "../../../../config/categories";
 import { getCategoryDisplay } from "../../../../config/categories";
 import { formatDate } from "../../../../lib/utils";
-import type { ProjectDiscoveryState, FilterOptions, SortOption } from "../../../../types/projectDiscovery";
+import type { FilterOptions, SortOption } from "../../../../types/projectDiscovery";
 import type { StartSnapProject } from "../../../../types/startsnap";
 import type { UserProfileData } from "../../../../types/user";
 import { HeroSection } from "./components/HeroSection";
 import { FeaturedStartSnapsSection } from "./components/FeaturedStartSnapsSection";
 import { BuildInPublicManifestoSection } from "./components/BuildInPublicManifestoSection";
 import { PlatformShowcaseSection } from "./components/PlatformShowcaseSection";
-
-const DEFAULT_DISCOVERY_STATE: ProjectDiscoveryState = {
-  searchTerm: '',
-  filters: { type: 'all' },
-  sort: { field: 'created_at', direction: 'desc' },
-};
 
 const categoryOptions = Object.values(CATEGORY_CONFIG).map(config => config.label);
 
@@ -33,55 +27,34 @@ const categoryOptions = Object.values(CATEGORY_CONFIG).map(config => config.labe
  * @returns {JSX.Element} Main content section with hero and StartSnap cards
  */
 export const MainContentSection = (): JSX.Element => {
-  const [startSnaps, setStartSnaps] = useState<StartSnapProject[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [creators, setCreators] = useState<Record<UserProfileData['user_id'], UserProfileData['username']>>({});
-  const [discoveryState, setDiscoveryState] = useState<ProjectDiscoveryState>(DEFAULT_DISCOVERY_STATE);
+  const [featuredStartSnaps, setFeaturedStartSnaps] = useState<StartSnapProject[]>([]);
+  const [loadingFeatured, setLoadingFeatured] = useState(true);
+  const [featuredCreators, setFeaturedCreators] = useState<Record<UserProfileData['user_id'], UserProfileData['username']>>({});
   const [platformStartSnap, setPlatformStartSnap] = useState<StartSnapProject | null>(null);
   const [platformCreator, setPlatformCreator] = useState<string>('Vibe Coder Team');
   const [loadingPlatformData, setLoadingPlatformData] = useState(true);
 
-  const fetchStartSnaps = useCallback(async (currentDiscoveryState: ProjectDiscoveryState) => {
+  /**
+   * @description Fetches featured StartSnaps for the home page display
+   * @async
+   * @sideEffects Updates featuredStartSnaps, featuredCreators, and loadingFeatured state
+   */
+  const fetchFeaturedStartSnaps = useCallback(async () => {
     try {
-      setLoading(true);
+      setLoadingFeatured(true);
       let query = supabase
         .from('startsnaps')
         .select('*, support_count, screenshot_urls');
 
-      if (currentDiscoveryState.searchTerm) {
-        const searchTerm = `%${currentDiscoveryState.searchTerm}%`;
-        query = query.or(
-          `name.ilike.${searchTerm},description.ilike.${searchTerm},tags.cs.{${currentDiscoveryState.searchTerm}},tools_used.cs.{${currentDiscoveryState.searchTerm}}`
-        );
-      }
-
-      if (currentDiscoveryState.filters.category) {
-        const categoryKey = Object.keys(CATEGORY_CONFIG).find(
-          key => CATEGORY_CONFIG[key as keyof typeof CATEGORY_CONFIG].label === currentDiscoveryState.filters.category
-        );
-        if (categoryKey) {
-          query = query.eq('category', categoryKey);
-        }
-      }
-      if (currentDiscoveryState.filters.type && currentDiscoveryState.filters.type !== 'all') {
-        query = query.eq('type', currentDiscoveryState.filters.type);
-      }
-      if (currentDiscoveryState.filters.isHackathonEntry) {
-        query = query.eq('is_hackathon_entry', true);
-      }
-
-      query = query.order(currentDiscoveryState.sort.field, { ascending: currentDiscoveryState.sort.direction === 'asc' });
-      if (currentDiscoveryState.sort.field !== 'created_at') {
-          query = query.order('created_at', { ascending: false });
-      }
-
+      // Featured projects: latest 12 projects ordered by creation date
+      query = query.order('created_at', { ascending: false });
       query = query.limit(12);
 
       const { data, error } = await query;
 
       if (error) throw error;
 
-      setStartSnaps(data || []);
+      setFeaturedStartSnaps(data || []);
 
       if (data && data.length > 0) {
         const userIds = [...new Set(data.map(snap => snap.user_id))];
@@ -97,19 +70,24 @@ export const MainContentSection = (): JSX.Element => {
           creatorsMap[profile.user_id] = profile.username;
         });
 
-        setCreators(creatorsMap);
+        setFeaturedCreators(creatorsMap);
       } else {
-        setCreators({});
+        setFeaturedCreators({});
       }
     } catch (error) {
       console.error('Error fetching startsnaps:', error);
-      setStartSnaps([]);
-      setCreators({});
+      setFeaturedStartSnaps([]);
+      setFeaturedCreators({});
     } finally {
-      setLoading(false);
+      setLoadingFeatured(false);
     }
   }, []);
 
+  /**
+   * @description Fetches the platform's own StartSnap project
+   * @async
+   * @sideEffects Updates platformStartSnap, platformCreator, and loadingPlatformData state
+   */
   const fetchPlatformStartSnap = useCallback(async () => {
     try {
       setLoadingPlatformData(true);
@@ -147,13 +125,9 @@ export const MainContentSection = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    fetchStartSnaps(discoveryState);
+    fetchFeaturedStartSnaps();
     fetchPlatformStartSnap();
-  }, [discoveryState, fetchStartSnaps, fetchPlatformStartSnap]);
-
-  const handleDiscoveryChange = (newDiscoveryState: ProjectDiscoveryState) => {
-    setDiscoveryState(newDiscoveryState);
-  };
+  }, [fetchFeaturedStartSnaps, fetchPlatformStartSnap]);
 
   return (
     <section className="flex flex-col w-full items-center bg-startsnap-candlelight">
@@ -162,9 +136,9 @@ export const MainContentSection = (): JSX.Element => {
 
       {/* StartSnaps Cards Section */}
       <FeaturedStartSnapsSection
-        loading={loading}
-        startSnaps={startSnaps}
-        creators={creators}
+        loading={loadingFeatured}
+        startSnaps={featuredStartSnaps}
+        creators={featuredCreators}
         formatDate={formatDate}
         getCategoryDisplay={getCategoryDisplay}
       />

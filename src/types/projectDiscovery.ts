@@ -39,3 +39,11 @@ export interface ProjectDiscoveryState {
   filters: FilterOptions;
   sort: SortOption;
 }
+
+/**
+ * @description Extends ProjectDiscoveryState with pagination parameters for paginated project discovery.
+ */
+export interface PaginatedProjectDiscoveryState extends ProjectDiscoveryState {
+  page: number;
+  pageSize: number;
+}

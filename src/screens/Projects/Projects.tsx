@@ -12,24 +12,26 @@ import { supabase } from "../../lib/supabase";
 import { CATEGORY_CONFIG, getCategoryDisplay } from "../../config/categories";
 import { formatDate } from "../../lib/utils";
 import { TrendingSection } from "./components/TrendingSection";
-import type { ProjectDiscoveryState, FilterOptions } from "../../types/projectDiscovery";
+import type { PaginatedProjectDiscoveryState, FilterOptions } from "../../types/projectDiscovery";
 import type { StartSnapProject } from "../../types/startsnap";
 import type { UserProfileData } from "../../types/user";
 
-const DEFAULT_DISCOVERY_STATE: ProjectDiscoveryState = {
+const DEFAULT_DISCOVERY_STATE: PaginatedProjectDiscoveryState = {
   searchTerm: '',
   filters: { type: 'all', category: undefined, isHackathonEntry: false },
   sort: { field: 'created_at', direction: 'desc' },
+  page: 1,
+  pageSize: 6,
 };
 
 const categoryOptions = Object.values(CATEGORY_CONFIG).map(config => config.label);
 
 /**
  * @description Helper function to check if any search term or filters are active.
- * @param {ProjectDiscoveryState} currentState - The current discovery state.
+ * @param {PaginatedProjectDiscoveryState} currentState - The current discovery state.
  * @returns {boolean} True if search term or filters are active, false otherwise.
  */
-const areFiltersOrSearchActive = (currentState: ProjectDiscoveryState): boolean => {
+const areFiltersOrSearchActive = (currentState: PaginatedProjectDiscoveryState): boolean => {
   const { searchTerm, filters } = currentState;
   return (
     searchTerm !== '' ||
@@ -47,14 +49,27 @@ export const Projects = (): JSX.Element => {
   const [startSnaps, setStartSnaps] = useState<StartSnapProject[]>([]);
   const [loading, setLoading] = useState(true);
   const [creators, setCreators] = useState<Record<UserProfileData['user_id'], UserProfileData['username']>>({});
-  const [discoveryState, setDiscoveryState] = useState<ProjectDiscoveryState>(DEFAULT_DISCOVERY_STATE);
+  const [discoveryState, setDiscoveryState] = useState<PaginatedProjectDiscoveryState>(DEFAULT_DISCOVERY_STATE);
+  const [totalProjectsCount, setTotalProjectsCount] = useState<number>(0);
 
-  const fetchStartSnaps = useCallback(async (currentDiscoveryState: ProjectDiscoveryState) => {
+  /**
+   * @description Fetches paginated StartSnaps from Supabase with search, filtering, and sorting
+   * @async
+   * @param {PaginatedProjectDiscoveryState} currentDiscoveryState - Current discovery state including pagination
+   * @sideEffects Updates startSnaps, creators, totalProjectsCount, and loading state
+   */
+  const fetchPaginatedStartSnaps = useCallback(async (currentDiscoveryState: PaginatedProjectDiscoveryState) => {
     try {
       setLoading(true);
+      
+      // Calculate range for pagination (zero-based indices)
+      const startIndex = (currentDiscoveryState.page - 1) * currentDiscoveryState.pageSize;
+      const endIndex = startIndex + currentDiscoveryState.pageSize - 1;
+      
       let query = supabase
         .from('startsnaps')
-        .select('*, support_count, screenshot_urls');
+        .select('*, support_count, screenshot_urls', { count: 'exact' })
+        .range(startIndex, endIndex);
 
       if (currentDiscoveryState.searchTerm) {
         const searchTerm = `%${currentDiscoveryState.searchTerm}%`;
@@ -83,46 +98,88 @@ export const Projects = (): JSX.Element => {
           query = query.order('created_at', { ascending: false });
       }
 
-      const { data, error } = await query;
+      const { data, error, count } = await query;
 
       if (error) throw error;
 
-      setStartSnaps(data || []);
+      // Update total count
+      setTotalProjectsCount(count || 0);
+
+      // For page 1, replace the array; for subsequent pages, append
+      if (currentDiscoveryState.page === 1) {
+        setStartSnaps(data || []);
+      } else {
+        setStartSnaps(prevStartSnaps => [...prevStartSnaps, ...(data || [])]);
+      }
 
       if (data && data.length > 0) {
-        const userIds = [...new Set(data.map(snap => snap.user_id))];
+        // Get user IDs from new data only
+        const newUserIds = [...new Set(data.map(snap => snap.user_id))];
         const { data: profilesData, error: profilesError } = await supabase
           .from('profiles')
           .select('user_id, username')
-          .in('user_id', userIds);
+          .in('user_id', newUserIds);
 
         if (profilesError) throw profilesError;
 
-        const creatorsMap: Record<UserProfileData['user_id'], UserProfileData['username']> = {};
+        const newCreatorsMap: Record<UserProfileData['user_id'], UserProfileData['username']> = {};
         profilesData?.forEach(profile => {
-          creatorsMap[profile.user_id] = profile.username;
+          newCreatorsMap[profile.user_id] = profile.username;
         });
 
-        setCreators(creatorsMap);
+        // For page 1, replace creators; for subsequent pages, merge
+        if (currentDiscoveryState.page === 1) {
+          setCreators(newCreatorsMap);
+        } else {
+          setCreators(prevCreators => ({ ...prevCreators, ...newCreatorsMap }));
+        }
       } else {
-        setCreators({});
+        if (currentDiscoveryState.page === 1) {
+          setCreators({});
+        }
       }
     } catch (error) {
       console.error('Error fetching startsnaps:', error);
-      setStartSnaps([]);
-      setCreators({});
+      if (currentDiscoveryState.page === 1) {
+        setStartSnaps([]);
+        setCreators({});
+        setTotalProjectsCount(0);
+      }
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchStartSnaps(discoveryState);
-  }, [discoveryState, fetchStartSnaps]);
+    fetchPaginatedStartSnaps(discoveryState);
+  }, [discoveryState, fetchPaginatedStartSnaps]);
 
-  const handleDiscoveryChange = (newDiscoveryState: ProjectDiscoveryState) => {
-    setDiscoveryState(newDiscoveryState);
+  /**
+   * @description Handles changes to discovery state and resets pagination to page 1
+   * @param {Omit<PaginatedProjectDiscoveryState, 'page' | 'pageSize'>} newDiscoveryState - New discovery state without pagination
+   * @sideEffects Updates discoveryState and resets to page 1
+   */
+  const handleDiscoveryChange = (newDiscoveryState: Omit<PaginatedProjectDiscoveryState, 'page' | 'pageSize'>) => {
+    setDiscoveryState({
+      ...newDiscoveryState,
+      page: 1,
+      pageSize: DEFAULT_DISCOVERY_STATE.pageSize
+    });
   };
+
+  /**
+   * @description Loads the next page of projects
+   * @sideEffects Increments the page number in discoveryState
+   */
+  const handleLoadMore = () => {
+    setDiscoveryState(prevState => ({
+      ...prevState,
+      page: prevState.page + 1
+    }));
+  };
+
+  // Check if there are more projects to load
+  const hasMoreProjects = startSnaps.length < totalProjectsCount;
 
   return (
     <div className="flex flex-col w-full items-center bg-startsnap-candlelight">
@@ -134,7 +191,7 @@ export const Projects = (): JSX.Element => {
           </h1>
 
           {/* Trending Zone - Now with Bold Contrast */}
-          <div className="bg-startsnap-ebony-clay p-8 md:p-12 rounded-xl border-4 border-startsnap-french-rose shadow-[8px_8px_0px_#ef4444] transform rotate-[-0.5deg] hover:rotate-0 transition-transform duration-300">
+          <div className="bg-startsnap-ebony-clay p-8 md:p-12 rounded-xl border-4 border-startsnap-french-rose shadow-[8px_8px_0px_#ef4444] transform rotate-[0.25deg] hover:rotate-0 transition-transform duration-300">
             <h2 className="text-3xl font-bold text-startsnap-beige text-center mb-8 font-['Space_Grotesk',Helvetica]">
               🔥 Trending StartSnaps
             </h2>
@@ -172,28 +229,43 @@ export const Projects = (): JSX.Element => {
           </div>
 
           {/* Projects Grid */}
-          {loading ? (
+          {loading && discoveryState.page === 1 ? (
             <div className="text-center py-20 bg-startsnap-candlelight/20 rounded-lg border-2 border-dashed border-gray-300">
               <p className="text-xl text-startsnap-pale-sky">Loading projects...</p>
             </div>
           ) : startSnaps.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {startSnaps.map((startsnap) => {
-                const creatorName = creators[startsnap.user_id] || 'Anonymous';
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {startSnaps.map((startsnap) => {
+                  const creatorName = creators[startsnap.user_id] || 'Anonymous';
 
-                return (
-                  <StartSnapCard
-                    key={startsnap.id}
-                    startsnap={startsnap}
-                    showCreator={true}
-                    creatorName={creatorName}
-                    variant="main-page"
-                    formatDate={formatDate}
-                    getCategoryDisplay={getCategoryDisplay}
-                  />
-                );
-              })}
-            </div>
+                  return (
+                    <StartSnapCard
+                      key={startsnap.id}
+                      startsnap={startsnap}
+                      showCreator={true}
+                      creatorName={creatorName}
+                      variant="main-page"
+                      formatDate={formatDate}
+                      getCategoryDisplay={getCategoryDisplay}
+                    />
+                  );
+                })}
+              </div>
+              
+              {/* Load More Button */}
+              {hasMoreProjects && (
+                <div className="text-center mt-12">
+                  <Button
+                    onClick={handleLoadMore}
+                    disabled={loading && discoveryState.page > 1}
+                    className="startsnap-button bg-startsnap-persian-blue text-startsnap-white font-['Roboto',Helvetica] font-bold text-lg px-8 py-4 rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+                  >
+                    {loading && discoveryState.page > 1 ? 'Loading More...' : 'Load More Projects'}
+                  </Button>
+                </div>
+              )}
+            </>
           ) : areFiltersOrSearchActive(discoveryState) ? (
             <div className="text-center py-20 bg-startsnap-candlelight/20 rounded-lg border-2 border-dashed border-gray-300">
               <p className="text-xl text-startsnap-pale-sky">No projects match your criteria. Try adjusting your search or filters!</p>
