@@ -25,3 +25,45 @@ export interface UserProfileData {
  * Uses Pick to select only the fields needed for the profiles directory listing.
  */
 export type ProfileSummary = Pick<UserProfileData, 'user_id' | 'username' | 'bio' | 'status' | 'github_url' | 'twitter_url' | 'linkedin_url' | 'website_url'>;
+
+/**
+ * @description Available fields to sort profiles by.
+ */
+export type ProfileSortableField = 'username' | 'created_at';
+
+/**
+ * @description Sort direction for profiles.
+ */
+export type ProfileSortDirection = 'asc' | 'desc';
+
+/**
+ * @description Options for sorting profiles.
+ */
+export interface ProfileSortOption {
+  field: ProfileSortableField;
+  direction: ProfileSortDirection;
+}
+
+/**
+ * @description Options for filtering profiles.
+ */
+export interface ProfileFilterOptions {
+  status?: string; // User status filter
+}
+
+/**
+ * @description Combines all profile discovery parameters.
+ */
+export interface ProfileDiscoveryState {
+  searchTerm: string;
+  filters: ProfileFilterOptions;
+  sort: ProfileSortOption;
+}
+
+/**
+ * @description Extends ProfileDiscoveryState with pagination parameters for paginated profile discovery.
+ */
+export interface PaginatedProfileDiscoveryState extends ProfileDiscoveryState {
+  page: number;
+  pageSize: number;
+}

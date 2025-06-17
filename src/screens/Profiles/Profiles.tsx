@@ -3,7 +3,7 @@
  * @description A page to discover and filter Vibe Coders on the platform.
  */
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { getUserStatusOptions } from "../../config/categories";
@@ -21,7 +21,30 @@ import {
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
 import { FaGithub, FaXTwitter, FaLinkedinIn } from "react-icons/fa6";
-import type { UserProfileData, ProfileSummary } from "../../types/user";
+import type { UserProfileData, ProfileSummary, PaginatedProfileDiscoveryState } from "../../types/user";
+
+const DEFAULT_DISCOVERY_STATE: PaginatedProfileDiscoveryState = {
+  searchTerm: '',
+  filters: { status: undefined },
+  sort: { field: 'username', direction: 'asc' },
+  page: 1,
+  pageSize: 6,
+};
+
+const statusOptions = [{ value: "all", label: "All Statuses" }, ...getUserStatusOptions()];
+
+/**
+ * @description Helper function to check if any search term or filters are active.
+ * @param {PaginatedProfileDiscoveryState} currentState - The current discovery state.
+ * @returns {boolean} True if search term or filters are active, false otherwise.
+ */
+const areFiltersOrSearchActive = (currentState: PaginatedProfileDiscoveryState): boolean => {
+  const { searchTerm, filters } = currentState;
+  return (
+    searchTerm !== '' ||
+    filters.status !== undefined
+  );
+};
 
 /**
  * @description Directory page component for discovering and filtering Vibe Coders
@@ -30,94 +53,179 @@ import type { UserProfileData, ProfileSummary } from "../../types/user";
 export const Profiles = (): JSX.Element => {
   const [loading, setLoading] = useState(true);
   const [profiles, setProfiles] = useState<ProfileSummary[]>([]);
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [sortOption, setSortOption] = useState<string>("name_asc");
+  const [discoveryState, setDiscoveryState] = useState<PaginatedProfileDiscoveryState>(DEFAULT_DISCOVERY_STATE);
+  const [totalProfilesCount, setTotalProfilesCount] = useState<number>(0);
   const [isFilterPopoverOpen, setIsFilterPopoverOpen] = useState<boolean>(false);
-  const statusOptions = [{ value: "all", label: "All Statuses" }, ...getUserStatusOptions()];
+
+  /**
+   * @description Fetches paginated profiles from Supabase with search, filtering, and sorting
+   * @async
+   * @param {PaginatedProfileDiscoveryState} currentDiscoveryState - Current discovery state including pagination
+   * @sideEffects Updates profiles, totalProfilesCount, and loading state
+   */
+  const fetchPaginatedProfiles = useCallback(async (currentDiscoveryState: PaginatedProfileDiscoveryState) => {
+    try {
+      setLoading(true);
+      
+      // Calculate range for pagination (zero-based indices)
+      const startIndex = (currentDiscoveryState.page - 1) * currentDiscoveryState.pageSize;
+      const endIndex = startIndex + currentDiscoveryState.pageSize - 1;
+      
+      let query = supabase
+        .from('profiles')
+        .select('user_id, username, bio, status, github_url, twitter_url, linkedin_url, website_url, created_at', { count: 'exact' })
+        .range(startIndex, endIndex);
+
+      // Apply search filter
+      if (currentDiscoveryState.searchTerm.trim()) {
+        query = query.or(`username.ilike.%${currentDiscoveryState.searchTerm}%,bio.ilike.%${currentDiscoveryState.searchTerm}%`);
+      }
+
+      // Apply status filter
+      if (currentDiscoveryState.filters.status && currentDiscoveryState.filters.status !== "all") {
+        query = query.eq('status', currentDiscoveryState.filters.status);
+      }
+
+      // Apply sorting
+      query = query.order(currentDiscoveryState.sort.field, { ascending: currentDiscoveryState.sort.direction === 'asc' });
+      if (currentDiscoveryState.sort.field !== 'created_at') {
+        query = query.order('created_at', { ascending: false });
+      }
+
+      const { data, error, count } = await query;
+
+      if (error) throw error;
+
+      // Update total count
+      setTotalProfilesCount(count || 0);
+
+      // For page 1, replace the array; for subsequent pages, append
+      if (currentDiscoveryState.page === 1) {
+        setProfiles(data || []);
+      } else {
+        setProfiles(prevProfiles => [...prevProfiles, ...(data || [])]);
+      }
+    } catch (error) {
+      console.error("Error fetching profiles:", error);
+      if (currentDiscoveryState.page === 1) {
+        setProfiles([]);
+        setTotalProfilesCount(0);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    /**
-     * @description Fetches profiles from the database with optional search, status filtering, and sorting
-     * @async
-     * @sideEffects Updates profiles state with filtered and sorted results
-     */
-    const fetchProfiles = async () => {
-      setLoading(true);
-      try {
-        let query = supabase
-          .from('profiles')
-          .select('user_id, username, bio, status, github_url, twitter_url, linkedin_url, website_url, created_at');
-
-        // Apply search filter
-        if (searchTerm.trim()) {
-          query = query.or(`username.ilike.%${searchTerm}%,bio.ilike.%${searchTerm}%`);
-        }
-
-        // Apply status filter
-        if (statusFilter !== "all") {
-          query = query.eq('status', statusFilter);
-        }
-
-        // Apply sorting
-        switch (sortOption) {
-          case "name_asc":
-            query = query.order('username', { ascending: true });
-            break;
-          case "name_desc":
-            query = query.order('username', { ascending: false });
-            break;
-          case "newest":
-            query = query.order('created_at', { ascending: false });
-            break;
-          case "oldest":
-            query = query.order('created_at', { ascending: true });
-            break;
-          default:
-            query = query.order('username', { ascending: true });
-        }
-
-        const { data, error } = await query;
-
-        if (error) throw error;
-        setProfiles(data || []);
-
-      } catch (error) {
-        console.error("Error fetching profiles:", error);
-        setProfiles([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     // Debounce search
     const handler = setTimeout(() => {
-      fetchProfiles();
+      fetchPaginatedProfiles(discoveryState);
     }, 300);
 
     return () => {
       clearTimeout(handler);
     };
-  }, [searchTerm, statusFilter, sortOption]);
+  }, [discoveryState, fetchPaginatedProfiles]);
+
+  /**
+   * @description Handles changes to discovery state and resets pagination to page 1
+   * @param {Omit<PaginatedProfileDiscoveryState, 'page' | 'pageSize'>} newDiscoveryState - New discovery state without pagination
+   * @sideEffects Updates discoveryState and resets to page 1
+   */
+  const handleDiscoveryChange = (newDiscoveryState: Omit<PaginatedProfileDiscoveryState, 'page' | 'pageSize'>) => {
+    setDiscoveryState({
+      ...newDiscoveryState,
+      page: 1,
+      pageSize: DEFAULT_DISCOVERY_STATE.pageSize
+    });
+  };
+
+  /**
+   * @description Loads the next page of profiles
+   * @sideEffects Increments the page number in discoveryState
+   */
+  const handleLoadMore = () => {
+    setDiscoveryState(prevState => ({
+      ...prevState,
+      page: prevState.page + 1
+    }));
+  };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
+    handleDiscoveryChange({
+      searchTerm: event.target.value,
+      filters: discoveryState.filters,
+      sort: discoveryState.sort
+    });
   };
 
   const handleStatusChange = (value: string) => {
-    setStatusFilter(value);
+    const statusValue = value === "all" ? undefined : value;
+    handleDiscoveryChange({
+      searchTerm: discoveryState.searchTerm,
+      filters: { status: statusValue },
+      sort: discoveryState.sort
+    });
   };
 
   const handleSortChange = (sort: string) => {
-    setSortOption(sort);
+    let field: 'username' | 'created_at' = 'username';
+    let direction: 'asc' | 'desc' = 'asc';
+
+    switch (sort) {
+      case "name_asc":
+        field = 'username';
+        direction = 'asc';
+        break;
+      case "name_desc":
+        field = 'username';
+        direction = 'desc';
+        break;
+      case "newest":
+        field = 'created_at';
+        direction = 'desc';
+        break;
+      case "oldest":
+        field = 'created_at';
+        direction = 'asc';
+        break;
+    }
+
+    handleDiscoveryChange({
+      searchTerm: discoveryState.searchTerm,
+      filters: discoveryState.filters,
+      sort: { field, direction }
+    });
   };
 
   const handleFilterClear = () => {
-    setStatusFilter("all");
+    handleDiscoveryChange({
+      searchTerm: discoveryState.searchTerm,
+      filters: { status: undefined },
+      sort: discoveryState.sort
+    });
     setIsFilterPopoverOpen(false);
   };
 
-  const getSortLabel = (sort: string): string => {
+  const getSortLabel = (): string => {
+    const { field, direction } = discoveryState.sort;
+    if (field === 'username' && direction === 'asc') return "Name (A-Z)";
+    if (field === 'username' && direction === 'desc') return "Name (Z-A)";
+    if (field === 'created_at' && direction === 'desc') return "Newest";
+    if (field === 'created_at' && direction === 'asc') return "Oldest";
+    return "Sort by";
+  };
+
+  const getCurrentSortValue = (): string => {
+    const { field, direction } = discoveryState.sort;
+    if (field === 'username' && direction === 'asc') return "name_asc";
+    if (field === 'username' && direction === 'desc') return "name_desc";
+    if (field === 'created_at' && direction === 'desc') return "newest";
+    if (field === 'created_at' && direction === 'asc') return "oldest";
+    return "name_asc";
+  };
+
+  const getSortLabelFromValue = (sort: string): string => {
     switch (sort) {
       case "name_asc": return "Name (A-Z)";
       case "name_desc": return "Name (Z-A)";
@@ -126,6 +234,9 @@ export const Profiles = (): JSX.Element => {
       default: return "Sort by";
     }
   };
+
+  // Check if there are more profiles to load
+  const hasMoreProfiles = profiles.length < totalProfilesCount;
 
   return (
     <div className="flex flex-col w-full items-center bg-white">
@@ -172,7 +283,7 @@ export const Profiles = (): JSX.Element => {
                     <Input
                       type="text"
                       placeholder="Search vibe coders by username or bio..."
-                      value={searchTerm}
+                      value={discoveryState.searchTerm}
                       onChange={handleSearchChange}
                       onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
                       className="w-full bg-startsnap-beige text-startsnap-ebony-clay placeholder:text-startsnap-ebony-clay/60 border-2 border-startsnap-ebony-clay rounded-lg pl-12 pr-4 py-3 text-base font-medium shadow-[3px_3px_0px_#1f2937] focus:shadow-[5px_5px_0px_#1f2937] focus:translate-x-[-2px] focus:translate-y-[-2px] transition-all duration-200"
@@ -196,7 +307,7 @@ export const Profiles = (): JSX.Element => {
                           {/* Status Filter */}
                           <div>
                             <Label className="font-medium text-startsnap-ebony-clay block mb-2">Status</Label>
-                            <Select value={statusFilter} onValueChange={handleStatusChange}>
+                            <Select value={discoveryState.filters.status || "all"} onValueChange={handleStatusChange}>
                               <SelectTrigger className="w-full border border-gray-800 rounded-md p-2">
                                 <SelectValue placeholder="All Statuses" />
                               </SelectTrigger>
@@ -231,23 +342,23 @@ export const Profiles = (): JSX.Element => {
                       <DropdownMenuTrigger asChild>
                         <Button className="bg-startsnap-beige text-startsnap-ebony-clay border-2 border-startsnap-ebony-clay rounded-lg px-4 py-3 font-bold shadow-[3px_3px_0px_#1f2937] hover:bg-startsnap-beige hover:shadow-[4px_4px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all duration-200 flex items-center gap-2">
                           <span className="material-icons text-lg">sort</span>
-                          <span className="hidden sm:inline">{getSortLabel(sortOption)}</span>
+                          <span className="hidden sm:inline">{getSortLabel()}</span>
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent className="bg-startsnap-white border-2 border-gray-800 rounded-lg shadow-[3px_3px_0px_#1f2937]" align="end">
                         <div className="px-2 py-1.5 text-sm font-semibold text-startsnap-ebony-clay">Sort By</div>
                         <div className="h-px my-1 bg-gray-300" />
                         <DropdownMenuItem onClick={() => handleSortChange('newest')} className="hover:bg-gray-100 cursor-pointer">
-                          Newest
+                          {getSortLabelFromValue('newest')}
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleSortChange('oldest')} className="hover:bg-gray-100 cursor-pointer">
-                          Oldest
+                          {getSortLabelFromValue('oldest')}
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleSortChange('name_asc')} className="hover:bg-gray-100 cursor-pointer">
-                          Name (A-Z)
+                          {getSortLabelFromValue('name_asc')}
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleSortChange('name_desc')} className="hover:bg-gray-100 cursor-pointer">
-                          Name (Z-A)
+                          {getSortLabelFromValue('name_desc')}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -257,70 +368,100 @@ export const Profiles = (): JSX.Element => {
             </div>
 
             {/* Results Section */}
-            {loading ? (
+            {loading && discoveryState.page === 1 ? (
               <div className="text-center py-20 bg-startsnap-candlelight/20 rounded-lg border-2 border-dashed border-gray-300">
                 <p className="text-xl font-bold text-startsnap-ebony-clay">Loading Vibe Coders...</p>
               </div>
             ) : profiles.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {profiles.map(profile => (
-                  <Link to={`/profiles/${profile.username}`} key={profile.user_id} className="block group">
-                    <Card className="h-full bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] hover:opacity-90 transition-opacity duration-200">
-                      {/* Header strip */}
-                      <div className="h-3 bg-startsnap-french-rose border-b-4 border-black"></div>
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {profiles.map(profile => (
+                    <Link to={`/profiles/${profile.username}`} key={profile.user_id} className="block group">
+                      <Card className="h-full bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] hover:opacity-90 transition-opacity duration-200">
+                        {/* Header strip */}
+                        <div className="h-3 bg-startsnap-french-rose border-b-4 border-black"></div>
 
-                      <CardContent className="p-6 flex flex-col items-center text-center">
-                        <div className="w-20 h-20 mb-4 relative">
-                          <UserAvatar name={getAvatarName(null, profile.username)} size={80} className="w-full h-full" />
-                          {/* Status indicator dot */}
-                          <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-white border-2 border-gray-800 rounded-full flex items-center justify-center shadow-[2px_2px_0px_#1f2937]">
-                            <span className="material-icons text-xs text-gray-700">
-                              {(() => {
-                                const foundOption = statusOptions.find(opt => opt.value === profile.status);
-                                return (foundOption && 'icon' in foundOption) ? foundOption.icon : 'lightbulb';
-                              })()}
-                            </span>
+                        <CardContent className="p-6 flex flex-col items-center text-center">
+                          <div className="w-20 h-20 mb-4 relative">
+                            <UserAvatar name={getAvatarName(null, profile.username)} size={80} className="w-full h-full" />
+                            {/* Status indicator dot */}
+                            <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-white border-2 border-gray-800 rounded-full flex items-center justify-center shadow-[2px_2px_0px_#1f2937]">
+                              <span className="material-icons text-xs text-gray-700">
+                                {(() => {
+                                  const foundOption = statusOptions.find(opt => opt.value === profile.status);
+                                  return (foundOption && 'icon' in foundOption) ? foundOption.icon : 'lightbulb';
+                                })()}
+                              </span>
+                            </div>
                           </div>
-                        </div>
 
-                        <h3 className="text-xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-2">{profile.username}</h3>
-                        <p className="text-sm text-startsnap-river-bed font-['Roboto',Helvetica] line-clamp-3 leading-relaxed mb-3">{profile.bio || 'No bio yet.'}</p>
+                          <h3 className="text-xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-2">{profile.username}</h3>
+                          <p className="text-sm text-startsnap-river-bed font-['Roboto',Helvetica] line-clamp-3 leading-relaxed mb-3">{profile.bio || 'No bio yet.'}</p>
 
-                        {/* Social Icons */}
-                        {(profile.github_url || profile.twitter_url || profile.linkedin_url || profile.website_url) && (
-                          <div className="flex items-center justify-center gap-3 mt-auto">
-                            {profile.github_url && (
-                              <a href={profile.github_url} target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70">
-                                {React.createElement(FaGithub as any, { size: 16, className: "text-gray-600" })}
-                              </a>
-                            )}
-                            {profile.twitter_url && (
-                              <a href={profile.twitter_url} target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70">
-                                {React.createElement(FaXTwitter as any, { size: 16, className: "text-gray-600" })}
-                              </a>
-                            )}
-                            {profile.linkedin_url && (
-                              <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70">
-                                {React.createElement(FaLinkedinIn as any, { size: 16, className: "text-gray-600" })}
-                              </a>
-                            )}
-                            {profile.website_url && (
-                              <a href={profile.website_url} target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70">
-                                <span className="material-icons text-base text-gray-600">public</span>
-                              </a>
-                            )}
-                          </div>
-                        )}
-
-
-                      </CardContent>
-                    </Card>
-                  </Link>
-                ))}
+                          {/* Social Icons */}
+                          {(profile.github_url || profile.twitter_url || profile.linkedin_url || profile.website_url) && (
+                            <div className="flex items-center justify-center gap-3 mt-auto">
+                              {profile.github_url && (
+                                <a href={profile.github_url} target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70">
+                                  {React.createElement(FaGithub as any, { size: 16, className: "text-gray-600" })}
+                                </a>
+                              )}
+                              {profile.twitter_url && (
+                                <a href={profile.twitter_url} target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70">
+                                  {React.createElement(FaXTwitter as any, { size: 16, className: "text-gray-600" })}
+                                </a>
+                              )}
+                              {profile.linkedin_url && (
+                                <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70">
+                                  {React.createElement(FaLinkedinIn as any, { size: 16, className: "text-gray-600" })}
+                                </a>
+                              )}
+                              {profile.website_url && (
+                                <a href={profile.website_url} target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70">
+                                  <span className="material-icons text-base text-gray-600">public</span>
+                                </a>
+                              )}
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  ))}
+                </div>
+                
+                {/* Load More Button */}
+                {hasMoreProfiles && (
+                  <div className="text-center mt-12">
+                    <Button
+                      onClick={handleLoadMore}
+                      disabled={loading && discoveryState.page > 1}
+                      className="startsnap-button bg-startsnap-persian-blue text-startsnap-white font-['Roboto',Helvetica] font-bold text-lg px-8 py-4 rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+                    >
+                      {loading && discoveryState.page > 1 ? 'Loading More...' : 'Load More Vibe Coders'}
+                    </Button>
+                  </div>
+                )}
+              </>
+            ) : areFiltersOrSearchActive(discoveryState) ? (
+              <div className="text-center py-20 bg-startsnap-candlelight/20 rounded-lg border-2 border-dashed border-gray-300">
+                <p className="text-xl text-startsnap-pale-sky">No Vibe Coders match your criteria. Try adjusting your search or filters!</p>
+                <Button
+                  onClick={() => setDiscoveryState(DEFAULT_DISCOVERY_STATE)}
+                  className="startsnap-button mt-4 bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+                >
+                  Clear Search & Filters
+                </Button>
               </div>
             ) : (
               <div className="text-center py-20 bg-startsnap-candlelight/20 rounded-lg border-2 border-dashed border-gray-300">
                 <p className="text-xl text-startsnap-pale-sky">No Vibe Coders found for this filter.</p>
+              </div>
+            )}
+
+            {/* Loading indicator for subsequent pages */}
+            {loading && discoveryState.page > 1 && (
+              <div className="text-center py-8">
+                <p className="text-xl text-startsnap-pale-sky">Loading more Vibe Coders...</p>
               </div>
             )}
           </div>
