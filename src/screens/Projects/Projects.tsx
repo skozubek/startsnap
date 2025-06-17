@@ -191,7 +191,7 @@ export const Projects = (): JSX.Element => {
           </h1>
 
           {/* Trending Zone - Now with Bold Contrast */}
-          <div className="bg-startsnap-ebony-clay p-8 md:p-12 rounded-xl border-4 border-startsnap-french-rose shadow-[8px_8px_0px_#ef4444] transform rotate-[-0.5deg] hover:rotate-0 transition-transform duration-300">
+          <div className="bg-startsnap-ebony-clay p-8 md:p-12 rounded-xl border-4 border-startsnap-french-rose shadow-[8px_8px_0px_#ef4444] transform rotate-[0.5deg] hover:rotate-0 transition-transform duration-300">
             <h2 className="text-3xl font-bold text-startsnap-beige text-center mb-8 font-['Space_Grotesk',Helvetica]">
               🔥 Trending StartSnaps
             </h2>
