@@ -138,7 +138,7 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
   };
 
   return (
-    <div className="bg-startsnap-ebony-clay p-6 rounded-xl border-2 border-startsnap-french-rose shadow-[3px_3px_0px_#ef4444] transform rotate-[0.25deg] hover:rotate-0 transition-all duration-300">
+    <div className="bg-startsnap-ebony-clay p-6 rounded-xl border-2 border-startsnap-french-rose shadow-[3px_3px_0px_#ef4444] transform rotate-[-0.25deg] hover:rotate-0 transition-all duration-300">
       {/* Search Section */}
       <div className="flex flex-col lg:flex-row gap-4 items-center">
         {/* Main Search Input - Takes Most Space */}
