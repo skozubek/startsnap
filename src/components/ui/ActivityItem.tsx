@@ -48,6 +48,8 @@ export const ActivityItem: React.FC<ActivityItemProps> = ({ activity }) => {
         return 'forum';
       case 'support_milestone_reached':
         return 'celebration';
+      case 'feedback_reply_added':
+        return 'reply';
       default:
         return 'activity_zone';
     }
@@ -71,6 +73,7 @@ export const ActivityItem: React.FC<ActivityItemProps> = ({ activity }) => {
       case 'support_milestone_reached':
         return 'text-startsnap-french-rose';
       case 'feedback_added':
+      case 'feedback_reply_added':
         return 'text-startsnap-persian-blue';
       default:
         return 'text-startsnap-pale-sky';
