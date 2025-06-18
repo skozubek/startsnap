@@ -4,7 +4,7 @@
  */
 
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "./card";
 import { Badge } from "./badge";
 import { UserAvatar, getAvatarName } from "./user-avatar";
@@ -45,6 +45,7 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
   getCategoryDisplay,
   rank
 }) => {
+  const navigate = useNavigate();
   const categoryDisplay = getCategoryDisplay(startsnap.category);
 
   /**
@@ -237,7 +238,10 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
               showCreator && creatorName && (
                 <div className="flex items-center">
                   {creatorName !== 'Anonymous' ? (
-                    <Link to={`/profiles/${creatorName}`} className="flex items-center gap-2 group/creator hover:text-startsnap-french-rose transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-startsnap-french-rose">
+                    <Link
+                      to={`/profiles/${creatorName}`}
+                      className="flex items-center gap-2 group/creator hover:text-startsnap-french-rose transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-startsnap-french-rose"
+                    >
                       <div className="w-6 h-6">
                         <UserAvatar
                           name={getAvatarName(null, creatorName)}
@@ -272,7 +276,6 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
                 <Link
                   to={`/edit/${startsnap.id}`}
                   className="text-startsnap-oxford-blue hover:text-startsnap-french-rose transition-colors"
-                  onClick={(e) => e.stopPropagation()}
                 >
                   <span className="material-icons text-lg">edit</span>
                 </Link>
@@ -297,11 +300,32 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
     </Card>
   );
 
+    const handleCardClick = (e: React.MouseEvent) => {
+    // Don't navigate if clicking on interactive elements
+    const target = e.target as HTMLElement;
+    if (target.closest('a') || target.closest('button')) {
+      return;
+    }
+    navigate(`/projects/${startsnap.slug}`);
+  };
+
   return (
     <TooltipProvider>
-      <Link to={`/projects/${startsnap.slug}`} className="block group">
+      <div
+        className="block group cursor-pointer"
+        onClick={handleCardClick}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            const syntheticEvent = { target: e.target, closest: (selector: string) => (e.target as HTMLElement).closest(selector) } as any;
+            handleCardClick(syntheticEvent);
+          }
+        }}
+      >
         {cardContent}
-      </Link>
+      </div>
     </TooltipProvider>
   );
 };

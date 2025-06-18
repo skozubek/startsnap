@@ -3,7 +3,7 @@
  * @description Component for displaying the activity feed with real-time updates
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../../lib/supabase';
 import { ActivityItem } from './ActivityItem';
 import { Button } from './button';
@@ -24,9 +24,9 @@ interface ActivityFeedSectionProps {
  * @param {ActivityFeedSectionProps} props - Component props
  * @returns {JSX.Element} Activity feed with loading states and error handling
  */
-export const ActivityFeedSection: React.FC<ActivityFeedSectionProps> = ({ 
+export const ActivityFeedSection: React.FC<ActivityFeedSectionProps> = ({
   isInPanel = false,
-  latestActivityTimestamp 
+  latestActivityTimestamp
 }) => {
   const [activities, setActivities] = useState<ActivityFeedItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -35,6 +35,10 @@ export const ActivityFeedSection: React.FC<ActivityFeedSectionProps> = ({
   const [loadingMore, setLoadingMore] = useState(false);
 
   const ITEMS_PER_PAGE = isInPanel ? 10 : 6;
+
+  // Use ref to prevent circular dependencies
+  const activitiesRef = useRef<ActivityFeedItem[]>([]);
+  activitiesRef.current = activities;
 
   /**
    * @description Fetches activity feed data from Supabase
@@ -51,7 +55,7 @@ export const ActivityFeedSection: React.FC<ActivityFeedSectionProps> = ({
         setLoadingMore(true);
       }
 
-      const startIndex = isLoadMore ? activities.length : 0;
+      const startIndex = isLoadMore ? activitiesRef.current.length : 0;
       const endIndex = startIndex + ITEMS_PER_PAGE - 1;
 
       const { data, error: fetchError } = await supabase
@@ -80,22 +84,21 @@ export const ActivityFeedSection: React.FC<ActivityFeedSectionProps> = ({
       setLoading(false);
       setLoadingMore(false);
     }
-  }, [activities.length, ITEMS_PER_PAGE]);
+  }, [ITEMS_PER_PAGE]); // Removed activities.length dependency
 
   /**
    * @description Effect to refresh activity feed when latestActivityTimestamp changes
    * @sideEffects Triggers fetchActivities when new activity is detected
    */
   useEffect(() => {
-    if (latestActivityTimestamp && activities.length > 0) {
+    if (latestActivityTimestamp && activitiesRef.current.length > 0) {
       // Check if the latest timestamp is newer than our current latest activity
-      const currentLatest = activities[0]?.created_at;
+      const currentLatest = activitiesRef.current[0]?.created_at;
       if (currentLatest && new Date(latestActivityTimestamp) > new Date(currentLatest)) {
-        console.log('New activity detected, refreshing feed...');
         fetchActivities(false); // Refresh from the beginning
       }
     }
-  }, [latestActivityTimestamp, activities, fetchActivities]);
+  }, [latestActivityTimestamp, fetchActivities]); // Removed activities dependency
 
   useEffect(() => {
     fetchActivities();

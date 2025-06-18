@@ -15,6 +15,9 @@ DECLARE
     new_support_count integer;
     recent_activity_count integer;
 BEGIN
+    -- CRITICAL FIX: Increment support count first (this was missing!)
+    SELECT increment_support_count(NEW.startsnap_id) INTO new_support_count;
+
     -- Critical Fix: Check for recent support/unsupport spam (last 5 minutes)
     SELECT COUNT(*) INTO recent_activity_count
     FROM public.activity_log
@@ -25,11 +28,6 @@ BEGIN
 
     -- Only log if no recent spam activity
     IF recent_activity_count = 0 THEN
-        -- Get current support count (trigger already incremented via existing trigger)
-        SELECT support_count INTO new_support_count
-        FROM public.startsnaps
-        WHERE id = NEW.startsnap_id;
-
         -- Log the support activity
         PERFORM public.create_activity_log(
             'project_supported',

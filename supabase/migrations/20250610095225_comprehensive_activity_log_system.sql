@@ -278,8 +278,9 @@ BEGIN
     FROM public.startsnaps
     WHERE id = p_startsnap_id;
 
-    -- Check for milestone achievements (10, 25, 50, 100, 250, 500, 1000)
+        -- Check for milestone achievements (10, 25, 50, 100, 250, 500, 1000)
     IF p_new_count IN (10, 25, 50, 100, 250, 500, 1000) THEN
+        -- Use the create_activity_log function to properly generate display_text
         PERFORM public.create_activity_log(
             'support_milestone_reached',
             project_owner_id,
@@ -290,6 +291,18 @@ BEGIN
             NULL,
             jsonb_build_object('milestone_count', p_new_count),
             'public'
+        );
+
+        -- Update the created_at timestamp to be 1 second later for proper ordering
+        UPDATE public.activity_log
+        SET created_at = NOW() + INTERVAL '1 second'
+        WHERE id = (
+            SELECT id FROM public.activity_log
+            WHERE activity_type = 'support_milestone_reached'
+              AND target_startsnap_id = p_startsnap_id
+              AND (metadata->>'milestone_count')::integer = p_new_count
+            ORDER BY created_at DESC
+            LIMIT 1
         );
     END IF;
 END;

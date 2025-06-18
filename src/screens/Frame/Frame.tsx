@@ -3,7 +3,7 @@
  * @description Main application frame component that handles routing and authentication state with real-time activity detection
  */
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { FooterSection } from "./sections/FooterSection/FooterSection";
 import { HeaderSection } from "./sections/HeaderSection/HeaderSection";
@@ -58,30 +58,36 @@ const FrameContent = (): JSX.Element => {
   const [latestActivityTimestamp, setLatestActivityTimestamp] = useState<string | null>(null);
   const { user } = useAuth(); // Now this is safely inside AuthProvider
 
+  // Use ref to create stable callback reference and prevent infinite subscription loops
+  const userRef = useRef(user);
+  userRef.current = user;
+
   /**
    * @description Handles new activity detection with spam prevention and own-activity filtering
    * @param {any} payload - Real-time payload from Supabase
    */
   const handleNewActivity = useCallback((payload: any) => {
-    // Critical Fix #2: Don't notify users about their own activities
-    if (user && payload.new?.actor_user_id === user.id) {
-      console.log('Ignoring own activity:', payload.new?.activity_type);
+    // Filter out own activities
+    if (userRef.current && payload.new?.actor_user_id === userRef.current.id) {
       return;
     }
-
-    console.log('New activity detected:', payload);
 
     if (payload.new && payload.new.created_at) {
       setLatestActivityTimestamp(payload.new.created_at);
 
-      // Only trigger pulse animation if panel is closed - using functional update to avoid dependency
+      // Only trigger pulse animation if panel is closed
       setHasNewActivity(prevHasActivity => {
-        // Check current panel state without adding it as dependency
-        const panelIsClosed = !document.querySelector('[data-pulse-panel-open="true"]');
-        return panelIsClosed ? true : prevHasActivity;
+        const panelElement = document.querySelector('[data-pulse-panel-open="true"]');
+        const panelIsClosed = !panelElement;
+
+        if (panelIsClosed) {
+          return true;
+        } else {
+          return prevHasActivity;
+        }
       });
     }
-  }, [user]);
+  }, []); // Empty dependency array - callback is now stable
 
   /**
    * @description Sets up real-time subscription to activity_log table for new activity detection
@@ -122,9 +128,8 @@ const FrameContent = (): JSX.Element => {
             handleNewActivity
           )
           .subscribe((status, err) => {
-            console.log('Activity subscription status:', status);
             if (err) {
-              console.error('Failed to subscribe to activity changes:', err);
+              console.error('❌ Failed to subscribe to activity changes:', err);
             }
           });
 
@@ -138,7 +143,6 @@ const FrameContent = (): JSX.Element => {
     // Critical Fix #1: Proper cleanup to prevent memory leaks
     return () => {
       if (subscription) {
-        console.log('Cleaning up activity subscription');
         subscription.unsubscribe();
       }
     };
@@ -165,7 +169,9 @@ const FrameContent = (): JSX.Element => {
         onPulseButtonClick={openPulsePanel}
         hasNewActivity={hasNewActivity}
       />
+
       <Subheader />
+
       <div className="flex flex-col w-full min-h-screen overflow-y-auto">
         <Routes>
           <Route path="/" element={<MainContentSection />} />
