@@ -77,13 +77,14 @@ export const PulsePanel: React.FC<PulsePanelProps> = ({
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
-            transition={{ 
-              type: 'spring', 
-              damping: 25, 
+            transition={{
+              type: 'spring',
+              damping: 25,
               stiffness: 200,
               duration: 0.4
             }}
             className="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-50 border-l-4 border-startsnap-french-rose"
+            data-pulse-panel-open="true"
           >
             {/* Panel Header */}
             <div className="flex items-center justify-between p-6 border-b-2 border-gray-800 bg-startsnap-beige">
@@ -106,7 +107,7 @@ export const PulsePanel: React.FC<PulsePanelProps> = ({
 
             {/* Panel Content */}
             <div className="flex-1 overflow-hidden">
-              <ActivityFeedSection 
+              <ActivityFeedSection
                 isInPanel={true}
                 latestActivityTimestamp={latestActivityTimestamp}
               />
