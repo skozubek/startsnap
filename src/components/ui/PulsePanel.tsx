@@ -83,11 +83,11 @@ export const PulsePanel: React.FC<PulsePanelProps> = ({
               stiffness: 200,
               duration: 0.4
             }}
-            className="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-50 border-l-4 border-startsnap-french-rose"
+            className="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-50 border-l-4 border-startsnap-french-rose flex flex-col"
             data-pulse-panel-open="true"
           >
             {/* Panel Header */}
-            <div className="flex items-center justify-between p-6 border-b-2 border-gray-800 bg-startsnap-beige">
+            <div className="flex items-center justify-between p-6 border-b-2 border-gray-800 bg-startsnap-beige flex-shrink-0">
               <div className="flex items-center gap-3">
                 <span className="material-icons text-startsnap-mountain-meadow text-2xl">bolt</span>
                 <h2 className="text-xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica]">
@@ -106,7 +106,7 @@ export const PulsePanel: React.FC<PulsePanelProps> = ({
             </div>
 
             {/* Panel Content */}
-            <div className="flex-1 overflow-hidden">
+            <div className="flex-1 min-h-0">
               <ActivityFeedSection
                 isInPanel={true}
                 latestActivityTimestamp={latestActivityTimestamp}

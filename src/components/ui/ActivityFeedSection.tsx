@@ -35,6 +35,7 @@ export const ActivityFeedSection: React.FC<ActivityFeedSectionProps> = ({
   const [loadingMore, setLoadingMore] = useState(false);
 
   const ITEMS_PER_PAGE = isInPanel ? 10 : 6;
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Use ref to prevent circular dependencies
   const activitiesRef = useRef<ActivityFeedItem[]>([]);
@@ -72,7 +73,7 @@ export const ActivityFeedSection: React.FC<ActivityFeedSectionProps> = ({
         setActivities(data || []);
       }
 
-      // Check if there are more items
+      // Check if there are more items - only false if we got less than requested
       setHasMore((data || []).length === ITEMS_PER_PAGE);
     } catch (err) {
       console.error('Error fetching activities:', err);
@@ -84,7 +85,40 @@ export const ActivityFeedSection: React.FC<ActivityFeedSectionProps> = ({
       setLoading(false);
       setLoadingMore(false);
     }
-  }, [ITEMS_PER_PAGE]); // Removed activities.length dependency
+  }, [ITEMS_PER_PAGE]);
+
+  /**
+   * @description Handles scroll events to trigger auto-loading at 80% scroll position
+   * @param {Event} event - Scroll event
+   */
+  const handleScroll = useCallback(() => {
+    if (!scrollContainerRef.current || !hasMore || loadingMore) {
+      return;
+    }
+
+    const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+    const scrollPercentage = (scrollTop + clientHeight) / scrollHeight;
+
+    // Trigger load more when user scrolls to 80% of the content
+    if (scrollPercentage >= 0.8) {
+      fetchActivities(true);
+    }
+  }, [hasMore, loadingMore, fetchActivities]);
+
+  /**
+   * @description Effect to set up scroll listener for auto-pagination
+   */
+  useEffect(() => {
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer || !isInPanel) {
+      return;
+    }
+
+    scrollContainer.addEventListener('scroll', handleScroll);
+    return () => {
+      scrollContainer.removeEventListener('scroll', handleScroll);
+    };
+  }, [handleScroll, isInPanel, activities.length]); // Add activities.length to trigger setup after content loads
 
   /**
    * @description Effect to refresh activity feed when latestActivityTimestamp changes
@@ -98,14 +132,14 @@ export const ActivityFeedSection: React.FC<ActivityFeedSectionProps> = ({
         fetchActivities(false); // Refresh from the beginning
       }
     }
-  }, [latestActivityTimestamp, fetchActivities]); // Removed activities dependency
+  }, [latestActivityTimestamp, fetchActivities]);
 
   useEffect(() => {
     fetchActivities();
   }, []);
 
   /**
-   * @description Handles loading more activities
+   * @description Handles loading more activities manually
    */
   const handleLoadMore = () => {
     if (!loadingMore && hasMore) {
@@ -138,7 +172,7 @@ export const ActivityFeedSection: React.FC<ActivityFeedSectionProps> = ({
           <p className="text-red-600 mb-4">{error}</p>
           <Button
             onClick={handleRetry}
-            className="startsnap-button bg-startsnap-french-rose text-white"
+            className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-lg px-8 py-4 rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
           >
             Try Again
           </Button>
@@ -171,20 +205,43 @@ export const ActivityFeedSection: React.FC<ActivityFeedSectionProps> = ({
         </div>
       )}
 
-      <div className={`${isInPanel ? 'flex-1 overflow-y-auto px-6 py-4' : ''} space-y-4`}>
+      <div
+        ref={scrollContainerRef}
+        className={`${isInPanel ? 'flex-1 overflow-y-auto px-6 py-4' : ''} space-y-4`}
+      >
         {activities.map((activity) => (
           <ActivityItem key={activity.id} activity={activity} />
         ))}
 
-        {hasMore && (
+        {/* Loading indicator for auto-scroll */}
+        {loadingMore && (
+          <div className="text-center py-4">
+            <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-startsnap-french-rose"></div>
+            <p className="mt-2 text-sm text-startsnap-pale-sky">Loading more activities...</p>
+          </div>
+        )}
+
+        {/* Manual Load More button - only show when not auto-loading */}
+        {hasMore && !loadingMore && (
           <div className="text-center pt-6">
             <Button
               onClick={handleLoadMore}
               disabled={loadingMore}
-              className="startsnap-button bg-startsnap-persian-blue text-white"
+              variant="outline"
+              className="text-sm text-startsnap-river-bed hover:text-startsnap-ebony-clay bg-transparent hover:bg-startsnap-mischka/20 border border-startsnap-mischka px-4 py-2 rounded-md transition-colors"
             >
-              {loadingMore ? 'Loading...' : 'Load More'}
+              Load More Activities
             </Button>
+          </div>
+        )}
+
+        {/* End of feed indicator */}
+        {!hasMore && activities.length > 0 && (
+          <div className="text-center py-6 border-t border-startsnap-mischka/30 mt-4">
+            <div className="flex items-center justify-center gap-2 text-startsnap-pale-sky">
+              <span className="material-icons text-sm">check_circle</span>
+              <p className="text-sm">You've reached the end of the activity feed</p>
+            </div>
           </div>
         )}
       </div>
