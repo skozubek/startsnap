@@ -8,7 +8,7 @@
  */
 
 -- Enable replica identity for activity_log table (required for real-time)
-ALTER TABLE public.activity_log REPLICA IDENTITY FULL;
+-- ALTER TABLE public.activity_log REPLICA IDENTITY FULL;
 
 -- Add activity_log table to the real-time publication
-ALTER PUBLICATION supabase_realtime ADD TABLE public.activity_log;
+-- ALTER PUBLICATION supabase_realtime ADD TABLE public.activity_log;
