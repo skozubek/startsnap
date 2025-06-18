@@ -1,9 +1,9 @@
 /**
  * src/screens/Frame/Frame.tsx
- * @description Main application frame component that handles routing and authentication state
+ * @description Main application frame component that handles routing and authentication state with real-time activity detection
  */
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { FooterSection } from "./sections/FooterSection/FooterSection";
 import { HeaderSection } from "./sections/HeaderSection/HeaderSection";
@@ -22,7 +22,7 @@ import { AuthProvider, useAuth } from "../../context/AuthContext";
 import { ScrollToTop } from "../../components/utils/ScrollToTop";
 import { ToastProvider } from "../../components/providers/ToastProvider";
 import { PulsePanel } from "../../components/ui/PulsePanel";
-import { useState } from "react";
+import { supabase } from "../../lib/supabase";
 
 /**
  * @description Component that protects routes requiring authentication
@@ -49,12 +49,79 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }): JSX.Elemen
 };
 
 /**
- * @description Main application container that manages routes and auth state
+ * @description Main application container that manages routes, auth state, and real-time activity detection
  * @returns {JSX.Element} The application frame with header, content area, and footer
  */
 export const Frame = (): JSX.Element => {
   const [isPulsePanelOpen, setIsPulsePanelOpen] = useState(false);
   const [hasNewActivity, setHasNewActivity] = useState(false);
+  const [latestActivityTimestamp, setLatestActivityTimestamp] = useState<string | null>(null);
+
+  /**
+   * @description Sets up real-time subscription to activity_log table for new activity detection
+   * @async
+   * @sideEffects Creates Supabase realtime subscription and updates activity state
+   */
+  useEffect(() => {
+    // Get initial latest activity timestamp
+    const getInitialActivityTimestamp = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('activity_log')
+          .select('created_at')
+          .eq('visibility', 'public')
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error fetching initial activity timestamp:', error);
+          return;
+        }
+
+        if (data) {
+          setLatestActivityTimestamp(data.created_at);
+        }
+      } catch (error) {
+        console.error('Error in getInitialActivityTimestamp:', error);
+      }
+    };
+
+    getInitialActivityTimestamp();
+
+    // Set up real-time subscription for new activity
+    const subscription = supabase
+      .channel('activity_log_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'activity_log',
+          filter: 'visibility=eq.public'
+        },
+        (payload) => {
+          console.log('New activity detected:', payload);
+          
+          if (payload.new && payload.new.created_at) {
+            setLatestActivityTimestamp(payload.new.created_at);
+            
+            // Only trigger pulse animation if panel is closed
+            if (!isPulsePanelOpen) {
+              setHasNewActivity(true);
+            }
+          }
+        }
+      )
+      .subscribe((status) => {
+        console.log('Activity subscription status:', status);
+      });
+
+    // Cleanup subscription on unmount
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [isPulsePanelOpen]);
 
   /**
    * @description Opens the Community Pulse panel and stops the pulsing effect
@@ -67,7 +134,9 @@ export const Frame = (): JSX.Element => {
   /**
    * @description Closes the Community Pulse panel
    */
-  const closePulsePanel = () => setIsPulsePanelOpen(false);
+  const closePulsePanel = () => {
+    setIsPulsePanelOpen(false);
+  };
 
   return (
     <div className="flex flex-col min-h-screen w-full bg-white">
@@ -118,7 +187,7 @@ export const Frame = (): JSX.Element => {
         <PulsePanel 
           isOpen={isPulsePanelOpen} 
           onClose={closePulsePanel}
-          onNewActivityDetected={() => setHasNewActivity(true)}
+          latestActivityTimestamp={latestActivityTimestamp}
         />
       </AuthProvider>
     </div>
