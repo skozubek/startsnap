@@ -68,7 +68,13 @@ export const ActivityFeedSection: React.FC<ActivityFeedSectionProps> = ({
       if (fetchError) throw fetchError;
 
       if (isLoadMore) {
-        setActivities(prev => [...prev, ...(data || [])]);
+        setActivities(prev => {
+          const newData = data || [];
+          // Filter out any activities that already exist to prevent duplicates
+          const existingIds = new Set(prev.map(activity => activity.id));
+          const uniqueNewData = newData.filter(activity => !existingIds.has(activity.id));
+          return [...prev, ...uniqueNewData];
+        });
       } else {
         setActivities(data || []);
       }
@@ -106,7 +112,7 @@ export const ActivityFeedSection: React.FC<ActivityFeedSectionProps> = ({
   }, [hasMore, loadingMore, fetchActivities]);
 
   /**
-   * @description Effect to set up scroll listener for auto-pagination
+   * @description Effect to set up scroll listener for auto-pagination and handle initial load
    */
   useEffect(() => {
     const scrollContainer = scrollContainerRef.current;
@@ -114,11 +120,26 @@ export const ActivityFeedSection: React.FC<ActivityFeedSectionProps> = ({
       return;
     }
 
+    // Check if we need to auto-load more content because container isn't scrollable
+    const checkInitialLoad = () => {
+      const { scrollHeight, clientHeight } = scrollContainer;
+      // If content doesn't fill the container and we have more items, auto-load
+      if (scrollHeight <= clientHeight && hasMore && !loadingMore && activities.length > 0) {
+        fetchActivities(true);
+      }
+    };
+
+    // Set up scroll listener
     scrollContainer.addEventListener('scroll', handleScroll);
+
+    // Check if we need initial auto-load (small delay to ensure layout is complete)
+    const timeoutId = setTimeout(checkInitialLoad, 100);
+
     return () => {
       scrollContainer.removeEventListener('scroll', handleScroll);
+      clearTimeout(timeoutId);
     };
-  }, [handleScroll, isInPanel, activities.length]); // Add activities.length to trigger setup after content loads
+  }, [handleScroll, isInPanel, activities.length, hasMore, loadingMore, fetchActivities]);
 
   /**
    * @description Effect to refresh activity feed when latestActivityTimestamp changes
@@ -129,6 +150,8 @@ export const ActivityFeedSection: React.FC<ActivityFeedSectionProps> = ({
       // Check if the latest timestamp is newer than our current latest activity
       const currentLatest = activitiesRef.current[0]?.created_at;
       if (currentLatest && new Date(latestActivityTimestamp) > new Date(currentLatest)) {
+        // Clear loading states before refresh to prevent race conditions
+        setLoadingMore(false);
         fetchActivities(false); // Refresh from the beginning
       }
     }
@@ -207,7 +230,7 @@ export const ActivityFeedSection: React.FC<ActivityFeedSectionProps> = ({
 
       <div
         ref={scrollContainerRef}
-        className={`${isInPanel ? 'flex-1 overflow-y-auto px-6 py-4' : ''} space-y-4`}
+        className={`${isInPanel ? 'flex-1 overflow-y-auto px-4 py-4' : ''} space-y-3`}
       >
         {activities.map((activity) => (
           <ActivityItem key={activity.id} activity={activity} />
