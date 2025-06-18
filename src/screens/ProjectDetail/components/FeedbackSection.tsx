@@ -294,9 +294,8 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
         .eq('id', editingReply.id);
       if (error) throw error;
       await onFeedbackChange(); // This should re-fetch and re-render
-      // No need to setReplyContent('') here as onFeedbackChange will trigger re-render with fresh data
-      // No need to setReplyingToFeedbackId(null) to keep the section open
-      setEditingReply(null); // Crucial: exit inline edit mode
+      setEditingReply(null); // Exit inline edit mode
+      setReplyContent(''); // Clear the reply content to prevent showing old content in new reply form
     } catch (error) {
       console.error('Error updating reply:', error);
       setReplyError('Failed to update reply. Please try again.');
