@@ -74,7 +74,6 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
       }
       sessionKeysToRemove.forEach(key => sessionStorage.removeItem(key));
 
-      console.log('🧹 Cleared local auth data');
     } catch (error) {
       console.error('❌ Error clearing local auth data:', error);
     }
@@ -87,8 +86,6 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
    * @sideEffects Clears localStorage, forces auth state reset, and shows user notification
    */
   const forceLogout = async (): Promise<void> => {
-    console.log('🚨 Force logout initiated');
-
     // Don't wait for any API calls - just force clear everything
     try {
       // Try one quick logout attempt with short timeout

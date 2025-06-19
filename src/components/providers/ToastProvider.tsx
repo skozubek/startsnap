@@ -20,14 +20,14 @@ export function ToastProvider() {
       duration={4000}
       toastOptions={{
         style: {
-          border: '2px solid #1f2937',
-          borderRadius: '8px',
-          boxShadow: '3px 3px 0px #1f2937',
+          border: '1px solid #1f2937',
+          borderRadius: '6px',
+          boxShadow: '2px 2px 0px #1f2937',
           fontFamily: "'Roboto', Helvetica",
-          fontSize: '14px',
+          fontSize: '13px',
           fontWeight: '500',
-          padding: '12px 32px 12px 16px',
-          minHeight: '60px',
+          padding: '8px 24px 8px 12px',
+          minHeight: '44px',
           position: 'relative'
         },
         className: 'startsnap-toast',

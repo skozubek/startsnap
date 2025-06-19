@@ -25,7 +25,7 @@ export const SegmentedControl = ({
   return (
     <div
       className={cn(
-        "flex w-full border-2 border-solid border-gray-800 rounded-lg overflow-hidden",
+        "flex w-full border-0 bg-gray-50 rounded-xl overflow-hidden md:border-2 md:border-solid md:border-gray-800 md:rounded-lg md:bg-white",
         className
       )}
     >
@@ -33,10 +33,10 @@ export const SegmentedControl = ({
         type="button"
         onClick={() => onChange("idea")}
         className={cn(
-          "flex items-center justify-center flex-1 py-2.5 px-4 min-w-[160px] text-center font-medium transition-colors whitespace-nowrap",
+          "flex items-center justify-center flex-1 py-3 px-3 min-h-[44px] text-center font-medium transition-all duration-200 text-sm",
           value === "idea"
-            ? "bg-startsnap-corn text-startsnap-ebony-clay"
-            : "bg-white text-startsnap-ebony-clay hover:bg-gray-100"
+            ? "bg-startsnap-corn text-startsnap-ebony-clay rounded-lg mx-1 my-1 shadow-sm"
+            : "text-startsnap-ebony-clay hover:bg-gray-100 md:hover:bg-gray-100"
         )}
       >
         {value === "idea" && (
@@ -48,10 +48,10 @@ export const SegmentedControl = ({
         type="button"
         onClick={() => onChange("live")}
         className={cn(
-          "flex items-center justify-center flex-1 py-2.5 px-4 min-w-[160px] text-center font-medium transition-colors whitespace-nowrap",
+          "flex items-center justify-center flex-1 py-3 px-3 min-h-[44px] text-center font-medium transition-all duration-200 text-sm",
           value === "live"
-            ? "bg-startsnap-mountain-meadow text-white"
-            : "bg-white text-startsnap-ebony-clay hover:bg-gray-100"
+            ? "bg-startsnap-mountain-meadow text-white rounded-lg mx-1 my-1 shadow-sm"
+            : "text-startsnap-ebony-clay hover:bg-gray-100 md:hover:bg-gray-100"
         )}
       >
         {value === "live" && (

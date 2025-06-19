@@ -224,8 +224,8 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
   };
 
   return (
-    <div className="border-b-2 border-gray-800 p-8">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-4 md:border-b-2 md:border-gray-800 md:p-8">
+      <div className="flex items-center justify-between mb-4 md:mb-6">
         <div className="flex items-center">
           <h2 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-2xl leading-8">
             Vibe Log
@@ -241,19 +241,19 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
               setEditingVibeLogInline(null); // Close edit form if open
               setNewVibeLogData({ log_type: 'update', title: '', content: '' });
             }}
-            className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-2 py-2 px-4 text-sm"
+            className="startsnap-mobile-btn-primary"
             size="sm"
           >
-            <span className="material-icons text-lg">post_add</span>
+            <span className="material-icons text-base mr-2">post_add</span>
             Add Entry
           </Button>
         )}
       </div>
 
       {isOwner && isAddingVibeLog && (
-        <Card className="mb-8 p-4 border-2 border-gray-800 rounded-lg shadow-[3px_3px_0px_#1f2937] bg-startsnap-white">
-          <CardContent className="p-0">
-            <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-xl mb-3">
+        <div className="startsnap-form-card">
+          <div className="py-2 md:p-0">
+            <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-gray-900 text-xl mb-6 px-1 md:px-0 md:mb-4">
               Add New Vibe Log Entry
             </h3>
             <VibeLogEntryComponent
@@ -265,27 +265,27 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
               onContentChange={(content: string) => setNewVibeLogData(prev => ({ ...prev, content }))}
               showAllTypes={true}
             />
-            <div className="mt-4 flex gap-3 justify-end">
+            <div className="startsnap-form-actions">
               <Button
                 variant="outline"
                 onClick={() => {
                   setIsAddingVibeLog(false);
                   setNewVibeLogData({ log_type: 'update', title: '', content: '' });
                 }}
-                className="startsnap-button bg-gray-200 text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[2px_2px_0px_#1f2937] py-2 px-5 text-base"
+                className="startsnap-mobile-btn-secondary"
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleVibeLogSubmit}
-                className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] py-2 px-5 text-base"
+                className="startsnap-mobile-btn-primary"
                 disabled={!newVibeLogData.title.trim() || !newVibeLogData.content.trim()}
               >
                 Submit Entry
               </Button>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
       {vibeLogEntries.length > 0 ? (
@@ -294,9 +294,9 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
           const iconData = getVibeLogDisplay(logType);
           if (isOwner && editingVibeLogInline && editingVibeLogInline.id === entry.id && currentEditVibeLogData) {
             return (
-              <Card key={`${entry.id}-edit`} className="mb-8 p-4 border-2 border-gray-800 rounded-lg shadow-[3px_3px_0px_#1f2937] bg-startsnap-white">
-                <CardContent className="p-0">
-                  <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-xl mb-3">
+              <div key={`${entry.id}-edit`} className="startsnap-form-card">
+                <div className="py-2 md:p-0">
+                  <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-gray-900 text-xl mb-6 px-1 md:px-0 md:mb-4">
                     Edit Vibe Log: <span className="font-normal">{entry.title}</span>
                   </h3>
                   <VibeLogEntryComponent
@@ -308,27 +308,27 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
                     onContentChange={(content: string) => setCurrentEditVibeLogData(prev => prev ? ({ ...prev, content }) : null)}
                     showAllTypes={true}
                   />
-                  <div className="mt-4 flex gap-3 justify-end">
+                  <div className="startsnap-form-actions">
                     <Button
                       variant="outline"
                       onClick={() => {
                         setEditingVibeLogInline(null);
                         setCurrentEditVibeLogData(null);
                       }}
-                      className="startsnap-button bg-gray-200 text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[2px_2px_0px_#1f2937] py-2 px-5 text-base"
+                      className="startsnap-mobile-btn-secondary"
                     >
                       Cancel
                     </Button>
                     <Button
                       onClick={handleUpdateVibeLog}
-                      className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] py-2 px-5 text-base"
+                      className="startsnap-mobile-btn-primary"
                       disabled={!currentEditVibeLogData.title.trim() || !currentEditVibeLogData.content.trim()}
                     >
                       Save Changes
                     </Button>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             );
           }
           return (

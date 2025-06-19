@@ -1,6 +1,6 @@
 /**
  * src/components/ui/vibe-log-entry.tsx
- * 
+ *
  * @description VibeLogEntry component for creating and editing vibe log entries.
  * Provides form fields for title, content, and type selection with support for
  * both single-option and multi-option type selection modes.
@@ -89,14 +89,14 @@ export const VibeLogEntry = ({
   }, [content, type, onContentChange]);
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <Label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+    <div className="space-y-5">
+      <div className="startsnap-form-group">
+        <label className="startsnap-form-label">
           Entry Type
-        </Label>
+        </label>
         {showAllTypes ? (
           <Select value={type} onValueChange={onTypeChange}>
-            <SelectTrigger className="w-full border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-base">
+            <SelectTrigger className="startsnap-form-input">
               <SelectValue placeholder="Select entry type" />
             </SelectTrigger>
             <SelectContent>
@@ -111,60 +111,58 @@ export const VibeLogEntry = ({
             </SelectContent>
           </Select>
         ) : (
-          <div className="w-full border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] bg-startsnap-athens-gray flex items-center">
-            <div className="flex items-center text-startsnap-ebony-clay">
-              {(() => {
-                const displayData = getVibeLogDisplay(singleOptionType);
-                return (
-                  <>
-                    <span className={`material-icons text-base mr-3 leading-none ${displayData.iconColor}`}>{displayData.icon}</span>
-                    <span className="font-medium">{displayData.label}</span>
-                  </>
-                );
-              })()}
-            </div>
+          <div className="startsnap-form-input flex items-center">
+            {(() => {
+              const displayData = getVibeLogDisplay(singleOptionType);
+              return (
+                <>
+                  <span className={`material-icons text-base mr-3 leading-none ${displayData.iconColor}`}>{displayData.icon}</span>
+                  <span className="font-medium text-gray-900">{displayData.label}</span>
+                </>
+              );
+            })()}
           </div>
         )}
       </div>
 
-      <div className="space-y-2">
-        <Label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+      <div className="startsnap-form-group">
+        <label className="startsnap-form-label">
           Entry Title
-        </Label>
+        </label>
         <Input
           value={title}
           onChange={(e) => onTitleChange(e.target.value)}
           placeholder="Give your entry a title"
-          className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky text-base"
+          className="startsnap-form-input"
         />
       </div>
 
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <Label className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+      <div className="startsnap-form-group">
+        <div className="flex items-center justify-between mb-2">
+          <label className="startsnap-form-label mb-0">
             Entry Content
-          </Label>
+          </label>
           <Button
             type="button"
             variant="outline"
             size="sm"
             onClick={handleAiFormat}
             disabled={isFormatting || !content.trim()}
-            className="startsnap-button bg-startsnap-wisp-pink text-startsnap-purple-heart font-['Roboto',Helvetica] font-bold text-sm rounded-lg border-2 border-solid border-gray-800 shadow-[2px_2px_0px_#1f2937] flex items-center gap-2 px-3 py-1.5"
+            className="startsnap-mobile-btn-small bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100 focus:ring-purple-500 md:startsnap-button md:bg-startsnap-wisp-pink md:text-startsnap-purple-heart md:font-bold md:border-2 md:border-solid md:border-gray-800 md:shadow-[2px_2px_0px_#1f2937]"
           >
-            <span className={`material-icons text-lg ${isFormatting ? 'animate-spin' : ''}`}>
+            <span className={`material-icons text-sm md:text-base ${isFormatting ? 'animate-spin' : ''}`}>
               auto_awesome
             </span>
-            {isFormatting ? 'Formatting...' : 'AI Magic'}
+            <span className="ml-1.5 hidden sm:inline">{isFormatting ? 'Formatting...' : 'AI Magic'}</span>
           </Button>
         </div>
         <Textarea
           value={content}
           onChange={(e) => onContentChange(e.target.value)}
           placeholder={placeholderText}
-          className="border-2 border-solid border-gray-800 rounded-lg p-3.5 min-h-[120px] font-['Roboto',Helvetica] text-startsnap-pale-sky text-base"
+          className="startsnap-form-textarea"
         />
-        <p className="text-xs text-gray-500 mt-1">Markdown formatting is supported.</p>
+        <p className="text-xs text-gray-500 mt-1.5">Markdown formatting is supported.</p>
       </div>
     </div>
   );

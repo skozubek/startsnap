@@ -299,14 +299,14 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
   const vibeLogOptions = getVibeLogOptions();
 
   return (
-    <Card className="project-form-container w-full max-w-4xl bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]">
-      <CardContent className="p-8">
-        <form onSubmit={handleSubmit} className="space-y-8">
+    <div className="project-form-container w-full max-w-4xl bg-transparent border-0 shadow-none rounded-none overflow-visible md:bg-startsnap-white md:rounded-xl md:overflow-hidden md:border-[3px] md:border-solid md:border-gray-800 md:shadow-[5px_5px_0px_#1f2937]">
+      <div className="p-4 md:p-8">
+        <form onSubmit={handleSubmit} className="space-y-6 md:space-y-8">
           {/* Project Type */}
-          <div className="space-y-3">
-            <Label className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+          <div className="startsnap-form-group">
+            <label className="startsnap-form-label">
               Project Type
-            </Label>
+            </label>
             <SegmentedControl
               value={formState.projectType}
               onChange={(value) => handleInputChange('projectType', value)}
@@ -314,16 +314,16 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
           </div>
 
           {/* Project Name */}
-          <div className="space-y-3">
-            <Label htmlFor="projectName" className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+          <div className="startsnap-form-group">
+            <label htmlFor="projectName" className="startsnap-form-label">
               Project Name *
-            </Label>
+            </label>
             <Input
               id="projectName"
               value={formState.projectName}
               onChange={(e) => handleInputChange('projectName', e.target.value)}
               placeholder="Enter your project name"
-              className={`border-2 border-solid ${errors.projectName ? 'border-red-500' : 'border-gray-800'} rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
+              className="startsnap-form-input"
             />
             {errors.projectName && (
               <p className="text-red-500 text-sm">{errors.projectName}</p>
@@ -331,16 +331,16 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
           </div>
 
           {/* Description */}
-          <div className="space-y-3">
-            <Label htmlFor="description" className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+          <div className="startsnap-form-group">
+            <label htmlFor="description" className="startsnap-form-label">
               Description *
-            </Label>
+            </label>
             <Textarea
               id="description"
               value={formState.description}
               onChange={(e) => handleInputChange('description', e.target.value)}
               placeholder="Describe your project, what it does, and what makes it special..."
-              className={`border-2 border-solid ${errors.description ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3.5 min-h-[120px] font-['Roboto',Helvetica] text-startsnap-pale-sky`}
+              className="startsnap-form-textarea"
             />
             {errors.description && (
               <p className="text-red-500 text-sm">{errors.description}</p>
@@ -348,12 +348,12 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
           </div>
 
           {/* Category */}
-          <div className="space-y-3">
-            <Label className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+          <div className="startsnap-form-group">
+            <label className="startsnap-form-label">
               Category *
-            </Label>
+            </label>
             <Select value={formState.category} onValueChange={(value) => handleInputChange('category', value)}>
-              <SelectTrigger className={`border-2 border-solid ${errors.category ? 'border-red-500' : 'border-gray-800'} rounded-lg p-4 font-['Roboto',Helvetica]`}>
+              <SelectTrigger className="startsnap-form-input">
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
               <SelectContent>
@@ -388,38 +388,38 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
           </div>
 
           {/* Project Links */}
-          <div className="space-y-6">
-            <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+          <div className="startsnap-form-group">
+            <h3 className="startsnap-form-label mb-4">
               Project Links
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-3">
-                <Label htmlFor="liveUrl" className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-base leading-6">
+              <div className="startsnap-form-group">
+                <label htmlFor="liveUrl" className="startsnap-form-label">
                   Live Demo URL
-                </Label>
+                </label>
                 <Input
                   id="liveUrl"
                   value={formState.liveUrl}
                   onChange={(e) => handleInputChange('liveUrl', e.target.value)}
                   placeholder="https://your-project.com"
-                  className={`border-2 border-solid ${errors.liveUrl ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
+                  className="startsnap-form-input"
                 />
                 {errors.liveUrl && (
                   <p className="text-red-500 text-sm">{errors.liveUrl}</p>
                 )}
               </div>
 
-              <div className="space-y-3">
-                <Label htmlFor="videoUrl" className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-base leading-6">
+              <div className="startsnap-form-group">
+                <label htmlFor="videoUrl" className="startsnap-form-label">
                   Demo Video URL
-                </Label>
+                </label>
                 <Input
                   id="videoUrl"
                   value={formState.videoUrl}
                   onChange={(e) => handleInputChange('videoUrl', e.target.value)}
                   placeholder="https://youtube.com/watch?v=..."
-                  className={`border-2 border-solid ${errors.videoUrl ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
+                  className="startsnap-form-input"
                 />
                 {errors.videoUrl && (
                   <p className="text-red-500 text-sm">{errors.videoUrl}</p>
@@ -429,11 +429,11 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
           </div>
 
           {/* Project Screenshots */}
-          <div className="space-y-3">
+          <div className="startsnap-form-group">
             <div className="flex items-center justify-between">
-              <Label className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+              <label className="startsnap-form-label">
                 Project Screenshots
-              </Label>
+              </label>
               <span className="text-sm font-['Roboto',Helvetica] text-startsnap-pale-sky">
                 {formState.screenshotUrls.length}/3 uploaded
               </span>
@@ -453,17 +453,17 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
           </div>
 
           {/* Tags */}
-          <div className="space-y-3">
-            <Label className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+          <div className="startsnap-form-group">
+            <label className="startsnap-form-label">
               Tags
-            </Label>
+            </label>
             <div className="space-y-3">
               <Input
                 value={formState.tagsInput}
                 onChange={(e) => handleInputChange('tagsInput', e.target.value)}
                 onKeyPress={(e) => handleKeyPress(e, addTag, formState.tagsInput)}
                 placeholder="Add tags (press Enter to add)"
-                className="border-2 border-solid border-gray-800 rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky"
+                className="startsnap-form-input"
               />
               {formState.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2">
@@ -489,17 +489,17 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
           </div>
 
           {/* Tools Used */}
-          <div className="space-y-3">
-            <Label className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+          <div className="startsnap-form-group">
+            <label className="startsnap-form-label">
               Tools Used
-            </Label>
+            </label>
             <div className="space-y-3">
               <Input
                 value={formState.toolsInput}
                 onChange={(e) => handleInputChange('toolsInput', e.target.value)}
                 onKeyPress={(e) => handleKeyPress(e, addTool, formState.toolsInput)}
                 placeholder="Add tools and technologies (press Enter to add)"
-                className="border-2 border-solid border-gray-800 rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky"
+                className="startsnap-form-input"
               />
               {formState.toolsUsed.length > 0 && (
                 <div className="flex flex-wrap gap-2">
@@ -526,11 +526,11 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
 
           {/* Initial Vibe Log (Create mode only) */}
           {mode === 'create' && (
-            <div className="space-y-6 border-t-2 border-gray-200 pt-8">
-              <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-xl leading-7">
+            <div className="startsnap-form-group border-t-0 md:border-t-2 md:border-gray-200 pt-4 md:pt-8">
+              <h3 className="startsnap-form-label text-xl mb-4">
                 Initial Vibe Log Entry *
               </h3>
-              <p className="text-sm text-startsnap-pale-sky font-['Roboto',Helvetica]">
+              <p className="text-sm text-startsnap-pale-sky font-['Roboto',Helvetica] mb-4">
                 Start documenting your journey with your first vibe log entry.
               </p>
 
@@ -559,26 +559,26 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
           )}
 
           {/* Form Actions */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-end pt-6 border-t-2 border-gray-200">
+          <div className="startsnap-form-actions">
             <Button
               type="button"
               variant="outline"
               onClick={onCancel}
-              className="startsnap-button bg-gray-200 text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] order-2 sm:order-1"
+              className="startsnap-mobile-btn-secondary"
               disabled={isSubmitting}
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] order-1 sm:order-2"
+              className="startsnap-mobile-btn-primary"
               disabled={isSubmitting}
             >
               {isSubmitting ? (mode === 'create' ? 'Creating...' : 'Updating...') : (mode === 'create' ? 'Create StartSnap' : 'Update StartSnap')}
             </Button>
           </div>
         </form>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };

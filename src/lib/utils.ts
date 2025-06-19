@@ -105,14 +105,9 @@ export function getTransformedImageUrl(originalUrl: string, options: ImageTransf
     }
 
     const transformedUrl = `${baseUrl}?${params.toString()}`;
-    console.log('🔄 Original URL:', originalUrl);
-    console.log('🎯 Transformed URL:', transformedUrl);
-    console.log('⚙️  Transformation options:', options);
     return transformedUrl;
   } catch (error) {
     console.error('❌ Error transforming image URL:', error);
-    console.error('📋 Original URL:', originalUrl);
-    console.error('🔧 Options:', options);
     // Return the original URL if transformation fails
     return originalUrl;
   }

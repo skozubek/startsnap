@@ -66,11 +66,11 @@ export const Profiles = (): JSX.Element => {
   const fetchPaginatedProfiles = useCallback(async (currentDiscoveryState: PaginatedProfileDiscoveryState) => {
     try {
       setLoading(true);
-      
+
       // Calculate range for pagination (zero-based indices)
       const startIndex = (currentDiscoveryState.page - 1) * currentDiscoveryState.pageSize;
       const endIndex = startIndex + currentDiscoveryState.pageSize - 1;
-      
+
       let query = supabase
         .from('profiles')
         .select('user_id, username, bio, status, github_url, twitter_url, linkedin_url, website_url, created_at', { count: 'exact' })
@@ -300,7 +300,7 @@ export const Profiles = (): JSX.Element => {
                           <span className="hidden sm:inline">Filter</span>
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="p-4 bg-startsnap-white border-2 border-gray-800 rounded-lg shadow-[3px_3px_0px_#1f2937] w-72" align="start">
+                      <PopoverContent className="p-4 bg-startsnap-white border-2 border-gray-800 rounded-lg shadow-[3px_3px_0px_#1f2937] w-72 mx-4 sm:mx-0 sm:w-72" align="start">
                         <div className="space-y-4">
                           <h3 className="font-semibold text-startsnap-ebony-clay">Filter Vibe Coders</h3>
 
@@ -428,7 +428,7 @@ export const Profiles = (): JSX.Element => {
                     </Link>
                   ))}
                 </div>
-                
+
                 {/* Load More Button */}
                 {hasMoreProfiles && (
                   <div className="text-center mt-12">

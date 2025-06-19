@@ -20,8 +20,6 @@ interface ConfirmationDialogProps {
   description: string;
   /** Text for the confirm button (default: "Delete") */
   confirmText?: string;
-  /** Text for the cancel button (default: "Cancel") */
-  cancelText?: string;
   /** Whether the action is loading */
   isLoading?: boolean;
   /** Type of confirmation - affects styling */
@@ -40,7 +38,6 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   title,
   description,
   confirmText = 'Delete',
-  cancelText = 'Cancel',
   isLoading = false,
   type = 'danger'
 }) => {
@@ -79,7 +76,7 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
       tabIndex={-1}
     >
       <div
-        className="bg-startsnap-white border-4 border-gray-800 rounded-xl shadow-[6px_6px_0px_#1f2937] max-w-md w-full p-6 animate-in zoom-in-95 duration-200"
+        className="bg-startsnap-white border-2 border-gray-800 rounded-xl shadow-[3px_3px_0px_#1f2937] md:border-4 md:shadow-[6px_6px_0px_#1f2937] max-w-xs p-6 sm:max-w-md sm:p-8 w-full animate-in zoom-in-95 duration-200"
         role="dialog"
         aria-modal="true"
         aria-labelledby="confirmation-title"
@@ -120,23 +117,13 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
         </p>
 
         {/* Actions */}
-        <div className="flex gap-3 justify-end">
-          <Button
-            variant="outline"
-            onClick={onClose}
-            disabled={isLoading}
-            className="startsnap-button bg-gray-200 text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[2px_2px_0px_#1f2937] py-2 px-5 text-base"
-          >
-            {cancelText}
-          </Button>
-          <Button
-            onClick={onConfirm}
-            disabled={isLoading}
-            className={confirmButtonStyle + ' py-2 px-5 text-base'}
-          >
-            {isLoading ? 'Deleting...' : confirmText}
-          </Button>
-        </div>
+        <Button
+          onClick={onConfirm}
+          disabled={isLoading}
+          className={`w-full ${confirmButtonStyle} py-3 text-base`}
+        >
+          {isLoading ? 'Deleting...' : confirmText}
+        </Button>
       </div>
     </div>
   );

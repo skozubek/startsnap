@@ -29,6 +29,10 @@ const buttonVariants = cva(
           "bg-startsnap-french-rose text-startsnap-white border-2 border-solid border-gray-800 shadow-[2px_2px_0px_#1f2937] hover:bg-startsnap-french-rose/90 font-bold",
         secondaryIcon:
           "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 shadow-none",
+        startsnap:
+          "startsnap-button bg-startsnap-french-rose text-startsnap-white border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] font-bold tap-target touch-manipulation",
+        startsnapSecondary:
+          "startsnap-button bg-startsnap-mischka text-startsnap-ebony-clay border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] font-bold tap-target touch-manipulation",
       },
       size: {
         default: "h-10 px-4 py-3",

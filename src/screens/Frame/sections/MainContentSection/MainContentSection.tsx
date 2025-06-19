@@ -97,11 +97,13 @@ export const MainContentSection = (): JSX.Element => {
         .from('startsnaps')
         .select('*, support_count, screenshot_urls')
         .eq('id', platformId)
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
 
-      setPlatformStartSnap(data);
+      setPlatformStartSnap(data || null);
 
       // Fetch creator info if needed
       if (data) {
@@ -119,6 +121,7 @@ export const MainContentSection = (): JSX.Element => {
       }
     } catch (error) {
       console.error('Error fetching platform startsnap:', error);
+      setPlatformStartSnap(null);
     } finally {
       setLoadingPlatformData(false);
     }
