@@ -354,8 +354,8 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
   };
 
   return (
-    <div className="p-8">
-      <div className="flex items-center mb-6">
+    <div className="p-4 md:p-8">
+      <div className="flex items-center mb-4 md:mb-6">
         <h2 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-2xl leading-8">
           Community Feedback
         </h2>
@@ -365,15 +365,15 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
       </div>
       {feedbackEntries.length > 0 ? (
         feedbackEntries.map((feedback) => (
-          <div key={feedback.id} className="mb-6">
+          <div key={feedback.id} className="mb-4 md:mb-6">
             {editingFeedback && editingFeedback.id === feedback.id ? (
-              <Card className="mb-6 p-4 border border-gray-800 rounded-lg shadow-[2px_2px_0px_#1f2937] bg-startsnap-white md:border-2 md:shadow-[3px_3px_0px_#1f2937]">
+              <Card className="startsnap-form-card">
                 <CardContent className="p-0">
-                  <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-start justify-between mb-4">
                     <div className="flex items-start">
                       {/* FEEDBACK AVATAR LINK */}
                       {(feedback.profile?.username && feedback.profile.username !== 'Anonymous') ? (
-                        <Link to={`/profiles/${feedback.profile.username}`} className="w-10 h-10 flex-shrink-0 hover:opacity-80 transition-opacity duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-startsnap-french-rose rounded-full">
+                        <Link to={`/profiles/${feedback.profile.username}`} className="w-10 h-10 flex-shrink-0 hover:opacity-80 transition-opacity duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 rounded-full">
                           <UserAvatar
                             name={getAvatarName(null, feedback.profile.username)}
                             size={40}
@@ -391,11 +391,11 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                       )}
                       <div className="ml-4 flex-1">
                         <div className="flex items-center gap-2">
-                          <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-base leading-6">
+                          <p className="font-['Roboto',Helvetica] font-semibold text-gray-900 text-base leading-6">
                             {feedback.profile?.username || 'Anonymous'}
                           </p>
-                          <p className="font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4">
-                            {formatDetailedDate(feedback.created_at)}{editingFeedback && editingFeedback.id === feedback.id ? ' (Editing)' : ''}
+                          <p className="font-['Inter',Helvetica] font-normal text-gray-500 text-xs leading-4">
+                            {formatDetailedDate(feedback.created_at)} (Editing)
                           </p>
                         </div>
                       </div>
@@ -429,24 +429,24 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                   </div>
                   <Textarea
                     placeholder="Edit your feedback..."
-                    className="border border-solid border-gray-800 rounded-lg p-3.5 min-h-[100px] font-['Roboto',Helvetica] text-startsnap-river-bed mb-3 w-full text-base md:border-2"
+                    className="startsnap-form-textarea"
                     value={inlineEditFeedbackContent}
                     onChange={(e) => setInlineEditFeedbackContent(e.target.value)}
                   />
-                  <div className="flex gap-3 justify-end">
+                  <div className="startsnap-form-actions">
                     <Button
                       variant="outline"
                       onClick={() => {
                         setEditingFeedback(null);
                         setInlineEditFeedbackContent('');
                       }}
-                      className="startsnap-button bg-gray-200 text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[2px_2px_0px_#1f2937] py-2 px-5 text-base"
+                      className="startsnap-mobile-btn-secondary"
                     >
                       Cancel
                     </Button>
                     <Button
                       onClick={handleUpdateFeedback}
-                      className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] py-2 px-5 text-base"
+                      className="startsnap-mobile-btn-primary"
                       disabled={!inlineEditFeedbackContent.trim() || isSubmitting}
                     >
                       {isSubmitting ? 'Saving...' : 'Save Changes'}
@@ -456,9 +456,9 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
               </Card>
             ) : (
               <Card
-                className="shadow-[0px_2px_4px_-2px_#0000001a,0px_4px_6px_-1px_#0000001a] bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800"
+                className="bg-transparent border-0 shadow-none rounded-none p-0 md:shadow-[0px_2px_4px_-2px_#0000001a,0px_4px_6px_-1px_#0000001a] md:bg-startsnap-white md:rounded-xl md:overflow-hidden md:border-[3px] md:border-solid md:border-gray-800"
               >
-                <CardContent className="p-5">
+                <CardContent className="p-0 md:p-5">
                   <div className="flex items-start justify-between">
                     <div className="flex items-start">
                       {/* FEEDBACK AVATAR LINK */}
@@ -552,7 +552,7 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                 {/* Form for ADDING a NEW reply - only show if not editing an existing reply inline */}
                 {currentUser && !editingReply && (
                   <div className={`pb-3 mb-3 ${feedback.replies && feedback.replies.length > 0 ? 'border-b border-gray-200' : ''}`}>
-                    <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="flex items-start gap-3 p-0 bg-transparent md:p-3 md:bg-gray-50 md:rounded-lg md:border md:border-gray-200">
                       <div className="w-8 h-8 flex-shrink-0">
                         <UserAvatar
                           name={getAvatarName(currentUser, currentUserProfile?.username)}
@@ -563,7 +563,7 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                       <div className="flex-1">
                         <Textarea
                           placeholder={'Write your reply...'} // Placeholder for new reply
-                          className="border border-solid border-gray-800 rounded-lg p-2 min-h-[80px] font-['Roboto',Helvetica] text-startsnap-river-bed text-sm mb-2 md:border-2"
+                          className="startsnap-reply-textarea"
                           value={replyContent} // This replyContent is for the NEW reply
                           onChange={(e) => {
                             setReplyContent(e.target.value);
@@ -572,20 +572,20 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                           disabled={replySubmitting}
                         />
                         {replyError && (
-                          <p className="text-red-500 text-xs mb-2">{replyError}</p>
+                          <p className="text-red-500 text-sm mb-2">{replyError}</p>
                         )}
-                        <div className="flex gap-2 justify-end">
+                        <div className="startsnap-form-actions">
                           <Button
                             variant="outline"
                             onClick={handleCancelReply} // This closes the entire reply section
-                            className="startsnap-button bg-gray-200 text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold text-sm rounded-lg border-2 border-solid border-gray-800 shadow-[2px_2px_0px_#1f2937] py-1 px-3 h-auto"
+                            className="startsnap-mobile-btn-secondary"
                             disabled={replySubmitting}
                           >
                             Cancel
                           </Button>
                           <Button
                             onClick={handleReplySubmit} // Submits a NEW reply
-                            className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-sm rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] py-1 px-3 h-auto"
+                            className="startsnap-mobile-btn-primary"
                             disabled={replySubmitting || !replyContent.trim()}
                           >
                             {replySubmitting ? 'Replying...' : 'Reply'}
@@ -603,7 +603,7 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                       // Check if THIS reply is being edited inline
                       editingReply && editingReply.id === reply.id ? (
                         <div key={reply.id} className={` ${replyIndex > 0 ? 'mt-3 border-t border-gray-200' : ''} pt-3`}>
-                          <div className="flex items-start gap-3 p-3 bg-gray-100 rounded-lg border-2 border-gray-800"> {/* Edit form styling */}
+                          <div className="flex items-start gap-3 p-0 bg-transparent md:p-3 md:bg-gray-100 md:rounded-lg md:border-2 md:border-gray-800"> {/* Edit form styling */}
                             {/* REPLY AVATAR/NAME LINK */}
                             {(reply.profile?.username && reply.profile.username !== 'Anonymous') ? (
                               <div className="flex items-start">
@@ -709,7 +709,7 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                             <div className="ml-3 flex-1"> {/* Ensure ml-3 if avatar is present */}
                               <Textarea
                                 placeholder="Edit your reply..."
-                                className="border-2 border-solid border-gray-800 rounded-lg p-2 min-h-[80px] font-['Roboto',Helvetica] text-startsnap-river-bed text-sm mb-2"
+                                className="startsnap-reply-textarea"
                                 value={replyContent} // Bound to the content of the reply being edited
                                 onChange={(e) => {
                                   setReplyContent(e.target.value);
@@ -718,20 +718,20 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                                 disabled={replySubmitting}
                               />
                               {replyError && ( // Show specific reply error if any
-                                <p className="text-red-500 text-xs mb-2">{replyError}</p>
+                                <p className="text-red-500 text-sm mb-2">{replyError}</p>
                               )}
-                              <div className="flex gap-2 justify-end mt-2">
+                              <div className="startsnap-form-actions mt-2">
                                 <Button
                                   variant="outline"
                                   onClick={handleCancelEditReply} // Cancel for INLINE EDIT
-                                  className="startsnap-button bg-gray-200 text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold text-sm rounded-lg border-2 border-solid border-gray-800 shadow-[2px_2px_0px_#1f2937] py-1 px-3 h-auto"
+                                  className="startsnap-mobile-btn-secondary"
                                   disabled={replySubmitting}
                                 >
                                   Cancel
                                 </Button>
                                 <Button
                                   onClick={handleUpdateReply} // Update for INLINE EDIT
-                                  className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-sm rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] py-1 px-3 h-auto"
+                                  className="startsnap-mobile-btn-primary"
                                   disabled={replySubmitting || !replyContent.trim()}
                                 >
                                   {replySubmitting ? 'Updating...' : 'Update Reply'}
@@ -872,33 +872,35 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
       )}
 
       <div className="mt-8">
-        <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7 mb-4">
+        <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-gray-900 text-xl leading-7 mb-5">
           Leave Your Feedback
         </h3>
-        <div className="flex items-start gap-4">
-          <div className="w-10 h-10 flex-shrink-0">
-            <UserAvatar
-              name={currentUser ? getAvatarName(currentUser, currentUserProfile?.username) : 'Anonymous'}
-              size={40}
-              className="w-full h-full"
-            />
-          </div>
-          <div className="flex-1">
-            <Textarea
-              placeholder={currentUser ? 'Share your thoughts, suggestions, or bug reports...' : 'Please log in to leave feedback'}
-              className="border-2 border-solid border-gray-800 rounded-lg p-3.5 min-h-[120px] font-['Roboto',Helvetica] text-startsnap-river-bed mb-2 text-base"
-              value={feedbackContent}
-              onChange={(e) => {
-                setFeedbackContent(e.target.value);
-                setSubmissionError(null);
-              }}
-              disabled={!currentUser || isSubmitting}
-            />
-            {submissionError && (
-              <p className="text-red-500 text-sm mb-2">{submissionError}</p>
-            )}
-            <Button
-              className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+        <div className="bg-transparent p-0 md:bg-white md:rounded-lg md:p-6 md:border-2 md:border-gray-800 md:shadow-[3px_3px_0px_#1f2937]">
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 flex-shrink-0">
+              <UserAvatar
+                name={currentUser ? getAvatarName(currentUser, currentUserProfile?.username) : 'Anonymous'}
+                size={40}
+                className="w-full h-full"
+              />
+            </div>
+            <div className="flex-1">
+              <Textarea
+                placeholder={currentUser ? 'Share your thoughts, suggestions, or bug reports...' : 'Please log in to leave feedback'}
+                className="startsnap-form-textarea"
+                value={feedbackContent}
+                onChange={(e) => {
+                  setFeedbackContent(e.target.value);
+                  setSubmissionError(null);
+                }}
+                disabled={!currentUser || isSubmitting}
+              />
+              {submissionError && (
+                <p className="text-red-500 text-sm mb-3">{submissionError}</p>
+              )}
+              <div className="flex justify-end mt-3">
+                <Button
+                  className="startsnap-mobile-btn-primary"
               onClick={async () => {
                 if (!currentUser) {
                   setSubmissionError('You need to be logged in to submit feedback');
@@ -923,6 +925,8 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
             >
               {isSubmitting ? 'Submitting...' : (currentUser ? 'Submit Feedback' : 'Login to Submit Feedback')}
             </Button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

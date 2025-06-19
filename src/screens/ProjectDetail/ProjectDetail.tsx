@@ -451,7 +451,7 @@ export const ProjectDetail = (): JSX.Element => {
       <div className="w-full bg-white pb-24 pt-8">
         <div className="flex flex-col w-full items-center px-8">
           <div className="w-full max-w-4xl">
-            <Card className="w-full bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]">
+            <Card className="w-full bg-transparent border-0 shadow-none rounded-none overflow-visible md:bg-startsnap-white md:rounded-xl md:overflow-hidden md:border-[3px] md:border-solid md:border-gray-800 md:shadow-[5px_5px_0px_#1f2937]">
               <CardContent className="p-0">
                 <VibeLogSection
                   startsnapId={startsnap.id}

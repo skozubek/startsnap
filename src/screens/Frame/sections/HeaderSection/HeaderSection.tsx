@@ -158,7 +158,7 @@ export const HeaderSection = ({ onPulseButtonClick, hasNewActivity }: HeaderSect
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger className="outline-none">
-                <div className="w-10 h-10 cursor-pointer hover:opacity-80 transition-opacity">
+                <div className="w-10 h-10 cursor-pointer hover:scale-105 transition-all duration-200 rounded-full overflow-hidden border-2 border-transparent hover:border-startsnap-french-rose/30">
                   <UserAvatar
                     name={getAvatarName(user, userProfile?.username)}
                     size={40}
@@ -166,20 +166,55 @@ export const HeaderSection = ({ onPulseButtonClick, hasNewActivity }: HeaderSect
                   />
                 </div>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem className="cursor-pointer hover:bg-startsnap-mischka/50 flex items-center gap-2" asChild>
-                  <Link to="/profile" className="flex items-center gap-2 w-full">
-                    <User size={16} />
-                    <span>Profile</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={handleSignOut}
-                  className="cursor-pointer text-startsnap-french-rose hover:text-startsnap-french-rose hover:bg-startsnap-mischka/50 flex items-center gap-2"
-                >
-                  <LogOut size={16} />
-                  <span>Sign Out</span>
-                </DropdownMenuItem>
+              <DropdownMenuContent align="end" className="w-72 p-4 bg-white border-2 border-gray-800 rounded-xl shadow-[3px_3px_0px_#1f2937]">
+                {/* User Info Header */}
+                                  <div className="flex items-center gap-4 p-4 mb-4 bg-gray-50 rounded-xl border-b border-gray-200">
+                    <div className="w-12 h-12">
+                      <UserAvatar
+                        name={getAvatarName(user, userProfile?.username)}
+                        size={48}
+                        className="w-full h-full"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-['Space_Grotesk',Helvetica] font-semibold text-startsnap-oxford-blue text-lg">
+                        {userProfile?.username || user.email?.split('@')[0] || 'User'}
+                      </p>
+                    </div>
+                  </div>
+
+                {/* Account Actions */}
+                <div>
+                  <div className="space-y-1">
+                    <DropdownMenuItem asChild className="p-0">
+                      <Link
+                        to="/profile"
+                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-200 group w-full"
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-startsnap-oxford-blue/10 transition-colors">
+                          <User size={16} className="text-startsnap-oxford-blue" />
+                        </div>
+                        <span className="font-['Space_Grotesk',Helvetica] text-startsnap-oxford-blue text-sm font-medium">
+                          My Profile
+                        </span>
+                      </Link>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem asChild className="p-0">
+                      <button
+                        onClick={handleSignOut}
+                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-red-50 transition-all duration-200 group w-full"
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center group-hover:bg-red-100 transition-colors">
+                          <LogOut size={16} className="text-red-500" />
+                        </div>
+                        <span className="font-['Space_Grotesk',Helvetica] text-red-500 text-sm font-medium">
+                          Sign Out
+                        </span>
+                      </button>
+                    </DropdownMenuItem>
+                  </div>
+                </div>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
@@ -207,99 +242,156 @@ export const HeaderSection = ({ onPulseButtonClick, hasNewActivity }: HeaderSect
             variant="ghost"
             size="icon"
             onClick={toggleMobileMenu}
-            className="text-startsnap-oxford-blue hover:text-startsnap-french-rose"
+            className="min-w-[48px] min-h-[48px] p-2 text-startsnap-oxford-blue hover:text-startsnap-french-rose hover:bg-startsnap-mischka/20 rounded-xl transition-all duration-200 active:scale-95"
             aria-label="Toggle mobile menu"
           >
-            {isMobileMenuOpen ? <X size={32} /> : <Menu size={32} />}
+            {isMobileMenuOpen ? <X size={28} strokeWidth={2.5} /> : <Menu size={28} strokeWidth={2.5} />}
           </Button>
         </div>
       </div>
 
-      {/* Mobile Navigation Menu */}
+      {/* Mobile Navigation Menu - LEGENDARY DESIGN */}
       {isMobileMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-[--startsnap-beige] shadow-lg p-6 animate-in slide-in-from-top-2 duration-300">
-          <nav className="flex flex-col gap-4">
-            {navLinks.map((link, index) => (
-              <Link
-                key={index}
-                to={link.href}
-                onClick={toggleMobileMenu}
-                className="font-['Space_Grotesk',Helvetica] text-startsnap-oxford-blue text-lg font-medium hover:text-startsnap-french-rose transition-colors py-2 text-center"
-              >
-                {link.title}
-              </Link>
-            ))}
-            <hr className="my-2 border-startsnap-mischka" />
-            {/* Mobile Community Pulse Button */}
-            <Button
-              onClick={() => {
-                onPulseButtonClick();
-                toggleMobileMenu();
-              }}
-              variant="startsnap"
-              className={`w-full bg-startsnap-mountain-meadow text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg flex items-center justify-center gap-2 ${hasNewActivity ? 'animate-pulse-glow' : ''}`}
-            >
-              <span className="material-icons text-lg">bolt</span>
-              <span>Community Pulse</span>
-            </Button>
-            {user && (
-              <Button
-                asChild
-                onClick={toggleMobileMenu}
-                variant="startsnap"
-                className="w-full bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg flex items-center justify-center gap-2"
-              >
-                <Link to="/create">
-                  <span>Add StartSnap</span>
-                </Link>
-              </Button>
-            )}
-            {user ? (
-              <>
-                <Link
-                  to="/profile"
-                  onClick={toggleMobileMenu}
-                  className="font-['Space_Grotesk',Helvetica] text-startsnap-oxford-blue text-lg font-medium hover:text-startsnap-french-rose transition-colors py-2 text-center flex items-center justify-center gap-2"
-                >
-                  <User size={20} />
-                  <span>Profile</span>
-                </Link>
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    handleSignOut();
-                    toggleMobileMenu();
-                  }}
-                  className="w-full font-['Space_Grotesk',Helvetica] text-startsnap-french-rose text-lg font-medium hover:text-startsnap-french-rose hover:bg-startsnap-mischka/10 transition-colors py-2 flex items-center justify-center gap-2"
-                >
-                  <LogOut size={20} />
-                  <span>Sign Out</span>
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    handleAuthClick('login');
-                    toggleMobileMenu();
-                  }}
-                  className="w-full startsnap-button bg-gray-200 text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
-                >
-                  Login
-                </Button>
+        <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-xl border-t-2 border-startsnap-french-rose animate-in slide-in-from-top-2 duration-300 backdrop-blur-sm">
+          <div className="p-6 max-h-[calc(100vh-120px)] overflow-y-auto">
+
+            {/* Navigation Section */}
+            <div className="mb-8">
+              <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-sm uppercase tracking-wider mb-4 px-2">
+                Explore
+              </h3>
+              <nav className="space-y-2">
+                {navLinks.map((link, index) => (
+                  <Link
+                    key={index}
+                    to={link.href}
+                    onClick={toggleMobileMenu}
+                    className="flex items-center gap-4 p-4 rounded-xl bg-gray-50 hover:bg-startsnap-mischka/30 transition-all duration-200 active:scale-[0.98] group"
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-startsnap-oxford-blue/10 flex items-center justify-center group-hover:bg-startsnap-french-rose/20 transition-colors">
+                      <span className="material-icons text-startsnap-oxford-blue group-hover:text-startsnap-french-rose transition-colors">
+                        {link.title === 'Profiles' ? 'people' : 'dashboard'}
+                      </span>
+                    </div>
+                    <span className="font-['Space_Grotesk',Helvetica] text-startsnap-oxford-blue text-lg font-semibold group-hover:text-startsnap-french-rose transition-colors">
+                      {link.title}
+                    </span>
+                  </Link>
+                ))}
+              </nav>
+            </div>
+
+            {/* Quick Actions Section */}
+            <div className="mb-8">
+              <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-sm uppercase tracking-wider mb-4 px-2">
+                Quick Actions
+              </h3>
+              <div className="space-y-3">
+                {/* Community Pulse - Premium Action */}
                 <Button
                   onClick={() => {
-                    handleAuthClick('signup');
+                    onPulseButtonClick();
                     toggleMobileMenu();
                   }}
-                  className="w-full startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+                  className={`w-full h-14 bg-startsnap-mountain-meadow hover:bg-green-600 text-white font-['Roboto',Helvetica] font-bold text-base rounded-xl border-2 border-gray-800 shadow-[3px_3px_0px_#1f2937] hover:shadow-[4px_4px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all duration-200 flex items-center justify-center gap-3 ${hasNewActivity ? 'animate-pulse-glow' : ''}`}
                 >
-                  Sign Up
+                  <span className="material-icons text-xl">bolt</span>
+                  <span>Community Pulse</span>
+                  {hasNewActivity && (
+                    <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                  )}
                 </Button>
-              </>
-            )}
-          </nav>
+
+                {/* Add StartSnap - Primary Action */}
+                {user && (
+                  <Button
+                    asChild
+                    onClick={toggleMobileMenu}
+                    className="w-full h-14 bg-startsnap-french-rose hover:bg-pink-600 text-white font-['Roboto',Helvetica] font-bold text-base rounded-xl border-2 border-gray-800 shadow-[3px_3px_0px_#1f2937] hover:shadow-[4px_4px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all duration-200 flex items-center justify-center gap-3"
+                  >
+                    <Link to="/create" className="flex items-center gap-3">
+                      <span className="material-icons text-xl">add_circle</span>
+                      <span>Add StartSnap</span>
+                    </Link>
+                  </Button>
+                )}
+              </div>
+            </div>
+
+            {/* Account Section */}
+            <div className="border-t border-gray-200 pt-6">
+              {user ? (
+                <>
+                  <div className="flex items-center gap-4 p-4 mb-4 bg-gray-50 rounded-xl">
+                    <div className="w-12 h-12">
+                      <UserAvatar
+                        name={getAvatarName(user, userProfile?.username)}
+                        size={48}
+                        className="w-full h-full"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-['Space_Grotesk',Helvetica] font-semibold text-startsnap-oxford-blue text-lg">
+                        {userProfile?.username || user.email?.split('@')[0] || 'User'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Link
+                      to="/profile"
+                      onClick={toggleMobileMenu}
+                      className="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-50 transition-all duration-200 active:scale-[0.98] group"
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-startsnap-oxford-blue/10 transition-colors">
+                        <User size={20} className="text-startsnap-oxford-blue" />
+                      </div>
+                      <span className="font-['Space_Grotesk',Helvetica] text-startsnap-oxford-blue text-lg font-medium">
+                        My Profile
+                      </span>
+                    </Link>
+
+                    <Button
+                      variant="ghost"
+                      onClick={() => {
+                        handleSignOut();
+                        toggleMobileMenu();
+                      }}
+                      className="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-red-50 transition-all duration-200 active:scale-[0.98] group justify-start h-auto"
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-red-50 flex items-center justify-center group-hover:bg-red-100 transition-colors">
+                        <LogOut size={20} className="text-red-500" />
+                      </div>
+                      <span className="font-['Space_Grotesk',Helvetica] text-red-500 text-lg font-medium">
+                        Sign Out
+                      </span>
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <div className="space-y-3">
+                  <Button
+                    onClick={() => {
+                      handleAuthClick('login');
+                      toggleMobileMenu();
+                    }}
+                    className="w-full h-12 bg-gray-200 hover:bg-gray-300 text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold text-base rounded-xl border-2 border-gray-800 shadow-[2px_2px_0px_#1f2937] hover:shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all duration-200"
+                  >
+                    Login
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      handleAuthClick('signup');
+                      toggleMobileMenu();
+                    }}
+                    className="w-full h-12 bg-startsnap-french-rose hover:bg-pink-600 text-white font-['Roboto',Helvetica] font-bold text-base rounded-xl border-2 border-gray-800 shadow-[2px_2px_0px_#1f2937] hover:shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all duration-200"
+                  >
+                    Sign Up
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
 
