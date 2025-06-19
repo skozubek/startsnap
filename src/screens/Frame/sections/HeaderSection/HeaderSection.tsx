@@ -47,6 +47,8 @@ export const HeaderSection = ({ onPulseButtonClick, hasNewActivity }: HeaderSect
   const { user, handleAuthErrorAndSignOut } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+
+
   // Fetch user profile when user changes to get consistent username
   useEffect(() => {
     if (user) {
@@ -234,7 +236,8 @@ export const HeaderSection = ({ onPulseButtonClick, hasNewActivity }: HeaderSect
                 onPulseButtonClick();
                 toggleMobileMenu();
               }}
-              className={`w-full startsnap-button bg-startsnap-mountain-meadow text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center justify-center gap-2 ${hasNewActivity ? 'animate-pulse-glow' : ''}`}
+              variant="startsnap"
+              className={`w-full bg-startsnap-mountain-meadow text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg flex items-center justify-center gap-2 ${hasNewActivity ? 'animate-pulse-glow' : ''}`}
             >
               <span className="material-icons text-lg">bolt</span>
               <span>Community Pulse</span>
@@ -243,7 +246,8 @@ export const HeaderSection = ({ onPulseButtonClick, hasNewActivity }: HeaderSect
               <Button
                 asChild
                 onClick={toggleMobileMenu}
-                className="w-full startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center justify-center gap-2"
+                variant="startsnap"
+                className="w-full bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg flex items-center justify-center gap-2"
               >
                 <Link to="/create">
                   <span>Add StartSnap</span>

@@ -253,5 +253,216 @@
 }
 
 @layer utilities {
-  /* Utility overrides if needed */
+  /* ============================================
+   * 🚀 2025 MOBILE UX OPTIMIZATION - PURE TAILWIND
+   * Zero JavaScript, Maximum Performance
+   * ============================================ */
+
+  /* Enhanced touch interactions for better UX */
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+
+  /* Accessibility-first tap targets */
+  .tap-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* ============================================
+ * 📱 MOBILE-SPECIFIC OPTIMIZATIONS
+ * These rules ONLY apply to mobile devices
+ * Desktop experience remains 100% unchanged
+ * ============================================ */
+
+@media (max-width: 768px) {
+  /* Optimize heavy shadows for mobile performance */
+  .shadow-\[5px_5px_0px_\#1f2937\] {
+    box-shadow: 3px 3px 0px #1f2937 !important;
+  }
+
+  .shadow-\[7px_7px_0px_\#1f2937\] {
+    box-shadow: 4px 4px 0px #1f2937 !important;
+  }
+
+  .shadow-\[4px_4px_0px_\#1f2937\] {
+    box-shadow: 3px 3px 0px #1f2937 !important;
+  }
+
+  /* Replace hover transforms with touch-friendly active states */
+  .hover\:translate-x-\[-2px\]:hover,
+  .hover\:translate-y-\[-2px\]:hover {
+    transform: none !important;
+  }
+
+  /* Enhanced active states for mobile */
+  .hover\:translate-x-\[-2px\]:active,
+  .hover\:translate-y-\[-2px\]:active {
+    transform: scale(0.97) !important;
+    transition: transform 0.1s ease-out !important;
+  }
+
+  /* Optimize complex hover shadows for mobile */
+  .hover\:shadow-\[5px_5px_0px_\#1f2937\]:hover {
+    box-shadow: 3px 3px 0px #1f2937 !important;
+  }
+
+  .hover\:shadow-\[5px_5px_0px_\#1f2937\]:active {
+    box-shadow: 2px 2px 0px #1f2937 !important;
+  }
+
+  /* Mobile button optimizations */
+  .startsnap-button:hover {
+    transform: none !important;
+    box-shadow: 3px 3px 0px #1f2937 !important;
+  }
+
+  .startsnap-button:active {
+    transform: scale(0.97) !important;
+    box-shadow: 2px 2px 0px #1f2937 !important;
+    transition: all 0.1s ease-out !important;
+  }
+
+  /* Optimize scale hover effects for mobile */
+  .hover\:scale-\[1\.02\]:hover {
+    transform: none !important;
+  }
+
+  .hover\:scale-\[1\.02\]:active {
+    transform: scale(0.98) !important;
+  }
+
+  .hover\:scale-110:hover {
+    transform: none !important;
+  }
+
+  .hover\:scale-110:active {
+    transform: scale(0.95) !important;
+  }
+
+  /* Optimize backdrop blur for mobile performance */
+  .backdrop-blur-sm {
+    backdrop-filter: blur(4px) !important;
+  }
+
+  .backdrop-blur-md {
+    backdrop-filter: blur(6px) !important;
+  }
+
+  /* Mobile-optimized animations */
+  .transition-all {
+    transition-duration: 0.15s !important;
+    transition-timing-function: ease-out !important;
+  }
+
+  /* Enhanced mobile scrolling */
+  body {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  /* Optimize mobile card grids */
+  .grid {
+    gap: 1rem !important;
+  }
+
+  /* Mobile typography optimization */
+  .text-4xl, .text-5xl, .text-6xl {
+    line-height: 1.1 !important;
+  }
+}
+
+/* ============================================
+ * 🎯 TOUCH-SPECIFIC OPTIMIZATIONS
+ * Enhanced interactions for touch interfaces
+ * ============================================ */
+
+@media (hover: none) and (pointer: coarse) {
+  /* This targets touch-only devices */
+
+  /* Remove all hover states on touch devices */
+  *:hover {
+    /* Reset any hover state immediately */
+    transition-duration: 0s !important;
+  }
+
+  /* Enhanced active states for better touch feedback */
+  .startsnap-button:active,
+  .touch-interactive:active {
+    transform: scale(0.96) !important;
+    filter: brightness(0.95) !important;
+    transition: all 0.1s ease-out !important;
+  }
+
+  /* Optimize card interactions for touch */
+  .hover\:opacity-90:active,
+  .hover\:opacity-95:active {
+    opacity: 0.85 !important;
+  }
+}
+
+/* ============================================
+ * 🎯 2025 COMPONENT PATTERNS - PURE TAILWIND
+ * Modern, performant, maintainable patterns
+ * ============================================ */
+
+@layer components {
+  /* StartSnap Card - Mobile-first responsive */
+  .startsnap-card {
+    @apply h-full bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800;
+    @apply shadow-[3px_3px_0px_#1f2937] active:opacity-85 active:scale-[0.98] transition-all duration-150;
+    @apply md:shadow-[5px_5px_0px_#1f2937] md:hover:opacity-90 md:duration-200;
+  }
+
+  /* StartSnap Button - Progressive enhancement */
+  .startsnap-button {
+    @apply touch-manipulation active:scale-95 transition-transform duration-150;
+    @apply md:hover:translate-x-[-2px] md:hover:translate-y-[-2px] md:transition-all md:duration-200;
+  }
+
+  /* Gallery Item - Touch-optimized */
+  .startsnap-gallery-item {
+    @apply relative cursor-pointer overflow-hidden rounded-lg border-2 border-gray-800 bg-white;
+    @apply shadow-[3px_3px_0px_#1f2937] active:scale-95 transition-transform duration-150;
+    @apply md:shadow-[3px_3px_0px_#1f2937] md:hover:translate-x-[-2px] md:hover:translate-y-[-2px] md:hover:shadow-[5px_5px_0px_#1f2937] md:transition-all md:duration-200;
+  }
+
+  /* Mobile Menu - Optimized animations */
+  .startsnap-mobile-menu {
+    @apply md:hidden absolute top-full left-0 right-0 bg-startsnap-beige shadow-lg p-6;
+    animation: slideDown 0.2s ease-out;
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Form Components - Mobile-first responsive borders */
+  .startsnap-form-card {
+    @apply border border-gray-800 rounded-lg shadow-[2px_2px_0px_#1f2937] bg-startsnap-white;
+    @apply md:border-2 md:shadow-[3px_3px_0px_#1f2937];
+  }
+
+  .startsnap-form-input {
+    @apply border border-solid border-gray-800 rounded-lg font-['Roboto',sans-serif] text-base;
+    @apply focus:outline-none focus:ring-2 focus:ring-startsnap-french-rose focus:border-startsnap-french-rose;
+    @apply md:border-2;
+  }
+}
+
+/* ============================================
+ * 🔥 PERFORMANCE OPTIMIZATIONS
+ * GPU acceleration where it matters
+ * ============================================ */
+
+@media (max-width: 768px) {
+  /* GPU acceleration for smooth animations */
+  .startsnap-button,
+  .startsnap-card,
+  .startsnap-gallery-item {
+    transform: translateZ(0);
+    will-change: transform;
+  }
 }

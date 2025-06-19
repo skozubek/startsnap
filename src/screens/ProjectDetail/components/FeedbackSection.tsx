@@ -367,7 +367,7 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
         feedbackEntries.map((feedback) => (
           <div key={feedback.id} className="mb-6">
             {editingFeedback && editingFeedback.id === feedback.id ? (
-              <Card className="mb-6 p-4 border-2 border-gray-800 rounded-lg shadow-[3px_3px_0px_#1f2937] bg-startsnap-white">
+              <Card className="mb-6 p-4 border border-gray-800 rounded-lg shadow-[2px_2px_0px_#1f2937] bg-startsnap-white md:border-2 md:shadow-[3px_3px_0px_#1f2937]">
                 <CardContent className="p-0">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-start">
@@ -429,7 +429,7 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                   </div>
                   <Textarea
                     placeholder="Edit your feedback..."
-                    className="border-2 border-solid border-gray-800 rounded-lg p-3.5 min-h-[100px] font-['Roboto',Helvetica] text-startsnap-river-bed mb-3 w-full text-base"
+                    className="border border-solid border-gray-800 rounded-lg p-3.5 min-h-[100px] font-['Roboto',Helvetica] text-startsnap-river-bed mb-3 w-full text-base md:border-2"
                     value={inlineEditFeedbackContent}
                     onChange={(e) => setInlineEditFeedbackContent(e.target.value)}
                   />
@@ -563,7 +563,7 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                       <div className="flex-1">
                         <Textarea
                           placeholder={'Write your reply...'} // Placeholder for new reply
-                          className="border-2 border-solid border-gray-800 rounded-lg p-2 min-h-[80px] font-['Roboto',Helvetica] text-startsnap-river-bed text-sm mb-2"
+                          className="border border-solid border-gray-800 rounded-lg p-2 min-h-[80px] font-['Roboto',Helvetica] text-startsnap-river-bed text-sm mb-2 md:border-2"
                           value={replyContent} // This replyContent is for the NEW reply
                           onChange={(e) => {
                             setReplyContent(e.target.value);

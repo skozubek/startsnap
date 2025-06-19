@@ -251,7 +251,7 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
       </div>
 
       {isOwner && isAddingVibeLog && (
-        <Card className="mb-8 p-4 border-2 border-gray-800 rounded-lg shadow-[3px_3px_0px_#1f2937] bg-startsnap-white">
+        <Card className="mb-8 p-4 border border-gray-800 rounded-lg shadow-[2px_2px_0px_#1f2937] bg-startsnap-white md:border-2 md:shadow-[3px_3px_0px_#1f2937]">
           <CardContent className="p-0">
             <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-xl mb-3">
               Add New Vibe Log Entry
@@ -294,7 +294,7 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
           const iconData = getVibeLogDisplay(logType);
           if (isOwner && editingVibeLogInline && editingVibeLogInline.id === entry.id && currentEditVibeLogData) {
             return (
-              <Card key={`${entry.id}-edit`} className="mb-8 p-4 border-2 border-gray-800 rounded-lg shadow-[3px_3px_0px_#1f2937] bg-startsnap-white">
+              <Card key={`${entry.id}-edit`} className="mb-8 p-4 border border-gray-800 rounded-lg shadow-[2px_2px_0px_#1f2937] bg-startsnap-white md:border-2 md:shadow-[3px_3px_0px_#1f2937]">
                 <CardContent className="p-0">
                   <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-xl mb-3">
                     Edit Vibe Log: <span className="font-normal">{entry.title}</span>

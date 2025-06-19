@@ -114,12 +114,12 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
   // Check if this project is featured by our scout account
   const isScouted = creatorName === 'VibeScout';
 
-  const cardContent = (
-    <Card className="h-full bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937] hover:opacity-90 transition-opacity duration-200">
+    const cardContent = (
+    <Card className="h-full bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] active:opacity-85 active:scale-[0.98] transition-all duration-150 md:shadow-[5px_5px_0px_#1f2937] md:hover:opacity-90 md:duration-200">
       <CardContent className="p-0 h-full flex flex-col">
         {/* Category Header with optional screenshot background */}
         <div
-          className={`${thumbnailUrl ? 'relative min-h-[250px]' : categoryDisplay.bgColor} px-6 ${thumbnailUrl ? 'pt-6 pb-6' : 'py-4'} border-b-2 border-gray-800 relative ${thumbnailUrl ? 'flex flex-col' : 'flex items-center'}`}
+          className={`${thumbnailUrl ? 'relative' : categoryDisplay.bgColor} ${thumbnailUrl ? 'min-h-[200px] md:min-h-[250px] px-4 py-4 md:px-6 md:pt-6 md:pb-6' : 'px-4 py-4 md:px-6'} border-b-2 border-gray-800 relative ${thumbnailUrl ? 'flex flex-col' : 'flex items-center'}`}
           style={thumbnailUrl ? {
             backgroundImage: `url(${thumbnailUrl})`,
             backgroundSize: 'cover',
@@ -153,7 +153,7 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
         </div>
 
         {/* Project Content */}
-        <div className="p-6 flex-1 flex flex-col">
+        <div className="p-4 md:p-6 flex-1 flex flex-col">
           <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-xl leading-tight mb-3 line-clamp-2">
             {startsnap.name}
           </h3>

@@ -1,13 +1,24 @@
-/* Toast styling to match StartSnap neobrutalist design */
+/* Toast styling to match StartSnap neobrutalist design - Mobile-first responsive */
 .startsnap-toast {
   font-family: 'Roboto', Helvetica, sans-serif !important;
   font-weight: 500 !important;
-  border: 2px solid #1f2937 !important;
-  border-radius: 8px !important;
-  box-shadow: 3px 3px 0px #1f2937 !important;
-  padding: 12px 32px 12px 16px !important; /* Extra right padding for close button */
-  min-height: 60px !important;
+  border: 1px solid #1f2937 !important;
+  border-radius: 6px !important;
+  box-shadow: 2px 2px 0px #1f2937 !important;
+  padding: 8px 24px 8px 12px !important; /* Extra right padding for close button */
+  min-height: 44px !important;
   position: relative !important;
+}
+
+/* Desktop enhancement */
+@media (min-width: 768px) {
+  .startsnap-toast {
+    border: 2px solid #1f2937 !important;
+    border-radius: 8px !important;
+    box-shadow: 3px 3px 0px #1f2937 !important;
+    padding: 12px 32px 12px 16px !important;
+    min-height: 60px !important;
+  }
 }
 
 /* Success toast */
@@ -45,26 +56,39 @@
   border-color: #1f2937 !important;
 }
 
-/* Toast title styling */
+/* Toast title styling - Mobile-first responsive */
 [data-sonner-toast] [data-title] {
   font-family: 'Space Grotesk', Helvetica, sans-serif !important;
   font-weight: 700 !important;
-  font-size: 14px !important;
-  line-height: 1.4 !important;
-  margin-bottom: 2px !important;
+  font-size: 13px !important;
+  line-height: 1.3 !important;
+  margin-bottom: 1px !important;
 }
 
-/* Toast description styling */
+/* Toast description styling - Mobile-first responsive */
 [data-sonner-toast] [data-description] {
   font-family: 'Roboto', Helvetica, sans-serif !important;
   font-weight: 400 !important;
-  font-size: 12px !important;
-  line-height: 1.3 !important;
+  font-size: 11px !important;
+  line-height: 1.2 !important;
   opacity: 0.9 !important;
 }
 
-/* Close button styling - positioned in upper right with better visibility */
-/* Target Sonner's actual close button structure */
+/* Desktop enhancement */
+@media (min-width: 768px) {
+  [data-sonner-toast] [data-title] {
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+    margin-bottom: 2px !important;
+  }
+
+  [data-sonner-toast] [data-description] {
+    font-size: 12px !important;
+    line-height: 1.3 !important;
+  }
+}
+
+/* Close button styling - Mobile-first responsive - PERFECTLY CENTERED */
 .startsnap-close-button,
 [data-sonner-toast] button[data-close-button],
 [data-sonner-toast] [data-close-button],
@@ -74,17 +98,18 @@
 [data-sonner-toast] [data-dismiss],
 button[data-sonner-close] {
   position: absolute !important;
-  top: 12px !important;
-  right: 12px !important;
+  top: 50% !important;
+  right: 8px !important;
   left: auto !important;
+  transform: translateY(-50%) !important;
   background-color: rgba(255, 255, 255, 0.15) !important;
   border: 1px solid rgba(255, 255, 255, 0.3) !important;
   border-radius: 50% !important;
   color: rgba(255, 255, 255, 0.9) !important;
   font-weight: 600 !important;
-  font-size: 14px !important;
-  width: 20px !important;
-  height: 20px !important;
+  font-size: 12px !important;
+  width: 18px !important;
+  height: 18px !important;
   padding: 0 !important;
   margin: 0 !important;
   display: flex !important;
@@ -94,6 +119,25 @@ button[data-sonner-close] {
   cursor: pointer !important;
   transition: opacity 0.2s ease !important;
   z-index: 10 !important;
+}
+
+/* Desktop enhancement - PERFECTLY CENTERED */
+@media (min-width: 768px) {
+  .startsnap-close-button,
+  [data-sonner-toast] button[data-close-button],
+  [data-sonner-toast] [data-close-button],
+  [data-sonner-toaster] [data-close-button],
+  .sonner-toast button[data-close-button],
+  [data-sonner-toast] button:last-child,
+  [data-sonner-toast] [data-dismiss],
+  button[data-sonner-close] {
+    top: 50% !important;
+    right: 12px !important;
+    transform: translateY(-50%) !important;
+    font-size: 14px !important;
+    width: 20px !important;
+    height: 20px !important;
+  }
 }
 
 /* Simple opacity change on hover - no scaling or complex animations */

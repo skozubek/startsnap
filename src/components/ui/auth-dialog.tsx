@@ -402,26 +402,14 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: Au
             </div>
           )}
 
-          <div className="flex gap-4 pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClose}
-              className="flex-1 startsnap-button bg-gray-200 text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
-              tabIndex={0}
-              disabled={loading || twitterLoading}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              disabled={loading || twitterLoading}
-              className="flex-1 startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
-              tabIndex={0}
-            >
-              {loading ? (mode === 'login' ? 'Logging In...' : 'Signing Up...') : (mode === 'login' ? 'Log In' : 'Sign Up')}
-            </Button>
-          </div>
+          <Button
+            type="submit"
+            disabled={loading || twitterLoading}
+            className="w-full startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] py-3"
+            tabIndex={0}
+          >
+            {loading ? (mode === 'login' ? 'Logging In...' : 'Signing Up...') : (mode === 'login' ? 'Log In' : 'Sign Up')}
+          </Button>
 
           <div className="text-center text-startsnap-french-rose hover:underline cursor-pointer mt-6">
             <span onClick={toggleMode} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && toggleMode()}>

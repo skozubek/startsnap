@@ -131,7 +131,7 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
             return (
               <div
                 key={index}
-                className="relative group cursor-pointer overflow-hidden rounded-lg border-2 border-gray-800 bg-white shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_#1f2937] transition-all duration-200"
+                className="startsnap-gallery-item"
                 onClick={() => openLightbox(index)}
               >
                 {/* Simplified image container */}
@@ -139,7 +139,7 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
                   <img
                     src={imageUrl}
                     alt={`Screenshot ${index + 1}`}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200 md:duration-300"
                     loading="lazy"
                     onError={(e) => {
                       // Set fallback image
@@ -149,8 +149,8 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
                   />
 
                   {/* Simple hover overlay */}
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200 flex items-center justify-center">
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-white/20 backdrop-blur-sm rounded-full p-3 border border-white/30">
+                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 group-active:bg-opacity-30 transition-all duration-200 flex items-center justify-center">
+                    <div className="opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity duration-200 bg-white/20 backdrop-blur-sm rounded-full p-3 border border-white/30">
                       <span className="material-icons text-white text-2xl">
                         zoom_in
                       </span>

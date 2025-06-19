@@ -1,6 +1,6 @@
 /**
  * src/components/ui/vibe-log-entry.tsx
- * 
+ *
  * @description VibeLogEntry component for creating and editing vibe log entries.
  * Provides form fields for title, content, and type selection with support for
  * both single-option and multi-option type selection modes.
@@ -96,7 +96,7 @@ export const VibeLogEntry = ({
         </Label>
         {showAllTypes ? (
           <Select value={type} onValueChange={onTypeChange}>
-            <SelectTrigger className="w-full border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-base">
+            <SelectTrigger className="w-full border border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-base md:border-2">
               <SelectValue placeholder="Select entry type" />
             </SelectTrigger>
             <SelectContent>
@@ -111,7 +111,7 @@ export const VibeLogEntry = ({
             </SelectContent>
           </Select>
         ) : (
-          <div className="w-full border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] bg-startsnap-athens-gray flex items-center">
+          <div className="w-full border border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] bg-startsnap-athens-gray flex items-center md:border-2">
             <div className="flex items-center text-startsnap-ebony-clay">
               {(() => {
                 const displayData = getVibeLogDisplay(singleOptionType);
@@ -135,7 +135,7 @@ export const VibeLogEntry = ({
           value={title}
           onChange={(e) => onTitleChange(e.target.value)}
           placeholder="Give your entry a title"
-          className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky text-base"
+          className="border border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky text-base md:border-2"
         />
       </div>
 
@@ -162,7 +162,7 @@ export const VibeLogEntry = ({
           value={content}
           onChange={(e) => onContentChange(e.target.value)}
           placeholder={placeholderText}
-          className="border-2 border-solid border-gray-800 rounded-lg p-3.5 min-h-[120px] font-['Roboto',Helvetica] text-startsnap-pale-sky text-base"
+          className="border border-solid border-gray-800 rounded-lg p-3.5 min-h-[120px] font-['Roboto',Helvetica] text-startsnap-pale-sky text-base md:border-2"
         />
         <p className="text-xs text-gray-500 mt-1">Markdown formatting is supported.</p>
       </div>
