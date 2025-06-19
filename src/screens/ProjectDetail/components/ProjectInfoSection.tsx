@@ -78,7 +78,7 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
 
       <div className="bg-white px-8 py-6 border-b-2 border-gray-800">
         <div className="flex justify-between items-center gap-4 mb-4">
-                      <h1 className="text-startsnap-oxford-blue font-[var(--startsnap-semantic-heading-3-font-family)] font-black tracking-tight leading-tight flex-1 text-4xl lg:text-5xl">
+          <h1 className="text-startsnap-oxford-blue font-[var(--startsnap-semantic-heading-3-font-family)] font-black tracking-tight leading-tight flex-1 text-3xl md:text-4xl lg:text-5xl">
             {startsnap.name}
           </h1>
           <div className="flex items-center gap-3 shrink-0">
@@ -120,22 +120,27 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
               <Button
                 onClick={onSupportToggle}
                 disabled={isSupportActionLoading}
-                className={`startsnap-button font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-1.5 px-3 py-1.5 text-sm bg-startsnap-french-rose text-startsnap-white hover:bg-startsnap-french-rose/90`}
+                className={`startsnap-button font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-1.5 bg-startsnap-french-rose text-startsnap-white hover:bg-startsnap-french-rose/90 min-w-0 flex-shrink-0 text-sm
+                  px-3 py-2 md:px-4 md:py-2`}
+                aria-label={isSupportedByCurrentUser ? 'Unsupport this project' : 'Support this project'}
               >
-                <span className="material-icons text-lg">
+                <span className="material-icons text-lg flex-shrink-0">
                   {isSupportedByCurrentUser ? 'favorite' : 'favorite_border'}
                 </span>
-                {isSupportActionLoading
-                  ? 'Processing...'
-                  : isSupportedByCurrentUser
-                  ? 'Supported ✔'
-                  : 'Support Project'}
+                {/* Show text only on medium screens and up */}
+                <span className="hidden md:inline truncate">
+                  {isSupportActionLoading
+                    ? 'Processing...'
+                    : isSupportedByCurrentUser
+                    ? 'Supported ✔'
+                    : 'Support Project'}
+                </span>
               </Button>
             )}
             {/* Always display support count with heart icon and rose color */}
-            <div className="flex items-center gap-1 text-sm text-startsnap-french-rose">
+            <div className="flex items-center gap-1 text-sm text-startsnap-french-rose flex-shrink-0">
               <span className="material-icons text-lg">favorite</span>
-              {currentSupportCount}
+              <span className="font-medium">{currentSupportCount}</span>
             </div>
           </div>
         </div>
