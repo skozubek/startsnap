@@ -22,7 +22,6 @@ export const ScrollToTop = (): null => {
       });
     } catch (e) {
       // In some environments (like Jest/JSDOM), these properties might not be available or writable.
-      // console.warn('Scroll to top is not fully available in this environment.');
     }
   }, [pathname]);
 

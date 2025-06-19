@@ -460,9 +460,14 @@
 
 
 /* ============================================
- * 🎯 STANDARDIZED FORM SYSTEM - ONE TRUTH SOURCE
  * Clean, borderless mobile with neo-brutalist desktop
  * ============================================ */
+
+/* Responsive Card Pattern - Consolidates the most common mobile-first pattern */
+.startsnap-responsive-card {
+  @apply bg-transparent border-0 shadow-none rounded-none overflow-visible;
+  @apply md:bg-startsnap-white md:rounded-xl md:overflow-hidden md:border-[3px] md:border-solid md:border-gray-800 md:shadow-[5px_5px_0px_#1f2937];
+}
 
 /* Form Cards - Clean Container System */
 .startsnap-form-card {

@@ -46,10 +46,6 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: Au
       setEmailError(null);
       setPasswordError(null);
 
-      // Debug Supabase configuration
-      console.log('🔧 Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
-      console.log('🔑 Supabase Anon Key (first 10 chars):', import.meta.env.VITE_SUPABASE_ANON_KEY?.substring(0, 10) + '...');
-
       // Delay focus slightly to ensure input is ready after potential re-renders
       requestAnimationFrame(() => {
         emailInputRef.current?.focus();
@@ -149,12 +145,6 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: Au
    */
   const handleTwitterLogin = async () => {
     try {
-      console.log('🐦 Starting Twitter OAuth flow...');
-      console.log('🌐 Current origin:', window.location.origin);
-      console.log('📍 Current URL:', window.location.href);
-      console.log('⏰ Current time:', new Date().toISOString());
-      console.log('🔧 User agent:', navigator.userAgent);
-
       setTwitterLoading(true);
       setError(null);
 
@@ -162,10 +152,6 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: Au
       if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
         console.warn('⚠️ OAuth might fail: not in secure context');
       }
-
-      // Log current auth state before OAuth
-      const { data: currentSession } = await supabase.auth.getSession();
-      console.log('📝 Current session before OAuth:', currentSession);
 
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'twitter',
@@ -175,17 +161,8 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: Au
         }
       });
 
-      console.log('📤 OAuth response data:', data);
-      console.log('❌ OAuth error:', error);
-
       if (error) {
         console.error('💥 OAuth initiation failed:', error);
-        console.error('📋 Error details:', {
-          code: error.code,
-          message: error.message,
-          status: error.status,
-          details: (error as any).details
-        });
 
         // Provide more specific error messages based on error type
         if (error.message.includes('redirect_uri')) {
@@ -203,11 +180,7 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: Au
       }
 
       if (data?.url) {
-        console.log('🔗 OAuth URL received:', data.url);
-        console.log('🚀 Redirecting to Twitter...');
-
-        // Log the redirect for debugging
-        console.log('🔄 About to redirect to:', data.url);
+        // The redirect will happen automatically
       } else {
         console.warn('⚠️ No URL returned from OAuth');
         setError('OAuth initialization failed: No redirect URL received');
@@ -218,8 +191,6 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: Au
       // The auth state change listener will handle profile extraction
     } catch (error: any) {
       console.error('💥 Error logging in with Twitter:', error);
-      console.error('📋 Full error object:', JSON.stringify(error, null, 2));
-      console.error('🕐 Error timestamp:', new Date().toISOString());
 
       // Enhanced error reporting
       const errorMessage = error.message || 'An error occurred during Twitter login';
