@@ -37,22 +37,7 @@ export const HeroSection = (): JSX.Element => {
     <div className="w-full bg-[--startsnap-beige]">
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 lg:py-24 flex flex-col md:flex-row items-center">       
         <div className="w-full md:w-[60%] md:pr-8 lg:pr-16 mb-8 md:mb-0 text-center md:text-left">
-           {/* Bolt.new Badge - Fixed positioning with responsive behavior */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10">
-        <a 
-          href="https://bolt.new" 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          className="block transition-all duration-300 hover:scale-110 bolt-badge"
-        >
-          <img 
-            src="https://storage.bolt.army/white_circle_360x360.png" 
-            alt="Built with Bolt.new badge" 
-            className="w-24 h-24 md:w-32 md:h-32 rounded-full shadow-lg bolt-badge-intro"
-            onAnimationEnd={(e) => e.currentTarget.classList.add('animated')}
-          />
-        </a>
-      </div>
+          
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-startsnap-ebony-clay mb-4 sm:mb-6 font-['Space_Grotesk',Helvetica] leading-tight">
             We're Vibe Coders,<br />
             We Build <span ref={typedRef}></span>
@@ -71,6 +56,22 @@ export const HeroSection = (): JSX.Element => {
             className="w-full h-auto"
           />
         </div>
+         {/* Bolt.new Badge - Fixed positioning with responsive behavior */}
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10">
+        <a 
+          href="https://bolt.new" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="block transition-all duration-300 hover:scale-110 bolt-badge"
+        >
+          <img 
+            src="https://storage.bolt.army/white_circle_360x360.png" 
+            alt="Built with Bolt.new badge" 
+            className="w-24 h-24 md:w-32 md:h-32 rounded-full shadow-lg bolt-badge-intro"
+            onAnimationEnd={(e) => e.currentTarget.classList.add('animated')}
+          />
+        </a>
+      </div>
       </div>
     </div>
   );
