@@ -173,7 +173,7 @@ const FrameContent = (): JSX.Element => {
       <Subheader />
 
       {/* Bolt.new Badge - Fixed positioning with responsive behavior */}
-      <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 md:top-8 md:right-8 md:left-auto md:transform-none">
+      <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-40 md:top-24 md:right-8 md:left-auto md:transform-none">
         <a 
           href="https://bolt.new/?rid=os72mi" 
           target="_blank" 
