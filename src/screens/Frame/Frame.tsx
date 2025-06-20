@@ -175,7 +175,7 @@ const FrameContent = (): JSX.Element => {
       {/* Bolt.new Badge - Fixed positioning with responsive behavior */}
       <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-40 md:top-24 md:right-8 md:left-auto md:transform-none">
         <a 
-          href="https://bolt.new/?rid=os72mi" 
+          href="https://bolt.new" 
           target="_blank" 
           rel="noopener noreferrer" 
           className="block transition-all duration-300 hover:shadow-2xl bolt-badge"
