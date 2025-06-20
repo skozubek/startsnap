@@ -57,7 +57,7 @@ export const HeroSection = (): JSX.Element => {
           />
         </div>
          {/* Bolt.new Badge - Fixed positioning with responsive behavior */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10">
+      <div className="relative bottom-4 left-1/2 transform -translate-x-1/2 z-10">
         <a 
           href="https://bolt.new" 
           target="_blank" 
