@@ -35,7 +35,8 @@ export const HeroSection = (): JSX.Element => {
 
   return (
     <div className="w-full bg-[--startsnap-beige]">
-       {/* Bolt.new Badge - Fixed positioning with responsive behavior */}
+      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 lg:py-24 flex flex-col md:flex-row items-center">
+        {/* Bolt.new Badge - Fixed positioning with responsive behavior */}
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10">
         <a 
           href="https://bolt.new" 
@@ -51,7 +52,6 @@ export const HeroSection = (): JSX.Element => {
           />
         </a>
       </div>
-      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 lg:py-24 flex flex-col md:flex-row items-center">
         <div className="w-full md:w-[60%] md:pr-8 lg:pr-16 mb-8 md:mb-0 text-center md:text-left">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-startsnap-ebony-clay mb-4 sm:mb-6 font-['Space_Grotesk',Helvetica] leading-tight">
             We're Vibe Coders,<br />
