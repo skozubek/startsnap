@@ -172,6 +172,23 @@ const FrameContent = (): JSX.Element => {
 
       <Subheader />
 
+      {/* Bolt.new Badge - Fixed positioning with responsive behavior */}
+      <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 md:top-8 md:right-8 md:left-auto md:transform-none">
+        <a 
+          href="https://bolt.new/?rid=os72mi" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="block transition-all duration-300 hover:shadow-2xl bolt-badge"
+        >
+          <img 
+            src="https://storage.bolt.army/white_circle_360x360.png" 
+            alt="Built with Bolt.new badge" 
+            className="w-16 h-16 md:w-20 md:h-20 rounded-full shadow-lg bolt-badge-intro"
+            onAnimationEnd={(e) => e.currentTarget.classList.add('animated')}
+          />
+        </a>
+      </div>
+
       <div className="flex flex-col w-full min-h-screen overflow-y-auto">
         <Routes>
           <Route path="/" element={<MainContentSection />} />
