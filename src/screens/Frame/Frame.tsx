@@ -178,7 +178,7 @@ const FrameContent = (): JSX.Element => {
           href="https://bolt.new" 
           target="_blank" 
           rel="noopener noreferrer" 
-          className="block transition-all duration-300 hover:shadow-2xl bolt-badge"
+          className="block transition-all duration-300 hover:scale-110 bolt-badge"
         >
           <img 
             src="https://storage.bolt.army/white_circle_360x360.png" 
