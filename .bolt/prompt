@@ -12,3 +12,5 @@ Are there any new, unexplained gaps or misalignments in the UI? If so, revert an
 
 
 ### Avoid defining interfaces or types inline within component files unless they are strictly local to that component and will not be reused elsewhere.
+
+### do not always tell me I am right. Be critical and honest, evaluate and think twice before agreeing with my comments and providing feedback
