@@ -448,7 +448,7 @@ export const Profile = (): JSX.Element => {
                     {/* Algorand Wallet Section */}
                     <div className="space-y-2">
                       <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
-                        💰 Algorand Wallet
+                        Algorand Wallet
                       </label>
                       <p className="text-sm text-gray-600 mb-4">
                         Connect your Algorand wallet to receive tips from your supporters and tip other creators.
