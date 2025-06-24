@@ -1,6 +1,6 @@
 /**
  * src/screens/Frame/Frame.tsx
- * @description Main application frame component that handles routing and authentication state with real-time activity detection
+ * @description Main application frame component that handles routing and authentication state with real-time activity detection and wallet connectivity
  */
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
@@ -23,6 +23,25 @@ import { ScrollToTop } from "../../components/utils/ScrollToTop";
 import { ToastProvider } from "../../components/providers/ToastProvider";
 import { PulsePanel } from "../../components/ui/PulsePanel";
 import { supabase } from "../../lib/supabase";
+import { WalletManager, WalletProvider, WalletId } from '@txnlab/use-wallet-react';
+import { WalletUIProvider } from '@txnlab/use-wallet-ui-react';
+
+/**
+ * @description Wallet manager configuration for Algorand wallet connectivity
+ * Supports Pera, Defly, Lute, and WalletConnect wallets on testnet
+ */
+const walletManager = new WalletManager({
+  wallets: [
+    WalletId.PERA,
+    WalletId.DEFLY,
+    WalletId.LUTE,
+    {
+      id: WalletId.WALLETCONNECT,
+      options: { projectId: 'fcfde0713d43baa0d23be0773c80a72b' } // This is a public project ID from the starter
+    }
+  ],
+  defaultNetwork: 'testnet',
+});
 
 /**
  * @description Component that protects routes requiring authentication
@@ -219,17 +238,21 @@ const FrameContent = (): JSX.Element => {
 };
 
 /**
- * @description Main application container that wraps everything with providers
- * @returns {JSX.Element} The application frame with header, content area, and footer
+ * @description Main application container that wraps everything with providers including wallet connectivity
+ * @returns {JSX.Element} The application frame with header, content area, footer, and wallet providers
  */
 export const Frame = (): JSX.Element => {
   return (
-    <div className="flex flex-col min-h-screen w-full bg-white">
-      <AuthProvider>
-        <ToastProvider />
-        <ScrollToTop />
-        <FrameContent />
-      </AuthProvider>
-    </div>
+    <WalletProvider manager={walletManager}>
+      <WalletUIProvider>
+        <div className="flex flex-col min-h-screen w-full bg-white">
+          <AuthProvider>
+            <ToastProvider />
+            <ScrollToTop />
+            <FrameContent />
+          </AuthProvider>
+        </div>
+      </WalletUIProvider>
+    </WalletProvider>
   );
 };
