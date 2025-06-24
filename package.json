@@ -52,9 +52,6 @@
     "tailwindcss": "3.4.16",
     "vite": "6.0.4"
   },
-  "overrides": {
-    "algosdk": "^3.0.0"
-  },
   "alias": {
     "@/*": "./src/components/ui/$1"
   }
