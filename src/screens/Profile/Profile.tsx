@@ -443,9 +443,10 @@ export const Profile = (): JSX.Element => {
                     <div className="flex justify-end pt-4">
                       <Button
                         type="button"
+                        variant="primary"
+                        size="lg"
                         onClick={updateProfile}
                         disabled={updating}
-                        className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
                       >
                         {updating ? 'Saving...' : 'Save Profile'}
                       </Button>
@@ -497,10 +498,7 @@ export const Profile = (): JSX.Element => {
             ) : (
               <div className="text-center py-20 bg-startsnap-candlelight/20 rounded-lg border-2 border-dashed border-gray-300">
                 <p className="text-lg text-startsnap-pale-sky mb-4">You haven't created any StartSnaps yet!</p>
-                <Button
-                  className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
-                  asChild
-                >
+                <Button variant="primary" size="lg" asChild>
                   <Link to="/create">Create Your First StartSnap</Link>
                 </Button>
               </div>

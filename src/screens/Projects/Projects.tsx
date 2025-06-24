@@ -61,11 +61,11 @@ export const Projects = (): JSX.Element => {
   const fetchPaginatedStartSnaps = useCallback(async (currentDiscoveryState: PaginatedProjectDiscoveryState) => {
     try {
       setLoading(true);
-      
+
       // Calculate range for pagination (zero-based indices)
       const startIndex = (currentDiscoveryState.page - 1) * currentDiscoveryState.pageSize;
       const endIndex = startIndex + currentDiscoveryState.pageSize - 1;
-      
+
       let query = supabase
         .from('startsnaps')
         .select('*, support_count, screenshot_urls', { count: 'exact' })
@@ -252,14 +252,15 @@ export const Projects = (): JSX.Element => {
                   );
                 })}
               </div>
-              
+
               {/* Load More Button */}
               {hasMoreProjects && (
                 <div className="text-center mt-12">
                   <Button
                     onClick={handleLoadMore}
                     disabled={loading && discoveryState.page > 1}
-                    className="startsnap-button bg-startsnap-persian-blue text-startsnap-white font-['Roboto',Helvetica] font-bold text-lg px-8 py-4 rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+                    variant="secondary"
+                    size="lg"
                   >
                     {loading && discoveryState.page > 1 ? 'Loading More...' : 'Load More Projects'}
                   </Button>
@@ -271,7 +272,9 @@ export const Projects = (): JSX.Element => {
               <p className="text-xl text-startsnap-pale-sky">No projects match your criteria. Try adjusting your search or filters!</p>
               <Button
                 onClick={() => setDiscoveryState(DEFAULT_DISCOVERY_STATE)}
-                className="startsnap-button mt-4 bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+                variant="primary"
+                size="lg"
+                className="mt-4"
               >
                 Clear Search & Filters
               </Button>
@@ -279,7 +282,7 @@ export const Projects = (): JSX.Element => {
           ) : (
             <div className="text-center py-20 bg-startsnap-candlelight/20 rounded-lg border-2 border-dashed border-gray-300">
               <p className="text-xl text-startsnap-pale-sky">No projects found yet. Why not be the first to add one?</p>
-              <Button className="startsnap-button mt-4 bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]" asChild>
+              <Button variant="primary" size="lg" className="mt-4" asChild>
                 <Link to="/new">Create Your First StartSnap</Link>
               </Button>
             </div>

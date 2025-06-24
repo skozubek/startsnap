@@ -435,7 +435,8 @@ export const Profiles = (): JSX.Element => {
                     <Button
                       onClick={handleLoadMore}
                       disabled={loading && discoveryState.page > 1}
-                      className="startsnap-button bg-startsnap-persian-blue text-startsnap-white font-['Roboto',Helvetica] font-bold text-lg px-8 py-4 rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+                      variant="secondary"
+                      size="lg"
                     >
                       {loading && discoveryState.page > 1 ? 'Loading More...' : 'Load More Vibe Coders'}
                     </Button>
@@ -447,7 +448,9 @@ export const Profiles = (): JSX.Element => {
                 <p className="text-xl text-startsnap-pale-sky">No Vibe Coders match your criteria. Try adjusting your search or filters!</p>
                 <Button
                   onClick={() => setDiscoveryState(DEFAULT_DISCOVERY_STATE)}
-                  className="startsnap-button mt-4 bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+                  variant="primary"
+                  size="lg"
+                  className="mt-4"
                 >
                   Clear Search & Filters
                 </Button>

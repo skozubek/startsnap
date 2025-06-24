@@ -299,7 +299,9 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: Au
             type="button"
             onClick={handleTwitterLogin}
             disabled={twitterLoading || loading}
-            className="w-full startsnap-button bg-black text-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center justify-center gap-3 hover:bg-gray-800"
+            variant="primary"
+            size="lg"
+            className="w-full bg-black text-white hover:bg-gray-800 flex items-center justify-center gap-3"
           >
             {React.createElement(FaXTwitter as any, { size: 20 })}
             {twitterLoading ? 'Connecting...' : `${mode === 'login' ? 'Login' : 'Sign up'} with Twitter`}
@@ -376,7 +378,9 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: Au
           <Button
             type="submit"
             disabled={loading || twitterLoading}
-            className="w-full startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] py-3"
+            variant="primary"
+            size="lg"
+            className="w-full"
             tabIndex={0}
           >
             {loading ? (mode === 'login' ? 'Logging In...' : 'Signing Up...') : (mode === 'login' ? 'Log In' : 'Sign Up')}

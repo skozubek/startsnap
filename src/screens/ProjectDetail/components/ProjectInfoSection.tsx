@@ -120,8 +120,9 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
               <Button
                 onClick={onSupportToggle}
                 disabled={isSupportActionLoading}
-                className={`startsnap-button font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-1.5 bg-startsnap-french-rose text-startsnap-white hover:bg-startsnap-french-rose/90 min-w-0 flex-shrink-0 text-sm
-                  px-3 py-2 md:px-4 md:py-2`}
+                variant="primary"
+                size="sm"
+                className="min-w-0 flex-shrink-0 px-3 py-2 md:px-4 md:py-2"
                 aria-label={isSupportedByCurrentUser ? 'Unsupport this project' : 'Support this project'}
               >
                 <span className="material-icons text-lg flex-shrink-0">

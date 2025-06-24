@@ -70,8 +70,9 @@ export const FeaturedStartSnapsSection = ({
           </div>
           <div className="mt-12 text-center">
             <Button
+              variant="secondary"
               asChild
-              className="startsnap-button bg-startsnap-persian-blue text-startsnap-white font-['Roboto',Helvetica] font-bold text-lg px-8 py-4 rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+              className="text-lg px-8 py-4"
             >
               <Link to="/projects">See All</Link>
             </Button>
@@ -80,7 +81,7 @@ export const FeaturedStartSnapsSection = ({
       ) : (
         <div className="text-center py-20">
           <p className="text-xl text-startsnap-pale-sky">No projects match your criteria. Try adjusting your search or filters!</p>
-          <Button className="startsnap-button mt-4 bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]" asChild>
+          <Button variant="primary" className="mt-4" asChild>
             <Link to="/create">Create StartSnap</Link>
           </Button>
         </div>

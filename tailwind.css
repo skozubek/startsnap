@@ -97,6 +97,43 @@
   .bolt-badge-intro.animated {
     animation: none;
   }
+
+  /* Semantic Color Tokens */
+  .color-primary {
+    color: var(--color-primary);
+  }
+
+  .color-secondary {
+    color: var(--color-secondary);
+  }
+
+  .color-success {
+    color: var(--color-success);
+  }
+
+  .color-warning {
+    color: var(--color-warning);
+  }
+
+  .color-error {
+    color: var(--color-error);
+  }
+
+  .color-surface {
+    background-color: var(--color-surface);
+  }
+
+  .color-surface-alt {
+    background-color: var(--color-surface-alt);
+  }
+
+  .color-text-primary {
+    color: var(--color-text-primary);
+  }
+
+  .color-text-inverse {
+    color: var(--color-text-inverse);
+  }
 }
 
 @layer base {
@@ -235,6 +272,17 @@
     --startsnap-white-candlelight: rgba(255, 255, 255, 1);
     --startsnap-wisp-pink: rgba(243, 232, 255, 1);
     --startsnap-beige: #f9f5f2;
+
+    /* Semantic Color Tokens */
+    --color-primary: var(--startsnap-french-rose);
+    --color-secondary: var(--startsnap-persian-blue);
+    --color-success: var(--startsnap-mountain-meadow);
+    --color-warning: var(--startsnap-candlelight);
+    --color-error: #DC2626;
+    --color-surface: var(--startsnap-white);
+    --color-surface-alt: var(--startsnap-mischka);
+    --color-text-primary: var(--startsnap-oxford-blue);
+    --color-text-inverse: var(--startsnap-white);
   }
 
   .dark {
@@ -457,7 +505,46 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
+  /* Base Semantic Button */
+  .btn-base {
+    @apply inline-flex items-center justify-center gap-2 font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] tap-target touch-manipulation transition-all duration-150 active:scale-95 md:hover:shadow-[5px_5px_0px_#1f2937] md:duration-200;
+  }
 
+  .btn-primary {
+    @apply btn-base;
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  .btn-secondary {
+    @apply btn-base;
+    background-color: var(--color-secondary);
+    color: var(--color-text-inverse);
+  }
+
+  .btn-success {
+    @apply btn-base;
+    background-color: var(--color-success);
+    color: var(--color-text-inverse);
+  }
+
+  .btn-danger {
+    @apply btn-base;
+    background-color: var(--color-error);
+    color: var(--color-text-inverse);
+  }
+
+  .btn-warning {
+    @apply btn-base;
+    background-color: var(--color-warning);
+    color: var(--color-text-inverse);
+  }
+
+  .btn-ghost {
+    @apply btn-base border-transparent shadow-none;
+    background-color: transparent;
+    color: var(--color-text-primary);
+  }
 }
 
 /* ============================================
@@ -474,8 +561,6 @@
     will-change: transform;
   }
 }
-
-
 
 /* ============================================
  * Clean, borderless mobile with neo-brutalist desktop
@@ -525,39 +610,6 @@
  * 🎯 STANDARDIZED BUTTON SYSTEM
  * Fixed color inheritance, consistent behavior
  * ============================================ */
-
-/* Base Button - Foundation */
-.startsnap-mobile-btn {
-  @apply min-h-[44px] px-5 py-3 rounded-lg font-['Roboto',sans-serif] font-medium text-base;
-  @apply transition-all duration-200 touch-manipulation;
-  @apply active:scale-[0.98];
-  @apply focus:outline-none;
-}
-
-/* Primary Button - StartSnap Pink, NO COLOR CHANGES */
-.startsnap-mobile-btn-primary {
-  @apply startsnap-mobile-btn;
-  background-color: #ec4899 !important; /* startsnap-french-rose */
-  color: white !important;
-  @apply hover:opacity-90 active:opacity-95;
-  @apply md:startsnap-button md:border-2 md:border-gray-800 md:shadow-[3px_3px_0px_#1f2937] md:font-bold;
-}
-
-/* Secondary Button - Gray, NO COLOR CHANGES */
-.startsnap-mobile-btn-secondary {
-  @apply startsnap-mobile-btn;
-  background-color: #f3f4f6 !important; /* gray-100 */
-  color: #374151 !important; /* gray-700 */
-  @apply hover:opacity-90 active:opacity-95;
-  @apply md:bg-gray-200 md:text-startsnap-ebony-clay md:hover:bg-gray-300;
-  @apply md:startsnap-button md:border-2 md:border-gray-800 md:shadow-[2px_2px_0px_#1f2937] md:font-bold;
-}
-
-/* Small Button Variant */
-.startsnap-mobile-btn-small {
-  @apply min-h-[36px] px-4 py-2 text-sm rounded-lg;
-  @apply startsnap-mobile-btn;
-}
 
 /* Form Layout - Consistent Spacing */
 .startsnap-form-group {

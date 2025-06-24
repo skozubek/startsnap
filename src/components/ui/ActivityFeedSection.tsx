@@ -195,7 +195,8 @@ export const ActivityFeedSection: React.FC<ActivityFeedSectionProps> = ({
           <p className="text-red-600 mb-4">{error}</p>
           <Button
             onClick={handleRetry}
-            className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-lg px-8 py-4 rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+            variant="primary"
+            size="lg"
           >
             Try Again
           </Button>

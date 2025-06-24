@@ -64,9 +64,6 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   };
 
   const iconColor = type === 'danger' ? 'text-red-600' : 'text-yellow-600';
-  const confirmButtonStyle = type === 'danger'
-    ? 'startsnap-button bg-red-600 hover:bg-red-700 text-white font-[\'Roboto\',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]'
-    : 'startsnap-button bg-yellow-600 hover:bg-yellow-700 text-white font-[\'Roboto\',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]';
 
   return (
     <div
@@ -120,7 +117,9 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
         <Button
           onClick={onConfirm}
           disabled={isLoading}
-          className={`w-full ${confirmButtonStyle} py-3 text-base`}
+          variant={type === 'danger' ? 'danger' : 'warning'}
+          size="lg"
+          className="w-full"
         >
           {isLoading ? 'Deleting...' : confirmText}
         </Button>

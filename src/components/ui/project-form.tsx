@@ -562,16 +562,17 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
           <div className="startsnap-form-actions">
             <Button
               type="button"
-              variant="outline"
+              variant="secondary"
+              size="lg"
               onClick={onCancel}
-              className="startsnap-mobile-btn-secondary"
               disabled={isSubmitting}
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              className="startsnap-mobile-btn-primary"
+              variant="primary"
+              size="lg"
               disabled={isSubmitting}
             >
               {isSubmitting ? (mode === 'create' ? 'Creating...' : 'Updating...') : (mode === 'create' ? 'Create StartSnap' : 'Update StartSnap')}

@@ -148,7 +148,7 @@ export const VibeLogEntry = ({
             size="sm"
             onClick={handleAiFormat}
             disabled={isFormatting || !content.trim()}
-            className="startsnap-mobile-btn-small bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100 focus:ring-purple-500 md:startsnap-button md:bg-startsnap-wisp-pink md:text-startsnap-purple-heart md:font-bold md:border-2 md:border-solid md:border-gray-800 md:shadow-[2px_2px_0px_#1f2937]"
+            className="bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100 focus:ring-purple-500 md:bg-startsnap-wisp-pink md:text-startsnap-purple-heart md:font-bold md:border-2 md:border-solid md:border-gray-800 md:shadow-[2px_2px_0px_#1f2937]"
           >
             <span className={`material-icons text-sm md:text-base ${isFormatting ? 'animate-spin' : ''}`}>
               auto_awesome

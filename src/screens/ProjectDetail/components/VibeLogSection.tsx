@@ -241,7 +241,7 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
               setEditingVibeLogInline(null); // Close edit form if open
               setNewVibeLogData({ log_type: 'update', title: '', content: '' });
             }}
-            className="startsnap-mobile-btn-primary"
+            variant="primary"
             size="sm"
           >
             <span className="material-icons text-base mr-2">post_add</span>
@@ -267,18 +267,17 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
             />
             <div className="startsnap-form-actions">
               <Button
-                variant="outline"
+                variant="secondary"
                 onClick={() => {
                   setIsAddingVibeLog(false);
                   setNewVibeLogData({ log_type: 'update', title: '', content: '' });
                 }}
-                className="startsnap-mobile-btn-secondary"
               >
                 Cancel
               </Button>
               <Button
+                variant="primary"
                 onClick={handleVibeLogSubmit}
-                className="startsnap-mobile-btn-primary"
                 disabled={!newVibeLogData.title.trim() || !newVibeLogData.content.trim()}
               >
                 Submit Entry
@@ -310,18 +309,17 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
                   />
                   <div className="startsnap-form-actions">
                     <Button
-                      variant="outline"
+                      variant="secondary"
                       onClick={() => {
                         setEditingVibeLogInline(null);
                         setCurrentEditVibeLogData(null);
                       }}
-                      className="startsnap-mobile-btn-secondary"
                     >
                       Cancel
                     </Button>
                     <Button
+                      variant="primary"
                       onClick={handleUpdateVibeLog}
-                      className="startsnap-mobile-btn-primary"
                       disabled={!currentEditVibeLogData.title.trim() || !currentEditVibeLogData.content.trim()}
                     >
                       Save Changes

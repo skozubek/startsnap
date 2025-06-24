@@ -118,8 +118,9 @@ export const BuildInPublicManifestoSection = (): JSX.Element => {
 
           <div className="text-center">
             <Button
+              variant="primary"
               onClick={handleStartJourneyClick}
-              className="startsnap-button bg-startsnap-candlelight text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold text-lg rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] px-8 py-4"
+              className="text-startsnap-white text-lg px-8 py-4"
             >
               Start Your Journey
             </Button>
