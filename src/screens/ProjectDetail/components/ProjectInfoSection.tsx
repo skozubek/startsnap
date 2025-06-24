@@ -45,6 +45,7 @@ interface ProjectInfoSectionProps {
   isSupportActionLoading: boolean;
   onSupportToggle: () => Promise<void>;
   onDeleteProjectRequest: (name: string) => void; // Added onDeleteProjectRequest prop
+  onTipCreator: () => void; // Added onTipCreator prop for opening tipping dialog
 }
 
 /**
@@ -62,6 +63,7 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
   isSupportActionLoading,
   onSupportToggle,
   onDeleteProjectRequest, // Destructure the new prop
+  onTipCreator, // Destructure the new prop
 }) => {
   const categoryDisplay = getCategoryDisplay(startsnap.category);
   const isScouted = creator?.username === 'VibeScout';
@@ -117,26 +119,47 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : currentUser && (
-              <Button
-                onClick={onSupportToggle}
-                disabled={isSupportActionLoading}
-                variant="primary"
-                size="sm"
-                className="min-w-0 flex-shrink-0 px-3 py-2 md:px-4 md:py-2"
-                aria-label={isSupportedByCurrentUser ? 'Unsupport this project' : 'Support this project'}
-              >
-                <span className="material-icons text-lg flex-shrink-0">
-                  {isSupportedByCurrentUser ? 'favorite' : 'favorite_border'}
-                </span>
-                {/* Show text only on medium screens and up */}
-                <span className="hidden md:inline truncate">
-                  {isSupportActionLoading
-                    ? 'Processing...'
-                    : isSupportedByCurrentUser
-                    ? 'Supported ✔'
-                    : 'Support Project'}
-                </span>
-              </Button>
+              <>
+                {/* Tip Creator Button - Only show if creator has wallet address */}
+                {creator?.algorand_wallet_address && (
+                  <Button
+                    onClick={onTipCreator}
+                    variant="success"
+                    size="sm"
+                    className="min-w-0 flex-shrink-0 px-3 py-2 md:px-4 md:py-2"
+                    aria-label="Tip the creator with Algorand"
+                  >
+                    <span className="material-icons text-lg flex-shrink-0">
+                      volunteer_activism
+                    </span>
+                    {/* Show text only on medium screens and up */}
+                    <span className="hidden md:inline truncate">
+                      Tip Creator
+                    </span>
+                  </Button>
+                )}
+                {/* Support Project Button */}
+                <Button
+                  onClick={onSupportToggle}
+                  disabled={isSupportActionLoading}
+                  variant="primary"
+                  size="sm"
+                  className="min-w-0 flex-shrink-0 px-3 py-2 md:px-4 md:py-2"
+                  aria-label={isSupportedByCurrentUser ? 'Unsupport this project' : 'Support this project'}
+                >
+                  <span className="material-icons text-lg flex-shrink-0">
+                    {isSupportedByCurrentUser ? 'favorite' : 'favorite_border'}
+                  </span>
+                  {/* Show text only on medium screens and up */}
+                  <span className="hidden md:inline truncate">
+                    {isSupportActionLoading
+                      ? 'Processing...'
+                      : isSupportedByCurrentUser
+                      ? 'Supported ✔'
+                      : 'Support Project'}
+                  </span>
+                </Button>
+              </>
             )}
             {/* Always display support count with heart icon and rose color */}
             <div className="flex items-center gap-1 text-sm text-startsnap-french-rose flex-shrink-0">

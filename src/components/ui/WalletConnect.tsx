@@ -12,6 +12,8 @@ import { toast } from 'sonner';
 interface WalletConnectProps {
   onWalletConnected?: (address: string) => void;
   compact?: boolean;
+  buttonText?: string;
+  mode?: 'collection' | 'payment';
 }
 
 /**
@@ -19,11 +21,15 @@ interface WalletConnectProps {
  * @param {WalletConnectProps} props - Component props
  * @param {Function} [props.onWalletConnected] - Optional callback when wallet connects
  * @param {boolean} [props.compact] - Whether to show compact version
+ * @param {string} [props.buttonText] - Custom text for the connect button
+ * @param {'collection' | 'payment'} [props.mode] - Mode for different use cases (collection wallet vs payment)
  * @returns {JSX.Element} Streamlined wallet connection UI with single source of truth
  */
 export const WalletConnect: React.FC<WalletConnectProps> = ({
   onWalletConnected,
-  compact = false
+  compact = false,
+  buttonText,
+  mode = 'collection'
 }): JSX.Element => {
   const { wallets, activeAccount, activeAddress } = useWallet();
   const [isConnecting, setIsConnecting] = useState(false);
@@ -49,13 +55,15 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
       setIsConnecting(true);
       const peraWallet = wallets.find(w => w.id === WalletId.PERA);
 
+
+
       if (!peraWallet) {
         toast.error('Pera Wallet connector not found');
         setIsConnecting(false);
         return;
       }
 
-      // Check if wallet is already connected
+            // Check if wallet is already connected
       if (peraWallet.isConnected && peraWallet.accounts && peraWallet.accounts.length > 0) {
         // Just set it as active and trigger callback
         peraWallet.setActive();
@@ -66,14 +74,17 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
       }
 
       // Connect to wallet if not already connected
+
+
       await peraWallet.connect();
+
       peraWallet.setActive();
 
       // Set flag to detect connection via useEffect
       setJustConnected(true);
 
     } catch (error: any) {
-      console.error('Wallet connection error:', error);
+      console.error('❌ Wallet connection error:', error);
       setIsConnecting(false);
 
       // Handle specific error cases
@@ -82,10 +93,11 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
         setJustConnected(true);
       } else if (error?.message?.includes('closed') || error?.message?.includes('cancelled')) {
         // User cancelled - don't show error toast
-        console.log('User cancelled wallet connection');
+        toast.dismiss('wallet-connect');
       } else {
         // Show error for other cases
         toast.error('Connection failed', {
+          id: 'wallet-connect',
           description: error?.message || 'Unknown error occurred'
         });
       }
@@ -134,23 +146,27 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
 
   // Show wallet connection interface - just the essential section
   return (
-    <div className="border border-gray-200 rounded-lg p-6 bg-gray-50 hover:bg-gray-100 transition-colors">
-      <div className="flex items-center gap-4 mb-4">
-        <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-sm border border-gray-200">
+    <div className="p-6 bg-gray-50 hover:bg-gray-100 transition-colors rounded-lg relative">
+      {/* Pera logo on separate line, wider */}
+      <div className="flex justify-center mb-4">
+        <div className="w-32 h-12 bg-white rounded-lg flex items-center justify-center shadow-sm">
           <img
             src="/pera-logo-black.png"
             alt="Pera Wallet"
-            className="w-8 h-8 object-contain"
+            className="w-20 h-8 object-contain"
           />
-        </div>
-        <div>
-          <h4 className="font-semibold text-gray-900">Pera Wallet</h4>
-          <p className="text-sm text-gray-600">Official Algorand Mobile Wallet</p>
         </div>
       </div>
 
+      <p className="text-sm text-gray-600 text-center mb-4">
+        Official Algorand Mobile Wallet
+      </p>
+
       <p className="text-sm text-gray-700 mb-4">
-        Connect your Pera mobile wallet by scanning the QR code that appears.
+        {mode === 'collection'
+          ? 'Connect your Pera mobile wallet by scanning the QR code that appears. This will be your tip collection wallet.'
+          : 'Connect your Pera mobile wallet by scanning the QR code that appears to send your tip.'
+        }
       </p>
 
       <Button
@@ -160,11 +176,11 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
         disabled={isConnecting}
         className="w-full"
       >
-        {isConnecting ? 'Connecting...' : 'Connect Pera Wallet'}
+        {isConnecting ? 'Connecting...' : (buttonText || 'Connect Pera Wallet')}
       </Button>
 
       {isConnecting && (
-        <div className="text-xs text-gray-600 mt-3 text-center bg-white p-2 rounded border border-gray-200">
+        <div className="text-xs text-gray-600 mt-3 text-center bg-white p-2 rounded">
           <p>📱 Open your Pera Wallet app and approve the connection</p>
         </div>
       )}

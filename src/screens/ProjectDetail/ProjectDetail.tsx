@@ -14,6 +14,7 @@ import { VibeLogSection } from "./components/VibeLogSection";
 import { FeedbackSection } from "./components/FeedbackSection";
 import { ScreenshotGallery } from "./components/ScreenshotGallery";
 import { ConfirmationDialog } from "../../components/ui/confirmation-dialog";
+import { TippingDialog } from "../../components/ui/tipping-dialog";
 import type { User } from '@supabase/supabase-js';
 import type { StartSnapProject } from "../../types/startsnap"; // Import centralized type
 import type { UserProfileData } from "../../types/user"; // Import UserProfileData
@@ -44,6 +45,7 @@ export const ProjectDetail = (): JSX.Element => {
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [projectToDeleteName, setProjectToDeleteName] = useState('');
   const [isDeletingProject, setIsDeletingProject] = useState(false);
+  const [isTippingDialogOpen, setIsTippingDialogOpen] = useState(false);
 
   const VIBE_LOG_PAGE_SIZE = 3; // Number of vibe logs to show per page
   const [visibleVibeLogCount, setVisibleVibeLogCount] = useState(VIBE_LOG_PAGE_SIZE);
@@ -344,6 +346,10 @@ export const ProjectDetail = (): JSX.Element => {
     setIsDeleteConfirmOpen(true);
   };
 
+  const handleTipCreator = () => {
+    setIsTippingDialogOpen(true);
+  };
+
   const handleConfirmDelete = async () => {
     if (!startsnap || !startsnap.id) {
       console.error("Project data or ID is missing, cannot delete.");
@@ -425,6 +431,7 @@ export const ProjectDetail = (): JSX.Element => {
                   isSupportActionLoading={isSupportActionLoading}
                   onSupportToggle={handleSupportToggle}
                   onDeleteProjectRequest={openDeleteConfirmation}
+                  onTipCreator={handleTipCreator}
                 />
                 <ScreenshotGallery urls={startsnap.screenshot_urls || []} />
               </CardContent>
@@ -506,6 +513,13 @@ export const ProjectDetail = (): JSX.Element => {
         confirmText="Delete Project"
         isLoading={isDeletingProject}
         type="danger"
+      />
+
+      <TippingDialog
+        isOpen={isTippingDialogOpen}
+        onClose={() => setIsTippingDialogOpen(false)}
+        creatorAddress={creator?.algorand_wallet_address || ''}
+        projectName={startsnap?.name || ''}
       />
     </>
   );

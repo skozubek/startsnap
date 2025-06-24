@@ -21,6 +21,15 @@ import { UserAvatar, getAvatarName } from "../../components/ui/user-avatar";
 import type { UserProfileData } from "../../types/user";
 import { toast } from "sonner";
 import { WalletConnect } from "../../components/ui/WalletConnect";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../components/ui/dropdown-menu";
+import { MoreHorizontal, Edit, Trash2, Unplug, Link as LinkIcon } from "lucide-react";
+import { useWallet } from '@txnlab/use-wallet-react';
+import { ConfirmationDialog } from "../../components/ui/confirmation-dialog";
 
 /**
  * @description User profile page with settings and project management
@@ -31,6 +40,7 @@ export const Profile = (): JSX.Element => {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const { user } = useAuth();
+  const { activeAddress, wallets } = useWallet();
   const [profile, setProfile] = useState({
     username: "",
     bio: "",
@@ -51,6 +61,130 @@ export const Profile = (): JSX.Element => {
   });
   const [usernameError, setUsernameError] = useState<string>("");
   const [statusPopoverOpen, setStatusPopoverOpen] = useState(false);
+  const [isChangingWallet, setIsChangingWallet] = useState(false);
+  const [isRemoveWalletDialogOpen, setIsRemoveWalletDialogOpen] = useState(false);
+  const [isRemovingWallet, setIsRemovingWallet] = useState(false);
+
+  /**
+   * @description Checks if the stored wallet address matches the currently connected wallet
+   * @returns {boolean} Whether the stored wallet is currently connected
+   */
+  const isStoredWalletConnected = (): boolean => {
+    return activeAddress === profile.algorand_wallet_address;
+  };
+
+  /**
+   * @description Checks if a different wallet is connected (not the stored one)
+   * @returns {boolean} Whether a different wallet is connected
+   */
+  const isDifferentWalletConnected = (): boolean => {
+    // Only show "different wallet" if there's both an active wallet AND a stored wallet address that don't match
+    return !!activeAddress && !!profile.algorand_wallet_address && activeAddress !== profile.algorand_wallet_address;
+  };
+
+  /**
+   * @description Handles removing the tip collection wallet with auto-disconnect
+   * @async
+   * @sideEffects Disconnects wallet and removes stored address
+   */
+  const handleRemoveWallet = async () => {
+    if (!user) return;
+
+    setIsRemovingWallet(true);
+
+    try {
+      // Disconnect wallet first if it's connected
+      if (activeAddress) {
+        try {
+          const activeWallet = wallets.find(w => w.isActive);
+          if (activeWallet) {
+            await activeWallet.disconnect();
+          }
+        } catch (error) {
+          console.error('Error disconnecting wallet:', error);
+          // Continue with removal even if disconnect fails
+        }
+      }
+
+      // Remove the stored address from database immediately
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          algorand_wallet_address: '',
+          updated_at: new Date()
+        })
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      // Update local state after successful database update
+      setProfile(prev => ({ ...prev, algorand_wallet_address: '' }));
+
+      toast.success('Wallet Removed Successfully!', {
+        description: 'Wallet disconnected and address removed. Add a new one to receive tips.'
+      });
+    } catch (error) {
+      console.error('Error removing wallet:', error);
+      toast.error('Failed to remove wallet', {
+        description: 'Please try again or contact support if the issue persists.'
+      });
+    } finally {
+      setIsRemovingWallet(false);
+      setIsRemoveWalletDialogOpen(false);
+    }
+  };
+
+  /**
+   * @description Handles disconnecting the current wallet session
+   * @async
+   * @sideEffects Disconnects wallet but keeps stored address
+   */
+  const handleDisconnectWallet = async () => {
+    try {
+      const activeWallet = wallets.find(w => w.isActive);
+      if (activeWallet) {
+        await activeWallet.disconnect();
+        toast.success('Wallet disconnected', {
+          description: 'Your tip collection address is still saved.'
+        });
+      }
+    } catch (error) {
+      console.error('Disconnect error:', error);
+      toast.error('Failed to disconnect wallet');
+    }
+  };
+
+    /**
+   * @description Handles connecting to the stored wallet address with validation
+   * @async
+   * @sideEffects Connects to wallet and validates address matches stored tip collection wallet
+   */
+  const handleConnectStoredWallet = async () => {
+    try {
+      const peraWallet = wallets.find(w => w.id === 'pera');
+      if (!peraWallet) {
+        toast.error('Pera Wallet not found');
+        return;
+      }
+
+      await peraWallet.connect();
+      peraWallet.setActive();
+
+      toast.success('Wallet Connected', {
+        description: 'Check the status indicator above for connection details.'
+      });
+
+    } catch (error: any) {
+      console.error('Connect error:', error);
+      if (error?.message?.includes('cancelled')) {
+        // User cancelled - don't show error
+        return;
+      }
+      toast.error('Failed to connect wallet', {
+        description: error?.message || 'Unknown error occurred'
+      });
+    }
+  };
 
   useEffect(() => {
     // If no user is authenticated, redirect to home
@@ -445,43 +579,148 @@ export const Profile = (): JSX.Element => {
                       </div>
                     </div>
 
-                    {/* Algorand Wallet Section */}
+                    {/* Tip Collection Wallet Section */}
                     <div className="space-y-2">
                       <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
-                        Algorand Wallet
+                        Tip Collection Wallet
                       </label>
                       <p className="text-sm text-gray-600 mb-4">
-                        Connect your Algorand wallet to receive tips from your supporters and tip other creators.
+                        This is where you'll receive tips from your supporters. You can change or remove this wallet anytime.
                       </p>
 
                       {profile.algorand_wallet_address ? (
-                        <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                                                <div className="p-4 border-2 rounded-lg bg-gray-50 border-gray-200">
                           <div className="flex items-center justify-between">
-                            <div>
-                              <p className="text-sm font-medium text-green-800 mb-1">✅ Wallet Connected</p>
-                              <p className="font-mono text-sm text-green-700 bg-white px-2 py-1 rounded border">
-                                {profile.algorand_wallet_address.slice(0, 8)}...{profile.algorand_wallet_address.slice(-8)}
-                              </p>
+                            <div className="flex items-center gap-3">
+                                                            <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gray-200">
+                                                                <span className="material-icons text-xl text-gray-500">
+                                  account_balance_wallet
+                                </span>
+                              </div>
+                              <div>
+                                <div className="flex items-center gap-2 mb-1">
+                                                                    <p className="text-sm font-medium text-gray-700">
+                                    Tip Collection Wallet
+                                  </p>
+                                  {isStoredWalletConnected() ? (
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                      Connected
+                                    </span>
+                                  ) : isDifferentWalletConnected() ? (
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                      Different Wallet
+                                    </span>
+                                  ) : (
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                                      Stored
+                                    </span>
+                                  )}
+                                </div>
+                                                                <p className="font-mono text-sm px-2 py-1 rounded border text-gray-600 bg-gray-100">
+                                  {profile.algorand_wallet_address.slice(0, 8)}...{profile.algorand_wallet_address.slice(-8)}
+                                </p>
+                              </div>
                             </div>
-                            <Button
-                              type="button"
-                              variant="secondary"
-                              size="sm"
-                              onClick={() => setProfile(prev => ({ ...prev, algorand_wallet_address: '' }))}
-                            >
-                              Disconnect
-                            </Button>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                  <span className="sr-only">Wallet actions</span>
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                {activeAddress ? (
+                                  <DropdownMenuItem
+                                    onClick={handleDisconnectWallet}
+                                    className="text-startsnap-oxford-blue hover:bg-startsnap-french-rose/10"
+                                  >
+                                    <Unplug className="mr-2 h-4 w-4" />
+                                    Disconnect
+                                  </DropdownMenuItem>
+                                ) : (
+                                  <DropdownMenuItem
+                                    onClick={handleConnectStoredWallet}
+                                    className="text-startsnap-oxford-blue hover:bg-startsnap-french-rose/10"
+                                  >
+                                    <LinkIcon className="mr-2 h-4 w-4" />
+                                    Connect
+                                  </DropdownMenuItem>
+                                )}
+                                <DropdownMenuItem
+                                  onClick={() => setIsChangingWallet(true)}
+                                  className="text-startsnap-oxford-blue hover:bg-startsnap-french-rose/10"
+                                >
+                                  <Edit className="mr-2 h-4 w-4" />
+                                  Change Wallet
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => setIsRemoveWalletDialogOpen(true)}
+                                  className="text-red-600 hover:bg-red-50"
+                                >
+                                  <Trash2 className="mr-2 h-4 w-4" />
+                                  Remove Wallet
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                                                    <div className="mt-3 p-2 border rounded text-xs bg-gray-100 border-gray-200 text-gray-600">
+                            <span className="material-icons text-sm mr-1 align-middle text-gray-500">
+                              {isDifferentWalletConnected() ? 'warning' : 'info'}
+                            </span>
+                            {isDifferentWalletConnected()
+                              ? 'Connected wallet doesn\'t match your tip collection address.'
+                              : 'This wallet is only for collecting tips. When tipping others, you can use any wallet you prefer.'
+                            }
                           </div>
                         </div>
                       ) : (
-                                                                        <div className="border border-gray-200 rounded-lg p-4">
-                          <WalletConnect
-                            compact={true}
-                            onWalletConnected={(address: string) => {
-                              setProfile(prev => ({ ...prev, algorand_wallet_address: address }));
-                              toast.success('Wallet connected! Don\'t forget to save your profile.');
-                            }}
-                          />
+                        <div className="border border-gray-200 rounded-lg p-6 bg-gray-50">
+                          <div className="text-center">
+
+                            <WalletConnect
+                              compact={true}
+                              buttonText="Connect Wallet"
+                              mode="collection"
+                              onWalletConnected={(address: string) => {
+                                setProfile(prev => ({ ...prev, algorand_wallet_address: address }));
+                                toast.success('Tip collection wallet connected! Don\'t forget to save your profile.');
+                              }}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Change Wallet Dialog */}
+                      {isChangingWallet && (
+                        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+                          <div className="bg-white border-2 border-gray-800 rounded-xl shadow-[3px_3px_0px_#1f2937] max-w-md w-full p-6">
+                            <div className="flex items-center justify-between mb-4">
+                              <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg">
+                                Change Tip Collection Wallet
+                              </h3>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setIsChangingWallet(false)}
+                                className="h-8 w-8 p-0"
+                              >
+                                <span className="material-icons text-gray-500">close</span>
+                              </Button>
+                            </div>
+                            <p className="text-sm text-gray-600 mb-4">
+                              Connect a different wallet to use as your tip collection wallet.
+                            </p>
+                            <WalletConnect
+                              compact={true}
+                              buttonText="Connect New Wallet"
+                              mode="collection"
+                              onWalletConnected={(address: string) => {
+                                setProfile(prev => ({ ...prev, algorand_wallet_address: address }));
+                                toast.success('Tip collection wallet updated! Don\'t forget to save your profile.');
+                                setIsChangingWallet(false);
+                              }}
+                            />
+                          </div>
                         </div>
                       )}
                     </div>
@@ -552,6 +791,18 @@ export const Profile = (): JSX.Element => {
           </div>
         </div>
       </div>
+
+      {/* Remove Wallet Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={isRemoveWalletDialogOpen}
+        onClose={() => setIsRemoveWalletDialogOpen(false)}
+        onConfirm={handleRemoveWallet}
+        title="Remove Tip Collection Wallet"
+        description="Are you sure you want to remove your tip collection wallet? This will disconnect your current wallet session, remove the stored wallet address, and prevent you from receiving tips until you add a new wallet."
+        confirmText="Remove Wallet"
+        type="danger"
+        isLoading={isRemovingWallet}
+      />
     </div>
   );
 };

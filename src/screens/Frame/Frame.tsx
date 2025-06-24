@@ -23,17 +23,33 @@ import { ScrollToTop } from "../../components/utils/ScrollToTop";
 import { ToastProvider } from "../../components/providers/ToastProvider";
 import { PulsePanel } from "../../components/ui/PulsePanel";
 import { supabase } from "../../lib/supabase";
-import { WalletProvider, WalletManager, WalletId } from '@txnlab/use-wallet-react';
+import { WalletProvider, WalletManager, WalletId, NetworkId } from '@txnlab/use-wallet-react';
 
 /**
- * @description Simplified wallet manager configuration for Algorand wallet connectivity
- * Only includes Pera wallet for streamlined user experience
+ * @description Wallet manager configuration for Algorand wallet connectivity with QR code support
+ * Clear any cached network state and force MainNet
  */
+
+// Clear any cached network state that might be forcing testnet
+localStorage.removeItem('use-wallet:network');
+localStorage.removeItem('use-wallet:activeNetwork');
+localStorage.removeItem('txnlab-use-wallet-network');
+
 const walletManager = new WalletManager({
-  wallets: [
-    WalletId.PERA
-  ]
+  wallets: [WalletId.PERA],
+  defaultNetwork: NetworkId.MAINNET,
+  options: {
+    debug: true,
+    resetNetwork: true  // Force reset to default network on page load
+  }
 });
+
+// Force set the network to MainNet after initialization
+setTimeout(() => {
+  console.log('🔧 Force setting network to MainNet...');
+  walletManager.setActiveNetwork(NetworkId.MAINNET);
+  console.log('✅ Network set to:', walletManager.activeNetwork);
+}, 100);
 
 /**
  * @description Component that protects routes requiring authentication
