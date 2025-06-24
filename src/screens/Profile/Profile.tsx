@@ -20,6 +20,7 @@ import { useAuth } from "../../context/AuthContext";
 import { UserAvatar, getAvatarName } from "../../components/ui/user-avatar";
 import type { UserProfileData } from "../../types/user";
 import { toast } from "sonner";
+import { WalletConnect } from "../../components/ui/WalletConnect";
 
 /**
  * @description User profile page with settings and project management
@@ -37,7 +38,8 @@ export const Profile = (): JSX.Element => {
     github: "",
     twitter: "",
     linkedin: "",
-    website: ""
+    website: "",
+    algorand_wallet_address: ""
   });
   const [userStartSnaps, setUserStartSnaps] = useState<any[]>([]);
   const [loadingStartSnaps, setLoadingStartSnaps] = useState(true);
@@ -80,13 +82,15 @@ export const Profile = (): JSX.Element => {
             github: data.github_url || '',
             twitter: data.twitter_url || '',
             linkedin: data.linkedin_url || '',
-            website: data.website_url || ''
+            website: data.website_url || '',
+            algorand_wallet_address: data.algorand_wallet_address || ''
           });
         } else {
           // Set default username from email if no profile exists
           setProfile(prev => ({
             ...prev,
-            username: user.email?.split('@')[0] || ''
+            username: user.email?.split('@')[0] || '',
+            algorand_wallet_address: ''
           }));
         }
 
@@ -233,6 +237,7 @@ export const Profile = (): JSX.Element => {
           twitter_url: profile.twitter,
           linkedin_url: profile.linkedin,
           website_url: profile.website,
+          algorand_wallet_address: profile.algorand_wallet_address,
           updated_at: new Date()
         }, {
           onConflict: 'user_id'
@@ -438,6 +443,47 @@ export const Profile = (): JSX.Element => {
                           )}
                         </div>
                       </div>
+                    </div>
+
+                    {/* Algorand Wallet Section */}
+                    <div className="space-y-2">
+                      <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+                        💰 Algorand Wallet
+                      </label>
+                      <p className="text-sm text-gray-600 mb-4">
+                        Connect your Algorand wallet to receive tips from your supporters and tip other creators.
+                      </p>
+
+                      {profile.algorand_wallet_address ? (
+                        <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-medium text-green-800 mb-1">✅ Wallet Connected</p>
+                              <p className="font-mono text-sm text-green-700 bg-white px-2 py-1 rounded border">
+                                {profile.algorand_wallet_address.slice(0, 8)}...{profile.algorand_wallet_address.slice(-8)}
+                              </p>
+                            </div>
+                            <Button
+                              type="button"
+                              variant="secondary"
+                              size="sm"
+                              onClick={() => setProfile(prev => ({ ...prev, algorand_wallet_address: '' }))}
+                            >
+                              Disconnect
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                                                                        <div className="border border-gray-200 rounded-lg p-4">
+                          <WalletConnect
+                            compact={true}
+                            onWalletConnected={(address: string) => {
+                              setProfile(prev => ({ ...prev, algorand_wallet_address: address }));
+                              toast.success('Wallet connected! Don\'t forget to save your profile.');
+                            }}
+                          />
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex justify-end pt-4">

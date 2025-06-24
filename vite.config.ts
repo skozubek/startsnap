@@ -7,6 +7,9 @@ import path from "path";
 export default defineConfig({
   plugins: [react()],
   base: "/", // Use root-relative paths instead of relative paths
+  define: {
+    global: 'globalThis',
+  },
   css: {
     postcss: {
       plugins: [tailwind()],

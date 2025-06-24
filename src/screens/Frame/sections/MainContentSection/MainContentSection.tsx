@@ -20,6 +20,7 @@ import { FeaturedStartSnapsSection } from "./components/FeaturedStartSnapsSectio
 import { BuildInPublicManifestoSection } from "./components/BuildInPublicManifestoSection";
 import { PlatformShowcaseSection } from "./components/PlatformShowcaseSection";
 
+
 const categoryOptions = Object.values(CATEGORY_CONFIG).map(config => config.label);
 
 /**
@@ -157,6 +158,8 @@ export const MainContentSection = (): JSX.Element => {
         formatDate={formatDate}
         getCategoryDisplay={getCategoryDisplay}
       />
+
+
     </section>
   );
 };

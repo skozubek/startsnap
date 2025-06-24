@@ -23,24 +23,16 @@ import { ScrollToTop } from "../../components/utils/ScrollToTop";
 import { ToastProvider } from "../../components/providers/ToastProvider";
 import { PulsePanel } from "../../components/ui/PulsePanel";
 import { supabase } from "../../lib/supabase";
-import { WalletManager, WalletProvider, WalletId } from '@txnlab/use-wallet-react';
-import { WalletUIProvider } from '@txnlab/use-wallet-ui-react';
+import { WalletProvider, WalletManager, WalletId } from '@txnlab/use-wallet-react';
 
 /**
- * @description Wallet manager configuration for Algorand wallet connectivity
- * Supports Pera, Defly, Lute, and WalletConnect wallets on testnet
+ * @description Simplified wallet manager configuration for Algorand wallet connectivity
+ * Only includes Pera wallet for streamlined user experience
  */
 const walletManager = new WalletManager({
   wallets: [
-    WalletId.PERA,
-    WalletId.DEFLY,
-    WalletId.LUTE,
-    {
-      id: WalletId.WALLETCONNECT,
-      options: { projectId: 'fcfde0713d43baa0d23be0773c80a72b' } // This is a public project ID from the starter
-    }
-  ],
-  defaultNetwork: 'testnet',
+    WalletId.PERA
+  ]
 });
 
 /**
@@ -190,7 +182,7 @@ const FrameContent = (): JSX.Element => {
       />
 
       <Subheader />
-      
+
 
       <div className="flex flex-col w-full min-h-screen overflow-y-auto">
         <Routes>
@@ -244,15 +236,13 @@ const FrameContent = (): JSX.Element => {
 export const Frame = (): JSX.Element => {
   return (
     <WalletProvider manager={walletManager}>
-      <WalletUIProvider>
-        <div className="flex flex-col min-h-screen w-full bg-white">
-          <AuthProvider>
-            <ToastProvider />
-            <ScrollToTop />
-            <FrameContent />
-          </AuthProvider>
-        </div>
-      </WalletUIProvider>
+      <div className="flex flex-col min-h-screen w-full bg-white">
+        <AuthProvider>
+          <ToastProvider />
+          <ScrollToTop />
+          <FrameContent />
+        </AuthProvider>
+      </div>
     </WalletProvider>
   );
 };

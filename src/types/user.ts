@@ -16,6 +16,7 @@ export interface UserProfileData {
   twitter_url?: string | null;
   linkedin_url?: string | null;
   website_url?: string | null;
+  algorand_wallet_address?: string | null; // Algorand wallet address for tipping
   created_at?: string; // ISO date string
   updated_at?: string; // ISO date string
 }
