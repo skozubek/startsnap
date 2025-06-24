@@ -130,7 +130,7 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
                     aria-label="Tip the creator with Algorand"
                   >
                     <span className="material-icons text-lg flex-shrink-0">
-                      volunteer_activism
+                      monetization_on
                     </span>
                     {/* Show text only on medium screens and up */}
                     <span className="hidden md:inline truncate">

@@ -89,6 +89,8 @@ export const ActivityItem: React.FC<ActivityItemProps> = ({ activity }) => {
         return 'celebration';
       case 'feedback_reply_added':
         return 'reply';
+            case 'tip_sent':
+        return 'monetization_on';
       default:
         return 'activity_zone';
     }
@@ -141,6 +143,8 @@ export const ActivityItem: React.FC<ActivityItemProps> = ({ activity }) => {
       case 'feedback_added':
       case 'feedback_reply_added':
         return 'text-startsnap-persian-blue';
+      case 'tip_sent':
+        return 'text-startsnap-corn';
       default:
         return 'text-startsnap-pale-sky';
     }

@@ -299,18 +299,8 @@ export const TippingDialog: React.FC<TippingDialogProps> = ({
         });
       }
 
-      console.log('🔍 About to sign transaction:', {
-        transaction,
-        currency: selectedCurrency,
-        activeAddress,
-        creatorAddress,
-        amount: tipAmount
-      });
-
       // 5. Sign transaction using wallet (Pera Wallet will handle the UI)
       const signedTxns = await signTransactions([transaction]);
-
-      console.log('✅ Transaction signed successfully:', signedTxns);
 
       // 6. Send signed transaction to network
       const signedTxn = signedTxns[0];
@@ -456,13 +446,13 @@ export const TippingDialog: React.FC<TippingDialogProps> = ({
         <div className="flex items-start justify-between mb-6">
           <div className="flex items-center gap-3">
             <span className="material-icons text-startsnap-mountain-meadow text-2xl">
-              volunteer_activism
+              monetization_on
             </span>
             <h2
               id="tipping-title"
               className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-xl leading-7"
             >
-              Tip Creator
+              Send Tip
             </h2>
           </div>
           <Button
@@ -481,7 +471,7 @@ export const TippingDialog: React.FC<TippingDialogProps> = ({
           id="tipping-description"
           className="font-['Roboto',Helvetica] text-startsnap-river-bed text-base leading-6 mb-6"
         >
-          Send a tip to support the creator of <strong>{projectName}</strong>
+          Support the creator of <strong>{projectName}</strong>
         </p>
 
         {/* Wallet Connection Section */}
@@ -529,7 +519,7 @@ export const TippingDialog: React.FC<TippingDialogProps> = ({
 
         {/* Tip Form - Only show when wallet is connected */}
         {isWalletConnected && (
-          <div className="space-y-4 mb-6">
+          <div className="space-y-6 mb-6">
             {/* Currency Selection */}
             <div className="space-y-2">
               <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-base leading-6">
@@ -614,20 +604,22 @@ export const TippingDialog: React.FC<TippingDialogProps> = ({
 
               {/* Custom Amount Input - Only show when custom is selected */}
               {selectedAmount === 'custom' && (
-                <div className="mt-3">
-                  <Input
-                    type="number"
-                    step={currency.minAmount}
-                    min={currency.minAmount}
-                    max={getCurrencyBalance(selectedCurrency)}
-                    value={customAmount}
-                    onChange={(e) => setCustomAmount(e.target.value)}
-                    placeholder={`Enter amount (min ${currency.minAmount})`}
-                    className="border-2 border-solid border-gray-800 rounded-lg p-3 font-['Roboto',Helvetica] text-startsnap-pale-sky"
-                  />
-                  <div className="flex justify-between text-xs text-gray-500 mt-1">
-                    <span>Minimum: {currency.minAmount} {currency.symbol}</span>
-                    <span>Available: {getCurrencyBalance(selectedCurrency).toFixed(6)} {currency.symbol}</span>
+                <div className="mt-6 p-4 bg-gray-50/50 border border-gray-200 rounded-lg">
+                  <div className="space-y-3">
+                    <Input
+                      type="number"
+                      step={currency.minAmount}
+                      min={currency.minAmount}
+                      max={getCurrencyBalance(selectedCurrency)}
+                      value={customAmount}
+                      onChange={(e) => setCustomAmount(e.target.value)}
+                      placeholder={`Enter amount (min ${currency.minAmount})`}
+                      className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky text-lg"
+                    />
+                    <div className="flex justify-between text-xs text-gray-600 px-1">
+                      <span>Minimum: {currency.minAmount} {currency.symbol}</span>
+                      <span>Available: {getCurrencyBalance(selectedCurrency).toFixed(6)} {currency.symbol}</span>
+                    </div>
                   </div>
                 </div>
               )}

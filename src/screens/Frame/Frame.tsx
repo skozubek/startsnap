@@ -39,16 +39,14 @@ const walletManager = new WalletManager({
   wallets: [WalletId.PERA],
   defaultNetwork: NetworkId.MAINNET,
   options: {
-    debug: true,
+    debug: false,
     resetNetwork: true  // Force reset to default network on page load
   }
 });
 
 // Force set the network to MainNet after initialization
 setTimeout(() => {
-  console.log('🔧 Force setting network to MainNet...');
   walletManager.setActiveNetwork(NetworkId.MAINNET);
-  console.log('✅ Network set to:', walletManager.activeNetwork);
 }, 100);
 
 /**
