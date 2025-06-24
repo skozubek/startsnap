@@ -49,6 +49,27 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   const [session, setSession] = useState<Session | null>(null);
 
   /**
+   * @description Disconnects any active Algorand wallets safely
+   * @async
+   * @sideEffects Disconnects active wallet connections
+   */
+  const disconnectWallet = async (): Promise<void> => {
+    try {
+      // Access the global wallet manager if available
+      if (typeof window !== 'undefined' && (window as any).walletManager) {
+        const walletManager = (window as any).walletManager;
+        const activeWallet = walletManager.wallets?.find((w: any) => w.isActive);
+        if (activeWallet) {
+          await activeWallet.disconnect();
+        }
+      }
+    } catch (error) {
+      console.warn('⚠️ Error disconnecting wallet during logout:', error);
+      // Don't throw - logout should continue even if wallet disconnect fails
+    }
+  };
+
+  /**
    * @description Clears all local authentication data from localStorage and sessionStorage
    * @sideEffects Removes Supabase auth tokens from browser storage
    */
@@ -98,6 +119,9 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
     } catch (error) {
       console.warn('⚠️ Quick logout failed, proceeding with force cleanup:', error);
     }
+
+    // Disconnect wallet before clearing data
+    await disconnectWallet();
 
     // Clear all local auth data regardless of API success
     clearLocalAuthData();
@@ -307,6 +331,9 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   const handleAuthErrorAndSignOut = async (): Promise<void> => {
 
     try {
+      // Disconnect wallet first
+      await disconnectWallet();
+
       // Try normal logout first with timeout
       const logoutPromise = supabase.auth.signOut();
       const timeoutPromise = new Promise<never>((_, reject) =>

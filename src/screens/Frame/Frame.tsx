@@ -44,6 +44,9 @@ const walletManager = new WalletManager({
   }
 });
 
+// Make wallet manager globally accessible for logout
+(window as any).walletManager = walletManager;
+
 // Force set the network to MainNet after initialization
 setTimeout(() => {
   walletManager.setActiveNetwork(NetworkId.MAINNET);
