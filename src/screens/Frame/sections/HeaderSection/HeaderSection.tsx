@@ -136,8 +136,9 @@ export const HeaderSection = ({ onPulseButtonClick, hasNewActivity }: HeaderSect
 
           {user && (
             <Button
+              variant="primary"
               asChild
-              className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-2"
+              className="flex items-center gap-2"
             >
               <Link to="/create">
                 <span>Add StartSnap</span>
@@ -147,8 +148,9 @@ export const HeaderSection = ({ onPulseButtonClick, hasNewActivity }: HeaderSect
 
           {/* Community Pulse Button */}
           <Button
+            variant="success"
             onClick={onPulseButtonClick}
-            className={`startsnap-button bg-startsnap-mountain-meadow text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] flex items-center gap-2 ${hasNewActivity ? 'animate-pulse-glow' : ''}`}
+            className={`flex items-center gap-2 ${hasNewActivity ? 'animate-pulse-glow' : ''}`}
             aria-label="Open Community Pulse"
           >
             <span className="material-icons text-lg">bolt</span>
@@ -220,17 +222,11 @@ export const HeaderSection = ({ onPulseButtonClick, hasNewActivity }: HeaderSect
           ) : (
             <>
               <Button
-                variant="outline"
-                onClick={() => handleAuthClick('login')}
-                className="startsnap-button bg-gray-200 text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
-              >
-                Login
-              </Button>
-              <Button
+                variant="secondary"
                 onClick={() => handleAuthClick('signup')}
-                className="startsnap-button bg-startsnap-french-rose text-startsnap-white font-['Roboto',Helvetica] font-bold text-base rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937]"
+                className=""
               >
-                Sign Up
+                Get Started
               </Button>
             </>
           )}
@@ -289,11 +285,12 @@ export const HeaderSection = ({ onPulseButtonClick, hasNewActivity }: HeaderSect
               <div className="space-y-3">
                 {/* Community Pulse - Premium Action */}
                 <Button
+                  variant="success"
                   onClick={() => {
                     onPulseButtonClick();
                     toggleMobileMenu();
                   }}
-                  className={`w-full h-14 bg-startsnap-mountain-meadow hover:bg-green-600 text-white font-['Roboto',Helvetica] font-bold text-base rounded-xl border-2 border-gray-800 shadow-[3px_3px_0px_#1f2937] hover:shadow-[4px_4px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all duration-200 flex items-center justify-center gap-3 ${hasNewActivity ? 'animate-pulse-glow' : ''}`}
+                  className={`w-full h-12 flex items-center justify-center gap-3 ${hasNewActivity ? 'animate-pulse-glow' : ''}`}
                 >
                   <span className="material-icons text-xl">bolt</span>
                   <span>Community Pulse</span>
@@ -305,9 +302,10 @@ export const HeaderSection = ({ onPulseButtonClick, hasNewActivity }: HeaderSect
                 {/* Add StartSnap - Primary Action */}
                 {user && (
                   <Button
+                    variant="primary"
                     asChild
                     onClick={toggleMobileMenu}
-                    className="w-full h-14 bg-startsnap-french-rose hover:bg-pink-600 text-white font-['Roboto',Helvetica] font-bold text-base rounded-xl border-2 border-gray-800 shadow-[3px_3px_0px_#1f2937] hover:shadow-[4px_4px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all duration-200 flex items-center justify-center gap-3"
+                    className="w-full h-12 flex items-center justify-center gap-3"
                   >
                     <Link to="/create" className="flex items-center gap-3">
                       <span className="material-icons text-xl">add_circle</span>
@@ -352,7 +350,7 @@ export const HeaderSection = ({ onPulseButtonClick, hasNewActivity }: HeaderSect
                     </Link>
 
                     <Button
-                      variant="ghost"
+                      variant="unstyled"
                       onClick={() => {
                         handleSignOut();
                         toggleMobileMenu();
@@ -371,22 +369,14 @@ export const HeaderSection = ({ onPulseButtonClick, hasNewActivity }: HeaderSect
               ) : (
                 <div className="space-y-3">
                   <Button
-                    onClick={() => {
-                      handleAuthClick('login');
-                      toggleMobileMenu();
-                    }}
-                    className="w-full h-12 bg-gray-200 hover:bg-gray-300 text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold text-base rounded-xl border-2 border-gray-800 shadow-[2px_2px_0px_#1f2937] hover:shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all duration-200"
-                  >
-                    Login
-                  </Button>
-                  <Button
+                    variant="secondary"
                     onClick={() => {
                       handleAuthClick('signup');
                       toggleMobileMenu();
                     }}
-                    className="w-full h-12 bg-startsnap-french-rose hover:bg-pink-600 text-white font-['Roboto',Helvetica] font-bold text-base rounded-xl border-2 border-gray-800 shadow-[2px_2px_0px_#1f2937] hover:shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all duration-200"
+                    className="w-full h-12"
                   >
-                    Sign Up
+                    Get Started
                   </Button>
                 </div>
               )}

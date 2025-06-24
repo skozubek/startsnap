@@ -15,8 +15,12 @@ const buttonVariants = cva(
           "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
           "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
-        secondary:
-          "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
+        // 🚀 Design-system semantic skins (Neo-brutalist)
+        primary: "btn-primary",
+        secondary: "btn-secondary",
+        success: "btn-success",
+        danger: "btn-danger",
+        warning: "btn-warning",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         filterTrigger:
@@ -29,10 +33,7 @@ const buttonVariants = cva(
           "bg-startsnap-french-rose text-startsnap-white border-2 border-solid border-gray-800 shadow-[2px_2px_0px_#1f2937] hover:bg-startsnap-french-rose/90 font-bold",
         secondaryIcon:
           "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 shadow-none",
-        startsnap:
-          "startsnap-button bg-startsnap-french-rose text-startsnap-white border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] font-bold tap-target touch-manipulation",
-        startsnapSecondary:
-          "startsnap-button bg-startsnap-mischka text-startsnap-ebony-clay border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] font-bold tap-target touch-manipulation",
+        unstyled: "",
       },
       size: {
         default: "h-10 px-4 py-3",

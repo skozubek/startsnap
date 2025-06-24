@@ -467,8 +467,8 @@ export const ProjectDetail = (): JSX.Element => {
                     {visibleVibeLogCount > VIBE_LOG_PAGE_SIZE && (
                       <Button
                         onClick={handleShowLessVibeLogs}
-                        variant="outline"
-                        className="startsnap-button bg-startsnap-mischka text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] py-2 px-5 text-base hover:bg-gray-300"
+                        variant="secondary"
+                        size="lg"
                       >
                         Show Less Vibe Logs
                       </Button>
@@ -476,8 +476,8 @@ export const ProjectDetail = (): JSX.Element => {
                     {visibleVibeLogCount < vibeLogEntries.length && (
                       <Button
                         onClick={handleLoadMoreVibeLogs}
-                        variant="outline"
-                        className="startsnap-button bg-startsnap-mischka text-startsnap-ebony-clay font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] py-2 px-5 text-base hover:bg-gray-300"
+                        variant="secondary"
+                        size="lg"
                       >
                         Load More Vibe Logs
                       </Button>

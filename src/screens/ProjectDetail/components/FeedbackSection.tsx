@@ -435,18 +435,17 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                   />
                   <div className="startsnap-form-actions">
                     <Button
-                      variant="outline"
+                      variant="secondary"
                       onClick={() => {
                         setEditingFeedback(null);
                         setInlineEditFeedbackContent('');
                       }}
-                      className="startsnap-mobile-btn-secondary"
                     >
                       Cancel
                     </Button>
                     <Button
+                      variant="primary"
                       onClick={handleUpdateFeedback}
-                      className="startsnap-mobile-btn-primary"
                       disabled={!inlineEditFeedbackContent.trim() || isSubmitting}
                     >
                       {isSubmitting ? 'Saving...' : 'Save Changes'}
@@ -576,16 +575,15 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                         )}
                         <div className="startsnap-form-actions">
                           <Button
-                            variant="outline"
+                            variant="secondary"
                             onClick={handleCancelReply} // This closes the entire reply section
-                            className="startsnap-mobile-btn-secondary"
                             disabled={replySubmitting}
                           >
                             Cancel
                           </Button>
                           <Button
+                            variant="primary"
                             onClick={handleReplySubmit} // Submits a NEW reply
-                            className="startsnap-mobile-btn-primary"
                             disabled={replySubmitting || !replyContent.trim()}
                           >
                             {replySubmitting ? 'Replying...' : 'Reply'}
@@ -722,16 +720,15 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                               )}
                               <div className="startsnap-form-actions mt-2">
                                 <Button
-                                  variant="outline"
+                                  variant="secondary"
                                   onClick={handleCancelEditReply} // Cancel for INLINE EDIT
-                                  className="startsnap-mobile-btn-secondary"
                                   disabled={replySubmitting}
                                 >
                                   Cancel
                                 </Button>
                                 <Button
+                                  variant="primary"
                                   onClick={handleUpdateReply} // Update for INLINE EDIT
-                                  className="startsnap-mobile-btn-primary"
                                   disabled={replySubmitting || !replyContent.trim()}
                                 >
                                   {replySubmitting ? 'Updating...' : 'Update Reply'}
@@ -900,31 +897,32 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
               )}
               <div className="flex justify-end mt-3">
                 <Button
-                  className="startsnap-mobile-btn-primary"
-              onClick={async () => {
-                if (!currentUser) {
-                  setSubmissionError('You need to be logged in to submit feedback');
-                  return;
-                }
-                if (!feedbackContent.trim()) {
-                  setSubmissionError('Please enter some feedback');
-                  return;
-                }
-                setIsSubmitting(true);
-                try {
-                  await handleFeedbackSubmit({ content: feedbackContent });
-                  // feedbackContent is cleared within handleFeedbackSubmit on success
-                } catch (error) {
-                  // submissionError is set within handleFeedbackSubmit on error
-                  // No need to set it again here unless for a different message
-                } finally {
-                  setIsSubmitting(false);
-                }
-              }}
-              disabled={!currentUser || !feedbackContent.trim() || isSubmitting}
-            >
-              {isSubmitting ? 'Submitting...' : (currentUser ? 'Submit Feedback' : 'Login to Submit Feedback')}
-            </Button>
+                  variant="primary"
+                  size="lg"
+                  onClick={async () => {
+                    if (!currentUser) {
+                      setSubmissionError('You need to be logged in to submit feedback');
+                      return;
+                    }
+                    if (!feedbackContent.trim()) {
+                      setSubmissionError('Please enter some feedback');
+                      return;
+                    }
+                    setIsSubmitting(true);
+                    try {
+                      await handleFeedbackSubmit({ content: feedbackContent });
+                      // feedbackContent is cleared within handleFeedbackSubmit on success
+                    } catch (error) {
+                      // submissionError is set within handleFeedbackSubmit on error
+                      // No need to set it again here unless for a different message
+                    } finally {
+                      setIsSubmitting(false);
+                    }
+                  }}
+                  disabled={!currentUser || !feedbackContent.trim() || isSubmitting}
+                >
+                  {isSubmitting ? 'Submitting...' : (currentUser ? 'Submit Feedback' : 'Login to Submit Feedback')}
+                </Button>
               </div>
             </div>
           </div>
