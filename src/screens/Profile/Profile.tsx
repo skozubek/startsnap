@@ -27,7 +27,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
-import { MoreHorizontal, Edit, Trash2, Unplug, Link as LinkIcon } from "lucide-react";
+import { MoreHorizontal, Edit, Trash2, Unplug, Link as LinkIcon, X } from "lucide-react";
 import { useWallet } from '@txnlab/use-wallet-react';
 import { ConfirmationDialog } from "../../components/ui/confirmation-dialog";
 
@@ -692,34 +692,75 @@ export const Profile = (): JSX.Element => {
 
                       {/* Change Wallet Dialog */}
                       {isChangingWallet && (
-                        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-                          <div className="bg-white border-2 border-gray-800 rounded-xl shadow-[3px_3px_0px_#1f2937] max-w-md w-full p-6">
-                            <div className="flex items-center justify-between mb-4">
-                              <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg">
-                                Change Tip Collection Wallet
-                              </h3>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => setIsChangingWallet(false)}
-                                className="h-8 w-8 p-0"
-                              >
-                                <span className="material-icons text-gray-500">close</span>
-                              </Button>
+                        <div
+                          className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+                          onClick={(e) => {
+                            if (e.target === e.currentTarget) {
+                              setIsChangingWallet(false);
+                            }
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Escape') {
+                              setIsChangingWallet(false);
+                            }
+                          }}
+                          tabIndex={-1}
+                        >
+                          <div
+                            className="bg-startsnap-white border-2 border-startsnap-ebony-clay rounded-xl shadow-[4px_4px_0px_#1f2937] max-w-md w-full animate-in zoom-in-95 duration-200"
+                            role="dialog"
+                            aria-modal="true"
+                            aria-labelledby="change-wallet-title"
+                            aria-describedby="change-wallet-description"
+                          >
+                            {/* Header Section */}
+                            <div className="border-b-2 border-startsnap-ebony-clay p-6">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-8 h-8 bg-startsnap-mountain-meadow rounded-lg border-2 border-startsnap-ebony-clay flex items-center justify-center shadow-[2px_2px_0px_#1f2937]">
+                                    <Edit className="h-4 w-4 text-startsnap-ebony-clay" />
+                                  </div>
+                                  <h3
+                                    id="change-wallet-title"
+                                    className="font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-xl uppercase tracking-wider"
+                                  >
+                                    CHANGE WALLET
+                                  </h3>
+                                </div>
+                                <button
+                                  onClick={() => setIsChangingWallet(false)}
+                                  className="w-8 h-8 bg-startsnap-beige border-2 border-startsnap-ebony-clay rounded-lg hover:bg-startsnap-beige/90 active:scale-95 transition-all duration-150 flex items-center justify-center shadow-[2px_2px_0px_#1f2937] hover:shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px]"
+                                  aria-label="Close dialog"
+                                >
+                                  <X className="h-4 w-4 text-startsnap-ebony-clay" />
+                                </button>
+                              </div>
                             </div>
-                            <p className="text-sm text-gray-600 mb-4">
-                              Connect a different wallet to use as your tip collection wallet.
-                            </p>
-                            <WalletConnect
-                              compact={true}
-                              buttonText="Connect New Wallet"
-                              mode="collection"
-                              onWalletConnected={(address: string) => {
-                                setProfile(prev => ({ ...prev, algorand_wallet_address: address }));
-                                toast.success('Tip collection wallet updated! Don\'t forget to save your profile.');
-                                setIsChangingWallet(false);
-                              }}
-                            />
+
+                            {/* Main Content Section */}
+                            <div className="p-6">
+                              {/* Description */}
+                              <div className="bg-startsnap-beige border-2 border-startsnap-ebony-clay rounded-lg p-4 mb-6 shadow-[2px_2px_0px_#1f2937]">
+                                <p
+                                  id="change-wallet-description"
+                                  className="font-medium text-startsnap-ebony-clay text-sm leading-relaxed"
+                                >
+                                  Connect a different wallet to use as your tip collection wallet. This will update your profile with the new wallet address.
+                                </p>
+                              </div>
+
+                              {/* Wallet Connect */}
+                              <WalletConnect
+                                compact={true}
+                                buttonText="CONNECT NEW WALLET"
+                                mode="collection"
+                                onWalletConnected={(address: string) => {
+                                  setProfile(prev => ({ ...prev, algorand_wallet_address: address }));
+                                  toast.success('Tip collection wallet updated! Don\'t forget to save your profile.');
+                                  setIsChangingWallet(false);
+                                }}
+                              />
+                            </div>
                           </div>
                         </div>
                       )}

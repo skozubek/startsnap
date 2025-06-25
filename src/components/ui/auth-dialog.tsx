@@ -7,10 +7,10 @@ import React, { useState, useEffect, useRef } from "react";
 import { Button } from "./button";
 import { Input } from "./input";
 import { Label } from "./label";
-import { Dialog, DialogContent, DialogTitle } from "./dialog";
 import { supabase } from "../../lib/supabase";
 import { FaXTwitter } from "react-icons/fa6";
 import { toast } from "sonner";
+import { X, User, UserPlus } from "lucide-react";
 
 interface AuthDialogProps {
   isOpen: boolean;
@@ -53,7 +53,27 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: Au
     }
   }, [initialMode, isOpen]);
 
+  if (!isOpen) return <></>;
 
+  /**
+   * @description Handles backdrop click to close dialog
+   * @param {React.MouseEvent} e - Mouse event
+   */
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      handleClose();
+    }
+  };
+
+  /**
+   * @description Handles escape key press to close dialog
+   * @param {React.KeyboardEvent} e - Keyboard event
+   */
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      handleClose();
+    }
+  };
 
   /**
    * @description Toggles between login and signup modes
@@ -285,114 +305,161 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: Au
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent
-        className="max-w-xs p-6 sm:max-w-md sm:p-8 bg-white rounded-lg border-3 border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]"
+    <div
+      className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+      onClick={handleBackdropClick}
+      onKeyDown={handleKeyDown}
+      tabIndex={-1}
+    >
+      <div
+        className="bg-startsnap-white border-2 border-startsnap-ebony-clay rounded-xl shadow-[4px_4px_0px_#1f2937] max-w-md w-full animate-in zoom-in-95 duration-200"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="auth-title"
+        aria-describedby="auth-description"
       >
-        <DialogTitle className="text-3xl sm:text-4xl font-bold text-startsnap-ebony-clay text-center font-['Space_Grotesk',Helvetica] leading-tight mb-6 sm:mb-8">
-          {mode === 'login' ? 'Welcome Back' : 'Create Your Account'}
-        </DialogTitle>
-
-        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-          {/* Twitter Login Button */}
-          <Button
-            type="button"
-            onClick={handleTwitterLogin}
-            disabled={twitterLoading || loading}
-            variant="primary"
-            size="lg"
-            className="w-full bg-black text-white hover:bg-gray-800 flex items-center justify-center gap-3"
-          >
-            {React.createElement(FaXTwitter as any, { size: 20 })}
-            {twitterLoading ? 'Connecting...' : `${mode === 'login' ? 'Login' : 'Sign up'} with Twitter`}
-          </Button>
-
-          {/* Divider */}
-          <div className="flex items-center my-4">
-            <div className="flex-1 border-t border-gray-300"></div>
-            <span className="px-4 text-gray-500 font-['Roboto',Helvetica]">or</span>
-            <div className="flex-1 border-t border-gray-300"></div>
-          </div>
-
-          <div className="space-y-2">
-            <Label
-              htmlFor="email"
-              className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-xl leading-7"
-            >
-              Email
-            </Label>
-            <Input
-              ref={emailInputRef}
-              id="email"
-              type="email"
-              value={email}
-              onClick={(e) => e.currentTarget.focus()}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                setEmailError(null);
-                setError(null);
-              }}
-              className={`w-full border-2 border-solid ${emailError ? 'border-red-500' : 'border-gray-800'} rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
-              placeholder="your.email@example.com"
-              tabIndex={0}
-              disabled={twitterLoading}
-            />
-            {emailError && (
-              <p className="text-red-500 text-sm mt-1">{emailError}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label
-              htmlFor="password"
-              className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-xl leading-7"
-            >
-              Password
-            </Label>
-            <Input
-              ref={passwordInputRef}
-              id="password"
-              type="password"
-              value={password}
-              onClick={(e) => e.currentTarget.focus()}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                setPasswordError(null);
-                setError(null);
-              }}
-              className={`w-full border-2 border-solid ${passwordError ? 'border-red-500' : 'border-gray-800'} rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
-              tabIndex={0}
-              disabled={twitterLoading}
-            />
-            {passwordError && (
-              <p className="text-red-500 text-sm mt-1">{passwordError}</p>
-            )}
-          </div>
-
-          {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md">
-              {error}
+        {/* Header Section */}
+        <div className="border-b-2 border-startsnap-ebony-clay p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-startsnap-mountain-meadow rounded-lg border-2 border-startsnap-ebony-clay flex items-center justify-center shadow-[2px_2px_0px_#1f2937]">
+                {mode === 'login' ? (
+                  <User className="h-4 w-4 text-startsnap-ebony-clay" />
+                ) : (
+                  <UserPlus className="h-4 w-4 text-startsnap-ebony-clay" />
+                )}
+              </div>
+              <h2
+                id="auth-title"
+                className="font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-xl uppercase tracking-wider"
+              >
+                {mode === 'login' ? 'WELCOME BACK' : 'JOIN STARTSNAP'}
+              </h2>
             </div>
-          )}
-
-          <Button
-            type="submit"
-            disabled={loading || twitterLoading}
-            variant="primary"
-            size="lg"
-            className="w-full"
-            tabIndex={0}
-          >
-            {loading ? (mode === 'login' ? 'Logging In...' : 'Signing Up...') : (mode === 'login' ? 'Log In' : 'Sign Up')}
-          </Button>
-
-          <div className="text-center text-startsnap-french-rose hover:underline cursor-pointer mt-6">
-            <span onClick={toggleMode} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && toggleMode()}>
-              {mode === 'login' ? "Don't have an account? Sign up" : "Already have an account? Log in"}
-            </span>
+            <button
+              onClick={handleClose}
+              className="w-8 h-8 bg-startsnap-beige border-2 border-startsnap-ebony-clay rounded-lg hover:bg-startsnap-beige/90 active:scale-95 transition-all duration-150 flex items-center justify-center shadow-[2px_2px_0px_#1f2937] hover:shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px]"
+              aria-label="Close dialog"
+            >
+              <X className="h-4 w-4 text-startsnap-ebony-clay" />
+            </button>
           </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+        </div>
+
+        {/* Main Content Section */}
+        <div className="p-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Twitter Login Button */}
+            <Button
+              type="button"
+              onClick={handleTwitterLogin}
+              disabled={twitterLoading || loading}
+              variant="primary"
+              size="lg"
+              className="w-full bg-startsnap-ebony-clay text-startsnap-beige hover:bg-startsnap-ebony-clay/90 flex items-center justify-center gap-3"
+            >
+              {React.createElement(FaXTwitter as any, { size: 20 })}
+              {twitterLoading ? 'CONNECTING...' : `${mode === 'login' ? 'LOGIN' : 'SIGN UP'} WITH TWITTER`}
+            </Button>
+
+            {/* Divider */}
+            <div className="flex items-center my-6">
+              <div className="flex-1 h-0.5 bg-startsnap-ebony-clay"></div>
+              <span className="px-4 text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] font-bold text-sm uppercase tracking-wider">OR</span>
+              <div className="flex-1 h-0.5 bg-startsnap-ebony-clay"></div>
+            </div>
+
+            {/* Email Field */}
+            <div className="space-y-3">
+              <Label
+                htmlFor="email"
+                className="block font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-sm uppercase tracking-wider"
+              >
+                EMAIL ADDRESS
+              </Label>
+              <Input
+                ref={emailInputRef}
+                id="email"
+                type="email"
+                value={email}
+                onClick={(e) => e.currentTarget.focus()}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setEmailError(null);
+                  setError(null);
+                }}
+                className={`w-full border-2 ${emailError ? 'border-startsnap-french-rose' : 'border-startsnap-ebony-clay'} rounded-lg bg-startsnap-white font-medium text-startsnap-ebony-clay placeholder-startsnap-river-bed shadow-[2px_2px_0px_#1f2937] focus:shadow-[3px_3px_0px_#1f2937] focus:translate-x-[-1px] focus:translate-y-[-1px] transition-all duration-200`}
+                placeholder="your.email@example.com"
+                tabIndex={0}
+                disabled={twitterLoading}
+              />
+              {emailError && (
+                <p className="text-startsnap-french-rose text-sm font-medium">{emailError}</p>
+              )}
+            </div>
+
+            {/* Password Field */}
+            <div className="space-y-3">
+              <Label
+                htmlFor="password"
+                className="block font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-sm uppercase tracking-wider"
+              >
+                PASSWORD
+              </Label>
+              <Input
+                ref={passwordInputRef}
+                id="password"
+                type="password"
+                value={password}
+                onClick={(e) => e.currentTarget.focus()}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setPasswordError(null);
+                  setError(null);
+                }}
+                className={`w-full border-2 ${passwordError ? 'border-startsnap-french-rose' : 'border-startsnap-ebony-clay'} rounded-lg bg-startsnap-white font-medium text-startsnap-ebony-clay placeholder-startsnap-river-bed shadow-[2px_2px_0px_#1f2937] focus:shadow-[3px_3px_0px_#1f2937] focus:translate-x-[-1px] focus:translate-y-[-1px] transition-all duration-200`}
+                placeholder={mode === 'signup' ? 'Create a strong password' : 'Enter your password'}
+                tabIndex={0}
+                disabled={twitterLoading}
+              />
+              {passwordError && (
+                <p className="text-startsnap-french-rose text-sm font-medium">{passwordError}</p>
+              )}
+            </div>
+
+            {/* Error Message */}
+            {error && (
+              <div className="bg-startsnap-french-rose/10 border-2 border-startsnap-french-rose rounded-lg p-4 shadow-[2px_2px_0px_#ef4444]">
+                <p className="text-startsnap-french-rose text-sm font-medium">{error}</p>
+              </div>
+            )}
+
+            {/* Submit Button */}
+            <Button
+              type="submit"
+              disabled={loading || twitterLoading}
+              variant="primary"
+              size="lg"
+              className="w-full"
+              tabIndex={0}
+            >
+              {loading ? (mode === 'login' ? 'LOGGING IN...' : 'SIGNING UP...') : (mode === 'login' ? 'LOG IN' : 'SIGN UP')}
+            </Button>
+
+            {/* Mode Toggle */}
+            <div className="text-center pt-4">
+              <button
+                type="button"
+                onClick={toggleMode}
+                className="text-startsnap-ebony-clay hover:text-startsnap-french-rose font-['Space_Grotesk',Helvetica] font-bold text-sm uppercase tracking-wide transition-colors duration-200"
+                tabIndex={0}
+              >
+                {mode === 'login' ? "DON'T HAVE AN ACCOUNT? SIGN UP" : "ALREADY HAVE AN ACCOUNT? LOG IN"}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   );
 };

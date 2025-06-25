@@ -37,13 +37,12 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
 
   // Detect when wallet connects and trigger callback
   useEffect(() => {
-    if (justConnected && activeAccount && activeAddress) {
-      console.log('Wallet connection detected via useEffect:', { activeAccount, activeAddress });
-      onWalletConnected?.(activeAddress);
-      setJustConnected(false);
-      setIsConnecting(false);
+    if (activeAccount && activeAddress) {
+      if (onWalletConnected) {
+        onWalletConnected(activeAddress);
+      }
     }
-  }, [activeAccount, activeAddress, justConnected, onWalletConnected]);
+  }, [activeAccount, activeAddress, onWalletConnected]);
 
   /**
    * @description Handles wallet connection via use-wallet-react

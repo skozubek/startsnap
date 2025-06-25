@@ -63,8 +63,6 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
     }
   };
 
-  const iconColor = type === 'danger' ? 'text-red-600' : 'text-yellow-600';
-
   return (
     <div
       className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
@@ -73,56 +71,80 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
       tabIndex={-1}
     >
       <div
-        className="bg-startsnap-white border-2 border-gray-800 rounded-xl shadow-[3px_3px_0px_#1f2937] md:border-4 md:shadow-[6px_6px_0px_#1f2937] max-w-xs p-6 sm:max-w-md sm:p-8 w-full animate-in zoom-in-95 duration-200"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="confirmation-title"
-        aria-describedby="confirmation-description"
+        className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+        onClick={handleBackdropClick}
+        onKeyDown={handleKeyDown}
+        tabIndex={-1}
       >
-        {/* Header */}
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-3">
-            {type === 'danger' ? (
-              <Trash2 className={`h-6 w-6 ${iconColor}`} />
-            ) : (
-              <AlertTriangle className={`h-6 w-6 ${iconColor}`} />
-            )}
-            <h2
-              id="confirmation-title"
-              className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-xl leading-7"
-            >
-              {title}
-            </h2>
+        <div
+          className="bg-startsnap-white border-2 border-startsnap-ebony-clay rounded-xl shadow-[4px_4px_0px_#1f2937] max-w-sm w-full animate-in zoom-in-95 duration-200"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="confirmation-title"
+          aria-describedby="confirmation-description"
+        >
+          {/* Header Section */}
+          <div className="border-b-2 border-startsnap-ebony-clay p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className={`w-8 h-8 rounded-lg border-2 border-startsnap-ebony-clay flex items-center justify-center shadow-[2px_2px_0px_#1f2937] ${
+                  type === 'danger'
+                    ? 'bg-startsnap-french-rose'
+                    : 'bg-startsnap-candlelight'
+                }`}>
+                  {type === 'danger' ? (
+                    <Trash2 className="h-4 w-4 text-startsnap-ebony-clay" />
+                  ) : (
+                    <AlertTriangle className="h-4 w-4 text-startsnap-ebony-clay" />
+                  )}
+                </div>
+                <h2
+                  id="confirmation-title"
+                  className="font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-xl uppercase tracking-wider"
+                >
+                  {title}
+                </h2>
+              </div>
+              <button
+                onClick={onClose}
+                className="w-8 h-8 bg-startsnap-beige border-2 border-startsnap-ebony-clay rounded-lg hover:bg-startsnap-beige/90 active:scale-95 transition-all duration-150 flex items-center justify-center shadow-[2px_2px_0px_#1f2937] hover:shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px]"
+                aria-label="Close dialog"
+              >
+                <X className="h-4 w-4 text-startsnap-ebony-clay" />
+              </button>
+            </div>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="h-8 w-8 p-0 hover:bg-startsnap-mischka/20"
-            aria-label="Close dialog"
-          >
-            <X className="h-4 w-4" />
-          </Button>
+
+          {/* Main Content Section */}
+          <div className="p-6">
+            {/* Warning Message */}
+            <div className={`border-2 border-startsnap-ebony-clay rounded-lg p-4 mb-6 shadow-[2px_2px_0px_#1f2937] ${
+              type === 'danger'
+                ? 'bg-startsnap-french-rose/10'
+                : 'bg-startsnap-candlelight/20'
+            }`}>
+              <p
+                id="confirmation-description"
+                className="font-medium text-startsnap-ebony-clay text-sm leading-relaxed"
+              >
+                {description}
+              </p>
+            </div>
+
+            {/* Actions */}
+            <div className="space-y-3">
+              <Button
+                onClick={onConfirm}
+                disabled={isLoading}
+                variant={type === 'danger' ? 'danger' : 'warning'}
+                size="lg"
+                className="w-full"
+              >
+                {isLoading ? 'PROCESSING...' : confirmText.toUpperCase()}
+              </Button>
+            </div>
+          </div>
         </div>
-
-        {/* Content */}
-        <p
-          id="confirmation-description"
-          className="font-['Roboto',Helvetica] text-startsnap-river-bed text-base leading-6 mb-6"
-        >
-          {description}
-        </p>
-
-        {/* Actions */}
-        <Button
-          onClick={onConfirm}
-          disabled={isLoading}
-          variant={type === 'danger' ? 'danger' : 'warning'}
-          size="lg"
-          className="w-full"
-        >
-          {isLoading ? 'Deleting...' : confirmText}
-        </Button>
       </div>
     </div>
   );

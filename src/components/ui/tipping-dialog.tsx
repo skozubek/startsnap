@@ -428,184 +428,192 @@ export const TippingDialog: React.FC<TippingDialogProps> = ({
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center p-4 ${
-        isSending ? 'bg-transparent' : 'bg-black/30'
-      }`}
+      className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
       onClick={handleBackdropClick}
       onKeyDown={handleKeyDown}
       tabIndex={-1}
     >
       <div
-        className="bg-startsnap-white border-2 border-gray-800 rounded-xl shadow-[3px_3px_0px_#1f2937] md:border-4 md:shadow-[6px_6px_0px_#1f2937] max-w-md p-6 sm:p-8 w-full animate-in zoom-in-95 duration-200"
+        className="bg-startsnap-white border-2 border-startsnap-ebony-clay rounded-xl shadow-[4px_4px_0px_#1f2937] max-w-md w-full animate-in zoom-in-95 duration-200"
         role="dialog"
         aria-modal="true"
         aria-labelledby="tipping-title"
         aria-describedby="tipping-description"
       >
-        {/* Header */}
-        <div className="flex items-start justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <span className="material-icons text-startsnap-mountain-meadow text-2xl">
-              monetization_on
-            </span>
-            <h2
-              id="tipping-title"
-              className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-xl leading-7"
+        {/* Header Section */}
+        <div className="border-b-2 border-startsnap-ebony-clay p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-startsnap-mountain-meadow rounded-lg border-2 border-startsnap-ebony-clay flex items-center justify-center shadow-[2px_2px_0px_#1f2937]">
+                <span className="text-startsnap-ebony-clay text-lg font-bold">$</span>
+              </div>
+              <h2
+                id="tipping-title"
+                className="font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-xl uppercase tracking-wider"
+              >
+                SEND TIP
+              </h2>
+            </div>
+            <button
+              onClick={handleClose}
+              className="w-8 h-8 bg-startsnap-beige border-2 border-startsnap-ebony-clay rounded-lg hover:bg-startsnap-beige/90 active:scale-95 transition-all duration-150 flex items-center justify-center shadow-[2px_2px_0px_#1f2937] hover:shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px]"
+              aria-label="Close dialog"
             >
-              Send Tip
-            </h2>
+              <X className="h-4 w-4 text-startsnap-ebony-clay" />
+            </button>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleClose}
-            className="h-8 w-8 p-0 hover:bg-startsnap-mischka/20"
-            aria-label="Close dialog"
-          >
-            <X className="h-4 w-4" />
-          </Button>
+          <p className="text-startsnap-ebony-clay/70 mt-3 font-medium">
+            Support the creator of <strong className="text-startsnap-ebony-clay">{projectName}</strong>
+          </p>
         </div>
 
-        {/* Description */}
-        <p
-          id="tipping-description"
-          className="font-['Roboto',Helvetica] text-startsnap-river-bed text-base leading-6 mb-6"
-        >
-          Support the creator of <strong>{projectName}</strong>
-        </p>
-
-        {/* Wallet Connection Section */}
-        {!isWalletConnected ? (
-          <div className="mb-6">
-            <WalletConnect
-              compact={true}
-              buttonText="Connect Wallet to Send Tip"
-              mode="payment"
-              onWalletConnected={(address: string) => {
-                toast.success('Wallet connected! You can now send a tip.');
-              }}
-            />
-          </div>
-        ) : (
-          <div className="mb-6">
-            {/* Wallet Status with Balance */}
-            <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="material-icons text-green-600">check_circle</span>
-                  <div>
-                    <p className="text-sm font-medium text-green-800">Wallet Connected</p>
-                    <p className="font-mono text-xs text-green-700">
-                      {activeAddress.slice(0, 8)}...{activeAddress.slice(-8)}
-                    </p>
-                  </div>
-                </div>
-                {isLoadingBalance ? (
-                  <div className="flex items-center gap-2 text-sm text-green-600">
-                    <span className="material-icons text-sm animate-spin">refresh</span>
-                  </div>
-                ) : (
-                  <div className="text-right">
-                    <div className="text-xs text-green-700">
-                      <div>ALGO: {walletBalance.algo.toFixed(4)}</div>
-                      <div>USDC: {walletBalance.hasUsdc ? walletBalance.usdc.toFixed(4) : 'N/A'}</div>
+        {/* Main Content Section */}
+        <div className="p-6">
+          {/* Wallet Connection Section */}
+          {!isWalletConnected ? (
+            <div className="mb-6">
+              <div className="bg-startsnap-beige border-2 border-startsnap-ebony-clay rounded-lg p-4 mb-4 shadow-[2px_2px_0px_#1f2937]">
+                <p className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-sm uppercase tracking-wide mb-3">
+                  WALLET REQUIRED
+                </p>
+                <p className="text-startsnap-ebony-clay/70 text-sm mb-4">
+                  Connect your Algorand wallet to send tips
+                </p>
+              </div>
+              <WalletConnect
+                compact={true}
+                buttonText="CONNECT WALLET"
+                mode="payment"
+                onWalletConnected={(address: string) => {
+                  toast.success('Wallet connected! You can now send a tip.');
+                }}
+              />
+            </div>
+          ) : (
+            <div className="mb-6">
+              {/* Wallet Status */}
+              <div className="bg-startsnap-mountain-meadow border-2 border-startsnap-ebony-clay rounded-lg p-4 mb-6 shadow-[3px_3px_0px_#1f2937]">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-6 h-6 bg-startsnap-beige border-2 border-startsnap-ebony-clay rounded-md flex items-center justify-center shadow-[1px_1px_0px_#1f2937]">
+                      <span className="text-startsnap-mountain-meadow text-sm font-bold">✓</span>
                     </div>
+                    <div>
+                      <p className="font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-sm uppercase tracking-wide">
+                        WALLET CONNECTED
+                      </p>
+                      <p className="font-mono text-xs text-startsnap-ebony-clay/70 mt-1">
+                        {activeAddress.slice(0, 8)}...{activeAddress.slice(-8)}
+                      </p>
+                    </div>
+                  </div>
+                  {isLoadingBalance ? (
+                    <div className="w-6 h-6 bg-startsnap-beige border-2 border-startsnap-ebony-clay rounded-md flex items-center justify-center shadow-[1px_1px_0px_#1f2937]">
+                      <span className="text-startsnap-ebony-clay text-xs animate-spin">⟳</span>
+                    </div>
+                  ) : (
+                    <div className="text-right">
+                      <div className="text-xs text-startsnap-ebony-clay font-mono font-bold">
+                        <div>ALGO: {walletBalance.algo.toFixed(4)}</div>
+                        <div>USDC: {walletBalance.hasUsdc ? walletBalance.usdc.toFixed(4) : 'N/A'}</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Tip Form - Only show when wallet is connected */}
+          {isWalletConnected && (
+            <div className="space-y-6">
+              {/* Currency Selection */}
+              <div>
+                <label className="block font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-sm uppercase tracking-wider mb-3">
+                  CURRENCY
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  {Object.entries(CURRENCIES).map(([key, curr]) => {
+                    const isAvailable = isCurrencyAvailable(key as CurrencyType);
+                    const balance = getCurrencyBalance(key as CurrencyType);
+
+                    return (
+                      <button
+                        key={key}
+                        onClick={() => isAvailable && setSelectedCurrency(key as CurrencyType)}
+                        disabled={!isAvailable}
+                        className={`p-4 border-2 border-startsnap-ebony-clay rounded-lg font-['Space_Grotesk',Helvetica] font-bold transition-all duration-150 shadow-[2px_2px_0px_#1f2937] hover:shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px] active:scale-95 ${
+                          selectedCurrency === key && isAvailable
+                            ? 'bg-startsnap-ebony-clay text-startsnap-beige'
+                            : isAvailable
+                            ? 'bg-startsnap-beige text-startsnap-ebony-clay hover:bg-startsnap-beige/90'
+                            : 'bg-startsnap-mischka text-startsnap-river-bed cursor-not-allowed border-startsnap-river-bed shadow-none hover:shadow-none hover:translate-x-0 hover:translate-y-0'
+                        }`}
+                      >
+                        <div className="text-center">
+                          <div className="text-base font-black uppercase tracking-wider">{curr.symbol}</div>
+                          <div className="text-xs font-mono mt-1 opacity-75">
+                            {isAvailable ? balance.toFixed(4) : 'N/A'}
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+                {selectedCurrency === 'USDC' && !walletBalance.hasUsdc && (
+                  <div className="mt-4 bg-startsnap-french-rose/10 border-2 border-startsnap-french-rose rounded-lg p-4 shadow-[2px_2px_0px_#ef4444]">
+                    <p className="text-startsnap-french-rose text-sm font-bold">
+                      ⚠ USDC must be added to your wallet first
+                    </p>
+                    <p className="text-startsnap-french-rose/80 text-xs mt-1">
+                      Get USDC from exchanges or swap ALGO for USDC on Algorand DEXs
+                    </p>
                   </div>
                 )}
               </div>
-            </div>
-          </div>
-        )}
 
-        {/* Tip Form - Only show when wallet is connected */}
-        {isWalletConnected && (
-          <div className="space-y-6 mb-6">
-            {/* Currency Selection */}
-            <div className="space-y-2">
-              <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-base leading-6">
-                Currency
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                {Object.entries(CURRENCIES).map(([key, curr]) => {
-                  const isAvailable = isCurrencyAvailable(key as CurrencyType);
-                  const balance = getCurrencyBalance(key as CurrencyType);
+              {/* Tip Amount Selection */}
+              <div>
+                <label className="block font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-sm uppercase tracking-wider mb-3">
+                  TIP AMOUNT ({currency.symbol})
+                </label>
 
-                  return (
-                    <button
-                      key={key}
-                      onClick={() => isAvailable && setSelectedCurrency(key as CurrencyType)}
-                      disabled={!isAvailable}
-                      className={`p-3 border-2 border-solid rounded-lg font-['Space_Grotesk',Helvetica] font-medium transition-all duration-150 ${
-                        selectedCurrency === key && isAvailable
-                          ? 'border-startsnap-mountain-meadow bg-startsnap-mountain-meadow/10 text-startsnap-mountain-meadow'
-                          : isAvailable
-                          ? 'border-gray-800 bg-white text-startsnap-oxford-blue hover:border-startsnap-mountain-meadow/50'
-                          : 'border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed'
-                      }`}
-                    >
-                      <div className="flex flex-col items-center">
-                        <span>{curr.symbol}</span>
-                        <span className="text-xs font-mono">
-                          {isAvailable ? balance.toFixed(4) : 'N/A'}
-                        </span>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-              {selectedCurrency === 'USDC' && !walletBalance.hasUsdc && (
-                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-sm text-blue-800">
-                    <span className="material-icons text-blue-600 text-sm mr-1 align-middle">info</span>
-                    USDC must be added to your wallet first. Get USDC from exchanges like Coinbase or swap ALGO for USDC on Algorand DEXs.
-                  </p>
+                {/* Predefined Amount Buttons */}
+                <div className="grid grid-cols-4 gap-2 mb-4">
+                  {PREDEFINED_AMOUNTS.map((amount) => {
+                    const isAffordable = isAmountAffordable(amount);
+                    return (
+                      <button
+                        key={amount}
+                        onClick={() => isAffordable && setSelectedAmount(amount)}
+                        disabled={!isAffordable}
+                        className={`p-3 border-2 border-startsnap-ebony-clay rounded-lg font-['Space_Grotesk',Helvetica] font-black text-sm transition-all duration-150 shadow-[2px_2px_0px_#1f2937] hover:shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px] active:scale-95 ${
+                          selectedAmount === amount && isAffordable
+                            ? 'bg-startsnap-ebony-clay text-startsnap-beige'
+                            : isAffordable
+                            ? 'bg-startsnap-beige text-startsnap-ebony-clay hover:bg-startsnap-beige/90'
+                            : 'bg-startsnap-mischka text-startsnap-river-bed cursor-not-allowed border-startsnap-river-bed shadow-none hover:shadow-none hover:translate-x-0 hover:translate-y-0'
+                        }`}
+                      >
+                        {amount}
+                      </button>
+                    );
+                  })}
+                  <button
+                    onClick={() => setSelectedAmount('custom')}
+                    className={`p-3 border-2 border-startsnap-ebony-clay rounded-lg font-['Space_Grotesk',Helvetica] font-black text-xs transition-all duration-150 uppercase tracking-wide shadow-[2px_2px_0px_#1f2937] hover:shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px] active:scale-95 ${
+                      selectedAmount === 'custom'
+                        ? 'bg-startsnap-ebony-clay text-startsnap-beige'
+                        : 'bg-startsnap-beige text-startsnap-ebony-clay hover:bg-startsnap-beige/90'
+                    }`}
+                  >
+                    CUSTOM
+                  </button>
                 </div>
-              )}
-            </div>
 
-            {/* Tip Amount Selection */}
-            <div className="space-y-2">
-              <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-base leading-6">
-                Tip Amount ({currency.symbol})
-              </label>
-
-              {/* Predefined Amount Buttons */}
-              <div className="grid grid-cols-4 gap-2">
-                {PREDEFINED_AMOUNTS.map((amount) => {
-                  const isAffordable = isAmountAffordable(amount);
-                  return (
-                    <button
-                      key={amount}
-                      onClick={() => isAffordable && setSelectedAmount(amount)}
-                      disabled={!isAffordable}
-                      className={`p-3 border-2 border-solid rounded-lg font-['Space_Grotesk',Helvetica] font-medium transition-all duration-150 ${
-                        selectedAmount === amount && isAffordable
-                          ? 'border-startsnap-mountain-meadow bg-startsnap-mountain-meadow/10 text-startsnap-mountain-meadow'
-                          : isAffordable
-                          ? 'border-gray-800 bg-white text-startsnap-oxford-blue hover:border-startsnap-mountain-meadow/50'
-                          : 'border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed'
-                      }`}
-                    >
-                      {amount}
-                    </button>
-                  );
-                })}
-                <button
-                  onClick={() => setSelectedAmount('custom')}
-                  className={`p-3 border-2 border-solid rounded-lg font-['Space_Grotesk',Helvetica] font-medium transition-all duration-150 ${
-                    selectedAmount === 'custom'
-                      ? 'border-startsnap-mountain-meadow bg-startsnap-mountain-meadow/10 text-startsnap-mountain-meadow'
-                      : 'border-gray-800 bg-white text-startsnap-oxford-blue hover:border-startsnap-mountain-meadow/50'
-                  }`}
-                >
-                  Custom
-                </button>
-              </div>
-
-              {/* Custom Amount Input - Only show when custom is selected */}
-              {selectedAmount === 'custom' && (
-                <div className="mt-6 p-4 bg-gray-50/50 border border-gray-200 rounded-lg">
-                  <div className="space-y-3">
+                {/* Custom Amount Input */}
+                {selectedAmount === 'custom' && (
+                  <div className="bg-startsnap-beige border-2 border-startsnap-ebony-clay rounded-lg p-4 shadow-[2px_2px_0px_#1f2937]">
                     <Input
                       type="number"
                       step={currency.minAmount}
@@ -614,69 +622,76 @@ export const TippingDialog: React.FC<TippingDialogProps> = ({
                       value={customAmount}
                       onChange={(e) => setCustomAmount(e.target.value)}
                       placeholder={`Enter amount (min ${currency.minAmount})`}
-                      className="border-2 border-solid border-gray-800 rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky text-lg"
+                      className="w-full border-2 border-startsnap-ebony-clay rounded-lg bg-startsnap-white font-mono text-startsnap-ebony-clay placeholder-startsnap-river-bed shadow-[2px_2px_0px_#1f2937] focus:shadow-[3px_3px_0px_#1f2937] focus:translate-x-[-1px] focus:translate-y-[-1px] transition-all duration-200"
                     />
-                    <div className="flex justify-between text-xs text-gray-600 px-1">
-                      <span>Minimum: {currency.minAmount} {currency.symbol}</span>
-                      <span>Available: {getCurrencyBalance(selectedCurrency).toFixed(6)} {currency.symbol}</span>
+                    <div className="flex justify-between text-xs text-startsnap-ebony-clay/70 mt-2 font-mono">
+                      <span>MIN: {currency.minAmount} {currency.symbol}</span>
+                      <span>MAX: {getCurrencyBalance(selectedCurrency).toFixed(6)} {currency.symbol}</span>
                     </div>
                   </div>
-                </div>
-              )}
-            </div>
-
-            {/* Optional Note */}
-            <div className="space-y-2">
-              <label
-                htmlFor="tip-note"
-                className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-base leading-6"
-              >
-                Message (Optional)
-              </label>
-              <Textarea
-                id="tip-note"
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                placeholder="Thanks for the awesome project!"
-                maxLength={100}
-                className="border-2 border-solid border-gray-800 rounded-lg p-3 min-h-[80px] font-['Roboto',Helvetica] text-startsnap-pale-sky resize-none"
-              />
-              <p className="text-xs text-gray-500">
-                {note.length}/100 characters
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Actions */}
-        {isWalletConnected && (
-          <div className="space-y-3">
-            {/* Signing Status Message */}
-            {isSending && (
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <span className="material-icons text-blue-600 animate-pulse">phone_android</span>
-                  <div>
-                    <p className="text-sm font-medium text-blue-800">Check your mobile device</p>
-                    <p className="text-xs text-blue-700">
-                      Open Pera Wallet on your phone to sign the transaction
-                    </p>
-                  </div>
-                </div>
+                )}
               </div>
-            )}
 
-            <Button
-              onClick={handleSendTip}
-              disabled={!canSendTip}
-              variant="success"
-              size="lg"
-              className="w-full"
-            >
-              {isSending ? 'Waiting for signature...' : isLoadingBalance ? 'Loading...' : `Send ${currentTipAmount || '0'} ${currency.symbol} Tip`}
-            </Button>
-          </div>
-        )}
+              {/* Optional Note */}
+              <div>
+                <label
+                  htmlFor="tip-note"
+                  className="block font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-sm uppercase tracking-wider mb-3"
+                >
+                  MESSAGE (OPTIONAL)
+                </label>
+                <Textarea
+                  id="tip-note"
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  placeholder="Thanks for the awesome project!"
+                  maxLength={100}
+                  className="min-h-[80px] resize-none border-2 border-startsnap-ebony-clay rounded-lg bg-startsnap-white font-medium text-startsnap-ebony-clay placeholder-startsnap-river-bed shadow-[2px_2px_0px_#1f2937] focus:shadow-[3px_3px_0px_#1f2937] focus:translate-x-[-1px] focus:translate-y-[-1px] transition-all duration-200"
+                />
+                <p className="text-xs text-startsnap-river-bed mt-2 font-mono">
+                  {note.length}/100 CHARACTERS
+                </p>
+              </div>
+
+              {/* Actions */}
+              <div className="space-y-4 pt-2">
+                {/* Signing Status Message */}
+                {isSending && (
+                  <div className="bg-startsnap-mountain-meadow border-2 border-startsnap-ebony-clay rounded-lg p-4 shadow-[2px_2px_0px_#1f2937]">
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 bg-startsnap-beige border-2 border-startsnap-ebony-clay rounded-md flex items-center justify-center shadow-[1px_1px_0px_#1f2937]">
+                        <span className="text-startsnap-mountain-meadow text-sm animate-pulse">📱</span>
+                      </div>
+                      <div>
+                        <p className="font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-sm uppercase tracking-wide">
+                          CHECK YOUR DEVICE
+                        </p>
+                        <p className="text-startsnap-ebony-clay/70 text-xs mt-1">
+                          Open Pera Wallet on your phone to sign the transaction
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <Button
+                  onClick={handleSendTip}
+                  disabled={!canSendTip}
+                  variant="primary"
+                  size="lg"
+                  className="w-full"
+                >
+                  {isSending
+                    ? 'WAITING FOR SIGNATURE...'
+                    : isLoadingBalance
+                    ? 'LOADING...'
+                    : `SEND ${currentTipAmount || '0'} ${currency.symbol} TIP`
+                  }
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
