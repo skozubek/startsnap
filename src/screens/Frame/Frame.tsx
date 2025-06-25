@@ -124,9 +124,27 @@ const FrameContent = (): JSX.Element => {
    */
   useEffect(() => {
     let subscription: any = null;
+    let retryTimeoutId: NodeJS.Timeout | null = null;
+    let retryCount = 0;
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY = 5000; // 5 seconds
 
     const setupSubscription = async () => {
       try {
+        // Debug: Check if we can read from activity_log at all
+        console.log('🔍 Testing activity_log read access...');
+        const { data: testData, error: testError } = await supabase
+          .from('activity_log')
+          .select('id, visibility, created_at')
+          .eq('visibility', 'public')
+          .limit(1);
+
+        if (testError) {
+          console.error('❌ Cannot read from activity_log:', testError);
+        } else {
+          console.log('✅ Successfully read from activity_log, found', testData?.length || 0, 'rows');
+        }
+
         // Get initial latest activity timestamp
         const { data, error } = await supabase
           .from('activity_log')
@@ -156,8 +174,36 @@ const FrameContent = (): JSX.Element => {
             handleNewActivity
           )
           .subscribe((status, err) => {
+            console.log('🔔 Realtime subscription status:', status);
+
             if (err) {
               console.error('❌ Failed to subscribe to activity changes:', err);
+              console.error('❌ Error details:', JSON.stringify(err, null, 2));
+
+              // If realtime is not enabled, don't retry indefinitely
+              if (err.message?.includes('realtime') || err.message?.includes('websocket') || err.message?.includes('permission')) {
+                console.warn('🚨 Realtime subscription failed - could be permissions or realtime config issue');
+                if (retryCount < MAX_RETRIES) {
+                  retryCount++;
+                  console.log(`⏳ Retrying subscription in ${RETRY_DELAY/1000}s (attempt ${retryCount}/${MAX_RETRIES})`);
+                  retryTimeoutId = setTimeout(() => {
+                    if (subscription) {
+                      subscription.unsubscribe();
+                    }
+                    setupSubscription();
+                  }, RETRY_DELAY);
+                } else {
+                  console.error('🛑 Max retries reached. Realtime subscription disabled for this session.');
+                  console.error('💡 Check: 1) activity_log table has realtime enabled, 2) RLS policies allow access, 3) Network connectivity');
+                }
+              }
+            } else if (status === 'SUBSCRIBED') {
+              console.log('✅ Successfully subscribed to activity_log changes');
+              retryCount = 0; // Reset retry count on successful connection
+            } else if (status === 'CLOSED') {
+              console.warn('⚠️ Realtime subscription closed');
+            } else if (status === 'CHANNEL_ERROR') {
+              console.error('🚨 Channel error occurred');
             }
           });
 
@@ -168,8 +214,11 @@ const FrameContent = (): JSX.Element => {
 
     setupSubscription();
 
-    // Critical Fix #1: Proper cleanup to prevent memory leaks
+    // Cleanup function to prevent memory leaks
     return () => {
+      if (retryTimeoutId) {
+        clearTimeout(retryTimeoutId);
+      }
       if (subscription) {
         subscription.unsubscribe();
       }
