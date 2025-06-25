@@ -97,24 +97,23 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
                     <MoreHorizontal size={20} />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="end"
-                  className="min-w-[180px] bg-white rounded-md shadow-lg border border-gray-200"
-                >
+                <DropdownMenuContent align="end">
                   <DropdownMenuItem
                     asChild
-                    className="flex items-center gap-2 cursor-pointer hover:bg-startsnap-athens-gray focus:bg-startsnap-athens-gray p-2 text-startsnap-ebony-clay"
+                    className="text-startsnap-oxford-blue hover:bg-startsnap-french-rose/10"
                   >
                     <Link to={`/edit/${startsnap.id}`} className="w-full">
-                      <Pencil size={16} className="mr-2 text-current" /> Edit Project
+                      <Pencil className="mr-2 h-4 w-4" />
+                      Edit Project
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={handleDeleteClick}
-                    className="flex items-center gap-2 cursor-pointer hover:!bg-red-50 focus:!bg-red-50 p-2 text-startsnap-french-rose hover:!text-startsnap-french-rose focus:!text-startsnap-french-rose"
+                    className="text-red-600 hover:bg-red-50"
                     aria-label="Delete project"
                   >
-                    <Trash2 size={16} className="mr-2 text-current" /> Delete Project
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete Project
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

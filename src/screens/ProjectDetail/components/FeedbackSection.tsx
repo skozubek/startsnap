@@ -562,7 +562,7 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                       <div className="flex-1">
                         <Textarea
                           placeholder={'Write your reply...'} // Placeholder for new reply
-                          className="startsnap-reply-textarea"
+                          className="startsnap-form-textarea"
                           value={replyContent} // This replyContent is for the NEW reply
                           onChange={(e) => {
                             setReplyContent(e.target.value);
@@ -707,7 +707,7 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                             <div className="ml-3 flex-1"> {/* Ensure ml-3 if avatar is present */}
                               <Textarea
                                 placeholder="Edit your reply..."
-                                className="startsnap-reply-textarea"
+                                className="startsnap-form-textarea"
                                 value={replyContent} // Bound to the content of the reply being edited
                                 onChange={(e) => {
                                   setReplyContent(e.target.value);
