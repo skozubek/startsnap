@@ -99,6 +99,7 @@ const FrameContent = (): JSX.Element => {
    */
   useEffect(() => {
     let pollingInterval: NodeJS.Timeout | null = null;
+    let lastKnownTimestamp: string | null = null;
 
     const setupActivityPolling = async () => {
       try {
@@ -115,8 +116,9 @@ const FrameContent = (): JSX.Element => {
         if (error && error.code !== 'PGRST116') {
           console.error('❌ Error fetching initial activity timestamp:', error);
         } else if (data) {
+          lastKnownTimestamp = data.created_at;
           setLatestActivityTimestamp(data.created_at);
-          console.log('✅ Activity polling initialized');
+          console.log('✅ Activity polling initialized with timestamp:', data.created_at);
         }
 
         // Set up polling every 30 seconds
@@ -130,10 +132,20 @@ const FrameContent = (): JSX.Element => {
               .limit(1)
               .single();
 
-            if (data && data.created_at !== latestActivityTimestamp) {
+            if (data && data.created_at !== lastKnownTimestamp) {
+              console.log('🔄 New activity detected via polling:', data.created_at, 'vs', lastKnownTimestamp);
+              lastKnownTimestamp = data.created_at;
               setLatestActivityTimestamp(data.created_at);
-              setHasNewActivity(true);
-              console.log('🔄 New activity detected via polling');
+
+              // Only trigger pulse animation if panel is closed
+              const panelElement = document.querySelector('[data-pulse-panel-open="true"]');
+              const panelIsClosed = !panelElement;
+
+              if (panelIsClosed) {
+                setHasNewActivity(true);
+              }
+            } else {
+              console.log('🔍 No new activity detected');
             }
           } catch (error) {
             console.error('❌ Activity polling failed:', error);
