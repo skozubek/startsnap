@@ -132,17 +132,27 @@ const FrameContent = (): JSX.Element => {
               .limit(1)
               .single();
 
-            if (data && data.created_at !== lastKnownTimestamp) {
-              console.log('🔄 New activity detected via polling:', data.created_at, 'vs', lastKnownTimestamp);
-              lastKnownTimestamp = data.created_at;
-              setLatestActivityTimestamp(data.created_at);
+                        if (data && data.created_at !== lastKnownTimestamp) {
+              // Only consider it "new" if the timestamp is actually newer
+              const isNewerActivity = !lastKnownTimestamp || new Date(data.created_at) > new Date(lastKnownTimestamp);
 
-              // Only trigger pulse animation if panel is closed
-              const panelElement = document.querySelector('[data-pulse-panel-open="true"]');
-              const panelIsClosed = !panelElement;
+              if (isNewerActivity) {
+                console.log('🔄 New activity detected via polling:', data.created_at, 'vs', lastKnownTimestamp);
+                lastKnownTimestamp = data.created_at;
+                setLatestActivityTimestamp(data.created_at);
 
-              if (panelIsClosed) {
-                setHasNewActivity(true);
+                // Only trigger pulse animation if panel is closed
+                const panelElement = document.querySelector('[data-pulse-panel-open="true"]');
+                const panelIsClosed = !panelElement;
+
+                if (panelIsClosed) {
+                  setHasNewActivity(true);
+                }
+              } else {
+                console.log('🔄 Activity timestamp changed but is older (likely deleted entry):', data.created_at, 'vs', lastKnownTimestamp);
+                // Update our tracking timestamp but don't trigger pulse
+                lastKnownTimestamp = data.created_at;
+                setLatestActivityTimestamp(data.created_at);
               }
             } else {
               console.log('🔍 No new activity detected');
