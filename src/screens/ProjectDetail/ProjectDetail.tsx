@@ -416,7 +416,7 @@ export const ProjectDetail = (): JSX.Element => {
     <>
       {/* Hero Background with Gradient */}
       <div className="w-full bg-startsnap-candlelight">
-        <div className="flex flex-col w-full items-center pt-12 pb-8 px-8">
+        <div className="flex flex-col w-full items-center pt-12 pb-8 px-4 md:px-8">
           {/* Project Showcase Zone */}
           <div className="w-full max-w-4xl">
             <Card className="w-full bg-startsnap-white rounded-xl overflow-hidden border-[3px] border-solid border-gray-800 shadow-[5px_5px_0px_#1f2937]">
@@ -443,7 +443,7 @@ export const ProjectDetail = (): JSX.Element => {
       {/* Dynamic Separator */}
       <div className="w-full bg-startsnap-beige relative">
         <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(0,0,0,0.03)_10px,rgba(0,0,0,0.03)_20px)]"></div>
-        <div className="w-full max-w-4xl px-8 py-8 mx-auto relative">
+        <div className="w-full max-w-4xl px-4 py-8 mx-auto relative md:px-8">
           <div className="flex items-center justify-center">
             <div className="flex-1 h-2 bg-startsnap-french-rose transform -skew-x-12"></div>
             <div className="px-6 py-2 bg-startsnap-ebony-clay text-startsnap-beige font-bold text-sm rounded-full border-2 border-startsnap-french-rose">
@@ -456,7 +456,7 @@ export const ProjectDetail = (): JSX.Element => {
 
       {/* Content Zone - White Background */}
       <div className="w-full bg-white pb-24 pt-8">
-        <div className="flex flex-col w-full items-center px-8">
+        <div className="flex flex-col w-full items-center px-4 md:px-8">
           <div className="w-full max-w-4xl">
             <Card className="w-full bg-transparent border-0 shadow-none rounded-none overflow-visible md:bg-startsnap-white md:rounded-xl md:overflow-hidden md:border-[3px] md:border-solid md:border-gray-800 md:shadow-[5px_5px_0px_#1f2937]">
               <CardContent className="p-0">

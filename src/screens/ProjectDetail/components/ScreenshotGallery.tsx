@@ -95,7 +95,7 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
   return (
     <>
       {/* Screenshot Grid */}
-      <div className="px-8 py-6 border-b-2 border-gray-800">
+      <div className="px-4 py-6 border-b-2 border-gray-800 md:px-8">
         <div className="flex items-center mb-6">
           <h2 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-2xl leading-8">
             Screenshots

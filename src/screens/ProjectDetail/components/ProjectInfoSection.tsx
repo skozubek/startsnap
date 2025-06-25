@@ -78,94 +78,114 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
       {/* BRUTAL Category Strip - Raw & Uncompromising! */}
       <div className={`h-4 ${categoryDisplay.bgColor} border-b-4 border-black`}></div>
 
-      <div className="bg-white px-8 py-6 border-b-2 border-gray-800">
-        <div className="flex justify-between items-center gap-4 mb-4">
-          <h1 className="text-startsnap-oxford-blue font-[var(--startsnap-semantic-heading-3-font-family)] font-black tracking-tight leading-tight flex-1 text-3xl md:text-4xl lg:text-5xl">
-            {startsnap.name}
-          </h1>
-          <div className="flex items-center gap-3 shrink-0">
-            {isOwner ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger
-                  asChild
-                >
-                  <button
-                    type="button"
-                    className="h-8 w-8 flex items-center justify-center rounded-full text-gray-600 hover:bg-gray-100 data-[state=open]:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    aria-label="Project actions"
-                  >
-                    <MoreHorizontal size={20} />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    asChild
-                    className="text-startsnap-oxford-blue hover:bg-startsnap-french-rose/10"
-                  >
-                    <Link to={`/edit/${startsnap.id}`} className="w-full">
-                      <Pencil className="mr-2 h-4 w-4" />
-                      Edit Project
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={handleDeleteClick}
-                    className="text-red-600 hover:bg-red-50"
-                    aria-label="Delete project"
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Delete Project
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : currentUser && (
-              <>
-                {/* Tip Creator Button - Only show if creator has wallet address */}
-                {creator?.algorand_wallet_address && (
-                  <Button
-                    onClick={onTipCreator}
-                    variant="success"
-                    size="sm"
-                    className="min-w-0 flex-shrink-0 px-3 py-2 md:px-4 md:py-2"
-                    aria-label="Tip the creator with Algorand"
-                  >
-                    <span className="material-icons text-lg flex-shrink-0">
-                      monetization_on
-                    </span>
-                    {/* Show text only on medium screens and up */}
-                    <span className="hidden md:inline truncate">
-                      Tip Creator
-                    </span>
-                  </Button>
-                )}
-                {/* Support Project Button */}
-                <Button
-                  onClick={onSupportToggle}
-                  disabled={isSupportActionLoading}
-                  variant="primary"
-                  size="sm"
-                  className="min-w-0 flex-shrink-0 px-3 py-2 md:px-4 md:py-2"
-                  aria-label={isSupportedByCurrentUser ? 'Unsupport this project' : 'Support this project'}
-                >
-                  <span className="material-icons text-lg flex-shrink-0">
-                    {isSupportedByCurrentUser ? 'favorite' : 'favorite_border'}
-                  </span>
-                  {/* Show text only on medium screens and up */}
-                  <span className="hidden md:inline truncate">
-                    {isSupportActionLoading
-                      ? 'Processing...'
-                      : isSupportedByCurrentUser
-                      ? 'Supported ✔'
-                      : 'Support Project'}
-                  </span>
-                </Button>
-              </>
-            )}
-            {/* Always display support count with heart icon and rose color */}
-            <div className="flex items-center gap-1 text-sm text-startsnap-french-rose flex-shrink-0">
-              <span className="material-icons text-lg">favorite</span>
-              <span className="font-medium">{currentSupportCount}</span>
+                  <div className="bg-white px-5 py-6 border-b-2 border-gray-800 md:px-8">
+        {/* Title and Actions - Adaptive Layout */}
+        <div className="flex flex-col gap-6 mb-4 md:gap-5">
+          {/* Title Row */}
+          <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start lg:gap-6">
+            <h1 className="text-startsnap-oxford-blue font-[var(--startsnap-semantic-heading-3-font-family)] font-black tracking-tight leading-relaxed text-2xl md:text-3xl lg:text-3xl lg:leading-tight xl:text-4xl lg:flex-1 lg:min-w-0 lg:pr-4">
+              {startsnap.name}
+            </h1>
+
+            {/* Actions - Always in separate visual block for long titles */}
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-3 lg:shrink-0 lg:min-w-fit">
+              {isOwner ? (
+                <div className="flex items-center justify-between lg:justify-end lg:gap-3">
+                  {/* Support Count for Owner */}
+                  <div className="flex items-center gap-2 text-base text-startsnap-french-rose lg:text-sm lg:gap-1">
+                    <span className="material-icons text-xl lg:text-lg">favorite</span>
+                    <span className="font-medium">{currentSupportCount}</span>
+                  </div>
+
+                  {/* Owner Actions */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        type="button"
+                        className="h-8 w-8 flex items-center justify-center rounded-full text-gray-600 hover:bg-gray-100 data-[state=open]:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        aria-label="Project actions"
+                      >
+                        <MoreHorizontal size={20} />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        asChild
+                        className="text-startsnap-oxford-blue hover:bg-startsnap-french-rose/10"
+                      >
+                        <Link to={`/edit/${startsnap.id}`} className="w-full">
+                          <Pencil className="mr-2 h-4 w-4" />
+                          Edit Project
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={handleDeleteClick}
+                        className="text-red-600 hover:bg-red-50"
+                        aria-label="Delete project"
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Delete Project
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              ) : currentUser ? (
+                <>
+                                    {/* User Action Buttons */}
+                  <div className="flex gap-4 lg:gap-3">
+                    {/* Tip Creator Button - Only show if creator has wallet address */}
+                    {creator?.algorand_wallet_address && (
+                      <Button
+                        onClick={onTipCreator}
+                        variant="success"
+                        size="lg"
+                        className="flex-1 lg:flex-none tap-target lg:px-3 lg:py-1.5"
+                        aria-label="Tip the creator with Algorand"
+                      >
+                        <span className="material-icons text-lg mr-3 lg:text-base lg:mr-1">
+                          monetization_on
+                        </span>
+                        <span className="lg:text-sm">Tip Creator</span>
+                      </Button>
+                    )}
+
+                    {/* Support Project Button */}
+                    <Button
+                      onClick={onSupportToggle}
+                      disabled={isSupportActionLoading}
+                      variant="primary"
+                      size="lg"
+                      className="flex-1 lg:flex-none tap-target lg:px-3 lg:py-1.5"
+                      aria-label={isSupportedByCurrentUser ? 'Unsupport this project' : 'Support this project'}
+                    >
+                      <span className="material-icons text-lg mr-3 lg:text-base lg:mr-1">
+                        {isSupportedByCurrentUser ? 'favorite' : 'favorite_border'}
+                      </span>
+                      <span className="lg:text-sm">
+                        {isSupportActionLoading
+                          ? 'Processing...'
+                          : isSupportedByCurrentUser
+                          ? 'Supported ✔'
+                          : 'Support Project'}
+                      </span>
+                    </Button>
+                  </div>
+
+                  {/* Support Count for Users */}
+                  <div className="flex items-center justify-center gap-2 text-base text-startsnap-french-rose lg:text-sm lg:gap-1">
+                    <span className="material-icons text-xl lg:text-lg">favorite</span>
+                    <span className="font-medium">{currentSupportCount}</span>
+                  </div>
+                </>
+              ) : (
+                /* Support Count for Non-logged Users */
+                <div className="flex items-center justify-center gap-2 text-base text-startsnap-french-rose lg:justify-end lg:gap-1">
+                  <span className="material-icons text-xl">favorite</span>
+                  <span className="font-medium">{currentSupportCount}</span>
+                </div>
+              )}
             </div>
-          </div>
+                    </div>
         </div>
         <div className="flex gap-3 flex-wrap items-center mb-2">
           <Badge
@@ -194,7 +214,7 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
         </div>
       </div>
 
-      <div className="px-8 pt-6 pb-8 border-b-2 border-gray-800">
+              <div className="px-4 pt-6 pb-8 border-b-2 border-gray-800 md:px-8">
         {(startsnap.live_demo_url || startsnap.demo_video_url) && (
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4">
             <p className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg">

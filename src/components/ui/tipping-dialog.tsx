@@ -428,47 +428,47 @@ export const TippingDialog: React.FC<TippingDialogProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 bg-black/50 md:flex md:items-center md:justify-center md:p-4"
       onClick={handleBackdropClick}
       onKeyDown={handleKeyDown}
       tabIndex={-1}
     >
       <div
-        className="bg-startsnap-white border-2 border-startsnap-ebony-clay rounded-xl shadow-[4px_4px_0px_#1f2937] max-w-md w-full animate-in zoom-in-95 duration-200"
+        className="bg-startsnap-white border-0 md:border-2 border-startsnap-ebony-clay rounded-none md:rounded-xl shadow-none md:shadow-[4px_4px_0px_#1f2937] w-full h-full md:max-w-md md:w-auto md:h-auto md:max-h-[70vh] animate-in fade-in md:zoom-in-95 duration-300 overflow-y-auto"
         role="dialog"
         aria-modal="true"
         aria-labelledby="tipping-title"
         aria-describedby="tipping-description"
       >
         {/* Header Section */}
-        <div className="border-b-2 border-startsnap-ebony-clay p-6">
+        <div className="border-b-2 border-startsnap-ebony-clay p-4 md:p-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-startsnap-mountain-meadow rounded-lg border-2 border-startsnap-ebony-clay flex items-center justify-center shadow-[2px_2px_0px_#1f2937]">
                 <span className="text-startsnap-ebony-clay text-lg font-bold">$</span>
               </div>
               <h2
                 id="tipping-title"
-                className="font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-xl uppercase tracking-wider"
+                className="font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-lg md:text-xl uppercase tracking-wider"
               >
                 SEND TIP
               </h2>
             </div>
             <button
               onClick={handleClose}
-              className="w-8 h-8 bg-startsnap-beige border-2 border-startsnap-ebony-clay rounded-lg hover:bg-startsnap-beige/90 active:scale-95 transition-all duration-150 flex items-center justify-center shadow-[2px_2px_0px_#1f2937] hover:shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px]"
+              className="w-8 h-8 bg-startsnap-beige border-2 border-startsnap-ebony-clay rounded-lg hover:bg-startsnap-beige/90 active:scale-95 transition-all duration-150 flex items-center justify-center shadow-[2px_2px_0px_#1f2937] hover:shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px] tap-target"
               aria-label="Close dialog"
             >
               <X className="h-4 w-4 text-startsnap-ebony-clay" />
             </button>
           </div>
-          <p className="text-startsnap-ebony-clay/70 mt-3 font-medium">
+          <p className="text-startsnap-ebony-clay/70 mt-2 md:mt-3 font-medium text-sm md:text-sm">
             Support the creator of <strong className="text-startsnap-ebony-clay">{projectName}</strong>
           </p>
         </div>
 
         {/* Main Content Section */}
-        <div className="p-6">
+        <div className="p-4 md:p-5 flex-1 md:flex-none">
           {/* Wallet Connection Section */}
           {!isWalletConnected ? (
             <div className="mb-6">
@@ -490,32 +490,32 @@ export const TippingDialog: React.FC<TippingDialogProps> = ({
               />
             </div>
           ) : (
-            <div className="mb-6">
+            <div className="mb-4">
               {/* Wallet Status */}
-              <div className="bg-startsnap-mountain-meadow border-2 border-startsnap-ebony-clay rounded-lg p-4 mb-6 shadow-[3px_3px_0px_#1f2937]">
+              <div className="bg-startsnap-mountain-meadow border-2 border-startsnap-ebony-clay rounded-lg p-3 mb-4 shadow-[3px_3px_0px_#1f2937]">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 bg-startsnap-beige border-2 border-startsnap-ebony-clay rounded-md flex items-center justify-center shadow-[1px_1px_0px_#1f2937]">
-                      <span className="text-startsnap-mountain-meadow text-sm font-bold">✓</span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-5 h-5 bg-startsnap-beige border-2 border-startsnap-ebony-clay rounded-md flex items-center justify-center shadow-[1px_1px_0px_#1f2937]">
+                      <span className="text-startsnap-mountain-meadow text-xs font-bold">✓</span>
                     </div>
                     <div>
-                      <p className="font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-sm uppercase tracking-wide">
+                      <p className="font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-xs uppercase tracking-wide">
                         WALLET CONNECTED
                       </p>
-                      <p className="font-mono text-xs text-startsnap-ebony-clay/70 mt-1">
-                        {activeAddress.slice(0, 8)}...{activeAddress.slice(-8)}
+                      <p className="font-mono text-xs text-startsnap-ebony-clay/70">
+                        {activeAddress.slice(0, 6)}...{activeAddress.slice(-6)}
                       </p>
                     </div>
                   </div>
                   {isLoadingBalance ? (
-                    <div className="w-6 h-6 bg-startsnap-beige border-2 border-startsnap-ebony-clay rounded-md flex items-center justify-center shadow-[1px_1px_0px_#1f2937]">
+                    <div className="w-5 h-5 bg-startsnap-beige border-2 border-startsnap-ebony-clay rounded-md flex items-center justify-center shadow-[1px_1px_0px_#1f2937]">
                       <span className="text-startsnap-ebony-clay text-xs animate-spin">⟳</span>
                     </div>
                   ) : (
                     <div className="text-right">
                       <div className="text-xs text-startsnap-ebony-clay font-mono font-bold">
-                        <div>ALGO: {walletBalance.algo.toFixed(4)}</div>
-                        <div>USDC: {walletBalance.hasUsdc ? walletBalance.usdc.toFixed(4) : 'N/A'}</div>
+                        <div>ALGO: {walletBalance.algo.toFixed(3)}</div>
+                        <div>USDC: {walletBalance.hasUsdc ? walletBalance.usdc.toFixed(3) : 'N/A'}</div>
                       </div>
                     </div>
                   )}
@@ -526,13 +526,13 @@ export const TippingDialog: React.FC<TippingDialogProps> = ({
 
           {/* Tip Form - Only show when wallet is connected */}
           {isWalletConnected && (
-            <div className="space-y-6">
+            <div className="space-y-3 md:space-y-4">
               {/* Currency Selection */}
               <div>
-                <label className="block font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-sm uppercase tracking-wider mb-3">
+                <label className="block font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-xs uppercase tracking-wider mb-2">
                   CURRENCY
                 </label>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-2">
                   {Object.entries(CURRENCIES).map(([key, curr]) => {
                     const isAvailable = isCurrencyAvailable(key as CurrencyType);
                     const balance = getCurrencyBalance(key as CurrencyType);
@@ -542,7 +542,7 @@ export const TippingDialog: React.FC<TippingDialogProps> = ({
                         key={key}
                         onClick={() => isAvailable && setSelectedCurrency(key as CurrencyType)}
                         disabled={!isAvailable}
-                        className={`p-4 border-2 border-startsnap-ebony-clay rounded-lg font-['Space_Grotesk',Helvetica] font-bold transition-all duration-150 shadow-[2px_2px_0px_#1f2937] hover:shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px] active:scale-95 ${
+                        className={`p-2.5 border-2 border-startsnap-ebony-clay rounded-lg font-['Space_Grotesk',Helvetica] font-bold transition-all duration-150 shadow-[2px_2px_0px_#1f2937] hover:shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px] active:scale-95 tap-target ${
                           selectedCurrency === key && isAvailable
                             ? 'bg-startsnap-ebony-clay text-startsnap-beige'
                             : isAvailable
@@ -551,9 +551,9 @@ export const TippingDialog: React.FC<TippingDialogProps> = ({
                         }`}
                       >
                         <div className="text-center">
-                          <div className="text-base font-black uppercase tracking-wider">{curr.symbol}</div>
-                          <div className="text-xs font-mono mt-1 opacity-75">
-                            {isAvailable ? balance.toFixed(4) : 'N/A'}
+                          <div className="text-sm font-black uppercase tracking-wider">{curr.symbol}</div>
+                          <div className="text-xs font-mono opacity-75">
+                            {isAvailable ? balance.toFixed(3) : 'N/A'}
                           </div>
                         </div>
                       </button>
@@ -574,12 +574,12 @@ export const TippingDialog: React.FC<TippingDialogProps> = ({
 
               {/* Tip Amount Selection */}
               <div>
-                <label className="block font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-sm uppercase tracking-wider mb-3">
+                <label className="block font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-xs uppercase tracking-wider mb-2">
                   TIP AMOUNT ({currency.symbol})
                 </label>
 
                 {/* Predefined Amount Buttons */}
-                <div className="grid grid-cols-4 gap-2 mb-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-2">
                   {PREDEFINED_AMOUNTS.map((amount) => {
                     const isAffordable = isAmountAffordable(amount);
                     return (
@@ -587,7 +587,7 @@ export const TippingDialog: React.FC<TippingDialogProps> = ({
                         key={amount}
                         onClick={() => isAffordable && setSelectedAmount(amount)}
                         disabled={!isAffordable}
-                        className={`p-3 border-2 border-startsnap-ebony-clay rounded-lg font-['Space_Grotesk',Helvetica] font-black text-sm transition-all duration-150 shadow-[2px_2px_0px_#1f2937] hover:shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px] active:scale-95 ${
+                        className={`p-2.5 border-2 border-startsnap-ebony-clay rounded-lg font-['Space_Grotesk',Helvetica] font-black text-sm transition-all duration-150 shadow-[2px_2px_0px_#1f2937] hover:shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px] active:scale-95 tap-target ${
                           selectedAmount === amount && isAffordable
                             ? 'bg-startsnap-ebony-clay text-startsnap-beige'
                             : isAffordable
@@ -601,7 +601,7 @@ export const TippingDialog: React.FC<TippingDialogProps> = ({
                   })}
                   <button
                     onClick={() => setSelectedAmount('custom')}
-                    className={`p-3 border-2 border-startsnap-ebony-clay rounded-lg font-['Space_Grotesk',Helvetica] font-black text-xs transition-all duration-150 uppercase tracking-wide shadow-[2px_2px_0px_#1f2937] hover:shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px] active:scale-95 ${
+                    className={`p-2.5 border-2 border-startsnap-ebony-clay rounded-lg font-['Space_Grotesk',Helvetica] font-black text-xs transition-all duration-150 uppercase tracking-wide shadow-[2px_2px_0px_#1f2937] hover:shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px] active:scale-95 tap-target ${
                       selectedAmount === 'custom'
                         ? 'bg-startsnap-ebony-clay text-startsnap-beige'
                         : 'bg-startsnap-beige text-startsnap-ebony-clay hover:bg-startsnap-beige/90'
@@ -613,7 +613,7 @@ export const TippingDialog: React.FC<TippingDialogProps> = ({
 
                 {/* Custom Amount Input */}
                 {selectedAmount === 'custom' && (
-                  <div className="bg-startsnap-beige border-2 border-startsnap-ebony-clay rounded-lg p-4 shadow-[2px_2px_0px_#1f2937]">
+                  <div className="bg-startsnap-beige border-2 border-startsnap-ebony-clay rounded-lg p-2.5 shadow-[2px_2px_0px_#1f2937]">
                     <Input
                       type="number"
                       step={currency.minAmount}
@@ -622,11 +622,11 @@ export const TippingDialog: React.FC<TippingDialogProps> = ({
                       value={customAmount}
                       onChange={(e) => setCustomAmount(e.target.value)}
                       placeholder={`Enter amount (min ${currency.minAmount})`}
-                      className="w-full border-2 border-startsnap-ebony-clay rounded-lg bg-startsnap-white font-mono text-startsnap-ebony-clay placeholder-startsnap-river-bed shadow-[2px_2px_0px_#1f2937] focus:shadow-[3px_3px_0px_#1f2937] focus:translate-x-[-1px] focus:translate-y-[-1px] transition-all duration-200"
+                      className="w-full border-2 border-startsnap-ebony-clay rounded-lg bg-startsnap-white font-mono text-startsnap-ebony-clay placeholder-startsnap-river-bed shadow-[2px_2px_0px_#1f2937] focus:shadow-[3px_3px_0px_#1f2937] focus:translate-x-[-1px] focus:translate-y-[-1px] transition-all duration-200 h-9 text-sm"
                     />
-                    <div className="flex justify-between text-xs text-startsnap-ebony-clay/70 mt-2 font-mono">
-                      <span>MIN: {currency.minAmount} {currency.symbol}</span>
-                      <span>MAX: {getCurrencyBalance(selectedCurrency).toFixed(6)} {currency.symbol}</span>
+                    <div className="flex justify-between text-xs text-startsnap-ebony-clay/70 mt-1.5 font-mono">
+                      <span>MIN: {currency.minAmount}</span>
+                      <span>MAX: {getCurrencyBalance(selectedCurrency).toFixed(3)}</span>
                     </div>
                   </div>
                 )}
@@ -636,7 +636,7 @@ export const TippingDialog: React.FC<TippingDialogProps> = ({
               <div>
                 <label
                   htmlFor="tip-note"
-                  className="block font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-sm uppercase tracking-wider mb-3"
+                  className="block font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-xs uppercase tracking-wider mb-1.5"
                 >
                   MESSAGE (OPTIONAL)
                 </label>
@@ -646,15 +646,15 @@ export const TippingDialog: React.FC<TippingDialogProps> = ({
                   onChange={(e) => setNote(e.target.value)}
                   placeholder="Thanks for the awesome project!"
                   maxLength={100}
-                  className="min-h-[80px] resize-none border-2 border-startsnap-ebony-clay rounded-lg bg-startsnap-white font-medium text-startsnap-ebony-clay placeholder-startsnap-river-bed shadow-[2px_2px_0px_#1f2937] focus:shadow-[3px_3px_0px_#1f2937] focus:translate-x-[-1px] focus:translate-y-[-1px] transition-all duration-200"
+                  className="min-h-[50px] resize-none border-2 border-startsnap-ebony-clay rounded-lg bg-startsnap-white font-medium text-startsnap-ebony-clay placeholder-startsnap-river-bed shadow-[2px_2px_0px_#1f2937] focus:shadow-[3px_3px_0px_#1f2937] focus:translate-x-[-1px] focus:translate-y-[-1px] transition-all duration-200 text-sm"
                 />
-                <p className="text-xs text-startsnap-river-bed mt-2 font-mono">
-                  {note.length}/100 CHARACTERS
+                <p className="text-xs text-startsnap-river-bed mt-1 font-mono">
+                  {note.length}/100
                 </p>
               </div>
 
               {/* Actions */}
-              <div className="space-y-4 pt-2">
+              <div className="space-y-3 pt-1">
                 {/* Signing Status Message */}
                 {isSending && (
                   <div className="bg-startsnap-mountain-meadow border-2 border-startsnap-ebony-clay rounded-lg p-4 shadow-[2px_2px_0px_#1f2937]">
