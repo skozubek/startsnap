@@ -10,6 +10,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
 } from './dropdown-menu'; // Reverted to named imports
 import { Popover, PopoverContent, PopoverTrigger } from './popover'; // Assuming Popover components exist
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select'; // Assuming Select components exist
@@ -164,7 +166,7 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
                 <span className="hidden sm:inline">Filter</span>
           </Button>
         </PopoverTrigger>
-                        <PopoverContent className="p-4 bg-startsnap-white border-2 border-gray-800 rounded-lg shadow-[3px_3px_0px_#1f2937] w-72 mx-4 sm:mx-0 sm:w-72" align="start">
+                        <PopoverContent align="start">
               <div className="space-y-4">
                 <h3 className="font-semibold text-startsnap-ebony-clay">Filter Projects</h3>
 
@@ -236,22 +238,22 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
                 <span className="hidden sm:inline">{getSortLabel(currentSort)}</span>
           </Button>
         </DropdownMenuTrigger>
-                        <DropdownMenuContent className="bg-startsnap-white border-2 border-gray-800 rounded-lg shadow-[3px_3px_0px_#1f2937]" align="end">
-              <div className="px-2 py-1.5 text-sm font-semibold text-startsnap-ebony-clay">Sort By</div>
-              <div className="h-px my-1 bg-gray-300" />
-              <DropdownMenuItem onClick={() => handleSortChange('created_at', 'desc')} className="hover:bg-gray-100 cursor-pointer">
+                        <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Sort By</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => handleSortChange('created_at', 'desc')}>
                 Newest
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleSortChange('created_at', 'asc')} className="hover:bg-gray-100 cursor-pointer">
+              <DropdownMenuItem onClick={() => handleSortChange('created_at', 'asc')}>
                 Oldest
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleSortChange('support_count', 'desc')} className="hover:bg-gray-100 cursor-pointer">
+              <DropdownMenuItem onClick={() => handleSortChange('support_count', 'desc')}>
                 Most Supported
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleSortChange('name', 'asc')} className="hover:bg-gray-100 cursor-pointer">
+              <DropdownMenuItem onClick={() => handleSortChange('name', 'asc')}>
                 Name (A-Z)
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleSortChange('name', 'desc')} className="hover:bg-gray-100 cursor-pointer">
+              <DropdownMenuItem onClick={() => handleSortChange('name', 'desc')}>
                 Name (Z-A)
               </DropdownMenuItem>
             </DropdownMenuContent>

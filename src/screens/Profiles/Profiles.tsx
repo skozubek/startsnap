@@ -19,6 +19,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
 } from "../../components/ui/dropdown-menu";
 import { FaGithub, FaXTwitter, FaLinkedinIn } from "react-icons/fa6";
 import type { UserProfileData, ProfileSummary, PaginatedProfileDiscoveryState } from "../../types/user";
@@ -300,7 +302,7 @@ export const Profiles = (): JSX.Element => {
                           <span className="hidden sm:inline">Filter</span>
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="p-4 bg-startsnap-white border-2 border-gray-800 rounded-lg shadow-[3px_3px_0px_#1f2937] w-72 mx-4 sm:mx-0 sm:w-72" align="start">
+                      <PopoverContent align="start">
                         <div className="space-y-4">
                           <h3 className="font-semibold text-startsnap-ebony-clay">Filter Vibe Coders</h3>
 
@@ -345,19 +347,19 @@ export const Profiles = (): JSX.Element => {
                           <span className="hidden sm:inline">{getSortLabel()}</span>
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent className="bg-startsnap-white border-2 border-gray-800 rounded-lg shadow-[3px_3px_0px_#1f2937]" align="end">
-                        <div className="px-2 py-1.5 text-sm font-semibold text-startsnap-ebony-clay">Sort By</div>
-                        <div className="h-px my-1 bg-gray-300" />
-                        <DropdownMenuItem onClick={() => handleSortChange('newest')} className="hover:bg-gray-100 cursor-pointer">
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Sort By</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => handleSortChange('newest')}>
                           {getSortLabelFromValue('newest')}
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleSortChange('oldest')} className="hover:bg-gray-100 cursor-pointer">
+                        <DropdownMenuItem onClick={() => handleSortChange('oldest')}>
                           {getSortLabelFromValue('oldest')}
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleSortChange('name_asc')} className="hover:bg-gray-100 cursor-pointer">
+                        <DropdownMenuItem onClick={() => handleSortChange('name_asc')}>
                           {getSortLabelFromValue('name_asc')}
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleSortChange('name_desc')} className="hover:bg-gray-100 cursor-pointer">
+                        <DropdownMenuItem onClick={() => handleSortChange('name_desc')}>
                           {getSortLabelFromValue('name_desc')}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
