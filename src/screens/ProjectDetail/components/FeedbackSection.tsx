@@ -455,7 +455,7 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
               </Card>
             ) : (
               <Card
-                className="bg-transparent border-0 shadow-none rounded-none p-0 md:shadow-[0px_2px_4px_-2px_#0000001a,0px_4px_6px_-1px_#0000001a] md:bg-startsnap-white md:rounded-xl md:overflow-hidden md:border-[3px] md:border-solid md:border-gray-800"
+                className="bg-transparent border-0 shadow-none rounded-none p-0 md:bg-startsnap-white md:rounded-xl md:overflow-hidden md:border-2 md:border-solid md:border-gray-800 md:shadow-[3px_3px_0px_#1f2937]"
               >
                 <CardContent className="p-0 md:p-5">
                   <div className="flex items-start justify-between">
