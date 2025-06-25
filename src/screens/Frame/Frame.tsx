@@ -90,62 +90,20 @@ const FrameContent = (): JSX.Element => {
   const userRef = useRef(user);
   userRef.current = user;
 
-  /**
-   * @description Handles new activity detection with spam prevention and own-activity filtering
-   * @param {any} payload - Real-time payload from Supabase
-   */
-  const handleNewActivity = useCallback((payload: any) => {
-    // Filter out own activities
-    if (userRef.current && payload.new?.actor_user_id === userRef.current.id) {
-      return;
-    }
 
-    if (payload.new && payload.new.created_at) {
-      setLatestActivityTimestamp(payload.new.created_at);
-
-      // Only trigger pulse animation if panel is closed
-      setHasNewActivity(prevHasActivity => {
-        const panelElement = document.querySelector('[data-pulse-panel-open="true"]');
-        const panelIsClosed = !panelElement;
-
-        if (panelIsClosed) {
-          return true;
-        } else {
-          return prevHasActivity;
-        }
-      });
-    }
-  }, []); // Empty dependency array - callback is now stable
 
   /**
-   * @description Sets up real-time subscription to activity_log table for new activity detection
+   * @description Sets up polling-based activity detection (no WebSocket complexity)
    * @async
-   * @sideEffects Creates Supabase realtime subscription and updates activity state
+   * @sideEffects Polls activity_log every 30 seconds for new activity detection
    */
   useEffect(() => {
-    let subscription: any = null;
-    let retryTimeoutId: NodeJS.Timeout | null = null;
-    let retryCount = 0;
-    const MAX_RETRIES = 3;
-    const RETRY_DELAY = 5000; // 5 seconds
+    let pollingInterval: NodeJS.Timeout | null = null;
 
-    const setupSubscription = async () => {
+    const setupActivityPolling = async () => {
       try {
-        // Debug: Check if we can read from activity_log at all
-        console.log('🔍 Testing activity_log read access...');
-        const { data: testData, error: testError } = await supabase
-          .from('activity_log')
-          .select('id, visibility, created_at')
-          .eq('visibility', 'public')
-          .limit(1);
-
-        if (testError) {
-          console.error('❌ Cannot read from activity_log:', testError);
-        } else {
-          console.log('✅ Successfully read from activity_log, found', testData?.length || 0, 'rows');
-        }
-
         // Get initial latest activity timestamp
+        console.log('🔍 Setting up activity polling...');
         const { data, error } = await supabase
           .from('activity_log')
           .select('created_at')
@@ -155,105 +113,47 @@ const FrameContent = (): JSX.Element => {
           .single();
 
         if (error && error.code !== 'PGRST116') {
-          console.error('Error fetching initial activity timestamp:', error);
+          console.error('❌ Error fetching initial activity timestamp:', error);
         } else if (data) {
           setLatestActivityTimestamp(data.created_at);
+          console.log('✅ Activity polling initialized');
         }
 
-        // Set up real-time subscription for new activity
-        subscription = supabase
-          .channel('activity_log_changes')
-          .on(
-            'postgres_changes',
-            {
-              event: 'INSERT',
-              schema: 'public',
-              table: 'activity_log',
-              filter: 'visibility=eq.public'
-            },
-            handleNewActivity
-          )
-          .subscribe((status, err) => {
-            console.log('🔔 Realtime subscription status:', status);
+        // Set up polling every 30 seconds
+        pollingInterval = setInterval(async () => {
+          try {
+            const { data } = await supabase
+              .from('activity_log')
+              .select('created_at')
+              .eq('visibility', 'public')
+              .order('created_at', { ascending: false })
+              .limit(1)
+              .single();
 
-            if (err) {
-              console.error('❌ Failed to subscribe to activity changes:', err);
-              console.error('❌ Error details:', JSON.stringify(err, null, 2));
-
-              // If realtime is not enabled, don't retry indefinitely
-              if (err.message?.includes('realtime') || err.message?.includes('websocket') || err.message?.includes('permission')) {
-                console.warn('🚨 Realtime subscription failed - could be permissions or realtime config issue');
-                if (retryCount < MAX_RETRIES) {
-                  retryCount++;
-                  console.log(`⏳ Retrying subscription in ${RETRY_DELAY/1000}s (attempt ${retryCount}/${MAX_RETRIES})`);
-                  retryTimeoutId = setTimeout(() => {
-                    if (subscription) {
-                      subscription.unsubscribe();
-                    }
-                    setupSubscription();
-                  }, RETRY_DELAY);
-                } else {
-                  console.error('🛑 Max retries reached. Realtime subscription disabled for this session.');
-                  console.error('💡 Check: 1) activity_log table has realtime enabled, 2) RLS policies allow access, 3) Network connectivity');
-                  console.warn('🔄 Falling back to polling mode for activity updates');
-
-                  // Fallback: Use polling every 30 seconds instead of realtime
-                  const pollingInterval = setInterval(async () => {
-                    try {
-                      const { data } = await supabase
-                        .from('activity_log')
-                        .select('created_at')
-                        .eq('visibility', 'public')
-                        .order('created_at', { ascending: false })
-                        .limit(1)
-                        .single();
-
-                      if (data && data.created_at !== latestActivityTimestamp) {
-                        setLatestActivityTimestamp(data.created_at);
-                        setHasNewActivity(true);
-                        console.log('🔄 New activity detected via polling');
-                      }
-                    } catch (error) {
-                      console.error('❌ Polling failed:', error);
-                    }
-                  }, 30000); // Poll every 30 seconds
-
-                  // Store polling interval for cleanup
-                  (window as any).__activityPollingInterval = pollingInterval;
-                }
-              }
-            } else if (status === 'SUBSCRIBED') {
-              console.log('✅ Successfully subscribed to activity_log changes');
-              retryCount = 0; // Reset retry count on successful connection
-            } else if (status === 'CLOSED') {
-              console.warn('⚠️ Realtime subscription closed');
-            } else if (status === 'CHANNEL_ERROR') {
-              console.error('🚨 Channel error occurred');
+            if (data && data.created_at !== latestActivityTimestamp) {
+              setLatestActivityTimestamp(data.created_at);
+              setHasNewActivity(true);
+              console.log('🔄 New activity detected via polling');
             }
-          });
+          } catch (error) {
+            console.error('❌ Activity polling failed:', error);
+          }
+        }, 30000); // Poll every 30 seconds
 
       } catch (error) {
-        console.error('Error setting up activity subscription:', error);
+        console.error('❌ Error setting up activity polling:', error);
       }
     };
 
-    setupSubscription();
+    setupActivityPolling();
 
-    // Cleanup function to prevent memory leaks
+    // Cleanup function
     return () => {
-      if (retryTimeoutId) {
-        clearTimeout(retryTimeoutId);
-      }
-      if (subscription) {
-        subscription.unsubscribe();
-      }
-      // Cleanup polling fallback if it exists
-      if ((window as any).__activityPollingInterval) {
-        clearInterval((window as any).__activityPollingInterval);
-        (window as any).__activityPollingInterval = null;
+      if (pollingInterval) {
+        clearInterval(pollingInterval);
       }
     };
-  }, [handleNewActivity]); // Dependency on handleNewActivity ensures proper cleanup
+  }, []); // No dependencies needed for simple polling
 
   /**
    * @description Opens the Community Pulse panel and stops the pulsing effect
