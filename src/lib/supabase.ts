@@ -13,16 +13,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 /**
- * @description Supabase client instance configured with environment variables and realtime options
+ * @description Supabase client instance configured with environment variables
  * @sideEffects Creates a connection to the Supabase backend
  */
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  realtime: {
-    params: {
-      eventsPerSecond: 10,
-    },
-    // Add timeout and heartbeat settings for better reliability
-    timeout: 20000,
-    heartbeatIntervalMs: 30000,
-  },
-});
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);

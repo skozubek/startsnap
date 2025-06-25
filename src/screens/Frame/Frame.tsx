@@ -195,6 +195,31 @@ const FrameContent = (): JSX.Element => {
                 } else {
                   console.error('🛑 Max retries reached. Realtime subscription disabled for this session.');
                   console.error('💡 Check: 1) activity_log table has realtime enabled, 2) RLS policies allow access, 3) Network connectivity');
+                  console.warn('🔄 Falling back to polling mode for activity updates');
+
+                  // Fallback: Use polling every 30 seconds instead of realtime
+                  const pollingInterval = setInterval(async () => {
+                    try {
+                      const { data } = await supabase
+                        .from('activity_log')
+                        .select('created_at')
+                        .eq('visibility', 'public')
+                        .order('created_at', { ascending: false })
+                        .limit(1)
+                        .single();
+
+                      if (data && data.created_at !== latestActivityTimestamp) {
+                        setLatestActivityTimestamp(data.created_at);
+                        setHasNewActivity(true);
+                        console.log('🔄 New activity detected via polling');
+                      }
+                    } catch (error) {
+                      console.error('❌ Polling failed:', error);
+                    }
+                  }, 30000); // Poll every 30 seconds
+
+                  // Store polling interval for cleanup
+                  (window as any).__activityPollingInterval = pollingInterval;
                 }
               }
             } else if (status === 'SUBSCRIBED') {
@@ -221,6 +246,11 @@ const FrameContent = (): JSX.Element => {
       }
       if (subscription) {
         subscription.unsubscribe();
+      }
+      // Cleanup polling fallback if it exists
+      if ((window as any).__activityPollingInterval) {
+        clearInterval((window as any).__activityPollingInterval);
+        (window as any).__activityPollingInterval = null;
       }
     };
   }, [handleNewActivity]); // Dependency on handleNewActivity ensures proper cleanup
