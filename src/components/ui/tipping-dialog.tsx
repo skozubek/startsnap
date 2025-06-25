@@ -434,7 +434,7 @@ export const TippingDialog: React.FC<TippingDialogProps> = ({
       tabIndex={-1}
     >
       <div
-        className="bg-startsnap-white border-0 md:border-2 border-startsnap-ebony-clay rounded-none md:rounded-xl shadow-none md:shadow-[4px_4px_0px_#1f2937] w-full h-full md:max-w-md md:w-auto md:h-auto md:max-h-[70vh] animate-in fade-in md:zoom-in-95 duration-300 overflow-y-auto"
+        className="bg-startsnap-white border-0 md:border-2 border-startsnap-ebony-clay rounded-none md:rounded-xl shadow-none md:shadow-[4px_4px_0px_#1f2937] w-full h-full md:max-w-md md:w-auto md:h-auto md:max-h-[70vh] animate-in fade-in md:zoom-in-95 duration-300 overflow-y-auto pt-16 md:pt-0"
         role="dialog"
         aria-modal="true"
         aria-labelledby="tipping-title"
