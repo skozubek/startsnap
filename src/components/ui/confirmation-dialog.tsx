@@ -71,18 +71,12 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
       tabIndex={-1}
     >
       <div
-        className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
-        onClick={handleBackdropClick}
-        onKeyDown={handleKeyDown}
-        tabIndex={-1}
+        className="bg-startsnap-white border-2 border-startsnap-ebony-clay rounded-xl shadow-[4px_4px_0px_#1f2937] max-w-sm w-full animate-in zoom-in-95 duration-200"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="confirmation-title"
+        aria-describedby="confirmation-description"
       >
-        <div
-          className="bg-startsnap-white border-2 border-startsnap-ebony-clay rounded-xl shadow-[4px_4px_0px_#1f2937] max-w-sm w-full animate-in zoom-in-95 duration-200"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="confirmation-title"
-          aria-describedby="confirmation-description"
-        >
           {/* Header Section */}
           <div className="border-b-2 border-startsnap-ebony-clay p-6">
             <div className="flex items-center justify-between">
@@ -145,7 +139,6 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
             </div>
           </div>
         </div>
-      </div>
     </div>
   );
 };
