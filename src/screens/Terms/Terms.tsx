@@ -17,7 +17,7 @@ export const Terms = (): JSX.Element => {
       {/* Hero Section */}
       <div className="w-full bg-startsnap-candlelight border-b-2 border-gray-800">
         <div className="max-w-4xl mx-auto px-8 py-16">
-          <h1 className="text-4xl lg:text-5xl font-bold text-startsnap-ebony-clay text-center font-['Space_Grotesk',Helvetica] leading-tight">
+          <h1 className="text-4xl lg:text-5xl font-bold text-startsnap-ebony-clay text-center font-heading leading-tight">
             Terms of Service
           </h1>
           <div className="text-center mt-6">
@@ -35,7 +35,7 @@ export const Terms = (): JSX.Element => {
         {/* Acceptance of Terms - White Background */}
         <section className="w-full bg-white border-b-2 border-gray-800">
           <div className="max-w-4xl mx-auto px-8 py-12">
-            <h2 className="text-2xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-6">
+            <h2 className="text-2xl font-bold text-startsnap-ebony-clay font-heading mb-6">
               1. Acceptance of Terms
             </h2>
             <p className="text-startsnap-river-bed leading-relaxed text-lg">
@@ -49,7 +49,7 @@ export const Terms = (): JSX.Element => {
         {/* Description of Service - Light Background */}
         <section className="w-full bg-startsnap-athens-gray border-b-2 border-gray-800">
           <div className="max-w-4xl mx-auto px-8 py-12">
-            <h2 className="text-2xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-6">
+            <h2 className="text-2xl font-bold text-startsnap-ebony-clay font-heading mb-6">
               2. Description of Service
             </h2>
             <p className="text-startsnap-river-bed leading-relaxed text-lg">
@@ -64,7 +64,7 @@ export const Terms = (): JSX.Element => {
         {/* User Accounts - White Background */}
         <section className="w-full bg-white border-b-2 border-gray-800">
           <div className="max-w-4xl mx-auto px-8 py-12">
-            <h2 className="text-2xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-6">
+            <h2 className="text-2xl font-bold text-startsnap-ebony-clay font-heading mb-6">
               3. User Accounts and Registration
             </h2>
             <ul className="text-startsnap-river-bed leading-relaxed space-y-3 list-disc pl-6 text-lg">
@@ -80,7 +80,7 @@ export const Terms = (): JSX.Element => {
         {/* User Content and Conduct - Light Background */}
         <section className="w-full bg-startsnap-french-pass border-b-2 border-gray-800">
           <div className="max-w-4xl mx-auto px-8 py-12">
-            <h2 className="text-2xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-8">
+            <h2 className="text-2xl font-bold text-startsnap-ebony-clay font-heading mb-8">
               4. User Content and Conduct
             </h2>
 
@@ -114,7 +114,7 @@ export const Terms = (): JSX.Element => {
         {/* Community Guidelines - White Background */}
         <section className="w-full bg-white border-b-2 border-gray-800">
           <div className="max-w-4xl mx-auto px-8 py-12">
-            <h2 className="text-2xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-6">
+            <h2 className="text-2xl font-bold text-startsnap-ebony-clay font-heading mb-6">
               5. Community Guidelines
             </h2>
             <p className="text-startsnap-river-bed leading-relaxed mb-6 text-lg">
@@ -133,7 +133,7 @@ export const Terms = (): JSX.Element => {
         {/* AI and Tool Usage - Light Background */}
         <section className="w-full bg-startsnap-wisp-pink border-b-2 border-gray-800">
           <div className="max-w-4xl mx-auto px-8 py-12">
-            <h2 className="text-2xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-6">
+            <h2 className="text-2xl font-bold text-startsnap-ebony-clay font-heading mb-6">
               6. AI and Tool Usage
             </h2>
             <p className="text-startsnap-river-bed leading-relaxed mb-6 text-lg">
@@ -153,7 +153,7 @@ export const Terms = (): JSX.Element => {
           <div className="max-w-4xl mx-auto px-8 py-12">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
-                <h2 className="text-xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-4">
+                <h2 className="text-xl font-bold text-startsnap-ebony-clay font-heading mb-4">
                   7. Platform Usage and Limitations
                 </h2>
                 <ul className="text-startsnap-river-bed leading-relaxed space-y-2 list-disc pl-6">
@@ -166,7 +166,7 @@ export const Terms = (): JSX.Element => {
               </div>
 
               <div>
-                <h2 className="text-xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-4">
+                <h2 className="text-xl font-bold text-startsnap-ebony-clay font-heading mb-4">
                   8. Privacy and Data Protection
                 </h2>
                 <p className="text-startsnap-river-bed leading-relaxed">
@@ -182,7 +182,7 @@ export const Terms = (): JSX.Element => {
           <div className="max-w-4xl mx-auto px-8 py-12">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
-                <h2 className="text-xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-4">
+                <h2 className="text-xl font-bold text-startsnap-ebony-clay font-heading mb-4">
                   9. Termination
                 </h2>
                 <p className="text-startsnap-river-bed leading-relaxed">
@@ -193,7 +193,7 @@ export const Terms = (): JSX.Element => {
               </div>
 
               <div>
-                <h2 className="text-xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-4">
+                <h2 className="text-xl font-bold text-startsnap-ebony-clay font-heading mb-4">
                   10. Disclaimers and Limitation of Liability
                 </h2>
                 <p className="text-startsnap-river-bed leading-relaxed">
@@ -210,7 +210,7 @@ export const Terms = (): JSX.Element => {
           <div className="max-w-4xl mx-auto px-8 py-12">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
-                <h2 className="text-xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-4">
+                <h2 className="text-xl font-bold text-startsnap-ebony-clay font-heading mb-4">
                   11. Changes to Terms
                 </h2>
                 <p className="text-startsnap-river-bed leading-relaxed">
@@ -221,7 +221,7 @@ export const Terms = (): JSX.Element => {
               </div>
 
               <div>
-                <h2 className="text-xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-4">
+                <h2 className="text-xl font-bold text-startsnap-ebony-clay font-heading mb-4">
                   12. Contact Information
                 </h2>
                 <p className="text-startsnap-river-bed leading-relaxed">
@@ -237,7 +237,7 @@ export const Terms = (): JSX.Element => {
         <section className="w-full bg-startsnap-french-pass">
           <div className="max-w-4xl mx-auto px-8 py-16">
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-6">
+              <h2 className="text-2xl font-bold text-startsnap-ebony-clay font-heading mb-6">
                 Questions or Concerns?
               </h2>
               <p className="text-startsnap-river-bed leading-relaxed mb-8 text-lg max-w-2xl mx-auto">

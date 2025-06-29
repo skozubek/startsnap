@@ -418,10 +418,10 @@ export const Profile = (): JSX.Element => {
       <div className="w-full bg-startsnap-candlelight">
         <div className="w-full max-w-4xl px-8 py-16 mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-5xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] leading-[48px]">
+            <h2 className="text-5xl font-heading text-startsnap-ebony-clay leading-[48px]">
               Your Profile
             </h2>
-            <p className="text-xl text-startsnap-river-bed font-['Roboto',Helvetica] mt-4">
+                          <p className="text-xl text-startsnap-river-bed font-body mt-4">
               Manage your profile and showcase your StartSnaps
             </p>
           </div>
@@ -447,7 +447,7 @@ export const Profile = (): JSX.Element => {
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
-                        className="rounded-full w-full max-w-xs sm:w-56 flex justify-between items-center px-3 py-2 text-sm font-['Roboto',Helvetica] bg-startsnap-athens-gray text-startsnap-ebony-clay hover:bg-gray-300 border-gray-800 border-2 shadow-[2px_2px_0px_#1f2937] mt-4"
+                        className="rounded-full w-full max-w-xs sm:w-56 flex justify-between items-center px-3 py-2 text-sm bg-startsnap-athens-gray text-startsnap-ebony-clay hover:bg-gray-300 border-gray-800 border-2 shadow-[2px_2px_0px_#1f2937] mt-4"
                       >
                         <div className="flex items-center">
                           <span className="material-icons text-sm mr-2">{getStatusIcon(profile.status)}</span>
@@ -476,7 +476,7 @@ export const Profile = (): JSX.Element => {
                 <div className="flex-1">
                   <form className="space-y-6">
                     <div className="space-y-2">
-                      <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+                      <label className="block font-ui text-startsnap-oxford-blue text-lg leading-7">
                         Username
                       </label>
                       <Input
@@ -484,7 +484,7 @@ export const Profile = (): JSX.Element => {
                         value={profile.username}
                         onChange={handleChange}
                         placeholder="Your username"
-                        className={`border-2 border-solid ${usernameError ? 'border-red-500' : 'border-gray-800'} rounded-lg p-4 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
+                        className={`border-2 border-solid ${usernameError ? 'border-red-500' : 'border-gray-800'} rounded-lg p-4 text-startsnap-pale-sky`}
                       />
                       {usernameError && (
                         <p className="text-red-500 text-sm mt-1">{usernameError}</p>
@@ -492,7 +492,7 @@ export const Profile = (): JSX.Element => {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+                      <label className="block font-ui text-startsnap-oxford-blue text-lg leading-7">
                         Bio
                       </label>
                       <Textarea
@@ -500,12 +500,12 @@ export const Profile = (): JSX.Element => {
                         value={profile.bio}
                         onChange={handleChange}
                         placeholder="Tell us about yourself, your skills, interests, and what you're working on..."
-                        className="border-2 border-solid border-gray-800 rounded-lg p-3.5 min-h-[120px] font-['Roboto',Helvetica] text-startsnap-pale-sky"
+                        className="border-2 border-solid border-gray-800 rounded-lg p-3.5 min-h-[120px] text-startsnap-pale-sky"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+                      <label className="block font-ui text-startsnap-oxford-blue text-lg leading-7">
                         External Links
                       </label>
                       <div className="space-y-3">
@@ -519,7 +519,7 @@ export const Profile = (): JSX.Element => {
                             value={profile.github}
                             onChange={handleChange}
                             placeholder="https://github.com/username"
-                            className={`border-2 border-solid ${linkErrors.github ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 pl-10 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
+                            className={`border-2 border-solid ${linkErrors.github ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 pl-10 text-startsnap-pale-sky`}
                           />
                           {linkErrors.github && (
                             <p className="text-red-500 text-xs mt-1">{linkErrors.github}</p>
@@ -536,7 +536,7 @@ export const Profile = (): JSX.Element => {
                             value={profile.twitter}
                             onChange={handleChange}
                             placeholder="https://twitter.com/username"
-                            className={`border-2 border-solid ${linkErrors.twitter ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 pl-10 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
+                            className={`border-2 border-solid ${linkErrors.twitter ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 pl-10 text-startsnap-pale-sky`}
                           />
                           {linkErrors.twitter && (
                             <p className="text-red-500 text-xs mt-1">{linkErrors.twitter}</p>
@@ -553,7 +553,7 @@ export const Profile = (): JSX.Element => {
                             value={profile.linkedin}
                             onChange={handleChange}
                             placeholder="https://linkedin.com/in/username"
-                            className={`border-2 border-solid ${linkErrors.linkedin ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 pl-10 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
+                            className={`border-2 border-solid ${linkErrors.linkedin ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 pl-10 text-startsnap-pale-sky`}
                           />
                           {linkErrors.linkedin && (
                             <p className="text-red-500 text-xs mt-1">{linkErrors.linkedin}</p>
@@ -570,7 +570,7 @@ export const Profile = (): JSX.Element => {
                             value={profile.website}
                             onChange={handleChange}
                             placeholder="https://yourwebsite.com"
-                            className={`border-2 border-solid ${linkErrors.website ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 pl-10 font-['Roboto',Helvetica] text-startsnap-pale-sky`}
+                            className={`border-2 border-solid ${linkErrors.website ? 'border-red-500' : 'border-gray-800'} rounded-lg p-3 pl-10 text-startsnap-pale-sky`}
                           />
                           {linkErrors.website && (
                             <p className="text-red-500 text-xs mt-1">{linkErrors.website}</p>
@@ -581,7 +581,7 @@ export const Profile = (): JSX.Element => {
 
                     {/* Tip Collection Wallet Section */}
                     <div className="space-y-2">
-                      <label className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">
+                      <label className="block font-ui text-startsnap-oxford-blue text-lg leading-7">
                         Tip Collection Wallet
                       </label>
                       <p className="text-sm text-gray-600 mb-4">
@@ -722,7 +722,7 @@ export const Profile = (): JSX.Element => {
                                   </div>
                                   <h3
                                     id="change-wallet-title"
-                                    className="font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-xl uppercase tracking-wider"
+                                    className="font-heading text-startsnap-ebony-clay text-xl uppercase tracking-wider"
                                   >
                                     CHANGE WALLET
                                   </h3>

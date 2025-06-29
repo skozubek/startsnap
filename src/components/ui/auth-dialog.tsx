@@ -331,7 +331,7 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: Au
               </div>
               <h2
                 id="auth-title"
-                className="font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-xl uppercase tracking-wider"
+                className="font-heading text-startsnap-ebony-clay text-xl uppercase tracking-wider"
               >
                 {mode === 'login' ? 'WELCOME BACK' : 'JOIN STARTSNAP'}
               </h2>
@@ -365,7 +365,7 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: Au
             {/* Divider */}
             <div className="flex items-center my-6">
               <div className="flex-1 h-0.5 bg-startsnap-ebony-clay"></div>
-              <span className="px-4 text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] font-bold text-sm uppercase tracking-wider">OR</span>
+              <span className="px-4 text-startsnap-ebony-clay font-ui text-sm uppercase tracking-wider">OR</span>
               <div className="flex-1 h-0.5 bg-startsnap-ebony-clay"></div>
             </div>
 
@@ -373,7 +373,7 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: Au
             <div className="space-y-3">
               <Label
                 htmlFor="email"
-                className="block font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-sm uppercase tracking-wider"
+                className="block font-ui text-startsnap-ebony-clay text-sm uppercase tracking-wider"
               >
                 EMAIL ADDRESS
               </Label>
@@ -402,7 +402,7 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: Au
             <div className="space-y-3">
               <Label
                 htmlFor="password"
-                className="block font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-sm uppercase tracking-wider"
+                className="block font-ui text-startsnap-ebony-clay text-sm uppercase tracking-wider"
               >
                 PASSWORD
               </Label>
@@ -451,7 +451,7 @@ export const AuthDialog = ({ isOpen, onClose, mode: initialMode, onSuccess }: Au
               <button
                 type="button"
                 onClick={toggleMode}
-                className="text-startsnap-ebony-clay hover:text-startsnap-french-rose font-['Space_Grotesk',Helvetica] font-bold text-sm uppercase tracking-wide transition-colors duration-200"
+                className="text-startsnap-ebony-clay hover:text-startsnap-french-rose font-ui text-sm uppercase tracking-wide transition-colors duration-200"
                 tabIndex={0}
               >
                 {mode === 'login' ? "DON'T HAVE AN ACCOUNT? SIGN UP" : "ALREADY HAVE AN ACCOUNT? LOG IN"}

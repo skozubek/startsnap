@@ -220,10 +220,10 @@ export const ActivityFeedSection: React.FC<ActivityFeedSectionProps> = ({
     <div className={`${isInPanel ? 'h-full flex flex-col' : 'w-full max-w-screen-2xl px-8 py-16'}`}>
       {!isInPanel && (
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-4">
+          <h2 className="text-4xl font-heading text-startsnap-ebony-clay mb-4">
             Community Pulse
           </h2>
-          <p className="text-xl text-startsnap-river-bed font-['Roboto',Helvetica]">
+                      <p className="text-xl text-startsnap-river-bed font-body">
             See what the community is building and sharing
           </p>
         </div>

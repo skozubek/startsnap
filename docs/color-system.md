@@ -49,7 +49,7 @@ A consistent color language helps users quickly understand what actions are poss
 
 ## Migration Checklist
 - [ ] Replace raw `bg-startsnap-french-rose` in components with `.btn-primary` or `text-primary` classes.
-- [ ] Update `.startsnap-button` variants to consume tokens.
+- [x] ~~Update `.startsnap-button` variants to consume tokens.~~ (Removed legacy system - using semantic Button component)
 - [ ] Audit all components for raw color classes and swap them with semantic tokens.
 
 ---

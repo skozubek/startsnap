@@ -83,7 +83,7 @@ export const Subheader = (): JSX.Element | null => {
       className="w-full bg-startsnap-beige py-3 border-b-2 border-gray-800 shadow-[0px_3px_0px_#1f2937]"
     >
       <div className="max-w-screen-2xl mx-auto px-4 md:px-8">
-        <ol className="flex items-center space-x-1 text-base text-startsnap-ebony-clay font-['Roboto',Helvetica]">
+        <ol className="flex items-center space-x-1 text-base text-startsnap-ebony-clay font-body">
           {breadcrumbs.map((crumb, index) => (
             <li key={crumb.path} className="flex items-center">
               {index === breadcrumbs.length - 1 ? (

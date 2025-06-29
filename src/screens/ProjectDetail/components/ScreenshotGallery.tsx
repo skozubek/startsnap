@@ -97,7 +97,7 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
       {/* Screenshot Grid */}
       <div className="px-4 py-6 border-b-2 border-gray-800 md:px-8">
         <div className="flex items-center mb-6">
-          <h2 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-2xl leading-8">
+          <h2 className="font-heading text-startsnap-ebony-clay text-2xl leading-8">
             Screenshots
           </h2>
           <span className="ml-1 text-startsnap-persian-blue text-2xl material-icons">
@@ -241,7 +241,7 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
                 <span className="material-icons text-startsnap-persian-blue text-xl">
                   photo_camera
                 </span>
-                <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-lg">
+                <h3 className="font-subheading text-startsnap-ebony-clay text-lg">
                   Screenshot Preview
                 </h3>
               </div>
@@ -249,7 +249,7 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ urls }) =>
               {/* Image Counter in header */}
               {urls.length > 1 && (
                 <div className="bg-startsnap-wisp-pink border-2 border-gray-800 rounded-full px-3 py-1 shadow-[2px_2px_0px_#1f2937]">
-                  <span className="font-['Roboto',Helvetica] font-semibold text-startsnap-ebony-clay text-sm">
+                  <span className="font-ui text-startsnap-ebony-clay text-sm">
                     {currentImageIndex + 1} of {urls.length}
                   </span>
                 </div>
