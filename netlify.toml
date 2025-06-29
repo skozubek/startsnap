@@ -3,6 +3,27 @@
   publish = "dist"
 
 [[redirects]]
+  from = "https://www.startsnap.fun/*"
+  to = "https://startsnap.fun/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://startsnap.xyz/*"
+  to = "https://startsnap.fun/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://www.startsnap.xyz/*"
+  to = "https://startsnap.fun/:splat"
+  status = 301
+  force = true
+
+# === SPA Fallback (Essential for React Router) ===
+# This must come last, as it's the catch-all.
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
