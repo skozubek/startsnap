@@ -1,3 +1,10 @@
+/* =========================================================================
+ * SIMPLE TYPOGRAPHY LAYER — Space Grotesk for headings, Inter for body
+ * Edit --font-heading / --font-body below or the @import URL to swap fonts.
+ * No component-level font overrides required — everything inherits.
+ * ========================================================================= */
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -97,68 +104,101 @@
     color: var(--color-text-inverse);
   }
 
-  /* Typography System - Font Hell Fix */
+  /* 🎭 SEMANTIC FONT CLASSES - Explicit Declarations for Maximum Specificity */
+  .font-display {
+    font-family: var(--font-heading);
+    font-weight: 900;
+    letter-spacing: -0.025em;
+  }
+
   .font-heading {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-heading);
     font-weight: 700;
+    letter-spacing: -0.025em;
   }
 
   .font-subheading {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-heading);
     font-weight: 600;
+    letter-spacing: 0;
   }
 
   .font-body {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-weight: 400;
+    letter-spacing: 0;
   }
 
   .font-ui {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-ui);
     font-weight: 600;
+    letter-spacing: 0.05em;
   }
 
   .font-mono {
-    font-family: 'Space Mono', monospace;
+    font-family: var(--font-body);
     font-weight: 400;
+    letter-spacing: 0;
   }
 }
 
 @layer base {
   /* 🎯 BASE FONT SYSTEM - Automatic inheritance for unspecified fonts
    *
-   * This system ensures ALL elements get consistent fonts even without explicit declarations:
+   * How it works (single-source of truth):
+   * 1. `body` gets `var(--font-body)` (Inter) so all regular text inherits it automatically.
+   * 2. Semantic elements (`h1‒h6`, `label`) are explicitly given `var(--font-heading)` (Space Grotesk).
+   * 3. Everything else – buttons, inputs, paragraphs, links, etc. – simply inherit and stay in sync.
+   * 4. Utility classes `.font-heading` and `.font-body` are available for any edge-cases where you
+   *    need to switch fonts manually.
    *
-   * 1. Universal (*) selector applies Inter as base font to everything
-   * 2. Element-specific rules set appropriate weights and families
-   * 3. Component classes (.font-heading, .font-body) override when needed
-   * 4. Technical elements (.badge, code) get Space Mono automatically
-   *
-   * Result: No more font hell - everything inherits good defaults!
+   * Change the faces once (variables or Google Fonts import) and the whole app updates instantly.
    */
 
-  /* Default body text - catches most content */
+  /* 🧠 INTELLIGENT FONT CASCADE - Everything inherits correctly */
+
+    /* Default body text - catches most content */
   body, p, span, div, li, td, th {
-    font-family: 'Inter', sans-serif;
     font-weight: 400;
+    letter-spacing: 0;
   }
 
   /* Headings hierarchy - automatic semantic fonts */
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-heading);
     font-weight: 700;
+    letter-spacing: -0.025em;
   }
 
-  /* UI elements - buttons, labels, inputs */
-  button, label, input, select, textarea {
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
+  /* Hero elements get display font */
+  .hero h1,
+  .hero h2,
+  [class*="text-4xl"],
+  [class*="text-5xl"],
+  [class*="text-6xl"] {
+    font-family: var(--font-heading);
+    font-weight: 900;
+    letter-spacing: -0.025em;
+  }
+
+  /* UI elements - buttons and labels only */
+  button {
+    font-family: var(--font-body);
+    font-weight: 400;
+  }
+
+  /* Input content uses body font for readability */
+  input, select, textarea {
+    font-family: var(--font-body);
+    font-weight: 400;
+    letter-spacing: 0;
   }
 
   /* Code and technical elements */
   code, pre, .badge, .tag {
-    font-family: 'Space Mono', monospace;
+    font-family: var(--font-body);
     font-weight: 400;
+    letter-spacing: 0;
   }
 
   /* Links inherit body font unless specified */
@@ -168,24 +208,18 @@
   }
 
   /* React component content - ensures consistent inheritance */
-  [class*="startsnap"] p,
-  [class*="startsnap"] span,
-  [class*="startsnap"] li,
-  [class*="startsnap"] div:not([class*="material-icons"]) {
-    font-family: 'Inter', sans-serif;
-    font-weight: 400;
-  }
+  /* Removed wildcard font override — inheritance now handles body font */
 
   /* Override for technical badges and code-like elements */
   .badge, .tag, [class*="badge"], [class*="tag"],
   [class*="mono"], [class*="code"] {
-    font-family: 'Space Mono', monospace !important;
-    font-weight: 400 !important;
+    font-family: var(--font-body);
+    font-weight: 400;
   }
 
   /* Material Icons protection */
   .material-icons, [class*="material-icons"] {
-    font-family: 'Material Icons' !important;
+    font-family: 'Material Icons', sans-serif !important;
     font-weight: 400 !important;
   }
 
@@ -212,91 +246,27 @@
     --ring: 215 20.2% 65.1%;
     --radius: 0.5rem;
 
-    /* StartSnap Design System Variables */
-    --startsnap-inter-regular-font-family: "Inter", Helvetica;
-    --startsnap-inter-regular-font-size: 14px;
-    --startsnap-inter-regular-font-style: normal;
-    --startsnap-inter-regular-font-weight: 400;
-    --startsnap-inter-regular-letter-spacing: 0px;
-    --startsnap-inter-regular-line-height: 20px;
-    --startsnap-material-icons-regular-font-family: "Material Icons", Helvetica;
-    --startsnap-material-icons-regular-font-size: 30px;
-    --startsnap-material-icons-regular-font-style: normal;
-    --startsnap-material-icons-regular-font-weight: 400;
-    --startsnap-material-icons-regular-letter-spacing: 0px;
-    --startsnap-material-icons-regular-line-height: 36px;
-    --startsnap-roboto-regular-font-family: "Roboto", Helvetica;
-    --startsnap-roboto-regular-font-size: 12px;
-    --startsnap-roboto-regular-font-style: normal;
-    --startsnap-roboto-regular-font-weight: 400;
-    --startsnap-roboto-regular-letter-spacing: 0px;
-    --startsnap-roboto-regular-line-height: 16px;
-    --startsnap-roboto-semibold-font-family: "Roboto", Helvetica;
-    --startsnap-roboto-semibold-font-size: 18px;
-    --startsnap-roboto-semibold-font-style: normal;
-    --startsnap-roboto-semibold-font-weight: 600;
-    --startsnap-roboto-semibold-letter-spacing: 0px;
-    --startsnap-roboto-semibold-line-height: 28px;
-    --startsnap-semantic-button-font-family: "Material Icons", Helvetica;
-    --startsnap-semantic-button-font-size: 24px;
-    --startsnap-semantic-button-font-style: normal;
-    --startsnap-semantic-button-font-weight: 400;
-    --startsnap-semantic-button-letter-spacing: 0px;
-    --startsnap-semantic-button-line-height: 24px;
-    --startsnap-semantic-heading-1-font-family: "Space Grotesk", Helvetica;
-    --startsnap-semantic-heading-1-font-size: 36px;
-    --startsnap-semantic-heading-1-font-style: normal;
-    --startsnap-semantic-heading-1-font-weight: 700;
-    --startsnap-semantic-heading-1-letter-spacing: 0px;
-    --startsnap-semantic-heading-1-line-height: 40px;
-    --startsnap-semantic-heading-2-font-family: "Material Icons", Helvetica;
-    --startsnap-semantic-heading-2-font-size: 24px;
-    --startsnap-semantic-heading-2-font-style: normal;
-    --startsnap-semantic-heading-2-font-weight: 400;
-    --startsnap-semantic-heading-2-letter-spacing: 0px;
-    --startsnap-semantic-heading-2-line-height: 24px;
-    --startsnap-semantic-heading-3-font-family: "Space Grotesk", Helvetica;
-    --startsnap-semantic-heading-3-font-size: 20px;
-    --startsnap-semantic-heading-3-font-style: normal;
-    --startsnap-semantic-heading-3-font-weight: 700;
-    --startsnap-semantic-heading-3-letter-spacing: 0px;
-    --startsnap-semantic-heading-3-line-height: 28px;
-    --startsnap-semantic-input-font-family: "Inter", Helvetica;
-    --startsnap-semantic-input-font-size: 16px;
-    --startsnap-semantic-input-font-style: normal;
-    --startsnap-semantic-input-font-weight: 400;
-    --startsnap-semantic-input-letter-spacing: 0px;
-    --startsnap-semantic-input-line-height: normal;
-    --startsnap-semantic-label-font-family: "Roboto", Helvetica;
-    --startsnap-semantic-label-font-size: 14px;
-    --startsnap-semantic-label-font-style: normal;
-    --startsnap-semantic-label-font-weight: 500;
-    --startsnap-semantic-label-letter-spacing: 0px;
-    --startsnap-semantic-label-line-height: 20px;
-    --startsnap-semantic-link-font-family: "Space Grotesk", Helvetica;
-    --startsnap-semantic-link-font-size: 16px;
-    --startsnap-semantic-link-font-style: normal;
-    --startsnap-semantic-link-font-weight: 400;
-    --startsnap-semantic-link-letter-spacing: 0px;
-    --startsnap-semantic-link-line-height: 24px;
-    --startsnap-semantic-options-font-family: "Roboto", Helvetica;
-    --startsnap-semantic-options-font-size: 16px;
-    --startsnap-semantic-options-font-style: normal;
-    --startsnap-semantic-options-font-weight: 400;
-    --startsnap-semantic-options-letter-spacing: 0px;
-    --startsnap-semantic-options-line-height: 24px;
-    --startsnap-semantic-textarea-font-family: "Roboto", Helvetica;
-    --startsnap-semantic-textarea-font-size: 16px;
-    --startsnap-semantic-textarea-font-style: normal;
-    --startsnap-semantic-textarea-font-weight: 400;
-    --startsnap-semantic-textarea-letter-spacing: 0px;
-    --startsnap-semantic-textarea-line-height: 24px;
-    --startsnap-space-mono-regular-font-family: "Space Mono", Helvetica;
-    --startsnap-space-mono-regular-font-size: 18px;
-    --startsnap-space-mono-regular-font-style: normal;
-    --startsnap-space-mono-regular-font-weight: 400;
-    --startsnap-space-mono-regular-letter-spacing: 0px;
-    --startsnap-space-mono-regular-line-height: 28px;
+    /* 🎯 MASTER TYPOGRAPHY SYSTEM - Single Source of Truth */
+    --font-display: 'Space Grotesk', 'Arial Black', sans-serif;    /* OPTIONAL: extra-bold display font (currently unused) */
+    --font-heading: 'Space Grotesk';         /* Default heading font (h1–h6, labels) */
+    --font-body: 'Inter';                    /* Base body font (everything else) */
+    --font-ui: 'Space Grotesk';             /* UI / button font */
+    --font-mono: 'Space Mono', 'Courier New', monospace;         /* Optional mono font (unused) */
+    --font-icons: 'Material Icons', sans-serif;                  /* Material Icons */
+
+    /* 🔧 FONT WEIGHTS - Semantic meaning */
+    --weight-light: 300;
+    --weight-normal: 400;
+    --weight-medium: 500;
+    --weight-semibold: 600;
+    --weight-bold: 700;
+    --weight-black: 900;
+
+    /* 📏 LETTER SPACING - Consistent rhythm */
+    --tracking-tight: -0.025em;
+    --tracking-normal: 0;
+    --tracking-wide: 0.025em;
+    --tracking-wider: 0.1em;
 
     /* StartSnap Color Variables */
     --startsnapathens-gray: rgba(229, 231, 235, 1);
@@ -362,8 +332,6 @@
 
   * {
     @apply border-border;
-    /* Universal font fallback - ensures Inter is the base for everything */
-    font-family: 'Inter', sans-serif;
   }
 
   body {
@@ -371,6 +339,14 @@
     font-feature-settings: "rlig" 1, "calt" 1;
     /* Body weight default */
     font-weight: 400;
+    font-family: var(--font-body);
+  }
+
+  /* Label elements should use heading font */
+  label {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    letter-spacing: 0.025em;
   }
 }
 
@@ -390,6 +366,8 @@
     min-height: 44px;
     min-width: 44px;
   }
+
+  /* duplicate font utilities removed; use config-based classes */
 }
 
 /* ============================================
@@ -548,7 +526,22 @@
 
   /* Base Semantic Button */
   .btn-base {
-    @apply inline-flex items-center justify-center gap-2 font-ui rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] tap-target touch-manipulation transition-all duration-150 active:scale-95 md:hover:shadow-[5px_5px_0px_#1f2937] md:duration-200;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] tap-target touch-manipulation transition-all duration-150 active:scale-95 md:hover:shadow-[5px_5px_0px_#1f2937] md:duration-200;
+    font-family: var(--font-ui);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  /* Nested content inside buttons should keep UI font */
+  .btn-base *,
+  .btn-primary *,
+  .btn-secondary *,
+  .btn-success *,
+  .btn-danger *,
+  .btn-warning *,
+  .btn-ghost * {
+    font-family: inherit;
   }
 
   .btn-primary {
@@ -586,6 +579,10 @@
     background-color: transparent;
     color: var(--color-text-primary);
   }
+
+  .btn-base span {
+    font-family: var(--font-ui);
+  }
 }
 
 /* ============================================
@@ -618,32 +615,37 @@
   @apply md:bg-white md:rounded-lg md:p-6 md:mb-6 md:border-2 md:border-gray-800 md:shadow-[3px_3px_0px_#1f2937];
 }
 
+/* 🎪 FORM ELEMENTS - Auto-applying component classes */
+
 /* Form Inputs - Borderless Mobile, Neo-brutalist Desktop */
   .startsnap-form-input {
-    @apply bg-gray-50 border-0 rounded-xl px-4 py-4 font-body text-base text-gray-900 w-full !important;
+    @apply bg-gray-50 border-0 rounded-xl px-4 py-4 text-base text-gray-900 w-full !important;
   @apply focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500 !important;
   @apply transition-all duration-200 !important;
   @apply md:bg-white md:border-2 md:border-gray-800 md:rounded-lg md:px-4 md:py-4 md:focus:border-blue-500 md:focus:ring-2 md:focus:ring-blue-500;
+  font-weight: 400 !important;
   border: none !important;
   box-shadow: none !important;
 }
 
 /* Form Textareas - Maximum Mobile Space */
   .startsnap-form-textarea {
-    @apply bg-gray-50 border-0 rounded-xl px-4 py-5 min-h-[240px] font-body text-base text-gray-900 w-full !important;
+    @apply bg-gray-50 border-0 rounded-xl px-4 py-5 min-h-[240px] text-base text-gray-900 w-full !important;
   @apply focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500 !important;
   @apply transition-all duration-200 resize-none !important;
   @apply md:bg-white md:border-2 md:border-gray-800 md:rounded-lg md:px-4 md:py-4 md:min-h-[140px] md:focus:border-blue-500 md:focus:ring-2 md:focus:ring-blue-500;
+  font-weight: 400 !important;
   border: none !important;
   box-shadow: none !important;
 }
 
 /* Reply Textareas - Feedback Form Specific */
   .startsnap-reply-textarea {
-    @apply bg-gray-50 border-0 rounded-lg px-3 py-3 min-h-[80px] font-body text-base text-gray-900 w-full !important;
+    @apply bg-gray-50 border-0 rounded-lg px-3 py-3 min-h-[80px] text-base text-gray-900 w-full !important;
   @apply focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500 !important;
   @apply transition-colors duration-200 resize-none !important;
   @apply md:bg-white md:border-2 md:border-gray-800 md:rounded-lg md:px-4 md:py-4 md:min-h-[60px] md:focus:border-blue-500 md:focus:ring-2 md:focus:ring-blue-500;
+  font-weight: 400 !important;
   border: none !important;
   box-shadow: none !important;
 }
@@ -664,8 +666,11 @@
 
 /* Form Labels - Clean Typography */
   .startsnap-form-label {
-    @apply block font-ui text-gray-900 text-lg mb-3;
+    @apply block text-gray-900 text-lg mb-3;
   @apply md:text-lg;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  letter-spacing: 0.025em;
 }
 
 /* Force Override Focus States - Mobile Only */

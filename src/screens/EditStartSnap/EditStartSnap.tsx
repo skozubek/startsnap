@@ -240,7 +240,7 @@ export const EditStartSnap = (): JSX.Element => {
         <div className="w-full max-w-4xl px-8 py-8 mx-auto relative">
           <div className="flex items-center justify-center">
             <div className="flex-1 h-2 bg-startsnap-french-rose transform -skew-x-12"></div>
-            <div className="px-6 py-2 bg-startsnap-ebony-clay text-startsnap-beige font-bold text-sm rounded-full border-2 border-startsnap-french-rose">
+            <div className="px-6 py-2 bg-startsnap-ebony-clay text-startsnap-beige font-heading font-bold text-sm rounded-full border-2 border-startsnap-french-rose">
               UPDATE PROJECT
             </div>
             <div className="flex-1 h-2 bg-startsnap-french-rose transform skew-x-12"></div>

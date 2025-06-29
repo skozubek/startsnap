@@ -23,7 +23,6 @@ export function ToastProvider() {
           border: '1px solid #1f2937',
           borderRadius: '6px',
           boxShadow: '2px 2px 0px #1f2937',
-          fontFamily: "Inter, Helvetica, sans-serif",
           fontSize: '13px',
           fontWeight: '500',
           padding: '8px 24px 8px 12px',

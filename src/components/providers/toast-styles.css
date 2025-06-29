@@ -1,6 +1,6 @@
 /* Toast styling to match StartSnap neobrutalist design - Mobile-first responsive */
 .startsnap-toast {
-  font-family: 'Inter', Helvetica, sans-serif !important;
+  font-family: 'Inter', 'Arial', sans-serif !important;
   font-weight: 500 !important;
   border: 1px solid #1f2937 !important;
   border-radius: 6px !important;
@@ -58,7 +58,7 @@
 
 /* Toast title styling - Mobile-first responsive */
 [data-sonner-toast] [data-title] {
-  font-family: 'Inter', Helvetica, sans-serif !important;
+  font-family: 'Space Grotesk', 'Arial', sans-serif !important;
   font-weight: 700 !important;
   font-size: 13px !important;
   line-height: 1.3 !important;
@@ -67,7 +67,7 @@
 
 /* Toast description styling - Mobile-first responsive */
 [data-sonner-toast] [data-description] {
-  font-family: 'Inter', Helvetica, sans-serif !important;
+  font-family: 'Inter', 'Arial', sans-serif !important;
   font-weight: 400 !important;
   font-size: 11px !important;
   line-height: 1.2 !important;
