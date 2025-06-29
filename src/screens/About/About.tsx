@@ -45,7 +45,7 @@ export const About = (): JSX.Element => {
               connection, or community support.
             </p>
             <p className="text-startsnap-river-bed leading-relaxed text-lg">
-              So we built what we needed—a space where "Vibe Coders" can showcase their projects, document their building 
+              So we built what we needed - a space where "Vibe Coders" can showcase their projects, document their building 
               process through Vibe Logs, and get real feedback from fellow creators. We're not just talking about building 
               in public; we're actually doing it. StartSnap.fun itself is our own StartSnap, and every feature you see 
               was shaped by our community's feedback.
