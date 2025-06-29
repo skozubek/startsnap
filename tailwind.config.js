@@ -95,6 +95,13 @@ module.exports = {
           "var(--startsnap-semantic-textarea-font-family)",
         "startsnap-space-mono-regular":
           "var(--startsnap-space-mono-regular-font-family)",
+        /* -------------------------------
+         *  🆕 2025 TYPOGRAPHY TOKENS
+         *  Tailwind-idiomatic font utilities
+         * ------------------------------- */
+        heading: ["var(--font-heading)"],
+        body: ["var(--font-body)"],
+        ui: ["var(--font-ui)"],
         sans: [
           "ui-sans-serif",
           "system-ui",

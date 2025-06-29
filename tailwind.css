@@ -112,7 +112,7 @@
   }
 
   .font-heading {
-    font-family: var(--font-heading) !important;
+    font-family: var(--font-heading);
     font-weight: 700;
     letter-spacing: -0.025em;
   }
@@ -130,7 +130,7 @@
   }
 
   .font-ui {
-    font-family: var(--font-ui) !important;
+    font-family: var(--font-ui);
     font-weight: 600;
     letter-spacing: 0.05em;
   }
@@ -208,13 +208,7 @@
   }
 
   /* React component content - ensures consistent inheritance */
-  [class*="startsnap"] p,
-  [class*="startsnap"] span,
-  [class*="startsnap"] li,
-  [class*="startsnap"] div:not([class*="material-icons"]) {
-    font-family: var(--font-body);
-    font-weight: 400;
-  }
+  /* Removed wildcard font override — inheritance now handles body font */
 
   /* Override for technical badges and code-like elements */
   .badge, .tag, [class*="badge"], [class*="tag"],
@@ -373,13 +367,7 @@
     min-width: 44px;
   }
 
-  .font-heading {
-    font-family: var(--font-heading);
-  }
-
-  .font-body {
-    font-family: var(--font-body);
-  }
+  /* duplicate font utilities removed; use config-based classes */
 }
 
 /* ============================================
