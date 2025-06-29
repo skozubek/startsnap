@@ -382,6 +382,7 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
                     )}
                   </div>
                   <h3 className="font-subheading text-startsnap-oxford-blue text-lg leading-7 mb-3">
+                  <h3 className="font-heading text-startsnap-ebony-clay text-xl leading-7 mb-3">
                     {entry.title}
                   </h3>
                                     <div className="prose prose-sm md:prose-base max-w-none text-startsnap-river-bed font-body leading-relaxed">
