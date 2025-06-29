@@ -83,7 +83,7 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
         <div className="flex flex-col gap-6 mb-4 md:gap-5">
           {/* Title Row */}
           <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start lg:gap-6">
-            <h1 className="text-startsnap-oxford-blue font-[var(--startsnap-semantic-heading-3-font-family)] font-black tracking-tight leading-relaxed text-2xl md:text-3xl lg:text-3xl lg:leading-tight xl:text-4xl lg:flex-1 lg:min-w-0 lg:pr-4">
+            <h1 className="text-startsnap-oxford-blue font-heading font-black tracking-tight leading-relaxed text-2xl md:text-3xl lg:text-3xl lg:leading-tight xl:text-4xl lg:flex-1 lg:min-w-0 lg:pr-4">
               {startsnap.name}
             </h1>
 

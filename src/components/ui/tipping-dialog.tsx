@@ -622,9 +622,9 @@ export const TippingDialog: React.FC<TippingDialogProps> = ({
                       value={customAmount}
                       onChange={(e) => setCustomAmount(e.target.value)}
                       placeholder={`Enter amount (min ${currency.minAmount})`}
-                      className="w-full border-2 border-startsnap-ebony-clay rounded-lg bg-startsnap-white font-mono text-startsnap-ebony-clay placeholder-startsnap-river-bed shadow-[2px_2px_0px_#1f2937] focus:shadow-[3px_3px_0px_#1f2937] focus:translate-x-[-1px] focus:translate-y-[-1px] transition-all duration-200 h-9 text-sm"
+                      className="w-full border-2 border-startsnap-ebony-clay rounded-lg bg-startsnap-white font-body text-startsnap-ebony-clay placeholder-startsnap-river-bed shadow-[2px_2px_0px_#1f2937] focus:shadow-[3px_3px_0px_#1f2937] focus:translate-x-[-1px] focus:translate-y-[-1px] transition-all duration-200 h-9 text-sm"
                     />
-                    <div className="flex justify-between text-xs text-startsnap-ebony-clay/70 mt-1.5 font-mono">
+                    <div className="flex justify-between text-xs text-startsnap-ebony-clay/70 mt-1.5 font-body">
                       <span>MIN: {currency.minAmount}</span>
                       <span>MAX: {getCurrencyBalance(selectedCurrency).toFixed(3)}</span>
                     </div>
