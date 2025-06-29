@@ -2,6 +2,10 @@
   command = "rm -rf node_modules package-lock.json && npm install && npm run build"
   publish = "dist"
 
+# === Canonical Domain Redirects ===
+# These rules are more specific and run first.
+# They force all traffic to the single, canonical domain (https://startsnap.fun).
+
 [[redirects]]
   from = "https://www.startsnap.fun/*"
   to = "https://startsnap.fun/:splat"
@@ -20,8 +24,9 @@
   status = 301
   force = true
 
-# === SPA Fallback (Essential for React Router) ===
-# This must come last, as it's the catch-all.
+# === Single Page App (SPA) Fallback ===
+# This is the essential rule for React Router.
+# It MUST come last as it's the catch-all.
 
 [[redirects]]
   from = "/*"
