@@ -2,6 +2,32 @@
   command = "rm -rf node_modules package-lock.json && npm install && npm run build"
   publish = "dist"
 
+# Domain redirects from alias to main domain - these must be specific
+[[redirects]]
+  from = "https://startsnap.xyz"
+  to = "https://startsnap.fun"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://www.startsnap.xyz"
+  to = "https://startsnap.fun"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://startsnap.xyz/*"
+  to = "https://startsnap.fun/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://www.startsnap.xyz/*"
+  to = "https://startsnap.fun/:splat"
+  status = 301
+  force = true
+
+# SPA routing fallback - this should come AFTER domain redirects
 [[redirects]]
   from = "/*"
   to = "/index.html"
