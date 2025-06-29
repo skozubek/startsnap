@@ -643,7 +643,7 @@
     @apply bg-gray-50 border-0 rounded-lg px-3 py-3 min-h-[80px] font-body text-base text-gray-900 w-full;
   @apply focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500;
   @apply transition-colors duration-200 resize-none;
-  @apply md:bg-white md:rounded-lg md:px-4 md:py-4 md:min-h-[60px] md:focus:ring-2 md:focus:ring-blue-500;
+  @apply md:bg-white md:border-2 md:border-gray-800 md:rounded-lg md:px-4 md:py-4 md:min-h-[60px] md:focus:border-blue-500 md:focus:ring-2 md:focus:ring-blue-500;
 }
 
 /* ============================================
