@@ -100,7 +100,7 @@ export const About = (): JSX.Element => {
                   Transparent Growth
                 </h3>
                 <p className="text-startsnap-river-bed leading-relaxed">
-                  Building in public isn't just a trend—it's how we learn, improve, and inspire others. 
+                  Building in public isn't just a trend - it's how we learn, improve, and inspire others. 
                   Transparency creates trust and accelerates innovation.
                 </p>
               </div>
@@ -120,7 +120,7 @@ export const About = (): JSX.Element => {
               Where the next breakthrough comes from someone who felt supported enough to share their "crazy" idea.
             </p>
             <p className="text-startsnap-river-bed leading-relaxed text-lg">
-              StartSnap.fun is more than a platform—it's a movement. A place where builders become better builders 
+              StartSnap.fun is more than a platform - it's a movement. A place where builders become better builders 
               through community, feedback, and the courage to build in public.
             </p>
           </div>
