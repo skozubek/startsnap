@@ -449,7 +449,7 @@ export const TippingDialog: React.FC<TippingDialogProps> = ({
               </div>
               <h2
                 id="tipping-title"
-                className="font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-lg md:text-xl uppercase tracking-wider"
+                className="font-heading text-startsnap-ebony-clay text-lg md:text-xl uppercase tracking-wider"
               >
                 SEND TIP
               </h2>
@@ -473,7 +473,7 @@ export const TippingDialog: React.FC<TippingDialogProps> = ({
           {!isWalletConnected ? (
             <div className="mb-6">
               <div className="bg-startsnap-beige border-2 border-startsnap-ebony-clay rounded-lg p-4 mb-4 shadow-[2px_2px_0px_#1f2937]">
-                <p className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-sm uppercase tracking-wide mb-3">
+                <p className="font-ui text-startsnap-ebony-clay text-sm uppercase tracking-wide mb-3">
                   WALLET REQUIRED
                 </p>
                 <p className="text-startsnap-ebony-clay/70 text-sm mb-4">
@@ -499,7 +499,7 @@ export const TippingDialog: React.FC<TippingDialogProps> = ({
                       <span className="text-startsnap-mountain-meadow text-xs font-bold">✓</span>
                     </div>
                     <div>
-                      <p className="font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-xs uppercase tracking-wide">
+                      <p className="font-heading text-startsnap-ebony-clay text-xs uppercase tracking-wide">
                         WALLET CONNECTED
                       </p>
                       <p className="font-mono text-xs text-startsnap-ebony-clay/70">
@@ -529,7 +529,7 @@ export const TippingDialog: React.FC<TippingDialogProps> = ({
             <div className="space-y-3 md:space-y-4">
               {/* Currency Selection */}
               <div>
-                <label className="block font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-xs uppercase tracking-wider mb-2">
+                <label className="block font-heading text-startsnap-ebony-clay text-xs uppercase tracking-wider mb-2">
                   CURRENCY
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -542,7 +542,7 @@ export const TippingDialog: React.FC<TippingDialogProps> = ({
                         key={key}
                         onClick={() => isAvailable && setSelectedCurrency(key as CurrencyType)}
                         disabled={!isAvailable}
-                        className={`p-2.5 border-2 border-startsnap-ebony-clay rounded-lg font-['Space_Grotesk',Helvetica] font-bold transition-all duration-150 shadow-[2px_2px_0px_#1f2937] hover:shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px] active:scale-95 tap-target ${
+                        className={`p-2.5 border-2 border-startsnap-ebony-clay rounded-lg font-ui transition-all duration-150 shadow-[2px_2px_0px_#1f2937] hover:shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px] active:scale-95 tap-target ${
                           selectedCurrency === key && isAvailable
                             ? 'bg-startsnap-ebony-clay text-startsnap-beige'
                             : isAvailable
@@ -574,7 +574,7 @@ export const TippingDialog: React.FC<TippingDialogProps> = ({
 
               {/* Tip Amount Selection */}
               <div>
-                <label className="block font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-xs uppercase tracking-wider mb-2">
+                <label className="block font-heading text-startsnap-ebony-clay text-xs uppercase tracking-wider mb-2">
                   TIP AMOUNT ({currency.symbol})
                 </label>
 
@@ -587,7 +587,7 @@ export const TippingDialog: React.FC<TippingDialogProps> = ({
                         key={amount}
                         onClick={() => isAffordable && setSelectedAmount(amount)}
                         disabled={!isAffordable}
-                        className={`p-2.5 border-2 border-startsnap-ebony-clay rounded-lg font-['Space_Grotesk',Helvetica] font-black text-sm transition-all duration-150 shadow-[2px_2px_0px_#1f2937] hover:shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px] active:scale-95 tap-target ${
+                        className={`p-2.5 border-2 border-startsnap-ebony-clay rounded-lg font-heading text-sm transition-all duration-150 shadow-[2px_2px_0px_#1f2937] hover:shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px] active:scale-95 tap-target ${
                           selectedAmount === amount && isAffordable
                             ? 'bg-startsnap-ebony-clay text-startsnap-beige'
                             : isAffordable
@@ -601,7 +601,7 @@ export const TippingDialog: React.FC<TippingDialogProps> = ({
                   })}
                   <button
                     onClick={() => setSelectedAmount('custom')}
-                    className={`p-2.5 border-2 border-startsnap-ebony-clay rounded-lg font-['Space_Grotesk',Helvetica] font-black text-xs transition-all duration-150 uppercase tracking-wide shadow-[2px_2px_0px_#1f2937] hover:shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px] active:scale-95 tap-target ${
+                    className={`p-2.5 border-2 border-startsnap-ebony-clay rounded-lg font-heading text-xs transition-all duration-150 uppercase tracking-wide shadow-[2px_2px_0px_#1f2937] hover:shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-1px] hover:translate-y-[-1px] active:scale-95 tap-target ${
                       selectedAmount === 'custom'
                         ? 'bg-startsnap-ebony-clay text-startsnap-beige'
                         : 'bg-startsnap-beige text-startsnap-ebony-clay hover:bg-startsnap-beige/90'
@@ -636,7 +636,7 @@ export const TippingDialog: React.FC<TippingDialogProps> = ({
               <div>
                 <label
                   htmlFor="tip-note"
-                  className="block font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-xs uppercase tracking-wider mb-1.5"
+                  className="block font-heading text-startsnap-ebony-clay text-xs uppercase tracking-wider mb-1.5"
                 >
                   MESSAGE (OPTIONAL)
                 </label>
@@ -663,7 +663,7 @@ export const TippingDialog: React.FC<TippingDialogProps> = ({
                         <span className="text-startsnap-mountain-meadow text-sm animate-pulse">📱</span>
                       </div>
                       <div>
-                        <p className="font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-sm uppercase tracking-wide">
+                        <p className="font-heading text-startsnap-ebony-clay text-sm uppercase tracking-wide">
                           CHECK YOUR DEVICE
                         </p>
                         <p className="text-startsnap-ebony-clay/70 text-xs mt-1">

@@ -41,7 +41,7 @@ export const FeaturedStartSnapsSection = ({
 }: FeaturedStartSnapsSectionProps): JSX.Element => {
   return (
     <div className="w-full max-w-screen-2xl px-8 py-16">
-      <h2 className="text-5xl font-bold text-startsnap-ebony-clay text-center mb-12 font-['Space_Grotesk',Helvetica]">
+                  <h2 className="text-5xl font-heading text-startsnap-ebony-clay text-center mb-12">
         Featured StartSnaps
       </h2>
 

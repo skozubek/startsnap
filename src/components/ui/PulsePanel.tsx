@@ -90,7 +90,7 @@ export const PulsePanel: React.FC<PulsePanelProps> = ({
             <div className="flex items-center justify-between p-6 border-b-2 border-gray-800 bg-startsnap-beige flex-shrink-0">
               <div className="flex items-center gap-3">
                 <span className="material-icons text-startsnap-mountain-meadow text-2xl">bolt</span>
-                <h2 className="text-xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica]">
+                <h2 className="text-xl font-heading text-startsnap-ebony-clay">
                   Community Pulse
                 </h2>
               </div>

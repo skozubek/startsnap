@@ -356,7 +356,7 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
   return (
     <div className="p-4 md:p-8">
       <div className="flex items-center mb-4 md:mb-6">
-        <h2 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-2xl leading-8">
+        <h2 className="font-heading text-startsnap-ebony-clay text-2xl leading-8">
           Community Feedback
         </h2>
         <span className="ml-1 text-startsnap-mountain-meadow text-2xl material-icons">
@@ -391,10 +391,10 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                       )}
                       <div className="ml-4 flex-1">
                         <div className="flex items-center gap-2">
-                          <p className="font-['Roboto',Helvetica] font-semibold text-gray-900 text-base leading-6">
+                          <p className="font-ui text-gray-900 text-base leading-6">
                             {feedback.profile?.username || 'Anonymous'}
                           </p>
-                          <p className="font-['Inter',Helvetica] font-normal text-gray-500 text-xs leading-4">
+                          <p className="font-body text-gray-500 text-xs leading-4">
                             {formatDetailedDate(feedback.created_at)} (Editing)
                           </p>
                         </div>
@@ -480,14 +480,14 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                       )}
                       <div className="ml-4 flex-1">
                         <div className="flex items-center gap-2">
-                          <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-base leading-6">
+                          <p className="font-ui text-startsnap-oxford-blue text-base leading-6">
                             {feedback.profile?.username || 'Anonymous'}
                           </p>
-                          <p className="font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4">
+                          <p className="font-body text-startsnap-pale-sky text-xs leading-4">
                             {formatDetailedDate(feedback.created_at)}{editingFeedback && editingFeedback.id === feedback.id ? ' (Editing)' : ''}
                           </p>
                         </div>
-                        <p className="font-['Roboto',Helvetica] font-normal text-startsnap-river-bed text-sm leading-5 mt-2">
+                        <p className="font-body text-startsnap-river-bed text-sm leading-5 mt-2">
                           {feedback.content}
                         </p>
                       </div>
@@ -615,10 +615,10 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                                 <div className="ml-3 flex-1">
                                   <div className="flex items-center">
                                     <div className="flex items-center">
-                                      <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-sm leading-5 group-hover:text-startsnap-french-rose">
+                                      <p className="font-ui text-startsnap-oxford-blue text-sm leading-5 group-hover:text-startsnap-french-rose">
                                         {reply.profile.username}
                                       </p>
-                                      <p className="ml-2 font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4 group-hover:text-startsnap-french-rose">
+                                      <p className="ml-2 font-body text-startsnap-pale-sky text-xs leading-4 group-hover:text-startsnap-french-rose">
                                         {formatDetailedDate(reply.created_at)}
                                       </p>
                                     </div>
@@ -665,10 +665,10 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                                 <div className="ml-3 flex-1">
                                   <div className="flex items-center">
                                     <div className="flex items-center">
-                                      <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-sm leading-5 group-hover:text-startsnap-french-rose">
+                                      <p className="font-ui text-startsnap-oxford-blue text-sm leading-5 group-hover:text-startsnap-french-rose">
                                         {reply.profile?.username || 'Anonymous'}
                                       </p>
-                                      <p className="ml-2 font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4 group-hover:text-startsnap-french-rose">
+                                      <p className="ml-2 font-body text-startsnap-pale-sky text-xs leading-4 group-hover:text-startsnap-french-rose">
                                         {formatDetailedDate(reply.created_at)}
                                       </p>
                                     </div>
@@ -756,10 +756,10 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                               <div className="ml-3 flex-1">
                                 <div className="flex items-center">
                                   <div className="flex items-center">
-                                    <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-sm leading-5 group-hover:text-startsnap-french-rose">
+                                    <p className="font-ui text-startsnap-oxford-blue text-sm leading-5 group-hover:text-startsnap-french-rose">
                                       {reply.profile.username}
                                     </p>
-                                    <p className="ml-2 font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4 group-hover:text-startsnap-french-rose">
+                                    <p className="ml-2 font-body text-startsnap-pale-sky text-xs leading-4 group-hover:text-startsnap-french-rose">
                                       {formatDetailedDate(reply.created_at)}
                                     </p>
                                   </div>
@@ -792,7 +792,7 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                                     </div>
                                   )}
                                 </div>
-                                <p className="font-['Roboto',Helvetica] font-normal text-startsnap-river-bed text-sm leading-5 mt-1 group-hover:text-startsnap-french-rose">
+                                <p className="font-body text-startsnap-river-bed text-sm leading-5 mt-1 group-hover:text-startsnap-french-rose">
                                   {reply.content}
                                 </p>
                               </div>
@@ -809,10 +809,10 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                               <div className="ml-3 flex-1">
                                 <div className="flex items-center">
                                   <div className="flex items-center">
-                                    <p className="font-['Roboto',Helvetica] font-semibold text-startsnap-oxford-blue text-sm leading-5 group-hover:text-startsnap-french-rose">
+                                    <p className="font-ui text-startsnap-oxford-blue text-sm leading-5 group-hover:text-startsnap-french-rose">
                                       {reply.profile?.username || 'Anonymous'}
                                     </p>
-                                    <p className="ml-2 font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4 group-hover:text-startsnap-french-rose">
+                                    <p className="ml-2 font-body text-startsnap-pale-sky text-xs leading-4 group-hover:text-startsnap-french-rose">
                                       {formatDetailedDate(reply.created_at)}
                                     </p>
                                   </div>
@@ -845,7 +845,7 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
                                     </div>
                                   )}
                                 </div>
-                                <p className="font-['Roboto',Helvetica] font-normal text-startsnap-river-bed text-sm leading-5 mt-1 group-hover:text-startsnap-french-rose">
+                                <p className="font-body text-startsnap-river-bed text-sm leading-5 mt-1 group-hover:text-startsnap-french-rose">
                                   {reply.content}
                                 </p>
                               </div>
@@ -862,14 +862,14 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
         ))
       ) : (
         <>
-          <p className="font-['Roboto',Helvetica] font-normal text-startsnap-pale-sky text-base leading-6">
+          <p className="font-body text-startsnap-pale-sky text-base leading-6">
             No feedback yet. Be the first to share your thoughts!
           </p>
         </>
       )}
 
       <div className="mt-8">
-        <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-gray-900 text-xl leading-7 mb-5">
+        <h3 className="font-subheading text-gray-900 text-xl leading-7 mb-5">
           Leave Your Feedback
         </h3>
         <div className="bg-transparent p-0 md:bg-white md:rounded-lg md:p-6 md:border-2 md:border-gray-800 md:shadow-[3px_3px_0px_#1f2937]">

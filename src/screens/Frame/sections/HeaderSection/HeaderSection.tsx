@@ -111,7 +111,7 @@ export const HeaderSection = ({ onPulseButtonClick, hasNewActivity }: HeaderSect
   return (
     <header className="sticky top-0 z-50 w-full flex justify-center p-6 bg-[--startsnap-beige] shadow-[0px_2px_4px_-2px_#0000001a,0px_4px_6px_-1px_#0000001a]">
       <div className="flex items-center justify-between w-full max-w-screen-2xl">
-        <div className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-3xl leading-9">
+        <div className="font-heading text-startsnap-ebony-clay text-3xl leading-9">
           <Link to="/" className="hover:text-startsnap-french-rose transition-colors">
             startsnap.fun
           </Link>
@@ -125,7 +125,7 @@ export const HeaderSection = ({ onPulseButtonClick, hasNewActivity }: HeaderSect
                 <NavigationMenuItem key={index}>
                   <NavigationMenuLink
                     asChild
-                    className="font-['Space_Grotesk',Helvetica] text-startsnap-oxford-blue text-lg md:text-xl font-medium tracking-[var(--startsnap-semantic-link-letter-spacing)] leading-[var(--startsnap-semantic-link-line-height)] hover:text-startsnap-french-rose transition-colors"
+                    className="font-ui text-startsnap-oxford-blue text-lg md:text-xl tracking-[var(--startsnap-semantic-link-letter-spacing)] leading-[var(--startsnap-semantic-link-line-height)] hover:text-startsnap-french-rose transition-colors"
                   >
                     <Link to={link.href}>{link.title}</Link>
                   </NavigationMenuLink>
@@ -179,7 +179,7 @@ export const HeaderSection = ({ onPulseButtonClick, hasNewActivity }: HeaderSect
                       />
                     </div>
                     <div className="flex-1">
-                      <p className="font-['Space_Grotesk',Helvetica] font-semibold text-startsnap-oxford-blue text-lg">
+                      <p className="font-ui text-startsnap-oxford-blue text-lg">
                         {userProfile?.username || user.email?.split('@')[0] || 'User'}
                       </p>
                     </div>
@@ -196,7 +196,7 @@ export const HeaderSection = ({ onPulseButtonClick, hasNewActivity }: HeaderSect
                         <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-startsnap-oxford-blue/10 transition-colors">
                           <User size={16} className="text-startsnap-oxford-blue" />
                         </div>
-                        <span className="font-['Space_Grotesk',Helvetica] text-startsnap-oxford-blue text-sm font-medium">
+                        <span className="font-ui text-startsnap-oxford-blue text-sm">
                           My Profile
                         </span>
                       </Link>
@@ -210,7 +210,7 @@ export const HeaderSection = ({ onPulseButtonClick, hasNewActivity }: HeaderSect
                         <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center group-hover:bg-red-100 transition-colors">
                           <LogOut size={16} className="text-red-500" />
                         </div>
-                        <span className="font-['Space_Grotesk',Helvetica] text-red-500 text-sm font-medium">
+                        <span className="font-ui text-red-500 text-sm">
                           Sign Out
                         </span>
                       </button>
@@ -253,7 +253,7 @@ export const HeaderSection = ({ onPulseButtonClick, hasNewActivity }: HeaderSect
 
             {/* Navigation Section */}
             <div className="mb-8">
-              <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-sm uppercase tracking-wider mb-4 px-2">
+              <h3 className="font-ui text-startsnap-oxford-blue text-sm uppercase tracking-wider mb-4 px-2">
                 Explore
               </h3>
               <nav className="space-y-2">
@@ -269,7 +269,7 @@ export const HeaderSection = ({ onPulseButtonClick, hasNewActivity }: HeaderSect
                         {link.title === 'Profiles' ? 'people' : 'dashboard'}
                       </span>
                     </div>
-                    <span className="font-['Space_Grotesk',Helvetica] text-startsnap-oxford-blue text-lg font-semibold group-hover:text-startsnap-french-rose transition-colors">
+                    <span className="font-ui text-startsnap-oxford-blue text-lg group-hover:text-startsnap-french-rose transition-colors">
                       {link.title}
                     </span>
                   </Link>
@@ -279,7 +279,7 @@ export const HeaderSection = ({ onPulseButtonClick, hasNewActivity }: HeaderSect
 
             {/* Quick Actions Section */}
             <div className="mb-8">
-              <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-sm uppercase tracking-wider mb-4 px-2">
+              <h3 className="font-ui text-startsnap-oxford-blue text-sm uppercase tracking-wider mb-4 px-2">
                 Quick Actions
               </h3>
               <div className="space-y-3">
@@ -329,7 +329,7 @@ export const HeaderSection = ({ onPulseButtonClick, hasNewActivity }: HeaderSect
                       />
                     </div>
                     <div className="flex-1">
-                      <p className="font-['Space_Grotesk',Helvetica] font-semibold text-startsnap-oxford-blue text-lg">
+                      <p className="font-ui text-startsnap-oxford-blue text-lg">
                         {userProfile?.username || user.email?.split('@')[0] || 'User'}
                       </p>
                     </div>
@@ -344,7 +344,7 @@ export const HeaderSection = ({ onPulseButtonClick, hasNewActivity }: HeaderSect
                       <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-startsnap-oxford-blue/10 transition-colors">
                         <User size={20} className="text-startsnap-oxford-blue" />
                       </div>
-                      <span className="font-['Space_Grotesk',Helvetica] text-startsnap-oxford-blue text-lg font-medium">
+                      <span className="font-ui text-startsnap-oxford-blue text-lg">
                         My Profile
                       </span>
                     </Link>
@@ -360,7 +360,7 @@ export const HeaderSection = ({ onPulseButtonClick, hasNewActivity }: HeaderSect
                       <div className="w-10 h-10 rounded-lg bg-red-50 flex items-center justify-center group-hover:bg-red-100 transition-colors">
                         <LogOut size={20} className="text-red-500" />
                       </div>
-                      <span className="font-['Space_Grotesk',Helvetica] text-red-500 text-lg font-medium">
+                      <span className="font-ui text-red-500 text-lg">
                         Sign Out
                       </span>
                     </Button>

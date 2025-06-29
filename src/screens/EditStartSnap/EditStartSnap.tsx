@@ -224,10 +224,10 @@ export const EditStartSnap = (): JSX.Element => {
       <div className="w-full bg-startsnap-candlelight">
         <div className="w-full max-w-4xl px-8 py-16 mx-auto">
           <div className="text-center">
-            <h2 className="text-5xl font-bold text-startsnap-ebony-clay mb-4 font-['Space_Grotesk',Helvetica] leading-[48px]">
+            <h2 className="text-5xl font-heading text-startsnap-ebony-clay mb-4 leading-[48px]">
               Edit your StartSnap
             </h2>
-            <p className="text-xl text-startsnap-river-bed font-['Roboto',Helvetica]">
+                          <p className="text-xl text-startsnap-river-bed font-body">
               Update your project details and keep your StartSnap current
             </p>
           </div>

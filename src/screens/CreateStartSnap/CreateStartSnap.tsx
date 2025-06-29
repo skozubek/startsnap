@@ -142,10 +142,10 @@ export const CreateStartSnap = (): JSX.Element => {
       <div className="w-full bg-startsnap-candlelight">
         <div className="w-full max-w-screen-xl px-8 py-16 mx-auto">
           <div className="text-center">
-            <h2 className="text-5xl font-bold text-startsnap-ebony-clay mb-4 font-['Space_Grotesk',Helvetica] leading-[48px]">
+            <h2 className="text-5xl font-heading text-startsnap-ebony-clay mb-4 leading-[48px]">
               Launch your StartSnap
             </h2>
-            <p className="text-xl text-startsnap-river-bed font-['Roboto',Helvetica] mb-8">
+                          <p className="text-xl text-startsnap-river-bed font-body mb-8">
               Share your project with the world and get valuable feedback
             </p>
           </div>

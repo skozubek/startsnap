@@ -178,20 +178,20 @@ export const ActivityItem: React.FC<ActivityItemProps> = ({ activity }) => {
                     className="w-full h-full"
                   />
                 </div>
-                <span className="font-['Space_Grotesk',Helvetica] font-semibold text-startsnap-ebony-clay text-sm hover:text-startsnap-french-rose transition-colors duration-200">
+                <span className="font-ui text-startsnap-ebony-clay text-sm hover:text-startsnap-french-rose transition-colors duration-200">
                   {activity.actor_username}
                 </span>
               </Link>
-              <span className="text-xs text-startsnap-pale-sky font-['Inter',Helvetica] opacity-60">
+              <span className="text-xs text-startsnap-pale-sky font-body opacity-60">
                 •
               </span>
-              <span className="font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs opacity-75">
+              <span className="font-body text-startsnap-pale-sky text-xs opacity-75">
                 {formatDetailedDate(activity.created_at)}
               </span>
             </div>
 
             {/* Activity Description with Inline Project Links */}
-            <div className="font-['Roboto',Helvetica] text-startsnap-river-bed text-sm leading-relaxed">
+            <div className="font-body text-startsnap-river-bed text-sm leading-relaxed">
               {renderActivityText(
                 activity.display_text,
                 activity.startsnap_name || null,

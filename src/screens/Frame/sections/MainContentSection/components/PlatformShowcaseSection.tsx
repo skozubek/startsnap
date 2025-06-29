@@ -42,7 +42,7 @@ export const PlatformShowcaseSection = ({
   return (
     <div className="w-full bg-startsnap-wisp-pink border-b-2 border-gray-800">
       <div className="max-w-screen-2xl mx-auto px-8 py-16 lg:py-24">
-        <h2 className="text-4xl lg:text-5xl font-bold text-startsnap-ebony-clay text-center mb-12 font-['Space_Grotesk',Helvetica] leading-tight">
+                  <h2 className="text-4xl lg:text-5xl font-heading text-startsnap-ebony-clay text-center mb-12 leading-tight">
           startsnap.fun is... well, a StartSnap!
         </h2>
 
@@ -72,7 +72,7 @@ export const PlatformShowcaseSection = ({
           {/* Explanatory Text & CTA */}
           <div className="w-full md:w-[60%] lg:w-[55%] md:pl-6">
             <div className="space-y-6">
-              <h3 className="text-3xl lg:text-4xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] leading-tight">
+              <h3 className="text-3xl lg:text-4xl font-heading text-startsnap-ebony-clay leading-tight">
                 We're Building This With You
               </h3>
               <p className="text-lg lg:text-xl text-startsnap-river-bed leading-relaxed">

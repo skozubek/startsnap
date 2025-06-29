@@ -94,7 +94,7 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
                 </div>
                 <h2
                   id="confirmation-title"
-                  className="font-['Space_Grotesk',Helvetica] font-black text-startsnap-ebony-clay text-xl uppercase tracking-wider"
+                  className="font-heading text-startsnap-ebony-clay text-xl uppercase tracking-wider"
                 >
                   {title}
                 </h2>

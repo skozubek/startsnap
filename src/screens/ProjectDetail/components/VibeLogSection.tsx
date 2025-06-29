@@ -227,7 +227,7 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
     <div className="p-4 md:border-b-2 md:border-gray-800 md:p-8">
       <div className="flex items-center justify-between mb-4 md:mb-6">
         <div className="flex items-center">
-          <h2 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-2xl leading-8">
+          <h2 className="font-heading text-startsnap-ebony-clay text-2xl leading-8">
             Vibe Log
           </h2>
           <span className="ml-1 text-startsnap-corn text-2xl material-icons">
@@ -253,7 +253,7 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
       {isOwner && isAddingVibeLog && (
         <div className="startsnap-form-card">
           <div className="py-2 md:p-0">
-            <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-gray-900 text-xl mb-6 px-1 md:px-0 md:mb-4">
+            <h3 className="font-subheading text-gray-900 text-xl mb-6 px-1 md:px-0 md:mb-4">
               Add New Vibe Log Entry
             </h3>
             <VibeLogEntryComponent
@@ -295,7 +295,7 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
             return (
               <div key={`${entry.id}-edit`} className="startsnap-form-card">
                 <div className="py-2 md:p-0">
-                  <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-gray-900 text-xl mb-6 px-1 md:px-0 md:mb-4">
+                  <h3 className="font-subheading text-gray-900 text-xl mb-6 px-1 md:px-0 md:mb-4">
                     Edit Vibe Log: <span className="font-normal">{entry.title}</span>
                   </h3>
                   <VibeLogEntryComponent
@@ -339,7 +339,7 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
                 </div>
                 <div className="ml-4 flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-2">
-                    <p className="font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4">
+                    <p className="font-body text-startsnap-pale-sky text-xs leading-4">
                       {formatDetailedDate(entry.created_at)}
                     </p>
                     {isOwner && (
@@ -381,10 +381,10 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
                       </div>
                     )}
                   </div>
-                  <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7 mb-3">
+                  <h3 className="font-subheading text-startsnap-oxford-blue text-lg leading-7 mb-3">
                     {entry.title}
                   </h3>
-                                    <div className="prose prose-sm md:prose-base max-w-none text-startsnap-river-bed font-['Roboto',Helvetica] leading-relaxed">
+                                    <div className="prose prose-sm md:prose-base max-w-none text-startsnap-river-bed font-body leading-relaxed">
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
                       components={{
@@ -448,7 +448,7 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
           );
         })
       ) : (
-        <p className="font-['Roboto',Helvetica] font-normal text-startsnap-pale-sky text-base leading-6">
+        <p className="font-body text-startsnap-pale-sky text-base leading-6">
           No vibe log entries yet. Check back soon for updates!
         </p>
       )}

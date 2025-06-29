@@ -246,10 +246,10 @@ export const Profiles = (): JSX.Element => {
       <div className="w-full bg-startsnap-candlelight">
         <div className="w-full max-w-6xl px-8 py-16 mx-auto">
           <div className="text-center">
-            <h1 className="text-5xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-4">
+            <h1 className="text-5xl font-heading text-startsnap-ebony-clay mb-4">
               Vibe Coders Directory
             </h1>
-            <p className="text-xl text-startsnap-river-bed font-['Roboto',Helvetica]">
+            <p className="text-xl text-startsnap-river-bed font-body">
               Discover talented developers, designers, and creators in the community
             </p>
           </div>
@@ -397,8 +397,8 @@ export const Profiles = (): JSX.Element => {
                             </div>
                           </div>
 
-                          <h3 className="text-xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-2">{profile.username}</h3>
-                          <p className="text-sm text-startsnap-river-bed font-['Roboto',Helvetica] line-clamp-3 leading-relaxed mb-3">{profile.bio || 'No bio yet.'}</p>
+                                          <h3 className="text-xl font-ui text-startsnap-ebony-clay mb-2">{profile.username}</h3>
+                <p className="text-sm text-startsnap-river-bed font-body line-clamp-3 leading-relaxed mb-3">{profile.bio || 'No bio yet.'}</p>
 
                           {/* Social Icons */}
                           {(profile.github_url || profile.twitter_url || profile.linkedin_url || profile.website_url) && (

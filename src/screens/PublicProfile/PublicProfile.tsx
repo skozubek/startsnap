@@ -109,10 +109,10 @@ export const PublicProfile = (): JSX.Element => {
                     <UserAvatar name={getAvatarName(null, profile.username)} size={96} className="w-full h-full" />
                   </div>
                   <div className="mt-4 text-center">
-                                        <h2 className="text-3xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica]">
-                      {profile.username}
-                    </h2>
-                    <Badge variant="outline" className="bg-startsnap-athens-gray text-startsnap-river-bed font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-gray-300 px-3 py-1.5 mt-2">
+                                                <h2 className="text-3xl font-heading text-startsnap-ebony-clay">
+          {profile.username}
+        </h2>
+                                         <Badge variant="outline" className="bg-startsnap-athens-gray text-startsnap-river-bed font-mono text-sm rounded-full border border-solid border-gray-300 px-3 py-1.5 mt-2">
                       <span className="material-icons text-sm mr-1">{getStatusIcon(profile.status || 'brainstorming')}</span>
                       {getUserStatusOptions().find(opt => opt.value === profile.status)?.label || 'Vibing'}
                     </Badge>
@@ -121,12 +121,12 @@ export const PublicProfile = (): JSX.Element => {
                 <div className="flex-1">
                   <div className="space-y-4">
                     <div>
-                      <h3 className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">Bio</h3>
-                      <p className="font-['Roboto',Helvetica] text-startsnap-river-bed mt-1">{profile.bio || 'No bio yet.'}</p>
+                                      <h3 className="block font-ui text-startsnap-oxford-blue text-lg leading-7">Bio</h3>
+                <p className="font-body text-startsnap-river-bed mt-1">{profile.bio || 'No bio yet.'}</p>
                     </div>
                     {(profile.github_url || profile.twitter_url || profile.linkedin_url || profile.website_url) && (
                       <div>
-                        <h3 className="block font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg leading-7">Links</h3>
+                        <h3 className="block font-ui text-startsnap-oxford-blue text-lg leading-7">Links</h3>
                         <div className="flex flex-wrap items-center gap-4 mt-2">
                           {profile.github_url && <a href={profile.github_url} target="_blank" rel="noopener noreferrer">{React.createElement(FaGithub as any, { size: 24, className: "text-gray-700 hover:text-black" })}</a>}
                           {profile.twitter_url && <a href={profile.twitter_url} target="_blank" rel="noopener noreferrer">{React.createElement(FaXTwitter as any, { size: 24, className: "text-gray-700 hover:text-black" })}</a>}

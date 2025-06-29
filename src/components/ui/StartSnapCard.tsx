@@ -135,7 +135,7 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
           <div className="flex justify-between items-center relative z-10 w-full">
             <Badge
               variant="outline"
-              className={`${thumbnailUrl ? 'bg-white/90 text-gray-900 border-white/50' : `${categoryDisplay.bgColor} ${categoryDisplay.textColor} border ${categoryDisplay.borderColor}`} rounded-full px-3 py-1 font-['Space_Mono',Helvetica] font-normal text-xs`}
+              className={`${thumbnailUrl ? 'bg-white/90 text-gray-900 border-white/50' : `${categoryDisplay.bgColor} ${categoryDisplay.textColor} border ${categoryDisplay.borderColor}`} rounded-full px-3 py-1 font-ui text-xs`}
             >
               {categoryDisplay.name}
             </Badge>
@@ -144,7 +144,7 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
             {rank && rank <= 3 && (
               <Badge
                 variant="outline"
-                className={`${getRankBadgeStyle(rank)} rounded-full px-2 py-1 font-['Space_Mono',Helvetica] font-bold text-xs border-2 ${thumbnailUrl ? 'bg-white/90' : ''}`}
+                className={`${getRankBadgeStyle(rank)} rounded-full px-2 py-1 font-mono text-xs border-2 ${thumbnailUrl ? 'bg-white/90' : ''}`}
               >
                 {getRankEmoji(rank)} #{rank}
               </Badge>
@@ -154,29 +154,29 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
 
         {/* Project Content */}
         <div className="p-4 md:p-6 flex-1 flex flex-col">
-          <h3 className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-xl leading-tight mb-3 line-clamp-2">
+          <h3 className="font-heading text-startsnap-ebony-clay text-xl leading-tight mb-3 line-clamp-2">
             {startsnap.name}
           </h3>
 
-          <p className="font-['Roboto',Helvetica] font-normal text-startsnap-river-bed text-sm leading-relaxed mb-4 line-clamp-3 flex-1">
+          <p className="font-body text-startsnap-river-bed text-sm leading-relaxed mb-4 line-clamp-3 flex-1">
             {startsnap.description}
           </p>
 
           {/* Project Type and Hackathon badges */}
           <div className="flex gap-2 flex-wrap items-center mb-4">
             {startsnap.type === "live" ? (
-              <Badge variant="outline" className="bg-startsnap-mountain-meadow text-white font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-green-700 px-2 py-1 flex items-center gap-1">
+                              <Badge variant="outline" className="bg-startsnap-mountain-meadow text-white font-mono text-xs rounded-full border border-solid border-green-700 px-2 py-1 flex items-center gap-1">
                 <span className="material-icons text-xs">rocket_launch</span>
                 Live
               </Badge>
             ) : (
-              <Badge variant="outline" className="bg-startsnap-corn text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-yellow-700 px-2 py-1 flex items-center gap-1">
+                              <Badge variant="outline" className="bg-startsnap-corn text-startsnap-ebony-clay font-mono text-xs rounded-full border border-solid border-yellow-700 px-2 py-1 flex items-center gap-1">
                 <span className="material-icons text-xs">lightbulb</span>
                 Idea
               </Badge>
             )}
             {startsnap.is_hackathon_entry && (
-              <Badge variant="outline" className="bg-startsnap-heliotrope text-white font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-purple-700 px-2 py-1 flex items-center gap-1">
+                              <Badge variant="outline" className="bg-startsnap-heliotrope text-white font-mono text-xs rounded-full border border-solid border-purple-700 px-2 py-1 flex items-center gap-1">
                 <span className="material-icons text-xs">emoji_events</span>
                 Hackathon
               </Badge>
@@ -187,12 +187,12 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
           {startsnap.tags && startsnap.tags.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-4">
               {startsnap.tags.slice(0, 3).map((tag: string, index: number) => (
-                <Badge key={`tag-${index}`} variant="outline" className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-gray-800 px-2 py-1">
+                <Badge key={`tag-${index}`} variant="outline" className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-mono text-xs rounded-full border border-solid border-gray-800 px-2 py-1">
                   #{tag}
                 </Badge>
               ))}
               {startsnap.tags.length > 3 && (
-                <Badge variant="outline" className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-gray-800 px-2 py-1">
+                                  <Badge variant="outline" className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-mono text-xs rounded-full border border-solid border-gray-800 px-2 py-1">
                   +{startsnap.tags.length - 3}
                 </Badge>
               )}
@@ -203,12 +203,12 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
           {startsnap.tools_used && startsnap.tools_used.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-4">
               {startsnap.tools_used.slice(0, 3).map((tool: string, index: number) => (
-                <Badge key={`tool-${index}`} variant="outline" className="bg-startsnap-french-pass text-startsnap-persian-blue font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-blue-700 px-2 py-1">
+                <Badge key={`tool-${index}`} variant="outline" className="bg-startsnap-french-pass text-startsnap-persian-blue font-mono text-xs rounded-full border border-solid border-blue-700 px-2 py-1">
                   {tool}
                 </Badge>
               ))}
               {startsnap.tools_used.length > 3 && (
-                <Badge variant="outline" className="bg-startsnap-french-pass text-startsnap-persian-blue font-['Space_Mono',Helvetica] text-xs rounded-full border border-solid border-blue-700 px-2 py-1">
+                                  <Badge variant="outline" className="bg-startsnap-french-pass text-startsnap-persian-blue font-mono text-xs rounded-full border border-solid border-blue-700 px-2 py-1">
                   +{startsnap.tools_used.length - 3}
                 </Badge>
               )}
@@ -221,7 +221,7 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div className="cursor-help">
-                    <Badge variant="outline" className="bg-gray-800 text-white font-['Space_Mono',Helvetica] text-xs rounded-full border-none px-3 py-1.5 flex items-center gap-1 hover:bg-gray-700 transition-colors duration-150">
+                    <Badge variant="outline" className="bg-gray-800 text-white font-mono text-xs rounded-full border-none px-3 py-1.5 flex items-center gap-1 hover:bg-gray-700 transition-colors duration-150">
                       ✨ Featured by StartSnap
                       <span className="material-icons text-xs ml-1 opacity-70">info</span>
                     </Badge>
@@ -249,7 +249,7 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
                           className="w-full h-full"
                         />
                       </div>
-                      <span className="font-['Roboto',Helvetica] font-medium text-startsnap-oxford-blue text-sm group-hover/creator:text-startsnap-french-rose">
+                      <span className="font-body font-medium text-startsnap-oxford-blue text-sm group-hover/creator:text-startsnap-french-rose">
                         {creatorName}
                       </span>
                     </Link>
@@ -262,7 +262,7 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
                           className="w-full h-full"
                         />
                       </div>
-                      <span className="font-['Roboto',Helvetica] font-medium text-startsnap-oxford-blue text-sm">
+                      <span className="font-body font-medium text-startsnap-oxford-blue text-sm">
                         {creatorName}
                       </span>
                     </div>
@@ -291,7 +291,7 @@ export const StartSnapCard: React.FC<StartSnapCardProps> = ({
 
           {/* Launch date for main-page variant - only show if not scouted */}
           {variant === 'main-page' && !isScouted && (
-            <p className="font-['Inter',Helvetica] font-normal text-startsnap-pale-sky text-xs leading-4 mt-2">
+            <p className="font-body text-startsnap-pale-sky text-xs leading-4 mt-2">
               {formatDate(startsnap.created_at)}
             </p>
           )}

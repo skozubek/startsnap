@@ -316,13 +316,13 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
             cloud_upload
           </span>
           <div>
-            <p className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay text-lg">
+                            <p className="font-ui text-startsnap-ebony-clay text-lg">
               {existingImageUrls.length >= 3
                 ? 'Maximum screenshots reached'
                 : 'Drop images here or click to upload'
               }
             </p>
-            <p className="font-['Roboto',Helvetica] text-startsnap-pale-sky text-sm mt-1">
+                          <p className="font-body text-startsnap-pale-sky text-sm mt-1">
               {existingImageUrls.length >= 3
                 ? 'Remove an image to upload a new one'
                 : `PNG, JPG, GIF up to 5MB each (${existingImageUrls.length + uploadingImages.length}/3)`

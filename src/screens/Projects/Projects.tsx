@@ -186,13 +186,13 @@ export const Projects = (): JSX.Element => {
       {/* Hero Section with Gradient */}
       <div className="w-full bg-startsnap-candlelight">
         <div className="w-full max-w-screen-2xl px-8 py-16 mx-auto">
-          <h1 className="text-5xl font-bold text-startsnap-ebony-clay text-center mb-16 font-['Space_Grotesk',Helvetica]">
+          <h1 className="text-5xl font-heading text-startsnap-ebony-clay text-center mb-16">
             Explore StartSnaps Gallery
           </h1>
 
           {/* Trending Zone - Now with Bold Contrast */}
           <div className="bg-startsnap-ebony-clay p-8 md:p-12 rounded-xl border-4 border-startsnap-french-rose shadow-[8px_8px_0px_#ef4444] transform rotate-[0.25deg] hover:rotate-0 transition-transform duration-300">
-            <h2 className="text-3xl font-bold text-startsnap-beige text-center mb-8 font-['Space_Grotesk',Helvetica]">
+            <h2 className="text-3xl font-heading text-startsnap-beige text-center mb-8">
               🔥 Trending StartSnaps
             </h2>
             <TrendingSection />

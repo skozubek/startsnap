@@ -378,10 +378,10 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
               className="border-2 border-solid border-blue-700"
             />
             <div className="flex-1">
-              <Label htmlFor="isHackathon" className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-persian-blue text-base leading-6 cursor-pointer">
+              <Label htmlFor="isHackathon" className="font-ui text-startsnap-persian-blue text-base leading-6 cursor-pointer">
                 This is a hackathon entry
               </Label>
-              <p className="text-sm text-startsnap-persian-blue/80 font-['Roboto',Helvetica] mt-1">
+              <p className="text-sm text-startsnap-persian-blue/80 font-body mt-1">
                 Mark this project if it was created for a hackathon or competition
               </p>
             </div>
@@ -434,11 +434,11 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
               <label className="startsnap-form-label">
                 Project Screenshots
               </label>
-              <span className="text-sm font-['Roboto',Helvetica] text-startsnap-pale-sky">
+              <span className="text-sm font-body text-startsnap-pale-sky">
                 {formState.screenshotUrls.length}/3 uploaded
               </span>
             </div>
-            <p className="text-sm text-startsnap-pale-sky font-['Roboto',Helvetica]">
+            <p className="text-sm text-startsnap-pale-sky font-body">
               Upload screenshots to showcase your project visually. Maximum 3 images allowed.
             </p>
             <ImageUploader
@@ -471,7 +471,7 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
                     <Badge
                       key={index}
                       variant="outline"
-                      className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-gray-800 px-3 py-1 flex items-center gap-2"
+                      className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-mono text-sm rounded-full border border-solid border-gray-800 px-3 py-1 flex items-center gap-2"
                     >
                       #{tag}
                       <button
@@ -507,7 +507,7 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
                     <Badge
                       key={index}
                       variant="outline"
-                      className="bg-startsnap-french-pass text-startsnap-persian-blue font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-blue-700 px-3 py-1 flex items-center gap-2"
+                      className="bg-startsnap-french-pass text-startsnap-persian-blue font-mono text-sm rounded-full border border-solid border-blue-700 px-3 py-1 flex items-center gap-2"
                     >
                       {tool}
                       <button
@@ -530,7 +530,7 @@ export const ProjectForm = ({ mode, projectId, initialData, onSubmit, onCancel }
               <h3 className="startsnap-form-label text-xl mb-4">
                 Initial Vibe Log Entry *
               </h3>
-              <p className="text-sm text-startsnap-pale-sky font-['Roboto',Helvetica] mb-4">
+              <p className="text-sm text-startsnap-pale-sky font-body mb-4">
                 Start documenting your journey with your first vibe log entry.
               </p>
 

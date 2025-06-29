@@ -190,23 +190,23 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
         <div className="flex gap-3 flex-wrap items-center mb-2">
           <Badge
             variant="outline"
-            className={`${categoryDisplay.bgColor} ${categoryDisplay.textColor} border ${categoryDisplay.borderColor} rounded-full px-4 py-2 font-['Space_Mono',Helvetica] font-normal text-sm`}
+            className={`${categoryDisplay.bgColor} ${categoryDisplay.textColor} border ${categoryDisplay.borderColor} rounded-full px-4 py-2 font-mono text-sm`}
           >
             {categoryDisplay.name}
           </Badge>
           {startsnap.type === "live" ? (
-            <Badge variant="outline" className="bg-startsnap-mountain-meadow text-white font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-green-700 px-3 py-1 flex items-center gap-1">
+            <Badge variant="outline" className="bg-startsnap-mountain-meadow text-white font-mono text-sm rounded-full border border-solid border-green-700 px-3 py-1 flex items-center gap-1">
               <span className="material-icons text-sm">rocket_launch</span>
               Live Project
             </Badge>
           ) : (
-            <Badge variant="outline" className="bg-startsnap-corn text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-yellow-700 px-3 py-1 flex items-center gap-1">
+            <Badge variant="outline" className="bg-startsnap-corn text-startsnap-ebony-clay font-mono text-sm rounded-full border border-solid border-yellow-700 px-3 py-1 flex items-center gap-1">
               <span className="material-icons text-sm">lightbulb</span>
               Idea / Concept
             </Badge>
           )}
           {startsnap.is_hackathon_entry && (
-            <Badge variant="outline" className="bg-startsnap-heliotrope text-white font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-purple-700 px-3 py-1 flex items-center gap-1">
+            <Badge variant="outline" className="bg-startsnap-heliotrope text-white font-mono text-sm rounded-full border border-solid border-purple-700 px-3 py-1 flex items-center gap-1">
               <span className="material-icons text-sm">emoji_events</span>
               Hackathon Entry
             </Badge>
@@ -217,14 +217,14 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
               <div className="px-4 pt-6 pb-8 border-b-2 border-gray-800 md:px-8">
         {(startsnap.live_demo_url || startsnap.demo_video_url) && (
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4">
-            <p className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-oxford-blue text-lg">
+            <p className="font-ui text-startsnap-oxford-blue text-lg">
               Project Links:
             </p>
             {startsnap.live_demo_url && (
               <div className="flex items-center">
                 <span className="material-icons text-startsnap-oxford-blue mr-1.5">public</span>
                 <a href={startsnap.live_demo_url} target="_blank" rel="noopener noreferrer"
-                  className="text-startsnap-persian-blue font-['Roboto',Helvetica] flex items-center hover:text-startsnap-french-rose transition-colors">
+                  className="text-startsnap-persian-blue font-body flex items-center hover:text-startsnap-french-rose transition-colors">
                   Live Demo
                   <span className="material-icons text-sm ml-1">open_in_new</span>
                 </a>
@@ -234,7 +234,7 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
               <div className="flex items-center">
                 <span className="material-icons text-startsnap-oxford-blue mr-1.5">videocam</span>
                 <a href={startsnap.demo_video_url} target="_blank" rel="noopener noreferrer"
-                  className="text-startsnap-persian-blue font-['Roboto',Helvetica] flex items-center hover:text-startsnap-french-rose transition-colors">
+                  className="text-startsnap-persian-blue font-body flex items-center hover:text-startsnap-french-rose transition-colors">
                   Demo Video
                   <span className="material-icons text-sm ml-1">open_in_new</span>
                 </a>
@@ -242,16 +242,16 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
             )}
           </div>
         )}
-        <p className="font-['Roboto',Helvetica] font-normal text-startsnap-river-bed leading-relaxed text-lg mb-6">
-          {startsnap.description}
-        </p>
+                        <p className="font-body text-startsnap-river-bed leading-relaxed text-lg mb-6">
+                  {startsnap.description}
+                </p>
         {(startsnap.tags && startsnap.tags.length > 0 || startsnap.tools_used && startsnap.tools_used.length > 0) && (
           <div className="flex flex-wrap items-start gap-x-4 gap-y-3 py-6 mb-6">
             {startsnap.tags && startsnap.tags.length > 0 && (
               <div className="flex flex-wrap items-center gap-3">
                 <span className="material-icons text-startsnap-shuttle-gray text-xl">sell</span>
                 {startsnap.tags.map((tag: string, index: number) => (
-                  <Badge key={`tag-${index}`} variant="outline" className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-gray-800 px-3 py-1">
+                  <Badge key={`tag-${index}`} variant="outline" className="bg-startsnap-athens-gray text-startsnap-ebony-clay font-mono text-sm rounded-full border border-solid border-gray-800 px-3 py-1">
                     #{tag}
                   </Badge>
                 ))}
@@ -261,7 +261,7 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
               <div className="flex flex-wrap items-center gap-3">
                 <span className="material-icons text-startsnap-persian-blue text-xl">build</span>
                 {startsnap.tools_used.map((tool: string, index: number) => (
-                  <Badge key={`tool-${index}`} variant="outline" className="bg-startsnap-french-pass text-startsnap-persian-blue font-['Space_Mono',Helvetica] text-sm rounded-full border border-solid border-blue-700 px-3 py-1">
+                  <Badge key={`tool-${index}`} variant="outline" className="bg-startsnap-french-pass text-startsnap-persian-blue font-mono text-sm rounded-full border border-solid border-blue-700 px-3 py-1">
                     {tool}
                   </Badge>
                 ))}
@@ -280,7 +280,7 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div className="cursor-help">
-                        <Badge variant="outline" className="bg-gray-800 text-white font-['Space_Mono',Helvetica] text-sm rounded-full border-none px-4 py-2 flex items-center gap-1 hover:bg-gray-700 transition-colors duration-150 shadow-[3px_3px_0px_#1f2937]">
+                        <Badge variant="outline" className="bg-gray-800 text-white font-mono text-sm rounded-full border-none px-4 py-2 flex items-center gap-1 hover:bg-gray-700 transition-colors duration-150 shadow-[3px_3px_0px_#1f2937]">
                           ✨ Featured by StartSnap
                           <span className="material-icons text-sm ml-1 opacity-70">info</span>
                         </Badge>
@@ -305,10 +305,10 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
                   />
                 </div>
                 <div>
-                  <p className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay leading-tight group-hover:text-startsnap-french-rose">
+                  <p className="font-ui text-startsnap-ebony-clay leading-tight group-hover:text-startsnap-french-rose">
                     {creator.username}
                   </p>
-                  <p className="font-['Roboto',Helvetica] text-startsnap-shuttle-gray text-sm group-hover:text-startsnap-french-rose">
+                  <p className="font-body text-startsnap-shuttle-gray text-sm group-hover:text-startsnap-french-rose">
                     Launched: {formatDetailedDate(startsnap.created_at)}
                   </p>
                 </div>
@@ -323,10 +323,10 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
                   />
                 </div>
                 <div>
-                  <p className="font-['Space_Grotesk',Helvetica] font-bold text-startsnap-ebony-clay leading-tight">
+                  <p className="font-ui text-startsnap-ebony-clay leading-tight">
                     {creator?.username || 'Anonymous'}
                   </p>
-                  <p className="font-['Roboto',Helvetica] text-startsnap-shuttle-gray text-sm">
+                  <p className="font-body text-startsnap-shuttle-gray text-sm">
                     Launched: {formatDetailedDate(startsnap.created_at)}
                   </p>
                 </div>

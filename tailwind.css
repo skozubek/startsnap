@@ -23,45 +23,7 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  .startsnap-button {
-    transition: all 0.3s ease-in-out;
-    transform: translate(0px, 0px);
-  }
 
-  .startsnap-button:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 5px 5px 0px #1f2937;
-  }
-
-  .startsnap-button:active {
-    transform: translate(1px, 1px);
-    box-shadow: 3px 2px 0px #1f2937;
-  }
-
-  /* Specific button color hover effects */
-  .startsnap-button.bg-startsnap-french-rose:hover {
-    background-color: rgb(219, 39, 119); /* Darker pink */
-  }
-
-  .startsnap-button.bg-startsnap-mountain-meadow:hover {
-    background-color: rgb(21, 128, 61); /* Darker green */
-  }
-
-  .startsnap-button.bg-gray-200:hover {
-    background-color: rgb(209, 213, 219); /* Darker gray */
-  }
-
-  .startsnap-button.bg-startsnap-mischka:hover {
-    background-color: rgba(209, 213, 219, 0.9); /* More subtle mischka */
-  }
-
-  .startsnap-button.bg-startsnap-persian-blue:hover {
-    background-color: var(--startsnap-persian-blue-dark);
-  }
-
-  .startsnap-button.bg-startsnap-candlelight:hover {
-    background-color: var(--startsnap-corn);
-  }
 
   /* Pulse glow animation for Community Pulse button */
   @keyframes pulse-glow {
@@ -134,9 +96,99 @@
   .color-text-inverse {
     color: var(--color-text-inverse);
   }
+
+  /* Typography System - Font Hell Fix */
+  .font-heading {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+  }
+
+  .font-subheading {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+  }
+
+  .font-body {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+  }
+
+  .font-ui {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+  }
+
+  .font-mono {
+    font-family: 'Space Mono', monospace;
+    font-weight: 400;
+  }
 }
 
 @layer base {
+  /* 🎯 BASE FONT SYSTEM - Automatic inheritance for unspecified fonts
+   *
+   * This system ensures ALL elements get consistent fonts even without explicit declarations:
+   *
+   * 1. Universal (*) selector applies Inter as base font to everything
+   * 2. Element-specific rules set appropriate weights and families
+   * 3. Component classes (.font-heading, .font-body) override when needed
+   * 4. Technical elements (.badge, code) get Space Mono automatically
+   *
+   * Result: No more font hell - everything inherits good defaults!
+   */
+
+  /* Default body text - catches most content */
+  body, p, span, div, li, td, th {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+  }
+
+  /* Headings hierarchy - automatic semantic fonts */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+  }
+
+  /* UI elements - buttons, labels, inputs */
+  button, label, input, select, textarea {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+  }
+
+  /* Code and technical elements */
+  code, pre, .badge, .tag {
+    font-family: 'Space Mono', monospace;
+    font-weight: 400;
+  }
+
+  /* Links inherit body font unless specified */
+  a {
+    font-family: inherit;
+    font-weight: inherit;
+  }
+
+  /* React component content - ensures consistent inheritance */
+  [class*="startsnap"] p,
+  [class*="startsnap"] span,
+  [class*="startsnap"] li,
+  [class*="startsnap"] div:not([class*="material-icons"]) {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+  }
+
+  /* Override for technical badges and code-like elements */
+  .badge, .tag, [class*="badge"], [class*="tag"],
+  [class*="mono"], [class*="code"] {
+    font-family: 'Space Mono', monospace !important;
+    font-weight: 400 !important;
+  }
+
+  /* Material Icons protection */
+  .material-icons, [class*="material-icons"] {
+    font-family: 'Material Icons' !important;
+    font-weight: 400 !important;
+  }
+
   :root {
     /* Tailwind CSS variables */
     --background: 0 0% 100%;
@@ -310,11 +362,15 @@
 
   * {
     @apply border-border;
+    /* Universal font fallback - ensures Inter is the base for everything */
+    font-family: 'Inter', sans-serif;
   }
 
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    /* Body weight default */
+    font-weight: 400;
   }
 }
 
@@ -378,17 +434,7 @@
     box-shadow: 2px 2px 0px #1f2937 !important;
   }
 
-  /* Mobile button optimizations */
-  .startsnap-button:hover {
-    transform: none !important;
-    box-shadow: 3px 3px 0px #1f2937 !important;
-  }
 
-  .startsnap-button:active {
-    transform: scale(0.97) !important;
-    box-shadow: 2px 2px 0px #1f2937 !important;
-    transition: all 0.1s ease-out !important;
-  }
 
   /* Optimize scale hover effects for mobile */
   .hover\:scale-\[1\.02\]:hover {
@@ -454,7 +500,6 @@
   }
 
   /* Enhanced active states for better touch feedback */
-  .startsnap-button:active,
   .touch-interactive:active {
     transform: scale(0.96) !important;
     filter: brightness(0.95) !important;
@@ -481,11 +526,7 @@
     @apply md:shadow-[5px_5px_0px_#1f2937] md:hover:opacity-90 md:duration-200;
   }
 
-  /* StartSnap Button - Progressive enhancement */
-  .startsnap-button {
-    @apply touch-manipulation active:scale-95 transition-transform duration-150;
-    @apply md:hover:translate-x-[-2px] md:hover:translate-y-[-2px] md:transition-all md:duration-200;
-  }
+
 
   /* Gallery Item - Touch-optimized */
   .startsnap-gallery-item {
@@ -507,7 +548,7 @@
 
   /* Base Semantic Button */
   .btn-base {
-    @apply inline-flex items-center justify-center gap-2 font-['Roboto',Helvetica] font-bold rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] tap-target touch-manipulation transition-all duration-150 active:scale-95 md:hover:shadow-[5px_5px_0px_#1f2937] md:duration-200;
+    @apply inline-flex items-center justify-center gap-2 font-ui rounded-lg border-2 border-solid border-gray-800 shadow-[3px_3px_0px_#1f2937] tap-target touch-manipulation transition-all duration-150 active:scale-95 md:hover:shadow-[5px_5px_0px_#1f2937] md:duration-200;
   }
 
   .btn-primary {
@@ -554,7 +595,6 @@
 
 @media (max-width: 768px) {
   /* GPU acceleration for smooth animations */
-  .startsnap-button,
   .startsnap-card,
   .startsnap-gallery-item {
     transform: translateZ(0);
@@ -579,8 +619,8 @@
 }
 
 /* Form Inputs - Borderless Mobile, Neo-brutalist Desktop */
-.startsnap-form-input {
-  @apply bg-gray-50 border-0 rounded-xl px-4 py-4 font-['Roboto',sans-serif] text-base text-gray-900 w-full !important;
+  .startsnap-form-input {
+    @apply bg-gray-50 border-0 rounded-xl px-4 py-4 font-body text-base text-gray-900 w-full !important;
   @apply focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500 !important;
   @apply transition-all duration-200 !important;
   @apply md:bg-white md:border-2 md:border-gray-800 md:rounded-lg md:px-4 md:py-4 md:focus:border-startsnap-french-rose md:focus:ring-2 md:focus:ring-startsnap-french-rose;
@@ -589,8 +629,8 @@
 }
 
 /* Form Textareas - Maximum Mobile Space */
-.startsnap-form-textarea {
-  @apply bg-gray-50 border-0 rounded-xl px-4 py-5 min-h-[240px] font-['Roboto',sans-serif] text-base text-gray-900 w-full !important;
+  .startsnap-form-textarea {
+    @apply bg-gray-50 border-0 rounded-xl px-4 py-5 min-h-[240px] font-body text-base text-gray-900 w-full !important;
   @apply focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500 !important;
   @apply transition-all duration-200 resize-none !important;
   @apply md:bg-white md:border-2 md:border-gray-800 md:rounded-lg md:px-4 md:py-4 md:min-h-[140px] md:focus:border-startsnap-french-rose md:focus:ring-2 md:focus:ring-startsnap-french-rose;
@@ -599,8 +639,8 @@
 }
 
 /* Reply Textareas - Feedback Form Specific */
-.startsnap-reply-textarea {
-  @apply bg-gray-50 border-0 rounded-lg px-3 py-3 min-h-[140px] font-['Roboto',sans-serif] text-base text-gray-900 w-full;
+  .startsnap-reply-textarea {
+    @apply bg-gray-50 border-0 rounded-lg px-3 py-3 min-h-[140px] font-body text-base text-gray-900 w-full;
   @apply focus:outline-none focus:bg-white;
   @apply transition-colors duration-200 resize-none;
   @apply md:bg-white md:border-2 md:border-gray-800 md:rounded-lg md:px-4 md:py-4 md:min-h-[100px] md:focus:border-startsnap-french-rose md:focus:ring-2 md:focus:ring-startsnap-french-rose;
@@ -621,8 +661,8 @@
 }
 
 /* Form Labels - Clean Typography */
-.startsnap-form-label {
-  @apply block font-['Space_Grotesk',sans-serif] font-semibold text-gray-900 text-lg mb-3;
+  .startsnap-form-label {
+    @apply block font-ui text-gray-900 text-lg mb-3;
   @apply md:text-lg;
 }
 

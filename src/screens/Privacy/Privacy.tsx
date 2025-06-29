@@ -17,7 +17,7 @@ export const Privacy = (): JSX.Element => {
       {/* Hero Section */}
       <div className="w-full bg-startsnap-candlelight border-b-2 border-gray-800">
         <div className="max-w-4xl mx-auto px-8 py-16">
-          <h1 className="text-4xl lg:text-5xl font-bold text-startsnap-ebony-clay text-center font-['Space_Grotesk',Helvetica] leading-tight">
+          <h1 className="text-4xl lg:text-5xl font-bold text-startsnap-ebony-clay text-center font-heading leading-tight">
             Privacy Policy
           </h1>
           <div className="text-center mt-6">
@@ -35,7 +35,7 @@ export const Privacy = (): JSX.Element => {
         {/* Introduction - White Background */}
         <section className="w-full bg-white border-b-2 border-gray-800">
           <div className="max-w-4xl mx-auto px-8 py-12">
-            <h2 className="text-2xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-6">
+            <h2 className="text-2xl font-bold text-startsnap-ebony-clay font-heading mb-6">
               1. Introduction
             </h2>
             <p className="text-startsnap-river-bed leading-relaxed text-lg">
@@ -49,7 +49,7 @@ export const Privacy = (): JSX.Element => {
         {/* Information We Collect - Light Background */}
         <section className="w-full bg-startsnap-athens-gray border-b-2 border-gray-800">
           <div className="max-w-4xl mx-auto px-8 py-12">
-            <h2 className="text-2xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-8">
+            <h2 className="text-2xl font-bold text-startsnap-ebony-clay font-heading mb-8">
               2. Information We Collect
             </h2>
 
@@ -96,7 +96,7 @@ export const Privacy = (): JSX.Element => {
         {/* How We Use Your Information - White Background */}
         <section className="w-full bg-white border-b-2 border-gray-800">
           <div className="max-w-4xl mx-auto px-8 py-12">
-            <h2 className="text-2xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-6">
+            <h2 className="text-2xl font-bold text-startsnap-ebony-clay font-heading mb-6">
               3. How We Use Your Information
             </h2>
             <ul className="text-startsnap-river-bed leading-relaxed space-y-3 list-disc pl-6 text-lg">
@@ -115,7 +115,7 @@ export const Privacy = (): JSX.Element => {
         {/* Information Sharing - Light Background */}
         <section className="w-full bg-startsnap-french-pass border-b-2 border-gray-800">
           <div className="max-w-4xl mx-auto px-8 py-12">
-            <h2 className="text-2xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-8">
+            <h2 className="text-2xl font-bold text-startsnap-ebony-clay font-heading mb-8">
               4. Information Sharing and Public Content
             </h2>
 
@@ -155,7 +155,7 @@ export const Privacy = (): JSX.Element => {
         {/* Data Storage and Security - White Background */}
         <section className="w-full bg-white border-b-2 border-gray-800">
           <div className="max-w-4xl mx-auto px-8 py-12">
-            <h2 className="text-2xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-6">
+            <h2 className="text-2xl font-bold text-startsnap-ebony-clay font-heading mb-6">
               5. Data Storage and Security
             </h2>
             <p className="text-startsnap-river-bed leading-relaxed mb-6 text-lg">
@@ -177,7 +177,7 @@ export const Privacy = (): JSX.Element => {
         {/* Privacy Rights - Light Background */}
         <section className="w-full bg-startsnap-wisp-pink border-b-2 border-gray-800">
           <div className="max-w-4xl mx-auto px-8 py-12">
-            <h2 className="text-2xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-6">
+            <h2 className="text-2xl font-bold text-startsnap-ebony-clay font-heading mb-6">
               6. Your Privacy Rights
             </h2>
             <p className="text-startsnap-river-bed leading-relaxed mb-6 text-lg">You have the following rights regarding your personal data:</p>
@@ -200,7 +200,7 @@ export const Privacy = (): JSX.Element => {
           <div className="max-w-4xl mx-auto px-8 py-12">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
-                <h2 className="text-xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-4">
+                <h2 className="text-xl font-bold text-startsnap-ebony-clay font-heading mb-4">
                   7. Cookies and Tracking
                 </h2>
                 <p className="text-startsnap-river-bed leading-relaxed mb-4">
@@ -217,7 +217,7 @@ export const Privacy = (): JSX.Element => {
               </div>
 
               <div>
-                <h2 className="text-xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-4">
+                <h2 className="text-xl font-bold text-startsnap-ebony-clay font-heading mb-4">
                   8. Third-Party Services
                 </h2>
                 <p className="text-startsnap-river-bed leading-relaxed mb-4">
@@ -240,7 +240,7 @@ export const Privacy = (): JSX.Element => {
           <div className="max-w-4xl mx-auto px-8 py-12">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
-                <h2 className="text-xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-4">
+                <h2 className="text-xl font-bold text-startsnap-ebony-clay font-heading mb-4">
                   9. Data Retention
                 </h2>
                 <p className="text-startsnap-river-bed leading-relaxed mb-4">
@@ -255,7 +255,7 @@ export const Privacy = (): JSX.Element => {
               </div>
 
               <div>
-                <h2 className="text-xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-4">
+                <h2 className="text-xl font-bold text-startsnap-ebony-clay font-heading mb-4">
                   10. Children's Privacy
                 </h2>
                 <p className="text-startsnap-river-bed leading-relaxed">
@@ -272,7 +272,7 @@ export const Privacy = (): JSX.Element => {
           <div className="max-w-4xl mx-auto px-8 py-12">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
-                <h2 className="text-xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-4">
+                <h2 className="text-xl font-bold text-startsnap-ebony-clay font-heading mb-4">
                   11. International Data Transfers
                 </h2>
                 <p className="text-startsnap-river-bed leading-relaxed">
@@ -282,7 +282,7 @@ export const Privacy = (): JSX.Element => {
               </div>
 
               <div>
-                <h2 className="text-xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-4">
+                <h2 className="text-xl font-bold text-startsnap-ebony-clay font-heading mb-4">
                   12. Changes to This Policy
                 </h2>
                 <p className="text-startsnap-river-bed leading-relaxed">
@@ -299,7 +299,7 @@ export const Privacy = (): JSX.Element => {
         <section className="w-full bg-startsnap-french-pass">
           <div className="max-w-4xl mx-auto px-8 py-16">
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-startsnap-ebony-clay font-['Space_Grotesk',Helvetica] mb-6">
+              <h2 className="text-2xl font-bold text-startsnap-ebony-clay font-heading mb-6">
                 13. Contact Us
               </h2>
               <p className="text-startsnap-river-bed leading-relaxed mb-6 text-lg">

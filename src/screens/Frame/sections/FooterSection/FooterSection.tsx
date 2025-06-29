@@ -54,7 +54,7 @@ export const FooterSection = (): JSX.Element => {
               <a
                 key={index}
                 href={link.href}
-                className="font-['Roboto',Helvetica] font-normal text-startsnap-ebony-clay text-base text-center leading-6 hover:text-startsnap-french-rose transition-colors"
+                className="font-body text-startsnap-ebony-clay text-base text-center leading-6 hover:text-startsnap-french-rose transition-colors"
               >
                 {link.title}
               </a>
@@ -62,7 +62,7 @@ export const FooterSection = (): JSX.Element => {
               <Link
                 key={index}
                 to={link.href}
-                className="font-['Roboto',Helvetica] font-normal text-startsnap-ebony-clay text-base text-center leading-6 hover:text-startsnap-french-rose transition-colors"
+                className="font-body text-startsnap-ebony-clay text-base text-center leading-6 hover:text-startsnap-french-rose transition-colors"
               >
                 {link.title}
               </Link>
@@ -71,7 +71,7 @@ export const FooterSection = (): JSX.Element => {
         </div>
 
         {/* Copyright */}
-        <div className="font-['Roboto',Helvetica] font-normal text-startsnap-ebony-clay text-base text-center leading-6">
+        <div className="font-body text-startsnap-ebony-clay text-base text-center leading-6">
           © {new Date().getFullYear()} startsnap.fun - Fueling Creative Journeys.
         </div>
       </div>

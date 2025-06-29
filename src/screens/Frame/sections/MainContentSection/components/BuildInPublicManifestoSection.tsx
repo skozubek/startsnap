@@ -37,20 +37,20 @@ export const BuildInPublicManifestoSection = (): JSX.Element => {
     <>
       <div className="w-full bg-startsnap-white border-t-2 border-b-2 border-gray-800">
         <div className="max-w-screen-2xl mx-auto px-8 py-16 lg:py-24">
-          <h2 className="text-4xl lg:text-5xl font-bold text-startsnap-ebony-clay text-center mb-12 font-['Space_Grotesk',Helvetica] leading-tight">
+          <h2 className="text-4xl lg:text-5xl font-heading text-startsnap-ebony-clay text-center mb-12 leading-tight">
             This Is How We Vibe
           </h2>
 
           {/* Text and Image Row */}
           <div className="flex flex-col-reverse md:flex-row gap-12 items-center max-w-6xl mx-auto mb-16">
             <div className="w-full md:w-[60%]">
-              <p className="text-lg lg:text-xl text-startsnap-river-bed mb-6 leading-relaxed font-['Roboto',Helvetica]">
+              <p className="text-lg lg:text-xl text-startsnap-river-bed mb-6 leading-relaxed font-body">
                 We build in public - sharing ideas, wins, and lessons as we go.
               </p>
-              <p className="text-lg lg:text-xl text-startsnap-river-bed mb-6 leading-relaxed font-['Roboto',Helvetica]">
+              <p className="text-lg lg:text-xl text-startsnap-river-bed mb-6 leading-relaxed font-body">
                 We learn from each other, with feedback that helps us get better.
               </p>
-              <p className="text-lg lg:text-xl text-startsnap-river-bed mb-6 leading-relaxed font-['Roboto',Helvetica]">
+              <p className="text-lg lg:text-xl text-startsnap-river-bed mb-6 leading-relaxed font-body">
                 StartSnap.fun is a place to connect, share your progress, or just see what others are up to.
               </p>
             </div>
@@ -68,7 +68,7 @@ export const BuildInPublicManifestoSection = (): JSX.Element => {
           {/* Cards Row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-6xl mx-auto mb-16">
             <div className="bg-startsnap-athens-gray p-6 rounded-lg border-2 border-gray-800 shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_#1f2937] transition-all duration-200">
-              <h3 className="text-xl font-bold text-startsnap-ebony-clay mb-4 font-['Space_Grotesk',Helvetica]">
+              <h3 className="text-xl font-heading text-startsnap-ebony-clay mb-4">
                 Why Build in Public?
               </h3>
               <ul className="space-y-4 text-startsnap-river-bed">
@@ -92,7 +92,7 @@ export const BuildInPublicManifestoSection = (): JSX.Element => {
             </div>
 
             <div className="bg-startsnap-french-pass p-6 rounded-lg border-2 border-gray-800 shadow-[3px_3px_0px_#1f2937] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_#1f2937] transition-all duration-200">
-              <h3 className="text-xl font-bold text-startsnap-ebony-clay mb-4 font-['Space_Grotesk',Helvetica]">
+              <h3 className="text-xl font-heading text-startsnap-ebony-clay mb-4">
                 How We Support You
               </h3>
               <ul className="space-y-4 text-startsnap-river-bed">

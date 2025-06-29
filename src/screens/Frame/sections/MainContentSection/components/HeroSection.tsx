@@ -54,11 +54,11 @@ export const HeroSection = (): JSX.Element => {
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 lg:py-24 flex flex-col md:flex-row items-center">
         <div className="w-full md:w-[60%] md:pr-8 lg:pr-16 mb-8 md:mb-0 text-center md:text-left">
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-startsnap-ebony-clay mb-4 sm:mb-6 font-['Space_Grotesk',Helvetica] leading-tight">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-heading text-startsnap-ebony-clay mb-4 sm:mb-6 leading-tight">
             We're Vibe Coders,<br />
             We Build <span ref={typedRef}></span>
           </h1>
-          <p className="text-base sm:text-lg lg:text-xl text-startsnap-river-bed mb-6 sm:mb-8 font-['Roboto',Helvetica] leading-relaxed">
+          <p className="text-base sm:text-lg lg:text-xl text-startsnap-river-bed mb-6 sm:mb-8 font-body leading-relaxed">
             Showcase your journey, build in public, get real feedback, and connect with opportunities
           </p>
           <Button variant="primary" asChild className="text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6">
