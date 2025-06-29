@@ -15,7 +15,7 @@ import { IconType } from "react-icons";
 export const FooterSection = (): JSX.Element => {
   // Footer navigation links data
   const footerLinks = [
-    { title: "About", href: "#" },
+    { title: "About", href: "/about" },
     { title: "Terms", href: "/terms" },
     { title: "Privacy", href: "/privacy" },
   ];
@@ -50,23 +50,13 @@ export const FooterSection = (): JSX.Element => {
         {/* Navigation Links */}
         <div className="flex items-center gap-6">
           {footerLinks.map((link, index) => (
-            link.href === "#" ? (
-              <a
-                key={index}
-                href={link.href}
-                className="font-body text-startsnap-ebony-clay text-base text-center leading-6 hover:text-startsnap-french-rose transition-colors"
-              >
-                {link.title}
-              </a>
-            ) : (
-              <Link
-                key={index}
-                to={link.href}
-                className="font-body text-startsnap-ebony-clay text-base text-center leading-6 hover:text-startsnap-french-rose transition-colors"
-              >
-                {link.title}
-              </Link>
-            )
+            <Link
+              key={index}
+              to={link.href}
+              className="font-body text-startsnap-ebony-clay text-base text-center leading-6 hover:text-startsnap-french-rose transition-colors"
+            >
+              {link.title}
+            </Link>
           ))}
         </div>
 

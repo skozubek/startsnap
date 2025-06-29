@@ -16,6 +16,7 @@ import { EditStartSnap } from "../EditStartSnap";
 import { Profile } from "../Profile";
 import { PublicProfile } from "../PublicProfile";
 import { Profiles } from "../Profiles";
+import { About } from "../About";
 import { Terms } from "../Terms";
 import { Privacy } from "../Privacy";
 import { AuthProvider, useAuth } from "../../context/AuthContext";
@@ -209,6 +210,7 @@ const FrameContent = (): JSX.Element => {
           <Route path="/projects/:slug" element={<ProjectDetail />} />
           <Route path="/profiles" element={<Profiles />} />
           <Route path="/profiles/:username" element={<PublicProfile />} />
+          <Route path="/about" element={<About />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route
