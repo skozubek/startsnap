@@ -218,7 +218,6 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
       shareText += "\n\n#buildinpublic";
     }
 
-
     const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
     window.open(shareUrl, '_blank');
   };
@@ -352,14 +351,14 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                          <DropdownMenuItem
+                            <DropdownMenuItem
                               onClick={() => handleShareOnX(entry.title)}
                               className="text-startsnap-oxford-blue hover:bg-startsnap-french-rose/10"
                             >
                               <span className="mr-2 flex items-center justify-center">
                                 {React.createElement(FaXTwitter as any, { className: "text-sm" })}
                               </span>
-                            Share
+                              Share
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => handleEditVibeLogInline(entry)}
@@ -368,7 +367,6 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
                               <Edit className="mr-2 h-4 w-4" />
                               Edit
                             </DropdownMenuItem>
-
                             <DropdownMenuItem
                               onClick={() => handleDeleteVibeLog(entry.id)}
                               className="text-red-600 hover:bg-red-50"
@@ -381,11 +379,10 @@ export const VibeLogSection: React.FC<VibeLogSectionProps> = ({
                       </div>
                     )}
                   </div>
-                  <h3 className="font-subheading text-startsnap-oxford-blue text-lg leading-7 mb-3">
                   <h3 className="font-heading text-startsnap-ebony-clay text-xl leading-7 mb-3">
                     {entry.title}
                   </h3>
-                                    <div className="prose prose-sm md:prose-base max-w-none text-startsnap-river-bed font-body leading-relaxed">
+                  <div className="prose prose-sm md:prose-base max-w-none text-startsnap-river-bed font-body leading-relaxed">
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
                       components={{
