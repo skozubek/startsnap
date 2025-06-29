@@ -1,0 +1,6 @@
+# Domain redirects from startsnap.xyz to startsnap.fun
+https://startsnap.xyz/* https://startsnap.fun/:splat 301!
+https://www.startsnap.xyz/* https://startsnap.fun/:splat 301!
+
+# SPA routing fallback - this must come AFTER domain redirects
+/* /index.html 200
