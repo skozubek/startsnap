@@ -14,6 +14,8 @@ import { getCategoryDisplay, getUserStatusOptions } from "../../config/categorie
 import { formatDate } from "../../lib/utils";
 import { UserAvatar, getAvatarName } from "../../components/ui/user-avatar";
 import type { UserProfileData } from "../../types/user";
+import { Helmet } from "react-helmet-async";
+import { SITE_URL, DEFAULT_OG_IMAGE } from "../../config/site";
 
 /**
  * @description Public profile page component for viewing any user's profile and StartSnaps
@@ -92,8 +94,38 @@ export const PublicProfile = (): JSX.Element => {
     return option ? option.icon : 'lightbulb';
   };
 
+  /* ------------------------- SEO META GENERATION ------------------------- */
+  const title = profile ? `${profile.username}'s Profile | StartSnap` : "StartSnap – Build in Public";
+  const rawDescription = profile?.bio || `Check out the projects and journey of ${profile?.username ?? "our creators"} on StartSnap.`;
+  const description = rawDescription.length > 160 ? `${rawDescription.slice(0, 157).trimEnd()}…` : rawDescription;
+
+  // Generate a deterministic boring-avatars URL for consistency
+  const avatarImage = profile ? `https://source.boringavatars.com/marble/120/${encodeURIComponent(profile.username)}?square=true` : "";
+  const imageUrl = profile ? avatarImage : DEFAULT_OG_IMAGE;
+
+  const canonicalUrl = profile ? `${SITE_URL}/profiles/${profile.username}` : SITE_URL;
+
   return (
     <div className="flex flex-col w-full items-center bg-white">
+      <Helmet>
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={canonicalUrl} />
+
+        {/* OpenGraph */}
+        <meta property="og:type" content="profile" />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:image" content={imageUrl} />
+        <meta property="og:url" content={canonicalUrl} />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={imageUrl} />
+      </Helmet>
+
       {/* Hero Section with Gradient */}
       <div className="w-full bg-startsnap-candlelight">
         <div className="w-full max-w-4xl px-8 py-16 mx-auto">
