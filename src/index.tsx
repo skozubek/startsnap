@@ -6,6 +6,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import { Frame } from "./screens/Frame/Frame";
 
 /**
@@ -15,7 +16,9 @@ import { Frame } from "./screens/Frame/Frame";
 createRoot(document.getElementById("app") as HTMLElement).render(
   <StrictMode>
     <BrowserRouter>
-      <Frame />
+      <HelmetProvider>
+        <Frame />
+      </HelmetProvider>
     </BrowserRouter>
   </StrictMode>,
 );

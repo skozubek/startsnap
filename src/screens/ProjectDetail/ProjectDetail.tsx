@@ -21,6 +21,8 @@ import type { UserProfileData } from "../../types/user"; // Import UserProfileDa
 import type { FeedbackEntry, FeedbackReply } from "../../types/feedback"; // Import feedback types
 import type { VibeLog } from "../../types/vibeLog"; // Import VibeLog type
 import { toast } from "sonner";
+import { Helmet } from "react-helmet-async";
+import { SITE_URL, DEFAULT_OG_IMAGE } from "../../config/site";
 
 // Define types that were previously inline or implicitly defined
 // These might be moved to a dedicated types.ts file if they grow further or are used elsewhere
@@ -412,8 +414,44 @@ export const ProjectDetail = (): JSX.Element => {
 
   const isOwner = !!(currentUser && currentUser.id === startsnap.user_id);
 
+  /* ------------------------- SEO META GENERATION ------------------------- */
+  const title = startsnap ? `${startsnap.name} | StartSnap` : "StartSnap – Build in Public";
+
+  const rawDescription = startsnap?.description ||
+    "Discover projects being built in public on StartSnap.";
+  const description = rawDescription.length > 160
+    ? `${rawDescription.slice(0, 157).trimEnd()}…`
+    : rawDescription;
+
+  const firstScreenshot = startsnap?.screenshot_urls?.[0] ?? "";
+  const imageUrl = firstScreenshot
+    ? (firstScreenshot.startsWith("http") ? firstScreenshot : `${SITE_URL}${firstScreenshot}`)
+    : DEFAULT_OG_IMAGE;
+
+  const canonicalUrl = startsnap?.slug
+    ? `${SITE_URL}/projects/${startsnap.slug}`
+    : SITE_URL;
+
   return (
     <>
+      <Helmet>
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={canonicalUrl} />
+
+        {/* OpenGraph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:image" content={imageUrl} />
+        <meta property="og:url" content={canonicalUrl} />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={imageUrl} />
+      </Helmet>
       {/* Hero Background with Gradient */}
       <div className="w-full bg-startsnap-candlelight">
         <div className="flex flex-col w-full items-center pt-12 pb-8 px-4 md:px-8">
