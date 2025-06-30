@@ -47,6 +47,7 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
+  const [autoLoginAttempted, setAutoLoginAttempted] = useState(false);
 
   /**
    * @description Disconnects any active Algorand wallets safely
@@ -255,6 +256,61 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
     }
   };
 
+  /**
+   * @description Attempts automatic login when special query parameters are present in the URL.
+   *              This is used exclusively for Hackathon judges so they can evaluate the app without
+   *              going through the manual sign-in flow. The logic only accepts the pre-defined
+   *              judge credentials and ignores all other values. After a successful auto-login the
+   *              sensitive query parameters are removed from the URL via history.replaceState().
+   * @async
+   * @returns {Promise<void>}
+   * @sideEffects Reads window.location.search, may call `supabase.auth.signInWithPassword`, updates
+   *              browser history to strip credentials, and triggers toast notifications on failure.
+   */
+  const attemptJudgeAutoLogin = async (): Promise<void> => {
+    // Prevent multiple invocations
+    if (autoLoginAttempted) return;
+    setAutoLoginAttempted(true);
+
+    // Guard for SSR/Node environments (should never run there, but keeps types happy)
+    if (typeof window === 'undefined') return;
+
+    try {
+      const params = new URLSearchParams(window.location.search);
+      // Support either explicit keys or shorthand to keep URL concise
+      const emailParam = params.get('email') || params.get('u');
+      const passwordParam = params.get('password') || params.get('p');
+
+      const JUDGE_EMAIL = 'judge@startsnap.fun';
+      const JUDGE_PASSWORD = 'judge!123';
+
+      // Only proceed if parameters exactly match the judge credentials
+      if (emailParam === JUDGE_EMAIL && passwordParam === JUDGE_PASSWORD) {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: JUDGE_EMAIL,
+          password: JUDGE_PASSWORD
+        });
+
+        if (error) {
+          console.error('❌ Automatic judge login failed:', error);
+          toast.error('Automatic judge login failed. You can still sign in manually.');
+        } else {
+          // Remove credentials from the URL to avoid leaking them if the user shares the link further
+          params.delete('email');
+          params.delete('password');
+          params.delete('u');
+          params.delete('p');
+          const newQuery = params.toString();
+          const newUrl = `${window.location.pathname}${newQuery ? `?${newQuery}` : ''}${window.location.hash}`;
+          window.history.replaceState({}, '', newUrl);
+        }
+      }
+    } catch (error) {
+      console.error('💥 Error during automatic judge login:', error);
+      // Fail silently – judges can still log in manually if needed
+    }
+  };
+
   useEffect(() => {
     setLoading(true);
 
@@ -263,6 +319,11 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
       setUser(initialSession?.user ?? null);
       setSession(initialSession);
       setLoading(false);
+
+      // --- HACKATHON JUDGE AUTO-LOGIN ---
+      if (!initialSession) {
+        attemptJudgeAutoLogin();
+      }
     }).catch(async (error) => {
       console.error('❌ Error getting initial session:', error);
       // Clear potentially corrupted session data - but don't wait for it
