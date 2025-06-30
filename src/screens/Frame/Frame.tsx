@@ -25,6 +25,7 @@ import { ToastProvider } from "../../components/providers/ToastProvider";
 import { PulsePanel } from "../../components/ui/PulsePanel";
 import { supabase } from "../../lib/supabase";
 import { WalletProvider, WalletManager, WalletId, NetworkId } from '@txnlab/use-wallet-react';
+import { DefaultHelmet } from "../../components/DefaultHelmet";
 
 /**
  * @description Wallet manager configuration for Algorand wallet connectivity with QR code support
@@ -195,6 +196,8 @@ const FrameContent = (): JSX.Element => {
 
   return (
     <>
+      <DefaultHelmet />
+
       <HeaderSection
         onPulseButtonClick={openPulsePanel}
         hasNewActivity={hasNewActivity}
