@@ -14,7 +14,7 @@ security definer
 set search_path = public
 as $$
 declare
-  endpoint   text := 'https://clbqzchawfyaixwnkbgi.functions.supabase.co/notify-new-feedback';
+  endpoint   text := 'VITE_SUPABASE_URL/notify-new-feedback';
   auth_token text := 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNsYnF6Y2hhd2Z5YWl4d25rYmdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg2MTU0OTEsImV4cCI6MjA2NDE5MTQ5MX0.B3D85OfpKsqYFf5tolzj2kKuVY7GbBjTFJZJlxC-7l4';  -- keep anon
   sig_header text := 'r9*au3vBTMkZYxdpZ#brkZ47s&JrPG7^CVNM7wPRuDZchYzmsRrmGwfRmFmwS%T2';     -- set a strong random token
   body_j     jsonb;
