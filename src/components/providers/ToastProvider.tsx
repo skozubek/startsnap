@@ -7,8 +7,11 @@ import { Toaster } from 'sonner'
 import './toast-styles.css'
 
 /**
- * @description Toast provider component with custom neobrutalist styling that matches StartSnap design system
- * @returns {JSX.Element} Configured Toaster component with neobrutalist aesthetics
+ * Provides a toast notification context with custom neobrutalist styling consistent with the StartSnap design system.
+ *
+ * Renders a configured `Toaster` component that displays toast notifications in the top-right corner with custom styles and color schemes for different toast types.
+ *
+ * @returns The configured `Toaster` React element.
  */
 export function ToastProvider() {
   return (
